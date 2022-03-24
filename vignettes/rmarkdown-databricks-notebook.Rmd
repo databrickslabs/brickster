@@ -1,0 +1,176 @@
+---
+title: "Using RMarkdown as a Databricks Notebook"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using RMarkdown as a Databricks Notebook}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+R users that user Databricks have the choice of the following developer experiences:
+
+1.  Databricks motebooks
+2.  RStudio server on a Databricks cluster
+3.  Databricks connect (restricted to specific Databricks runtimes)
+
+`{brickster}` introduces another experience for R users, using an R Markdown notebook as if it were a Databricks notebook. This allows R users to:
+
+-   Execute R/Python/SQL/Scala code on a Databricks cluster from an R Markdown notebook
+
+-   Choose the compute target for their R code (locally, or against a Databricks cluster)
+
+-   Use RStudio with Databricks clusters of any Databricks runtime version
+
+Some features are sacrificed when not using a Databricks notebook:
+
+-   Collaboration features such as co-presence
+
+-   Notebook revision history
+
+-   mlflow experiments integration (sidebar)
+
+-   Cannot use the `%sh`/`%fs` magic commands
+
+## Setup R Markdown with `{brickster}`
+
+`{brickster}` contains a template for R Markdown - this template demonstrates how to connect to a Databricks cluster. The template can be accessed in RStudio under `'File' > 'New File' > 'R Markdown …' > 'From Template'`.
+
+The setup chunk of this template demonstrates how to establish connection with a Databricks cluster.
+
+``` r
+library(brickster)
+
+# you can use Addins -> `Databricks Compute` to get and insert cluster ID
+cluster_id <- "<insert cluster id>"
+cluster_status <- brickster::get_and_start_cluster(cluster_id)
+
+# create execution context
+exec_context <- brickster::db_context_create(cluster_id = cluster_id, language = "r")
+
+# set knitr options
+knitr::opts_chunk$set(echo = TRUE)
+
+# these are databricks specific and required in order to hook into execution context on cluster
+knitr::opts_chunk$set(db_cluster_id = cluster_id)
+knitr::opts_chunk$set(db_exec_context = exec_context$id)
+```
+
+The setup chunk is not mandatory, but its the recommended way to start your R Markdown notebooks when using a Databricks cluster for analysis as it will:
+
+1.  Get the details of the specified Databricks cluster
+
+2.  Start the cluster (if inactive) and wait for the cluster to be running
+
+3.  Establish an execution context on the specified Databricks cluster
+
+4.  Set the chunk options `db_cluster_id` and `db_exec_context` for the whole notebook
+
+You can choose to manually specify `db_cluster_id` and `db_exec_context` for each chunk, this would likely be tedious. There may be certain situations where a R Markdown notebook will process against more than one Databricks cluster - in these cases you can create the additional execution contexts and specify the options deliberately.
+
+### Cluster ID
+
+The ID of a Databricks cluster can be found by either:
+
+-   Navigating to the cluster in Databricks under 'compute'. The URL of the page where you can see the cluster information will contain the ID. (e.g. `https:/.`)
+
+-   Using the Databricks API's (e.g. via `{brickster}` with `brickster::db_cluster_list()`) to list all clusters and then choose the ID a specific cluster
+
+-   Using the RStudio addin 'Databricks Compute' included within `{brickster}`
+
+## Executing against a Databricks Cluster
+
+`{brickster}` allows you to execute any R/Python/Scala/SQL code on the remote Databricks cluster whilst having the ability to run code locally in standard `{r}` knitr chunks.
+
+### Supported Languages
+
+`{knitr}` is what enables this feature of `{brickster}` by allowing the definition of custom 'engines'. An engine defines how to handle the code within a chunk, one engine is defined per supported language.
+
+| Language |    Chunk Engine    | Databricks Notebook Magic Command |
+|:--------:|:------------------:|:---------------------------------:|
+|   `R`    |   `databricks_r`   |               `%r`                |
+| `python` |  `databricks_py`   |             `%python`             |
+| `scala`  | `databricks_scala` |             `%scala`              |
+|  `SQL`   |  `databricks_sql`  |              `%sql`               |
+
+: `{brickster}` R Markdown capability
+
+For example we can execute R code on a Databricks cluster by defining the following chunk:
+
+```` r
+`r ''````{r, engine = "databricks_r"}
+# syntax highlighting will be as expected
+library(ggplot2)
+ggplot(mpg, aes(displ, hwy, colour = class)) + 
+  geom_point()
+```
+````
+
+The advantage of the first way is that chunks will have the proper syntax highlighting. The other way to define a chunk is to specify the engine directly
+
+```` r
+`r ''````{databricks_r}
+# no syntax highlighting
+library(ggplot2)
+ggplot(mpg, aes(displ, hwy, colour = class)) + 
+  geom_point()
+```
+````
+
+Want to use SQL instead? No problem.
+
+```` r
+`r ''````{sql, engine = "databricks_sql"}
+show databases
+```
+````
+
+Results that are detected as tabular in **any** `databricks_*` chunk will be rendered and styled as is standard with `{kable}` automatically. The SQL example above is one such example of this behaviour.
+
+### Persisting Tabular Results
+
+When a result is rendered as a table you can persist a copy to the R session (`.GlobalEnv`) by using the `keep_as` chunk option
+
+```` r
+`r ''````{sql, engine = "databricks_sql", keep_as = "tables"}
+show databases
+```
+````
+
+### Graphics
+
+Databricks notebooks and execution contexts support rendering of graphics, this allows you to use libraries such as `{ggplot2}` in R or `matplotlib` in python.
+
+The graphic will be rendered on the remote Databricks cluster and then downloaded locally to present in the R Markdown notebook.
+
+    `r ''````{sql, engine = "databricks_sql", keep_as = "tables"}
+    library(ggplot2)
+    ggplot(mpg, aes(displ, hwy, colour = class)) + 
+      geom_point()
+    ```
+
+#### Interactive Content
+
+Databricks notebooks support rendering HTML in their outputs, this works best for Python. R's preferred way of rendering HTML using `{htmlwidgets}` requires a work-around to function on Databricks.Below is an example of interactive content that is generated on a remote Databricks cluster and then presented in the local R Markdown notebook.
+
+```` r
+`r ''````{python, engine = "databricks_py"}
+import folium
+m = folium.Map(location=[45.5236, -122.6750])
+m
+```
+````
+
+## Limitations
+
+-   Returning interactive HTML content only works for python (using the `databricks_py` engine
+
+-   `{knitr}` chunk options for formatting may not work for Databricks related chunks
+
+-   Syntax highlighting is only possible when specifying chunks as `{r, engine = "databricks_r"}` (not as `{databricks_r}`)

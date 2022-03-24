@@ -1,0 +1,45 @@
+Package: brickster
+Title: R interface to Databricks REST 2.0 APIs
+Version: 0.1.0
+Authors@R: 
+  c(
+    person(given = "Zac",
+           family = "Davies",
+           role = c("aut", "cre"),
+           email = "zac@databricks.com"),
+    person(given = "Rafi",
+           family = "Kurlansik",
+           role = c("aut"),
+           email = "rafi.kurlansik@databricks.com"),
+    person("Databricks", role = c("cph", "fnd"))
+  )
+Description: R interface to Databricks REST 2.0 APIs.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports:
+    base64enc,
+    cli,
+    curl,
+    data.table,
+    dplyr,
+    httr2,
+    jsonlite,
+    magrittr,
+    purrr
+Suggests: 
+    testthat (>= 3.0.0),
+    DT,
+    htmltools,
+    knitr,
+    magick,
+    miniUI,
+    rmarkdown,
+    rstudioapi,
+    rvest,
+    shiny
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
+VignetteBuilder: knitr
+URL: https://redesigned-couscous-5e2a9c3d.pages.github.io/
+Config/testthat/edition: 3

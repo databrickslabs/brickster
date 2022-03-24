@@ -1,0 +1,65 @@
+---
+title: "Template Title"
+author: "Your Name"
+date: "The Date"
+output: output_format
+---
+
+Ensure that you have correctly setup `.Renviron` with:
+
+-   `DATABRICKS_HOST`
+
+-   `DATABRICKS_TOKEN`
+
+```{r setup, include=FALSE}
+library(brickster)
+
+# you can use Addins -> `Databricks Compute` to get and insert cluster ID
+cluster_id <- "<insert cluster id>"
+cluster_status <- brickster::get_and_start_cluster(cluster_id)
+
+# create execution context
+exec_context <- brickster::db_context_create(cluster_id = cluster_id, language = "r")
+
+# set knitr options
+knitr::opts_chunk$set(echo = TRUE)
+
+# these are databricks specific and required in order to hook into execution context on cluster
+knitr::opts_chunk$set(db_cluster_id = cluster_id)
+knitr::opts_chunk$set(db_exec_context = exec_context$id)
+```
+
+## Execute Code Against Databricks Cluster
+
+### R
+
+```{databricks_r}
+library(dplyr)
+mtcars %>%
+  mutate(x = 1) %>%
+  display()
+```
+
+```{databricks_r}
+library(ggplot2)
+ggplot(mpg, aes(displ, hwy, colour = class)) + 
+  geom_point()
+```
+
+### SQL
+
+```{databricks_sql}
+show databases
+```
+
+### Scala
+
+```{databricks_scala}
+println("hello from Databricks")
+```
+
+### Python
+
+```{databricks_py}
+print("hello from Databricks")
+```

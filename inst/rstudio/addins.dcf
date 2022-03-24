@@ -1,0 +1,4 @@
+Name: Databricks Compute
+Description: Check info regarding clusters & endpoints
+Binding: clusters_and_endpoints_widget
+Interactive: true
