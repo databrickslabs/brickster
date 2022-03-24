@@ -18,8 +18,6 @@
 
 `remotes::install_github("databricks/brickster")`
 
-**NOTE**: Above won't work until repo is public, for now you'll want to clone and install via `remotes::install_local("<path_to_brickster>")`
-
 ## Setup Authentication
 
 Please read the vignette, you can open it by running `vignette("setup-auth", package = "brickster")` after installation.
