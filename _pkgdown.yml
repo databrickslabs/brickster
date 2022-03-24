@@ -1,10 +1,8 @@
-url: https://redesigned-couscous-5e2a9c3d.pages.github.io/
+url: https://zacdav-db.github.io/brickster/
 template:
   bootstrap: 5
-
 home:
   title: brickster
-
 authors:
   Zac Davies:
     href: https://github.com/zacdav-db
@@ -12,19 +10,16 @@ authors:
     href: https://www.linkedin.com/in/raphaelkurlansik/
   Databricks:
     href: https://www.databricks.com
-    html: <img src='https://databricks.com/wp-content/uploads/2019/12/cropped-databricks-icon-192x192.png' width='25' alt='Databricks' />
-
+    html: <img src='https://databricks.com/wp-content/uploads/2019/12/cropped-databricks-icon-192x192.png'
+      width='25' alt='Databricks' />
 development:
   mode: auto
-
 reference:
-
 - title: Authentication
   contents:
   - db_host
   - db_token
   - db_read_netrc
-
 - title: Clusters
   contents:
   - starts_with("db_cluster", internal = TRUE)
@@ -42,24 +37,16 @@ reference:
   - access_control_request
   - access_control_req_user
   - access_control_req_group
-
 - title: Cluster Libraries
   contents:
   - starts_with("db_libs", internal = TRUE)
   - wait_for_lib_installs
-
 - title: DBFS
-  contents:
-  - starts_with("db_dbfs", internal = TRUE)
-
+  contents: starts_with("db_dbfs", internal = TRUE)
 - title: Execution Contexts
-  contents:
-  - starts_with("db_context", internal = TRUE)
-
+  contents: starts_with("db_context", internal = TRUE)
 - title: Global Init Scripts
-  contents:
-  - starts_with("db_global_init_scripts", internal = TRUE)
-
+  contents: starts_with("db_global_init_scripts", internal = TRUE)
 - title: Jobs
   contents:
   - starts_with("db_jobs", internal = TRUE)
@@ -76,40 +63,28 @@ reference:
   - starts_with("lib_", internal = TRUE)
   - email_notifications
   - cron_schedule
-
 - title: Mlflow Model Registry
-  contents:
-  - starts_with("db_mlflow", internal = TRUE)
-
+  contents: starts_with("db_mlflow", internal = TRUE)
 - title: R Library Management
   contents:
   - set_lib_path
   - remove_lib_path
-
 - title: Repos
-  contents:
-  - starts_with("db_repo", internal = TRUE)
-
+  contents: starts_with("db_repo", internal = TRUE)
 - title: Secrets
-  contents:
-  - starts_with("db_secrets", internal = TRUE)
-
+  contents: starts_with("db_secrets", internal = TRUE)
 - title: SQL Endpoints
   contents:
   - starts_with("db_sql", internal = TRUE)
   - get_and_start_endpoint
-
 - title: Workspaces
-  contents:
-  - starts_with("db_workspace", internal = TRUE)
-
+  contents: starts_with("db_workspace", internal = TRUE)
 - title: Request Helpers
   contents:
   - db_request
   - db_perform_request
   - db_req_error_body
   - db_request_json
-
 - title: Low Level Helpers
-  contents:
-  - starts_with("is.", internal = TRUE)
+  contents: starts_with("is.", internal = TRUE)
+

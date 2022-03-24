@@ -41,5 +41,6 @@ Suggests:
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 VignetteBuilder: knitr
-URL: https://redesigned-couscous-5e2a9c3d.pages.github.io/
+URL: https://redesigned-couscous-5e2a9c3d.pages.github.io/,
+    https://zacdav-db.github.io/brickster/
 Config/testthat/edition: 3
