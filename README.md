@@ -1,4 +1,4 @@
-# brickster
+# brickster <a href='https://zacdav-db.github.io/brickster/'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/databricks/brickster/workflows/R-CMD-check/badge.svg)](https://github.com/databricks/brickster/actions)
