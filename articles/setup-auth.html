@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">brickster</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,7 +59,14 @@
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
 </form>
 
-      <ul class="navbar-nav"></ul>
+      <ul class="navbar-nav">
+<li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/zacdav-db/brickster/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 
     
@@ -73,7 +80,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Connect to a Databricks Workspace</h1>
             
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/zacdav-db/brickster/blob/HEAD/vignettes/setup-auth.Rmd" class="external-link"><code>vignettes/setup-auth.Rmd</code></a></small>
       <div class="d-none name"><code>setup-auth.Rmd</code></div>
     </div>
 
@@ -82,7 +89,7 @@
 <div class="section level2">
 <h2 id="defining-credentials">Defining Credentials<a class="anchor" aria-label="anchor" href="#defining-credentials"></a>
 </h2>
-<p>The <a href="https://redesigned-couscous-5e2a9c3d.pages.github.io/" class="external-link">brickster</a> package connects to a Databricks workspace via personal access tokens. Tokens can be generated in a few steps, for a step-by-step breakdown <a href="https://docs.databricks.com/dev-tools/api/latest/authentication.html" class="external-link">refer to the documentation</a>.</p>
+<p>The <a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> package connects to a Databricks workspace via personal access tokens. Tokens can be generated in a few steps, for a step-by-step breakdown <a href="https://docs.databricks.com/dev-tools/api/latest/authentication.html" class="external-link">refer to the documentation</a>.</p>
 <p>Once you have a token you’ll be able to store it alongside the workspace URL in an <code>.Renviron</code> file. The <code>.Renviron</code> is used for storing the variables, such as those which may be sensitive (e.g. credentials) and de-couple them from the code (additional reading: <a href="https://support.rstudio.com/hc/en-us/articles/360047157094-Managing-R-with-Rprofile-Renviron-Rprofile-site-Renviron-site-rsession-conf-and-repos-conf" class="external-link">1</a>, <a href="https://cran.r-project.org/web/packages/startup/vignettes/startup-intro.html" class="external-link">2</a>).</p>
 <p>To get started add the following to your <code>.Renviron</code>:</p>
 <ul>
@@ -93,18 +100,18 @@
 <pre><code>DATABRICKS_HOST=https://xxxxxxx.cloud.databricks.com/
 DATABRICKS_TOKEN=dapi123456789012345678a9bc01234defg5</code></pre>
 <p><strong>Note</strong>: Recommend creating an <code>.Renviron</code> for each project. You can create <code>.Renviron</code> within your user home directory if required.</p>
-<p>Restarting your R session will allow those variable to be picked up via the <a href="https://redesigned-couscous-5e2a9c3d.pages.github.io/" class="external-link">brickster</a> package.</p>
+<p>Restarting your R session will allow those variable to be picked up via the <a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> package.</p>
 </div>
 <div class="section level2">
 <h2 id="using-credentials-with-brickster">Using Credentials with <code>{brickster}</code><a class="anchor" aria-label="anchor" href="#using-credentials-with-brickster"></a>
 </h2>
-<p>Authentication should now be possible without specifying the credentials in your R code. We can now load <a href="https://redesigned-couscous-5e2a9c3d.pages.github.io/" class="external-link">brickster</a> and list the clusters within the workspace using <code><a href="../reference/db_cluster_list.html">db_cluster_list()</a></code>, to access our host/token we use <code><a href="../reference/db_host.html">db_host()</a></code>/<code><a href="../reference/db_token.html">db_token()</a></code> respectively.</p>
+<p>Authentication should now be possible without specifying the credentials in your R code. We can now load <a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> and list the clusters within the workspace using <code><a href="../reference/db_cluster_list.html">db_cluster_list()</a></code>, to access our host/token we use <code><a href="../reference/db_host.html">db_host()</a></code>/<code><a href="../reference/db_token.html">db_token()</a></code> respectively.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://redesigned-couscous-5e2a9c3d.pages.github.io/" class="external-link">brickster</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a></span><span class="op">)</span>
 
 <span class="co"># using db_host() and db_token() to get credentials</span>
 <span class="va">clusters</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_cluster_list.html">db_cluster_list</a></span><span class="op">(</span>host <span class="op">=</span> <span class="fu"><a href="../reference/db_host.html">db_host</a></span><span class="op">(</span><span class="op">)</span>, token <span class="op">=</span> <span class="fu"><a href="../reference/db_token.html">db_token</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p>All <a href="https://redesigned-couscous-5e2a9c3d.pages.github.io/" class="external-link">brickster</a> functions have their host/token parameters default to calling <code><a href="../reference/db_host.html">db_host()</a></code>/<code><a href="../reference/db_token.html">db_token()</a></code> therefore we can omit explicit calls to the functions.</p>
+<p>All <a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> functions have their host/token parameters default to calling <code><a href="../reference/db_host.html">db_host()</a></code>/<code><a href="../reference/db_token.html">db_token()</a></code> therefore we can omit explicit calls to the functions.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># all host/token parameters default to db_host()/db_token()</span>
 <span class="va">clusters</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_cluster_list.html">db_cluster_list</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>

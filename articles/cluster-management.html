@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">brickster</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,7 +59,14 @@
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
 </form>
 
-      <ul class="navbar-nav"></ul>
+      <ul class="navbar-nav">
+<li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/zacdav-db/brickster/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 
     
@@ -73,13 +80,13 @@
       <img src="../logo.png" class="logo" alt=""><h1>Cluster Management</h1>
             
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/zacdav-db/brickster/blob/HEAD/vignettes/cluster-management.Rmd" class="external-link"><code>vignettes/cluster-management.Rmd</code></a></small>
       <div class="d-none name"><code>cluster-management.Rmd</code></div>
     </div>
 
     
     
-<p><a href="https://redesigned-couscous-5e2a9c3d.pages.github.io/" class="external-link">brickster</a> has 1:1 mappings with the clusters REST API, enabling full control of Databricks clusters from your R session.</p>
+<p><a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> has 1:1 mappings with the clusters REST API, enabling full control of Databricks clusters from your R session.</p>
 <div class="section level2">
 <h2 id="cluster-creation">Cluster Creation<a class="anchor" aria-label="anchor" href="#cluster-creation"></a>
 </h2>
@@ -87,7 +94,7 @@
 <p>Depending on the cloud you will need to change the node types and <code>cloud_attrs</code> to be one of; <code><a href="../reference/aws_attributes.html">aws_attributes()</a></code>, <code><a href="../reference/azure_attributes.html">azure_attributes()</a></code>, or <code><a href="../reference/gcp_attributes.html">gcp_attributes()</a></code>.</p>
 <p>Below we will create a cluster on AWS and then step through using the other supporting functions.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://redesigned-couscous-5e2a9c3d.pages.github.io/" class="external-link">brickster</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a></span><span class="op">)</span>
 
 <span class="co"># create a small cluster on AWS with DBR 9.1 LTS</span>
 <span class="va">new_cluster</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_cluster_create.html">db_cluster_create</a></span><span class="op">(</span>

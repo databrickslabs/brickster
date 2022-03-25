@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">brickster</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,7 +59,14 @@
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
 </form>
 
-      <ul class="navbar-nav"></ul>
+      <ul class="navbar-nav">
+<li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/zacdav-db/brickster/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 
     
@@ -73,7 +80,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Using RMarkdown as a Databricks Notebook</h1>
             
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/zacdav-db/brickster/blob/HEAD/vignettes/rmarkdown-databricks-notebook.Rmd" class="external-link"><code>vignettes/rmarkdown-databricks-notebook.Rmd</code></a></small>
       <div class="d-none name"><code>rmarkdown-databricks-notebook.Rmd</code></div>
     </div>
 
@@ -85,7 +92,7 @@
 <li>RStudio server on a Databricks cluster</li>
 <li>Databricks connect (restricted to specific Databricks runtimes)</li>
 </ol>
-<p><a href="https://redesigned-couscous-5e2a9c3d.pages.github.io/" class="external-link">brickster</a> introduces another experience for R users, using an R Markdown notebook as if it were a Databricks notebook. This allows R users to:</p>
+<p><a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> introduces another experience for R users, using an R Markdown notebook as if it were a Databricks notebook. This allows R users to:</p>
 <ul>
 <li><p>Execute R/Python/SQL/Scala code on a Databricks cluster from an R Markdown notebook</p></li>
 <li><p>Choose the compute target for their R code (locally, or against a Databricks cluster)</p></li>
@@ -101,10 +108,10 @@
 <div class="section level2">
 <h2 id="setup-r-markdown-with-brickster">Setup R Markdown with <code>{brickster}</code><a class="anchor" aria-label="anchor" href="#setup-r-markdown-with-brickster"></a>
 </h2>
-<p><a href="https://redesigned-couscous-5e2a9c3d.pages.github.io/" class="external-link">brickster</a> contains a template for R Markdown - this template demonstrates how to connect to a Databricks cluster. The template can be accessed in RStudio under <code>'File' &gt; 'New File' &gt; 'R Markdown …' &gt; 'From Template'</code>.</p>
+<p><a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> contains a template for R Markdown - this template demonstrates how to connect to a Databricks cluster. The template can be accessed in RStudio under <code>'File' &gt; 'New File' &gt; 'R Markdown …' &gt; 'From Template'</code>.</p>
 <p>The setup chunk of this template demonstrates how to establish connection with a Databricks cluster.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://redesigned-couscous-5e2a9c3d.pages.github.io/" class="external-link">brickster</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a></span><span class="op">)</span>
 
 <span class="co"># you can use Addins -&gt; `Databricks Compute` to get and insert cluster ID</span>
 <span class="va">cluster_id</span> <span class="op">&lt;-</span> <span class="st">"&lt;insert cluster id&gt;"</span>
@@ -133,22 +140,22 @@
 <p>The ID of a Databricks cluster can be found by either:</p>
 <ul>
 <li><p>Navigating to the cluster in Databricks under ‘compute’. The URL of the page where you can see the cluster information will contain the ID. (e.g. <code>https:/.</code>)</p></li>
-<li><p>Using the Databricks API’s (e.g. via <a href="https://redesigned-couscous-5e2a9c3d.pages.github.io/" class="external-link">brickster</a> with <code><a href="../reference/db_cluster_list.html">brickster::db_cluster_list()</a></code>) to list all clusters and then choose the ID a specific cluster</p></li>
-<li><p>Using the RStudio addin ‘Databricks Compute’ included within <a href="https://redesigned-couscous-5e2a9c3d.pages.github.io/" class="external-link">brickster</a></p></li>
+<li><p>Using the Databricks API’s (e.g. via <a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> with <code><a href="../reference/db_cluster_list.html">brickster::db_cluster_list()</a></code>) to list all clusters and then choose the ID a specific cluster</p></li>
+<li><p>Using the RStudio addin ‘Databricks Compute’ included within <a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a></p></li>
 </ul>
 </div>
 </div>
 <div class="section level2">
 <h2 id="executing-against-a-databricks-cluster">Executing against a Databricks Cluster<a class="anchor" aria-label="anchor" href="#executing-against-a-databricks-cluster"></a>
 </h2>
-<p><a href="https://redesigned-couscous-5e2a9c3d.pages.github.io/" class="external-link">brickster</a> allows you to execute any R/Python/Scala/SQL code on the remote Databricks cluster whilst having the ability to run code locally in standard <code>{r}</code> knitr chunks.</p>
+<p><a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> allows you to execute any R/Python/Scala/SQL code on the remote Databricks cluster whilst having the ability to run code locally in standard <code>{r}</code> knitr chunks.</p>
 <div class="section level3">
 <h3 id="supported-languages">Supported Languages<a class="anchor" aria-label="anchor" href="#supported-languages"></a>
 </h3>
-<p><a href="https://yihui.org/knitr/" class="external-link">knitr</a> is what enables this feature of <a href="https://redesigned-couscous-5e2a9c3d.pages.github.io/" class="external-link">brickster</a> by allowing the definition of custom ‘engines’. An engine defines how to handle the code within a chunk, one engine is defined per supported language.</p>
+<p><a href="https://yihui.org/knitr/" class="external-link">knitr</a> is what enables this feature of <a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> by allowing the definition of custom ‘engines’. An engine defines how to handle the code within a chunk, one engine is defined per supported language.</p>
 <table class="table">
 <caption>
-<a href="https://redesigned-couscous-5e2a9c3d.pages.github.io/" class="external-link">brickster</a> R Markdown capability</caption>
+<a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> R Markdown capability</caption>
 <thead><tr class="header">
 <th align="center">Language</th>
 <th align="center">Chunk Engine</th>
