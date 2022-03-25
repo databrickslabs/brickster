@@ -2,6 +2,8 @@
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/databricks/brickster/workflows/R-CMD-check/badge.svg)](https://github.com/databricks/brickster/actions)
+[![Codecov test
+coverage](https://codecov.io/gh/zacdav-db/brickster/branch/main/graph/badge.svg)](https://app.codecov.io/gh/zacdav-db/brickster?branch=main)
 <!-- badges: end -->
 
 `{brickster}` aims to reduce friction for R users on Databricks by:
