@@ -1,8 +1,11 @@
 url: https://zacdav-db.github.io/brickster/
 template:
   bootstrap: 5
-home:
   title: brickster
+navbar:
+  structure:
+    left:  [intro, reference, articles]
+    right: [search, github]
 authors:
   Zac Davies:
     href: https://github.com/zacdav-db
