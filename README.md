@@ -1,7 +1,7 @@
 # brickster <a href='https://zacdav-db.github.io/brickster/'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/databricks/brickster/workflows/R-CMD-check/badge.svg)](https://github.com/databricks/brickster/actions)
+[![R-CMD-check](https://github.com/zacdav-db/brickster/workflows/R-CMD-check/badge.svg)](https://github.com/zacdav-db/brickster/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/zacdav-db/brickster/branch/main/graph/badge.svg)](https://app.codecov.io/gh/zacdav-db/brickster?branch=main)
 <!-- badges: end -->
@@ -18,7 +18,7 @@ coverage](https://codecov.io/gh/zacdav-db/brickster/branch/main/graph/badge.svg)
 
 ## Installation
 
-`remotes::install_github("databricks/brickster")`
+`remotes::install_github("zacdav-db/brickster")`
 
 ## Setup Authentication
 
