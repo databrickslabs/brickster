@@ -373,17 +373,15 @@ is.s3_storage_info <- function(x) {
 #' @export
 cluster_log_conf <- function(dbfs = NULL, s3 = NULL) {
 
-  # dbfs or s3 must be specified
-  stopifnot(!is.null(dbfs) || !is.null(s3))
-  # but both can't be specified
-  stopifnot(!is.null(dbfs) && !is.null(s3))
+  # dbfs or s3 must be specified - but not both
+  stopifnot(xor(is.null(dbfs), is.null(s3)))
 
   if (!is.null(dbfs)) {
     stopifnot(is.dbfs_storage_info(dbfs))
   }
 
   if (!is.null(s3)) {
-    stopifnot(is.dbfs_storage_info(s3))
+    stopifnot(is.s3_storage_info(s3))
   }
 
   obj <- list(
