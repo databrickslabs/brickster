@@ -303,3 +303,147 @@ test_that("email notification object behaviour", {
 })
 
 
+test_that("cluster objects behaviour", {
+
+  # cluster autoscale
+  expect_s3_class(
+    autoscale <- brickster::cluster_autoscale(min_workers = 2, max_workers = 4),
+    c("AutoScale", "list")
+  )
+  expect_true(brickster::is.cluster_autoscale(autoscale))
+
+  expect_error(brickster::cluster_autoscale(min_workers = 2, max_workers = 0))
+  expect_error(brickster::cluster_autoscale(min_workers = 2, max_workers = 2))
+  expect_error(brickster::cluster_autoscale(min_workers = -2, max_workers = 2))
+  expect_error(brickster::cluster_autoscale(min_workers = 2))
+  expect_error(brickster::cluster_autoscale(max_workers = 2))
+
+  # dbfs storage
+  expect_s3_class(
+    dbfs <- brickster::dbfs_storage_info(destination = "/mock/storage/path"),
+    c("DbfsStorageInfo", "list")
+  )
+  expect_true(brickster::is.dbfs_storage_info(dbfs))
+
+  # file storage
+  expect_s3_class(
+    fs <- brickster::file_storage_info(destination = "/mock/storage/path"),
+    c("DbfsStorageInfo", "list")
+  )
+  expect_true(brickster::is.file_storage_info(fs))
+
+  # s3 storage info
+  expect_s3_class(
+    s3 <- brickster::s3_storage_info(
+      destination = "s3://mock/bucket/path",
+      region = "ap-southeast-2"
+    ),
+    c("S3StorageInfo", "list")
+  )
+  expect_true(brickster::is.s3_storage_info(s3))
+  expect_error(
+    brickster::s3_storage_info(
+      destination = "s3://mock/bucket/path",
+      region = "ap-southeast-2",
+      encryption_type = "mock_encrypton"
+    )
+  )
+  expect_length(
+    brickster::s3_storage_info(
+      destination = "s3://mock/bucket/path",
+      region = "ap-southeast-2",
+      encryption_type = c("sse-s3", "sse-kms")
+    )$encryption_type,
+    1
+  )
+
+  # cluster log conf
+  expect_s3_class(
+    clc_dbfs <- brickster::cluster_log_conf(dbfs = dbfs),
+    c("ClusterLogConf", "list")
+  )
+  expect_true(brickster::is.cluster_log_conf(clc_dbfs))
+
+  expect_s3_class(
+    clc_s3 <- brickster::cluster_log_conf(s3 = s3),
+    c("ClusterLogConf", "list")
+  )
+  expect_true(brickster::is.cluster_log_conf(clc_s3))
+
+  expect_error(brickster::cluster_log_conf(dbfs = dbfs, s3 = s3))
+  expect_error(brickster::cluster_log_conf(s3 = dbfs))
+  expect_error(brickster::cluster_log_conf(dbfs = s3))
+  expect_error(brickster::cluster_log_conf(dbfs = fs))
+  expect_error(brickster::cluster_log_conf(s3 = fs))
+  expect_error(brickster::cluster_log_conf())
+
+  # docker image
+  mock_image <- brickster::docker_image("mock_url", "mock_user", "mock_pass")
+  expect_s3_class(mock_image, c("DockerImage", "list"))
+  expect_true(brickster::is.docker_image(mock_image))
+  expect_false(brickster::is.docker_image(list()))
+  expect_error(brickster::docker_image())
+  expect_error(brickster::docker_image(list()))
+
+  # init script
+  expect_s3_class(
+    init <- brickster::init_script_info(s3, dbfs, fs),
+    c("InitScriptInfo", "list")
+  )
+  expect_s3_class(
+    init_script_info(),
+    c("InitScriptInfo", "list")
+  )
+  expect_true(brickster::is.init_script_info(init))
+
+  expect_error(brickster::init_script_info(1))
+  expect_error(brickster::init_script_info("a"))
+  expect_error(brickster::init_script_info(fs, 1))
+
+  ## cloud attributes
+  # gcp
+  expect_s3_class(brickster::gcp_attributes(), c("GcpAttributes", "list"))
+  expect_true(brickster::is.gcp_attributes(brickster::gcp_attributes()))
+
+  # aws
+  expect_s3_class(brickster::aws_attributes(), c("AwsAttributes", "list"))
+  expect_true(brickster::is.aws_attributes(brickster::aws_attributes()))
+
+  # azure
+  expect_s3_class(brickster::azure_attributes(), c("AzureAttributes", "list"))
+  expect_true(brickster::is.azure_attributes(brickster::azure_attributes()))
+  expect_error(brickster::azure_attributes(first_on_demand = -1))
+  expect_error(brickster::azure_attributes(first_on_demand = 0))
+
+  # new cluster
+  # TODO: add more checks, but should add more logic to `new_cluster()`
+  cloud_attr_types <- list(
+    brickster::aws_attributes(),
+    brickster::gcp_attributes(),
+    brickster::azure_attributes()
+  )
+
+  for (cloud in cloud_attr_types) {
+    cluster <- brickster::new_cluster(
+      num_workers = 1,
+      spark_version = "mock_spark_version",
+      node_type_id = "mock_node_type_id",
+      driver_node_type_id = "mock_driver_node_type_id",
+      cloud_attrs = cloud
+    )
+    expect_s3_class(cluster, c("NewCluster", "list"))
+    expect_true(brickster::is.new_cluster(cluster))
+  }
+
+  expect_error(
+    brickster::new_cluster(
+      num_workers = 1,
+      spark_version = "mock_spark_version",
+      node_type_id = "mock_node_type_id",
+      driver_node_type_id = "mock_driver_node_type_id",
+      cloud_attrs = list()
+    )
+  )
+
+})
+
