@@ -68,9 +68,11 @@ db_token <- function() {
 #' @return named list of `.netrc` entries
 #' @export
 db_read_netrc <- function(path = "~/.netrc") {
+  # nocov start
   params <- readLines(path, warn = FALSE)
   params <- lapply(strsplit(params, " "), `[`, 2)
   setNames(params, c("machine", "login", "password"))
+  # nocov end
 }
 
 #' @name auth_params
@@ -78,3 +80,4 @@ db_read_netrc <- function(path = "~/.netrc") {
 #' @param token Databricks workspace token, defaults to calling [db_token()].
 #'
 NULL
+

@@ -278,7 +278,6 @@ test_that("email notification object behaviour", {
     )
   }
 
-
   # test that valid inputs don't error
   expect_s3_class(
     email_notif <- brickster::email_notifications(
