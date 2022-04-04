@@ -58,7 +58,7 @@ db_mlflow_model_transition_stage <- function(name, version,
                                              comment = NULL,
                                              host = db_host(), token = db_token(),
                                              perform_request = TRUE) {
-  stage <- match.arg(stage)
+  stage <- match.arg(stage, several.ok = FALSE)
 
   body <- list(
     name = name,
@@ -99,7 +99,7 @@ db_mlflow_model_transition_req <- function(name, version,
                                            comment = NULL,
                                            host = db_host(), token = db_token(),
                                            perform_request = TRUE) {
-  stage <- match.arg(stage)
+  stage <- match.arg(stage, several.ok = FALSE)
 
   body <- list(
     name = name,
@@ -174,7 +174,7 @@ db_mlflow_model_approve_transition_req <- function(name, version,
                                                    comment = NULL,
                                                    host = db_host(), token = db_token(),
                                                    perform_request = TRUE) {
-  stage <- match.arg(stage)
+  stage <- match.arg(stage, several.ok = FALSE)
 
   body <- list(
     name = name,
@@ -215,7 +215,7 @@ db_mlflow_model_reject_transition_req <- function(name, version,
                                                   comment = NULL,
                                                   host = db_host(), token = db_token(),
                                                   perform_request = TRUE) {
-  stage <- match.arg(stage)
+  stage <- match.arg(stage, several.ok = FALSE)
 
   body <- list(
     name = name,
@@ -258,7 +258,7 @@ db_mlflow_model_delete_transition_req <- function(name, version,
                                                   creator, comment = NULL,
                                                   host = db_host(), token = db_token(),
                                                   perform_request = TRUE) {
-  stage <- match.arg(stage)
+  stage <- match.arg(stage, several.ok = FALSE)
 
   body <- list(
     name = name,

@@ -716,7 +716,7 @@ db_cluster_events <- function(cluster_id,
                               host = db_host(), token = db_token(),
                               perform_request = TRUE) {
 
-  order <- match.arg(order)
+  order <- match.arg(order, several.ok = FALSE)
   stopifnot(
     offset >= 0,
     limit > 0 && limit <= 500

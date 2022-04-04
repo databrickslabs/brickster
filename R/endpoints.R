@@ -51,8 +51,8 @@ db_sql_endpoint_create <- function(name,
                                    perform_request = TRUE) {
 
   # checks
-  spot_instance_policy <- match.arg(spot_instance_policy)
-  channel <- match.arg(channel)
+  spot_instance_policy <- match.arg(spot_instance_policy, several.ok = FALSE)
+  channel <- match.arg(channel, several.ok = FALSE)
   sizes <- c(
     "2X-Small", "X-Small", "Small",
     "Medium", "Large", "X-Large",

@@ -476,7 +476,7 @@ db_jobs_runs_list <- function(job_id, active_only = FALSE,
                               host = db_host(), token = db_token(),
                               perform_request = TRUE) {
 
-  run_type <- match.arg(run_type)
+  run_type <- match.arg(run_type, several.ok = FALSE)
 
   if (active_only && completed_only) {
     stop("`active_only` and `completed_only` cannot both be `TRUE`.")
@@ -565,7 +565,7 @@ db_jobs_runs_export <- function(run_id, views_to_export = c("CODE", "DASHBOARDS"
                                 perform_request = TRUE) {
 
   # TODO: could add the ability to directly parse the outputs to files?
-  views_to_export <- match.arg(views_to_export)
+  views_to_export <- match.arg(views_to_export, several.ok = FALSE)
 
   body <- list(
     run_id = as.character(run_id),
