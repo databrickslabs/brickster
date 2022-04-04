@@ -91,8 +91,8 @@ aws_attributes <- function(first_on_demand = 1,
                            ebs_volume_throughput = NULL) {
 
   # TODO: check inputs
-  availability <- match.arg(availability)
-  ebs_volume_type <- match.arg(ebs_volume_type)
+  availability <- match.arg(availability, several.ok = FALSE)
+  ebs_volume_type <- match.arg(ebs_volume_type, several.ok = FALSE)
 
   obj <- list(
     first_on_demand = first_on_demand,
@@ -179,7 +179,7 @@ azure_attributes <- function(first_on_demand = 1,
 
   # TODO: check inputs
   stopifnot(first_on_demand > 0)
-  availability <- paste0(match.arg(availability), "_AZURE")
+  availability <- paste0(match.arg(availability, several.ok = FALSE), "_AZURE")
 
   obj <- list(
     first_on_demand = first_on_demand,
@@ -332,7 +332,7 @@ s3_storage_info <- function(destination,
                             encryption_type = c("sse-s3", "sse-kms"),
                             kms_key = NULL,
                             canned_acl = NULL) {
-  encryption_type <- match.arg(encryption_type)
+  encryption_type <- match.arg(encryption_type, several.ok = FALSE)
 
   obj <- list(
     destination = destination,
@@ -811,6 +811,12 @@ email_notifications <- function(on_start = NULL,
                                 on_success = NULL,
                                 on_failure = NULL,
                                 no_alert_for_skipped_runs = TRUE) {
+
+  stopifnot(is.character(on_start))
+  stopifnot(is.character(on_success))
+  stopifnot(is.character(on_failure))
+  stopifnot(is.logical(no_alert_for_skipped_runs))
+
   obj <- list(
     on_start = on_start,
     on_success = on_success,
@@ -851,7 +857,7 @@ is.email_notifications <- function(x) {
 cron_schedule <- function(quartz_cron_expression,
                           timezone_id = "Etc/UTC",
                           pause_status = c("UNPAUSED", "PAUSED")) {
-  pause_status <- match.arg(pause_status)
+  pause_status <- match.arg(pause_status, several.ok = FALSE)
 
   obj <- list(
     quartz_cron_expression = quartz_cron_expression,
@@ -917,7 +923,7 @@ is.access_control_request <- function(x) {
 #' @export
 access_control_req_user <- function(user_name,
                                     permission_level = c("CAN_MANAGE", "CAN_MANAGE_RUN", "CAN_VIEW", "IS_OWNER")) {
-  permission_level <- match.arg(permission_level)
+  permission_level <- match.arg(permission_level, several.ok = FALSE)
 
   obj <- list(
     user_name = user_name,
@@ -925,6 +931,8 @@ access_control_req_user <- function(user_name,
   )
 
   class(obj) <- c("AccessControlRequestForUser", "list")
+  obj
+
 }
 
 #' Test if object is of class AccessControlRequestForUser
@@ -951,7 +959,7 @@ is.access_control_req_user <- function(x) {
 #' @export
 access_control_req_group <- function(group,
                                      permission_level = c("CAN_MANAGE", "CAN_MANAGE_RUN", "CAN_VIEW")) {
-  permission_level <- match.arg(permission_level)
+  permission_level <- match.arg(permission_level, several.ok = FALSE)
 
   obj <- list(
     group = group,
@@ -959,6 +967,8 @@ access_control_req_group <- function(group,
   )
 
   class(obj) <- c("AccessControlRequestForGroup", "list")
+  obj
+
 }
 
 #' Test if object is of class AccessControlRequestForGroup
@@ -1182,6 +1192,10 @@ is.valid_task_type <- function(x) {
 #' @export
 job_tasks <- function(...) {
   obj <- list(...)
+
+  if (length(obj) == 0) {
+    stop("Must specify at least one task")
+  }
 
   # check that all inputs are job tasks
   task_check <- vapply(obj, is.job_task, logical(1))

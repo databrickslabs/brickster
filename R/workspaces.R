@@ -80,7 +80,7 @@ db_workspace_export <- function(path,
   # gut feel is yes but want to think about it a bit more
   direct_download <- FALSE
 
-  format <- match.arg(format)
+  format <- match.arg(format, several.ok = FALSE)
 
   body <- list(
     path = path,
@@ -178,7 +178,7 @@ db_workspace_import <- function(path,
                                 overwrite = FALSE,
                                 host = db_host(), token = db_token(),
                                 perform_request = TRUE) {
-  format <- match.arg(format)
+  format <- match.arg(format, several.ok = FALSE)
 
   if (!is.null(language)) {
     stopifnot(language %in% c("SCALA", "PYTHON", "SQL", "R"))
