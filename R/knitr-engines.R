@@ -75,31 +75,65 @@ clean_command_results <- function(x, options, language) {
 
   # create data.table and return as {kable} table
   if (x$results$resultType == "table") {
-    schema <- data.table::rbindlist(x$results$schema)
-    tbl <- data.table::rbindlist(x$results$data)
-    names(tbl) <- schema$name
-    knitr::knit_print(tbl)
-    if (!is.null(options$keep_as)) {
-      base::assign(options$keep_as, value = tbl, envir = .GlobalEnv)
+
+    outputs <- list(sep = "\n\n")
+    if (options$echo) {
+      outputs$code <- knitr::engine_output(
+        options = options,
+        code = options$code,
+        out = NULL
+      )
     }
-    out <- knitr::engine_output(options, options$code, NULL)
-    return(out)
+
+    if (options$eval) {
+      schema <- data.table::rbindlist(x$results$schema)
+      tbl <- data.table::rbindlist(x$results$data)
+      names(tbl) <- schema$name
+      if (!is.null(options$keep_as)) {
+        base::assign(options$keep_as, value = tbl, envir = .GlobalEnv)
+      }
+      outputs$table <- knitr::engine_output(
+        options = options,
+        out = list(paste0(knitr::kable(tbl, "simple"), collapse = "\n"))
+      )
+      knitr::knit_print(tbl)
+    }
+
+    return(do.call(paste, outputs))
+
   }
 
   # when result is an image save and present
   if (x$results$resultType %in% c("images", "image")) {
-    img <- x$results$fileNames[[1]]
-    # read as raw
-    raw <- base64enc::base64decode(what = substr(img, 23, nchar(img)))
-    img <- magick::image_read(raw)
-    # save to temp location
-    file <- tempfile()
-    magick::image_write(img, path = file)
-    # knitr things...
-    res <- structure(file, class = c("knit_image_paths", "knit_asis"), dpi = options$dpi)
-    print(res)
-    out <- knitr::engine_output(options, options$code, NULL)
-    return(out)
+
+    outputs <- list(sep = "\n\n")
+    if (options$echo) {
+      outputs$code <- knitr::engine_output(
+        options = options,
+        code = options$code,
+        out = NULL
+      )
+    }
+
+    if (options$eval) {
+      img <- x$results$fileNames[[1]]
+      # read as raw
+      raw <- base64enc::base64decode(what = substr(img, 23, nchar(img)))
+      img <- magick::image_read(raw)
+      # save to temp location
+      file <- tempfile(fileext = ".png")
+      magick::image_write(img, path = file)
+      # knitr things...
+      outputs$plot <- knitr::engine_output(
+        options = options,
+        out = list(knitr::include_graphics(path = file))
+      )
+      res <- structure(file, class = c("knit_image_paths", "knit_asis"), dpi = options$dpi)
+      print(res)
+    }
+
+    return(do.call(paste, outputs))
+
   }
 
   # otherwise treat the results as standard output
@@ -119,7 +153,8 @@ clean_command_results <- function(x, options, language) {
     out <- x$results$data
   }
 
-  knitr::engine_output(options, options$code, out)
+  knitr::engine_output(options = options, code = options$code, out = out)
+
 }
 
 
