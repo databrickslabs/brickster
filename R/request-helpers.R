@@ -23,6 +23,7 @@ db_request <- function(endpoint, method, version = NULL, body = NULL, host, toke
     httr2::req_method(method)
 
   if (!is.null(body)) {
+    body <- base::Filter(length, body)
     req <- req %>%
       httr2::req_body_json(body, ...)
   }
