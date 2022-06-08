@@ -32,8 +32,8 @@
 #'
 #' @export
 db_jobs_create <- function(name,
-                           schedule,
                            tasks,
+                           schedule = NULL,
                            job_clusters = NULL,
                            email_notifications = NULL,
                            timeout_seconds = NULL,

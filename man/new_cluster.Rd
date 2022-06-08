@@ -8,7 +8,7 @@ new_cluster(
   num_workers,
   spark_version,
   node_type_id,
-  driver_node_type_id,
+  driver_node_type_id = NULL,
   autoscale = NULL,
   cloud_attrs = NULL,
   spark_conf = NULL,

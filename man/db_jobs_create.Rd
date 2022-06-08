@@ -6,8 +6,8 @@
 \usage{
 db_jobs_create(
   name,
-  schedule,
   tasks,
+  schedule = NULL,
   job_clusters = NULL,
   email_notifications = NULL,
   timeout_seconds = NULL,
@@ -21,10 +21,10 @@ db_jobs_create(
 \arguments{
 \item{name}{Name for the job.}
 
-\item{schedule}{Instance of \code{\link[=cron_schedule]{cron_schedule()}}.}
-
 \item{tasks}{Task specifications to be executed by this job. Use
 \code{\link[=job_tasks]{job_tasks()}}.}
+
+\item{schedule}{Instance of \code{\link[=cron_schedule]{cron_schedule()}}.}
 
 \item{job_clusters}{Named list of job cluster specifications (using
 \code{\link[=new_cluster]{new_cluster()}}) that can be shared and reused by tasks of this job.
