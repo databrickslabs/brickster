@@ -6,7 +6,7 @@ articles:
   managing-jobs: managing-jobs.html
   rmarkdown-databricks-notebook: rmarkdown-databricks-notebook.html
   setup-auth: setup-auth.html
-last_built: 2022-05-10T14:20Z
+last_built: 2022-06-09T12:14Z
 urls:
   reference: https://zacdav-db.github.io/brickster/reference
   article: https://zacdav-db.github.io/brickster/articles
