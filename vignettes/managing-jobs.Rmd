@@ -259,6 +259,57 @@ oneoff_job <- db_jobs_runs_submit(
 )
 ```
 
+### Remote Git Repos
+
+Instead of using notebooks contained within the Databricks workspace a job can be referenced in an external git repository and reference a specific branch, tag, or commit.
+
+Let's revisit the simple job example from before and adjust to use `git_source()`.\
+In this example the repo will have a folder `example` which contains `simple-notebook.py`.
+
+```{r}
+# define a job task
+# this time, the notebook_path is relative to the git root directory
+# omit file extensions like .py or .r
+simple_task <- job_task(
+  task_key = "simple_task",
+  description = "a simple task that runs a notebook",
+  # specify a cluster for the job
+  new_cluster = new_cluster(
+    spark_version = "9.1.x-scala2.12",
+    driver_node_type_id = "m5a.large",
+    node_type_id = "m5a.large",
+    num_workers = 2,
+    cloud_attr = aws_attributes(ebs_volume_size = 32)
+  ),
+  # this task will be a notebook
+  task = notebook_task(notebook_path = "example/simple-notebook")
+)
+```
+
+Within the call to `db_jobs_create()` use `git_source()` to point to the repo containing the notebook.
+
+```{r}
+# create job with simple task
+simple_task_job <- db_jobs_create(
+  name = "brickster example: simple",
+  tasks = job_tasks(simple_task),
+  # git source points to repo
+  git_source = git_source(
+    git_url = "www.github.com/<user>/<repo>",
+    git_provider = "github",
+    reference = "main",
+    type = "branch"
+  ),
+  # 9am every day, paused currently
+  schedule = cron_schedule(
+    quartz_cron_expression = "0 0 9 * * ?",
+    pause_status = "PAUSED"
+  )
+)
+```
+
+When specifying `git_source()` all `notebook_task()` must be repo paths - it's not possible to have a mix of repo and workspace based notebooks. Additionally, this behaviour only works for `notebook_task()`, other tasks such as `spark_python_task()` are unsupported.
+
 ## Updating Jobs
 
 ### Partial Update

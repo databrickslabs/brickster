@@ -14,5 +14,5 @@ access_control_request(...)
 Access Control Request
 }
 \seealso{
-\code{\link[=db_cluster_create]{db_cluster_create()}}, \code{\link[=db_cluster_edit]{db_cluster_edit()}}
+\code{\link[=db_jobs_create]{db_jobs_create()}}, \code{\link[=db_jobs_reset]{db_jobs_reset()}}, \code{\link[=db_jobs_update]{db_jobs_update()}}
 }

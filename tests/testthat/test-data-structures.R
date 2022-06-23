@@ -447,3 +447,63 @@ test_that("cluster objects behaviour", {
 
 })
 
+test_that("git_source behaviour", {
+
+
+  gs_git_tag <- brickster::git_source(
+    git_url = "mockUrl",
+    git_provider = "github",
+    reference = "a",
+    type = "tag"
+  )
+
+  gs_git_branch <- brickster::git_source(
+    git_url = "mockUrl",
+    git_provider = "github",
+    reference = "a",
+    type = "branch"
+  )
+
+  gs_git_commit <- brickster::git_source(
+    git_url = "mockUrl",
+    git_provider = "github",
+    reference = "a",
+    type = "commit"
+  )
+
+  expect_s3_class(gs_git_tag, c("GitSource", "list"))
+  expect_s3_class(gs_git_branch, c("GitSource", "list"))
+  expect_s3_class(gs_git_commit, c("GitSource", "list"))
+
+  expect_true(brickster::is.git_source(gs_git_tag))
+  expect_true(brickster::is.git_source(gs_git_branch))
+  expect_true(brickster::is.git_source(gs_git_commit))
+
+  expect_error(
+    brickster::git_source(
+      git_url = "mockUrl",
+      git_provider = "fake",
+      reference = "a",
+      type = "commit"
+    )
+  )
+
+  expect_error(
+    brickster::git_source(
+      git_provider = "fake",
+      reference = "a",
+      type = "commit"
+    )
+  )
+
+  expect_error(
+    brickster::git_source(
+      git_url = "mockUrl",
+      reference = "a",
+      type = "commit"
+    )
+  )
+
+  expect_error(brickster::git_source())
+
+})

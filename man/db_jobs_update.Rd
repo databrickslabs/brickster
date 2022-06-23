@@ -15,6 +15,7 @@ db_jobs_update(
   timeout_seconds = NULL,
   max_concurrent_runs = NULL,
   access_control_list = NULL,
+  git_source = NULL,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
@@ -50,6 +51,9 @@ exceed 1000. Setting this value to 0 causes all new runs to be skipped.
 The default behavior is to allow only 1 concurrent run.}
 
 \item{access_control_list}{Instance of \code{\link[=access_control_request]{access_control_request()}}.}
+
+\item{git_source}{Optional specification for a remote repository containing
+the notebooks used by this job's notebook tasks. Instance of \code{\link[=git_source]{git_source()}}.}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
