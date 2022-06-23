@@ -73,30 +73,45 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>job_id</dt>
 <dd><p>The canonical identifier of the job.</p></dd>
+
+
 <dt>jar_params</dt>
 <dd><p>Named list. Parameters are used to invoke the main
 function of the main class specified in the Spark JAR task. If not specified
 upon run-now, it defaults to an empty list. <code>jar_params</code> cannot be specified
 in conjunction with <code>notebook_params</code>.</p></dd>
+
+
 <dt>notebook_params</dt>
 <dd><p>Named list. Parameters is passed to the notebook
 and is accessible through the <code>dbutils.widgets.get</code> function. If not specified
 upon run-now, the triggered run uses the job’s base parameters.</p></dd>
+
+
 <dt>python_params</dt>
 <dd><p>Named list. Parameters are passed to Python file as
 command-line parameters. If specified upon run-now, it would overwrite the
 parameters specified in job setting.</p></dd>
+
+
 <dt>spark_submit_params</dt>
 <dd><p>Named list. Parameters are passed to spark-submit
 script as command-line parameters. If specified upon run-now, it would
 overwrite the parameters specified in job setting.</p></dd>
+
+
 <dt>host</dt>
 <dd><p>Databricks workspace URL, defaults to calling <code><a href="db_host.html">db_host()</a></code>.</p></dd>
+
+
 <dt>token</dt>
 <dd><p>Databricks workspace token, defaults to calling <code><a href="db_token.html">db_token()</a></code>.</p></dd>
+
+
 <dt>perform_request</dt>
 <dd><p>If <code>TRUE</code> (default) the request is performed, if
 <code>FALSE</code> the httr2 request is returned <em>without</em> being performed.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -131,7 +146,7 @@ overwrite the parameters specified in job setting.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

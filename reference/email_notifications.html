@@ -71,12 +71,16 @@
 <dd><p>List of email addresses to be notified when a run begins.
 If not specified on job creation, reset, or update, the list is empty, and
 notifications are not sent.</p></dd>
+
+
 <dt>on_success</dt>
 <dd><p>List of email addresses to be notified when a run
 successfully completes. A run is considered to have completed successfully if
 it ends with a <code>TERMINATED</code> <code>life_cycle_state</code> and a <code>SUCCESSFUL</code>
 <code>result_state.</code> If not specified on job creation, reset, or update, the list
 is empty, and notifications are not sent.</p></dd>
+
+
 <dt>on_failure</dt>
 <dd><p>List of email addresses to be notified when a run
 unsuccessfully completes. A run is considered to have completed
@@ -84,9 +88,12 @@ unsuccessfully if it ends with an <code>INTERNAL_ERROR</code> <code>life_cycle_s
 <code>SKIPPED</code>, <code>FAILED</code>, or <code>TIMED_OUT</code> <code>result_state.</code> If this is not specified
 on job creation, reset, or update the list is empty, and notifications are
 not sent.</p></dd>
+
+
 <dt>no_alert_for_skipped_runs</dt>
 <dd><p>If <code>TRUE</code> (default), do not send email to
 recipients specified in <code>on_failure</code> if the run is skipped.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -111,7 +118,7 @@ recipients specified in <code>on_failure</code> if the run is skipped.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

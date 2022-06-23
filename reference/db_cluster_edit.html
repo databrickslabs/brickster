@@ -93,43 +93,65 @@ size.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>cluster_id</dt>
 <dd><p>Canonical identifier for the cluster.</p></dd>
+
+
 <dt>spark_version</dt>
 <dd><p>The runtime version of the cluster. You can retrieve a
 list of available runtime versions by using <code><a href="db_cluster_runtime_versions.html">db_cluster_runtime_versions()</a></code>.</p></dd>
+
+
 <dt>node_type_id</dt>
 <dd><p>The node type for the worker nodes.
 <code><a href="db_cluster_list_node_types.html">db_cluster_list_node_types()</a></code> can be used to see available node types.</p></dd>
+
+
 <dt>num_workers</dt>
 <dd><p>Number of worker nodes that this cluster should have. A
 cluster has one Spark driver and <code>num_workers</code> executors for a total of
 <code>num_workers</code> + 1 Spark nodes.</p></dd>
+
+
 <dt>autoscale</dt>
 <dd><p>Instance of <code><a href="cluster_autoscale.html">cluster_autoscale()</a></code>.</p></dd>
+
+
 <dt>name</dt>
 <dd><p>Cluster name requested by the user. This doesn’t have to be
 unique. If not specified at creation, the cluster name will be an empty
 string.</p></dd>
+
+
 <dt>spark_conf</dt>
 <dd><p>Named list. An object containing a set of optional,
 user-specified Spark configuration key-value pairs. You can also pass in a
 string of extra JVM options to the driver and the executors via
 <code>spark.driver.extraJavaOptions</code> and <code>spark.executor.extraJavaOptions</code>
 respectively. E.g. <code>list("spark.speculation" = true, "spark.streaming.ui.retainedBatches" = 5)</code>.</p></dd>
+
+
 <dt>cloud_attrs</dt>
 <dd><p>Attributes related to clusters running on specific cloud
 provider. Defaults to <code><a href="aws_attributes.html">aws_attributes()</a></code>. Must be one of <code><a href="aws_attributes.html">aws_attributes()</a></code>,
 <code><a href="azure_attributes.html">azure_attributes()</a></code>, <code><a href="gcp_attributes.html">gcp_attributes()</a></code>.</p></dd>
+
+
 <dt>driver_node_type_id</dt>
 <dd><p>The node type of the Spark driver. This field is
 optional; if unset, the driver node type will be set as the same value as
 <code>node_type_id</code> defined above. <code><a href="db_cluster_list_node_types.html">db_cluster_list_node_types()</a></code> can be used to
 see available node types.</p></dd>
+
+
 <dt>custom_tags</dt>
 <dd><p>Named list. An object containing a set of tags for cluster
 resources. Databricks tags all cluster resources with these tags in addition
 to <code>default_tags</code>. Databricks allows at most 45 custom tags.</p></dd>
+
+
 <dt>init_scripts</dt>
 <dd><p>Instance of <code><a href="init_script_info.html">init_script_info()</a></code>.</p></dd>
+
+
 <dt>spark_env_vars</dt>
 <dd><p>Named list. User-specified environment variable
 key-value pairs. In order to specify an additional set of
@@ -137,26 +159,38 @@ key-value pairs. In order to specify an additional set of
 <code>$SPARK_DAEMON_JAVA_OPTS</code> as shown in the following example. This ensures
 that all default Databricks managed environmental variables are included as
 well. E.g. <code>{"SPARK_DAEMON_JAVA_OPTS": "$SPARK_DAEMON_JAVA_OPTS -Dspark.shuffle.service.enabled=true"}</code></p></dd>
+
+
 <dt>autotermination_minutes</dt>
 <dd><p>Automatically terminates the cluster after it
 is inactive for this time in minutes. If not set, this cluster will not be
 automatically terminated. If specified, the threshold must be between 10 and
 10000 minutes. You can also set this value to 0 to explicitly disable
 automatic termination. Defaults to 120.</p></dd>
+
+
 <dt>log_conf</dt>
 <dd><p>Instance of <code><a href="cluster_log_conf.html">cluster_log_conf()</a></code>.</p></dd>
+
+
 <dt>ssh_public_keys</dt>
 <dd><p>List. SSH public key contents that will be added to each
 Spark node in this cluster. The corresponding private keys can be used to
 login with the user name ubuntu on port 2200. Up to 10 keys can be specified.</p></dd>
+
+
 <dt>driver_instance_pool_id</dt>
 <dd><p>ID of the instance pool to use for the
 driver node. You must also specify <code>instance_pool_id</code>. Optional.</p></dd>
+
+
 <dt>instance_pool_id</dt>
 <dd><p>ID of the instance pool to use for cluster nodes. If
 <code>driver_instance_pool_id</code> is present, <code>instance_pool_id</code> is used for worker
 nodes only. Otherwise, it is used for both the driver and worker nodes.
 Optional.</p></dd>
+
+
 <dt>idempotency_token</dt>
 <dd><p>An optional token that can be used to guarantee the
 idempotency of cluster creation requests. If an active cluster with the
@@ -167,25 +201,40 @@ you specify the idempotency token, upon failure you can retry until the
 request succeeds. Databricks guarantees that exactly one cluster will be
 launched with that idempotency token. This token should have at most 64
 characters.</p></dd>
+
+
 <dt>enable_elastic_disk</dt>
 <dd><p>When enabled, this cluster will dynamically
 acquire additional disk space when its Spark workers are running low on
 disk space.</p></dd>
+
+
 <dt>apply_policy_default_values</dt>
 <dd><p>Boolean (Default: <code>TRUE</code>), whether to use
 policy default values for missing cluster attributes.</p></dd>
+
+
 <dt>enable_local_disk_encryption</dt>
 <dd><p>Boolean (Default: <code>TRUE</code>), whether
 encryption of disks locally attached to the cluster is enabled.</p></dd>
+
+
 <dt>docker_image</dt>
 <dd><p>Instance of <code><a href="docker_image.html">docker_image()</a></code>.</p></dd>
+
+
 <dt>host</dt>
 <dd><p>Databricks workspace URL, defaults to calling <code><a href="db_host.html">db_host()</a></code>.</p></dd>
+
+
 <dt>token</dt>
 <dd><p>Databricks workspace token, defaults to calling <code><a href="db_token.html">db_token()</a></code>.</p></dd>
+
+
 <dt>perform_request</dt>
 <dd><p>If <code>TRUE</code> (default) the request is performed, if
 <code>FALSE</code> the httr2 request is returned <em>without</em> being performed.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -227,7 +276,7 @@ error code.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

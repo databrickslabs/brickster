@@ -82,46 +82,71 @@ this task from other tasks. This field is required and must be unique within
 its parent job. On <code><a href="db_jobs_update.html">db_jobs_update()</a></code> or <code><a href="db_jobs_reset.html">db_jobs_reset()</a></code>, this field is
 used to reference the tasks to be updated or reset. The maximum length is
 100 characters.</p></dd>
+
+
 <dt>description</dt>
 <dd><p>An optional description for this task. The maximum length
 is 4096 bytes.</p></dd>
+
+
 <dt>depends_on</dt>
 <dd><p>Vector of <code>task_key</code>'s specifying the dependency graph of
 the task. All <code>task_key</code>'s specified in this field must complete successfully
 before executing this task. This field is required when a job consists of
 more than one task.</p></dd>
+
+
 <dt>existing_cluster_id</dt>
 <dd><p>ID of an existing cluster that is used for all
 runs of this task.</p></dd>
+
+
 <dt>new_cluster</dt>
 <dd><p>Instance of <code><a href="new_cluster.html">new_cluster()</a></code>.</p></dd>
+
+
 <dt>job_cluster_key</dt>
 <dd><p>Task is executed reusing the cluster specified in
 <code><a href="db_jobs_create.html">db_jobs_create()</a></code> with <code>job_clusters</code> parameter.</p></dd>
+
+
 <dt>task</dt>
 <dd><p>One of <code><a href="notebook_task.html">notebook_task()</a></code>, <code><a href="spark_jar_task.html">spark_jar_task()</a></code>,
 <code><a href="spark_python_task.html">spark_python_task()</a></code>, <code><a href="spark_submit_task.html">spark_submit_task()</a></code>, <code><a href="pipeline_task.html">pipeline_task()</a></code>,
 <code><a href="python_wheel_task.html">python_wheel_task()</a></code>.</p></dd>
+
+
 <dt>libraries</dt>
 <dd><p>Instance of <code><a href="libraries.html">libraries()</a></code>.</p></dd>
+
+
 <dt>email_notifications</dt>
 <dd><p>Instance of <a href="email_notifications.html">email_notifications</a>.</p></dd>
+
+
 <dt>timeout_seconds</dt>
 <dd><p>An optional timeout applied to each run of this job
 task. The default behavior is to have no timeout.</p></dd>
+
+
 <dt>max_retries</dt>
 <dd><p>An optional maximum number of times to retry an
 unsuccessful run. A run is considered to be unsuccessful if it completes with
 the <code>FAILED</code> <code>result_state</code> or <code>INTERNAL_ERROR</code> <code>life_cycle_state.</code> The value
 -1 means to retry indefinitely and the value 0 means to never retry. The
 default behavior is to never retry.</p></dd>
+
+
 <dt>min_retry_interval_millis</dt>
 <dd><p>Optional minimal interval in milliseconds
 between the start of the failed run and the subsequent retry run. The default
 behavior is that unsuccessful runs are immediately retried.</p></dd>
+
+
 <dt>retry_on_timeout</dt>
 <dd><p>Optional policy to specify whether to retry a task
 when it times out. The default behavior is to not retry on timeout.</p></dd>
+
 </dl></div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -133,7 +158,7 @@ when it times out. The default behavior is to not retry on timeout.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

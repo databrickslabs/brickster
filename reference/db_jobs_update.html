@@ -68,6 +68,7 @@
   timeout_seconds <span class="op">=</span> <span class="cn">NULL</span>,
   max_concurrent_runs <span class="op">=</span> <span class="cn">NULL</span>,
   access_control_list <span class="op">=</span> <span class="cn">NULL</span>,
+  git_source <span class="op">=</span> <span class="cn">NULL</span>,
   host <span class="op">=</span> <span class="fu"><a href="db_host.html">db_host</a></span><span class="op">(</span><span class="op">)</span>,
   token <span class="op">=</span> <span class="fu"><a href="db_token.html">db_token</a></span><span class="op">(</span><span class="op">)</span>,
   perform_request <span class="op">=</span> <span class="cn">TRUE</span>
@@ -78,41 +79,71 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>job_id</dt>
 <dd><p>The canonical identifier of the job.</p></dd>
+
+
 <dt>fields_to_remove</dt>
 <dd><p>Remove top-level fields in the job settings. Removing
 nested fields is not supported. This field is optional. Must be a <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>.</p></dd>
+
+
 <dt>name</dt>
 <dd><p>Name for the job.</p></dd>
+
+
 <dt>schedule</dt>
 <dd><p>Instance of <code><a href="cron_schedule.html">cron_schedule()</a></code>.</p></dd>
+
+
 <dt>tasks</dt>
 <dd><p>Task specifications to be executed by this job. Use
 <code><a href="job_tasks.html">job_tasks()</a></code>.</p></dd>
+
+
 <dt>job_clusters</dt>
 <dd><p>Named list of job cluster specifications (using
 <code><a href="new_cluster.html">new_cluster()</a></code>) that can be shared and reused by tasks of this job.
 Libraries cannot be declared in a shared job cluster. You must declare
 dependent libraries in task settings.</p></dd>
+
+
 <dt>email_notifications</dt>
 <dd><p>Instance of <code><a href="email_notifications.html">email_notifications()</a></code>.</p></dd>
+
+
 <dt>timeout_seconds</dt>
 <dd><p>An optional timeout applied to each run of this job.
 The default behavior is to have no timeout.</p></dd>
+
+
 <dt>max_concurrent_runs</dt>
 <dd><p>Maximum allowed number of concurrent runs of the
 job. Set this value if you want to be able to execute multiple runs of the
 same job concurrently. This setting affects only new runs. This value cannot
 exceed 1000. Setting this value to 0 causes all new runs to be skipped.
 The default behavior is to allow only 1 concurrent run.</p></dd>
+
+
 <dt>access_control_list</dt>
 <dd><p>Instance of <code><a href="access_control_request.html">access_control_request()</a></code>.</p></dd>
+
+
+<dt>git_source</dt>
+<dd><p>Optional specification for a remote repository containing
+the notebooks used by this job's notebook tasks. Instance of <code><a href="git_source.html">git_source()</a></code>.</p></dd>
+
+
 <dt>host</dt>
 <dd><p>Databricks workspace URL, defaults to calling <code><a href="db_host.html">db_host()</a></code>.</p></dd>
+
+
 <dt>token</dt>
 <dd><p>Databricks workspace token, defaults to calling <code><a href="db_token.html">db_token()</a></code>.</p></dd>
+
+
 <dt>perform_request</dt>
 <dd><p>If <code>TRUE</code> (default) the request is performed, if
 <code>FALSE</code> the httr2 request is returned <em>without</em> being performed.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -146,7 +177,7 @@ specify those that are changing.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

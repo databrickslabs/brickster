@@ -75,31 +75,50 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>cluster_id</dt>
 <dd><p>The ID of the cluster to retrieve events about.</p></dd>
+
+
 <dt>start_time</dt>
 <dd><p>The start time in epoch milliseconds. If empty, returns
 events starting from the beginning of time.</p></dd>
+
+
 <dt>end_time</dt>
 <dd><p>The end time in epoch milliseconds. If empty, returns events
 up to the current time.</p></dd>
+
+
 <dt>event_types</dt>
 <dd><p>List. Optional set of event types to filter by. Default
 is to return all events. <a href="https://docs.databricks.com/dev-tools/api/latest/clusters.html#clustereventtype" class="external-link">Event Types</a>.</p></dd>
+
+
 <dt>order</dt>
 <dd><p>Either <code>DESC</code> (default) or <code>ASC</code>.</p></dd>
+
+
 <dt>offset</dt>
 <dd><p>The offset in the result set. Defaults to 0 (no offset). When
 an offset is specified and the results are requested in descending order, the
 end_time field is required.</p></dd>
+
+
 <dt>limit</dt>
 <dd><p>Maximum number of events to include in a page of events.
 Defaults to 50, and maximum allowed value is 500.</p></dd>
+
+
 <dt>host</dt>
 <dd><p>Databricks workspace URL, defaults to calling <code><a href="db_host.html">db_host()</a></code>.</p></dd>
+
+
 <dt>token</dt>
 <dd><p>Databricks workspace token, defaults to calling <code><a href="db_token.html">db_token()</a></code>.</p></dd>
+
+
 <dt>perform_request</dt>
 <dd><p>If <code>TRUE</code> (default) the request is performed, if
 <code>FALSE</code> the httr2 request is returned <em>without</em> being performed.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -138,7 +157,7 @@ parameters necessary to request the next page of events.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>
