@@ -19,6 +19,8 @@
 #' exceed 1000. Setting this value to 0 causes all new runs to be skipped.
 #' The default behavior is to allow only 1 concurrent run.
 #' @param access_control_list Instance of [access_control_request()].
+#' @param git_source Optional specification for a remote repository containing
+#' the notebooks used by this job's notebook tasks. Instance of [git_source()].
 #' @inheritParams auth_params
 #' @inheritParams db_sql_endpoint_create
 #'
@@ -27,7 +29,7 @@
 #'
 #' @seealso [job_tasks()], [job_task()], [email_notifications()],
 #' [cron_schedule()], [access_control_request()], [access_control_req_user()],
-#' [access_control_req_group()]
+#' [access_control_req_group()], [git_source()]
 #' @family Jobs API
 #'
 #' @export
@@ -39,6 +41,7 @@ db_jobs_create <- function(name,
                            timeout_seconds = NULL,
                            max_concurrent_runs = 1,
                            access_control_list = NULL,
+                           git_source = NULL,
                            host = db_host(), token = db_token(),
                            perform_request = TRUE) {
 
@@ -63,7 +66,8 @@ db_jobs_create <- function(name,
     schedule = schedule,
     max_concurrent_runs = max_concurrent_runs,
     format = format,
-    access_control_list = access_control_list
+    access_control_list = access_control_list,
+    git_source = git_source
   )
 
   body <- purrr::discard(body, is.null)
@@ -216,6 +220,7 @@ db_jobs_reset <- function(job_id,
                           timeout_seconds = NULL,
                           max_concurrent_runs = 1,
                           access_control_list = NULL,
+                          git_source = NULL,
                           host = db_host(), token = db_token(),
                           perform_request = TRUE) {
 
@@ -230,7 +235,8 @@ db_jobs_reset <- function(job_id,
     schedule = schedule,
     max_concurrent_runs = max_concurrent_runs,
     format = format,
-    access_control_list = access_control_list
+    access_control_list = access_control_list,
+    git_source = git_source
   )
 
   body <- purrr::discard(body, is.null)
@@ -278,6 +284,7 @@ db_jobs_update <- function(job_id,
                            timeout_seconds = NULL,
                            max_concurrent_runs = NULL,
                            access_control_list = NULL,
+                           git_source = NULL,
                            host = db_host(), token = db_token(),
                            perform_request = TRUE) {
 
@@ -302,7 +309,8 @@ db_jobs_update <- function(job_id,
     schedule = schedule,
     max_concurrent_runs = max_concurrent_runs,
     format = format,
-    access_control_list = access_control_list
+    access_control_list = access_control_list,
+    git_source = git_source
   )
 
   body <- purrr::discard(body, is.null)
@@ -406,6 +414,7 @@ db_jobs_runs_submit <- function(tasks,
                                 timeout_seconds = NULL,
                                 idempotency_token = NULL,
                                 access_control_list = NULL,
+                                git_source = NULL,
                                 job_clusters = NULL,
                                 host = db_host(), token = db_token(),
                                 perform_request = TRUE) {
@@ -426,7 +435,8 @@ db_jobs_runs_submit <- function(tasks,
     job_clusters = job_clusters,
     idempotency_token = idempotency_token,
     timeout_seconds = timeout_seconds,
-    access_control_list = access_control_list
+    access_control_list = access_control_list,
+    git_source = git_source
   )
 
   body <- purrr::discard(body, is.null)

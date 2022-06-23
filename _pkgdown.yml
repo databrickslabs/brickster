@@ -66,6 +66,7 @@ reference:
   - starts_with("lib_", internal = TRUE)
   - email_notifications
   - cron_schedule
+  - git_source
 - title: Mlflow Model Registry
   contents: starts_with("db_mlflow", internal = TRUE)
 - title: R Library Management

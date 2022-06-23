@@ -10,6 +10,7 @@ db_jobs_runs_submit(
   timeout_seconds = NULL,
   idempotency_token = NULL,
   access_control_list = NULL,
+  git_source = NULL,
   job_clusters = NULL,
   host = db_host(),
   token = db_token(),
@@ -34,6 +35,9 @@ one run is launched with that idempotency token. This token must have at most
 64 characters.}
 
 \item{access_control_list}{Instance of \code{\link[=access_control_request]{access_control_request()}}.}
+
+\item{git_source}{Optional specification for a remote repository containing
+the notebooks used by this job's notebook tasks. Instance of \code{\link[=git_source]{git_source()}}.}
 
 \item{job_clusters}{Named list of job cluster specifications (using
 \code{\link[=new_cluster]{new_cluster()}}) that can be shared and reused by tasks of this job.

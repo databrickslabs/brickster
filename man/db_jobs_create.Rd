@@ -13,6 +13,7 @@ db_jobs_create(
   timeout_seconds = NULL,
   max_concurrent_runs = 1,
   access_control_list = NULL,
+  git_source = NULL,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
@@ -44,6 +45,9 @@ The default behavior is to allow only 1 concurrent run.}
 
 \item{access_control_list}{Instance of \code{\link[=access_control_request]{access_control_request()}}.}
 
+\item{git_source}{Optional specification for a remote repository containing
+the notebooks used by this job's notebook tasks. Instance of \code{\link[=git_source]{git_source()}}.}
+
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
 \item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}
@@ -60,7 +64,7 @@ Create Job
 \seealso{
 \code{\link[=job_tasks]{job_tasks()}}, \code{\link[=job_task]{job_task()}}, \code{\link[=email_notifications]{email_notifications()}},
 \code{\link[=cron_schedule]{cron_schedule()}}, \code{\link[=access_control_request]{access_control_request()}}, \code{\link[=access_control_req_user]{access_control_req_user()}},
-\code{\link[=access_control_req_group]{access_control_req_group()}}
+\code{\link[=access_control_req_group]{access_control_req_group()}}, \code{\link[=git_source]{git_source()}}
 
 Other Jobs API: 
 \code{\link{db_jobs_delete}()},

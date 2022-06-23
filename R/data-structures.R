@@ -849,7 +849,7 @@ is.email_notifications <- function(x) {
 #' @param pause_status Indicate whether this schedule is paused or not. Either
 #' `UNPAUSED` (default) or `PAUSED`.
 #'
-#' @seealso [db_cluster_create()], [db_cluster_edit()]
+#' @seealso [db_jobs_create()], [db_jobs_reset()], [db_jobs_update()]
 #'
 #' @export
 cron_schedule <- function(quartz_cron_expression,
@@ -882,7 +882,7 @@ is.cron_schedule <- function(x) {
 #' @param ... Instances of [access_control_req_user()] or
 #' [access_control_req_group()].
 #'
-#' @seealso [db_cluster_create()], [db_cluster_edit()]
+#' @seealso [db_jobs_create()], [db_jobs_reset()], [db_jobs_update()]
 #'
 #' @export
 access_control_request <- function(...) {
@@ -979,6 +979,56 @@ is.access_control_req_group <- function(x) {
   inherits(x, "AccessControlRequestForGroup")
 }
 
+#' Git Source for Job Notebook Tasks
+#'
+#' @param git_url URL of the repository to be cloned by this job. The maximum
+#' length is 300 characters.
+#' @param git_provider Unique identifier of the service used to host the Git
+#' repository. Must be one of: `github`, `bitbucketcloud`, `azuredevopsservices`,
+#' `githubenterprise`, `bitbucketserver`, `gitlab`, `gitlabenterpriseedition`,
+#' `awscodecommit`.
+#' @param reference Branch, tag, or commit to be checked out and used by this job.
+#' @param type Type of reference being used, one of: `branch`, `tag`, `commit`.
+#'
+#' @export
+git_source <- function(git_url, git_provider, reference,
+                       type = c("branch", "tag", "commit")) {
+
+  providers <- c(
+    "github",
+    "bitbucketcloud",
+    "azuredevopsservices",
+    "githubenterprise",
+    "bitbucketserver",
+    "gitlab",
+    "gitlabenterpriseedition",
+    "awscodecommit"
+  )
+
+  match.arg(type)
+  match.arg(git_provider, providers)
+
+  obj <- list(
+    git_url = git_url,
+    git_provider = git_provider
+  )
+
+  obj[[paste0("git_", type)]] <- reference
+
+  class(obj) <- c("GitSource", "list")
+  obj
+
+}
+
+#' Test if object is of class GitSource
+#'
+#' @param x An object
+#' @return `TRUE` if the object inherits from the `GitSource`
+#' class.
+#' @export
+is.git_source <- function(x) {
+  inherits(x, "GitSource")
+}
 
 #' Notebook Task
 #'
@@ -1185,7 +1235,7 @@ is.valid_task_type <- function(x) {
 #'
 #' @param ... Multiple Instance of tasks [job_task()].
 #'
-#' @seealso [db_cluster_create()], [db_cluster_edit()]
+#' @seealso [db_jobs_create()], [db_jobs_reset()], [db_jobs_update()]
 #'
 #' @export
 job_tasks <- function(...) {
@@ -1299,3 +1349,4 @@ job_task <- function(task_key,
 is.job_task <- function(x) {
   inherits(x, "JobTaskSettings")
 }
+
