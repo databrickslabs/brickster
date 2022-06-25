@@ -6,7 +6,7 @@
 #' @param recursive Flag that specifies whether to delete the object
 #' recursively. `False` by default.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' Delete an object or a directory (and optionally recursively deletes all
@@ -50,7 +50,7 @@ db_workspace_delete <- function(path, recursive = FALSE,
 #' @param format One of `SOURCE`, `HTML`, `JUPYTER`, `DBC`. Default is `SOURCE`.
 #' @inheritParams auth_params
 #' @inheritParams db_workspace_delete
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' Export a notebook or contents of an entire directory. If path does not exist,
@@ -111,7 +111,7 @@ db_workspace_export <- function(path,
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_workspace_delete
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' If path does not exist, this call returns an error `RESOURCE_DOES_NOT_EXIST.`
@@ -157,7 +157,7 @@ db_workspace_get_status <- function(path,
 #' a directory.
 #' @inheritParams auth_params
 #' @inheritParams db_workspace_export
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' `file` and `content` are mutually exclusive. If both are specified `content`
@@ -228,7 +228,7 @@ db_workspace_import <- function(path,
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_workspace_delete
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' List the contents of a directory, or the object if it is not a directory.
@@ -265,7 +265,7 @@ db_workspace_list <- function(path, host = db_host(), token = db_token(),
 #'
 #' @param path Absolute path of the directory.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' Create the given directory and necessary parent directories if they do not

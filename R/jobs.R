@@ -22,7 +22,7 @@
 #' @param git_source Optional specification for a remote repository containing
 #' the notebooks used by this job's notebook tasks. Instance of [git_source()].
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' [Full Documentation](https://docs.databricks.com/dev-tools/api/latest/jobs.html#operation/JobsCreate)
@@ -99,7 +99,7 @@ db_jobs_create <- function(name,
 #' @param expand_tasks Whether to include task and cluster details in the
 #' response.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Jobs API
 #'
@@ -137,7 +137,7 @@ db_jobs_list <- function(limit = 25, offset = 0, expand_tasks = FALSE,
 #'
 #' @param job_id The canonical identifier of the job.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Jobs API
 #'
@@ -171,7 +171,7 @@ db_jobs_delete <- function(job_id,
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_jobs_delete
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Jobs API
 #'
@@ -206,7 +206,7 @@ db_jobs_get <- function(job_id,
 #' @inheritParams auth_params
 #' @inheritParams db_jobs_delete
 #' @inheritParams db_jobs_create
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Jobs API
 #'
@@ -265,7 +265,7 @@ db_jobs_reset <- function(job_id,
 #' nested fields is not supported. This field is optional. Must be a `list()`.
 #' @inheritParams auth_params
 #' @inheritParams db_jobs_reset
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' Parameters which are shared with [db_jobs_create()] are optional, only
@@ -350,7 +350,7 @@ db_jobs_update <- function(job_id,
 #' overwrite the parameters specified in job setting.
 #' @inheritParams auth_params
 #' @inheritParams db_jobs_get
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' * `*_params` parameters cannot exceed 10,000 bytes when serialized to JSON.
@@ -404,7 +404,7 @@ db_jobs_run_now <- function(job_id,
 #' 64 characters.
 #' @inheritParams auth_params
 #' @inheritParams db_jobs_create
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Jobs API
 #'
@@ -474,7 +474,7 @@ db_jobs_runs_submit <- function(tasks,
 #' @inheritParams auth_params
 #' @inheritParams db_jobs_get
 #' @inheritParams db_jobs_list
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Jobs API
 #'
@@ -527,7 +527,7 @@ db_jobs_runs_list <- function(job_id, active_only = FALSE,
 #'
 #' @param run_id The canonical identifier of the run.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Jobs API
 #'
@@ -565,7 +565,7 @@ db_jobs_runs_get <- function(run_id,
 #' `ALL`. Defaults to `CODE`.
 #' @inheritParams auth_params
 #' @inheritParams db_jobs_runs_get
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Jobs API
 #'
@@ -605,7 +605,7 @@ db_jobs_runs_export <- function(run_id, views_to_export = c("CODE", "DASHBOARDS"
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_jobs_runs_get
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' The run is canceled asynchronously, so when this request completes, the run
@@ -644,7 +644,7 @@ db_jobs_runs_cancel <- function(run_id,
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_jobs_runs_get
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Jobs API
 #'
@@ -677,7 +677,7 @@ db_jobs_runs_get_output <- function(run_id,
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_jobs_runs_get
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Jobs API
 #'

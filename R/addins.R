@@ -15,7 +15,7 @@ clusters_and_endpoints_widget <- function() {
   }
 
   get_endpoint_infos <- function() {
-    endpoints <- brickster::db_sql_endpoint_list()
+    endpoints <- brickster::db_sql_warehouse_list()
     purrr::map_dfr(endpoints$endpoints, ~ {
       list(
         id = .x$id,

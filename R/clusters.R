@@ -70,7 +70,7 @@
 #' encryption of disks locally attached to the cluster is enabled.
 #' @param docker_image Instance of [docker_image()].
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' Create a new Apache Spark cluster. This method acquires new instances from
@@ -185,7 +185,7 @@ db_cluster_create <- function(name,
 #' @param cluster_id Canonical identifier for the cluster.
 #' @inheritParams auth_params
 #' @inheritParams db_cluster_create
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' You can edit a cluster if it is in a `RUNNING` or `TERMINATED` state. If you
@@ -303,7 +303,7 @@ db_cluster_edit <- function(cluster_id,
 #' `unpin`.
 #' @inheritParams auth_params
 #' @inheritParams db_cluster_edit
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 db_cluster_action <- function(cluster_id,
                               action = c("start", "restart", "delete", "permanent-delete", "pin", "unpin"),
                               host = db_host(), token = db_token(),
@@ -337,7 +337,7 @@ db_cluster_action <- function(cluster_id,
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_cluster_edit
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' Start a terminated cluster given its ID.
@@ -363,7 +363,7 @@ db_cluster_start <- function(cluster_id,
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_cluster_edit
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' The cluster must be in the `RUNNING` state.
@@ -381,7 +381,7 @@ db_cluster_restart <- function(cluster_id,
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_cluster_edit
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' The cluster is removed asynchronously. Once the termination has completed,
@@ -404,7 +404,7 @@ db_cluster_delete <- function(cluster_id,
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_cluster_edit
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' If the cluster is running, it is terminated and its resources are
@@ -428,7 +428,7 @@ db_cluster_perm_delete <- function(cluster_id,
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_cluster_edit
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' Ensure that an all-purpose cluster configuration is retained even after a
@@ -449,7 +449,7 @@ db_cluster_pin <- function(cluster_id,
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_cluster_edit
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' Allows the cluster to eventually be removed from the list returned by
@@ -468,7 +468,7 @@ db_cluster_unpin <- function(cluster_id,
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_cluster_edit
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details The cluster must be in the `RUNNING` state.
 #'
@@ -514,7 +514,7 @@ db_cluster_resize <- function(cluster_id, num_workers = NULL, autoscale = NULL,
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_cluster_edit
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' Retrieve the information for a cluster given its identifier. Clusters can be
@@ -555,7 +555,7 @@ db_cluster_get <- function(cluster_id,
 #' List Clusters
 #'
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' Return information about all pinned clusters, active clusters, up to 150 of
@@ -593,7 +593,7 @@ db_cluster_list <- function(host = db_host(), token = db_token(),
 #' List Available Cluster Node Types
 #'
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' Return a list of supported Spark node types. These node types can be used to
@@ -623,7 +623,7 @@ db_cluster_list_node_types <- function(host = db_host(), token = db_token(),
 #' List Available Databricks Runtime Versions
 #'
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' Return the list of available runtime versions. These versions can be used to
@@ -653,7 +653,7 @@ db_cluster_runtime_versions <- function(host = db_host(), token = db_token(),
 #' List Availability Zones (AWS Only)
 #'
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Clusters API
 #'
@@ -697,7 +697,7 @@ db_cluster_list_zones <- function(host = db_host(), token = db_token(),
 #' @param limit Maximum number of events to include in a page of events.
 #' Defaults to 50, and maximum allowed value is 500.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' Retrieve a list of events about the activity of a cluster. You can retrieve

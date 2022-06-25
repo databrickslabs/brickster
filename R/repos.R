@@ -11,7 +11,7 @@
 #' specified, returns the first page of results as well as a next page token if
 #' there are more results.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Repos API
 #'
@@ -52,7 +52,7 @@ db_repo_get_all <- function(path_prefix, next_page_token = NULL,
 #' @param path Desired path for the repo in the workspace. Must be in the format
 #' `/Repos/{folder}/{repo-name}`.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Repos API
 #'
@@ -89,7 +89,7 @@ db_repo_create <- function(url, provider, path,
 #'
 #' @param repo_id The ID for the corresponding repo to access.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Repos API
 #'
@@ -121,7 +121,7 @@ db_repo_get <- function(repo_id,
 #' @param tag Tag that the local version of the repo is checked out to.
 #' @inheritParams auth_params
 #' @inheritParams db_repo_get
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #'
@@ -166,7 +166,7 @@ db_repo_update <- function(repo_id, branch = NULL, tag = NULL,
 #'
 #' @inheritParams db_repo_get
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Repos API
 #'

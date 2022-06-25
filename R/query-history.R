@@ -19,7 +19,7 @@
 #' @param page_token Opaque token used to get the next page of results. Optional.
 #' @param include_metrics Whether to include metrics about query execution.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family SQL Query History API
 #'

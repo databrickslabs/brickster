@@ -5,7 +5,7 @@
 #' Get a list of all global init scripts for this workspace.
 #'
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Global Init Script API
 #'
@@ -40,7 +40,7 @@ db_global_init_scripts_list <- function(host = db_host(), token = db_token(),
 #'
 #' @param script_id String, the ID of the global init script.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details Base64-encoded contents are converted to character automatically.
 #'
@@ -80,7 +80,7 @@ db_global_init_scripts_get <- function(script_id,
 #' @param enabled Boolean (default: false). Specifies whether the script is enabled.
 #'   The script runs only if enabled.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' The [Global Init Scripts API](https://docs.databricks.com/dev-tools/api/latest/global-init-scripts.html)
@@ -138,7 +138,7 @@ db_global_init_scripts_create <- function(name, script, position = NULL,
 #' @inheritParams db_global_init_scripts_create
 #' @inheritParams db_global_init_scripts_get
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' All fields are optional.
@@ -194,7 +194,7 @@ db_global_init_scripts_update <- function(script_id, name = NULL,
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_global_init_scripts_get
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Global Init Script API
 #'
