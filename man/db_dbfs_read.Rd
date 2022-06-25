@@ -25,9 +25,6 @@ limit of 1 MB, and a default value of 0.5 MB.}
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
 \item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}
-
-\item{perform_request}{If \code{TRUE} (default) the request is performed, if
-\code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \description{
 Return the contents of a file.

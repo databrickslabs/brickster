@@ -2,31 +2,31 @@
 
 #' Create SQL Endpoint
 #'
-#' @param name Name of the SQL endpoint. Must be unique.
-#' @param cluster_size Size of the clusters allocated to the endpoint. One of
+#' @param name Name of the SQL warehouse. Must be unique.
+#' @param cluster_size Size of the clusters allocated to the warehouse. One of
 #' `2X-Small`, `X-Small`, `Small`, `Medium`, `Large`, `X-Large`, `2X-Large`,
 #' `3X-Large`, `4X-Large`.
 #' @param min_num_clusters Minimum number of clusters available when a SQL
-#' endpoint is running. The default is 1.
+#' warehouse is running. The default is 1.
 #' @param max_num_clusters Maximum number of clusters available when a SQL
-#' endpoint is running. If multi-cluster load balancing is not enabled,
+#' warehouse is running. If multi-cluster load balancing is not enabled,
 #' this is limited to 1.
-#' @param auto_stop_mins Time in minutes until an idle SQL endpoint terminates
-#' all clusters and stops. Defaults to 30. For Serverless SQL endpoints
+#' @param auto_stop_mins Time in minutes until an idle SQL warehouse terminates
+#' all clusters and stops. Defaults to 30. For Serverless SQL warehouses
 #' (`enable_serverless_compute` = `TRUE`), set this to 10.
-#' @param tags Named list that describes the endpoint. Databricks tags all
-#' endpoint resources with these tags.
+#' @param tags Named list that describes the warehouse. Databricks tags all
+#' warehouse resources with these tags.
 #' @param spot_instance_policy The spot policy to use for allocating instances
-#' to clusters. This field is not used if the SQL endpoint is a Serverless SQL
-#' endpoint.
+#' to clusters. This field is not used if the SQL warehouse is a Serverless SQL
+#' warehouse.
 #' @param enable_photon Whether queries are executed on a native vectorized
 #' engine that speeds up query execution. The default is `TRUE`.
-#' @param enable_serverless_compute Whether this SQL endpoint is a Serverless
-#' endpoint. To use a Serverless SQL endpoint, you must enable Serverless SQL
-#' endpoints for the workspace. If Serverless SQL endpoints are disabled for the
-#' workspace, the default is `FALSE` If Serverless SQL endpoints are enabled for
+#' @param enable_serverless_compute Whether this SQL warehouse is a Serverless
+#' warehouse. To use a Serverless SQL warehouse, you must enable Serverless SQL
+#' warehouses for the workspace. If Serverless SQL warehouses are disabled for the
+#' workspace, the default is `FALSE` If Serverless SQL warehouses are enabled for
 #' the workspace, the default is `TRUE`.
-#' @param channel Whether to use the current SQL endpoint compute version or the
+#' @param channel Whether to use the current SQL warehouse compute version or the
 #' preview version. Databricks does not recommend using preview versions for
 #' production workloads. The default is `CHANNEL_NAME_CURRENT.`
 #' @param perform_request If `TRUE` (default) the request is performed, if
@@ -37,7 +37,7 @@
 #' @family SQL Endpoints API
 #'
 #' @export
-db_sql_endpoint_create <- function(name,
+db_sql_warehouse_create <- function(name,
                                    cluster_size,
                                    min_num_clusters = 1,
                                    max_num_clusters = 1,
@@ -73,7 +73,7 @@ db_sql_endpoint_create <- function(name,
   )
 
   req <- db_request(
-    endpoint = "sql/endpoints",
+    endpoint = "sql/warehouses",
     method = "POST",
     version = "2.0",
     body = body,
@@ -91,19 +91,19 @@ db_sql_endpoint_create <- function(name,
 
 #' Delete SQL Endpoint
 #'
-#' @param id ID of the SQL endpoint.
+#' @param id ID of the SQL warehouse.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family SQL Endpoints API
 #'
 #' @export
-db_sql_endpoint_delete <- function(id,
+db_sql_warehouse_delete <- function(id,
                                    host = db_host(), token = db_token(),
                                    perform_request = TRUE) {
 
   req <- db_request(
-    endpoint = paste0("sql/endpoints/", id),
+    endpoint = paste0("sql/warehouses/", id),
     method = "DELETE",
     version = "2.0",
     host = host,
@@ -121,16 +121,16 @@ db_sql_endpoint_delete <- function(id,
 #' Edit SQL Endpoint
 #'
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
-#' @inheritParams db_sql_endpoint_delete
+#' @inheritParams db_sql_warehouse_create
+#' @inheritParams db_sql_warehouse_delete
 #'
-#' @details Modify a SQL endpoint. All fields are optional. Missing fields
+#' @details Modify a SQL warehouse. All fields are optional. Missing fields
 #' default to the current values.
 #'
 #' @family SQL Endpoints API
 #'
 #' @export
-db_sql_endpoint_edit <- function(id,
+db_sql_warehouse_edit <- function(id,
                                  name = NULL,
                                  cluster_size = NULL,
                                  min_num_clusters = NULL,
@@ -174,7 +174,7 @@ db_sql_endpoint_edit <- function(id,
   )
 
   req <- db_request(
-    endpoint = paste("sql/endpoints", id, "edit", sep = "/"),
+    endpoint = paste("sql/warehouses", id, "edit", sep = "/"),
     method = "POST",
     version = "2.0",
     body = body,
@@ -193,16 +193,16 @@ db_sql_endpoint_edit <- function(id,
 #' Get SQL Endpoint
 #'
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_delete
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_delete
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family SQL Endpoints API
 #'
 #' @export
-db_sql_endpoint_get <- function(id, host = db_host(), token = db_token(),
+db_sql_warehouse_get <- function(id, host = db_host(), token = db_token(),
                                 perform_request = TRUE) {
   req <- db_request(
-    endpoint = paste0("sql/endpoints/", id),
+    endpoint = paste0("sql/warehouses/", id),
     method = "GET",
     version = "2.0",
     host = host,
@@ -220,15 +220,15 @@ db_sql_endpoint_get <- function(id, host = db_host(), token = db_token(),
 #' List SQL Endpoints
 #'
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family SQL Endpoints API
 #'
 #' @export
-db_sql_endpoint_list <- function(host = db_host(), token = db_token(),
+db_sql_warehouse_list <- function(host = db_host(), token = db_token(),
                                  perform_request = TRUE) {
   req <- db_request(
-    endpoint = "sql/endpoints",
+    endpoint = "sql/warehouses",
     method = "GET",
     version = "2.0",
     body = NULL,
@@ -247,16 +247,16 @@ db_sql_endpoint_list <- function(host = db_host(), token = db_token(),
 #' Start SQL Endpoint
 #'
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_delete
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_delete
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family SQL Endpoints API
 #'
 #' @export
-db_sql_endpoint_start <- function(id, host = db_host(), token = db_token(),
+db_sql_warehouse_start <- function(id, host = db_host(), token = db_token(),
                                   perform_request = TRUE) {
   req <- db_request(
-    endpoint = paste("sql/endpoints", id, "start", sep = "/"),
+    endpoint = paste("sql/warehouses", id, "start", sep = "/"),
     method = "POST",
     version = "2.0",
     host = host,
@@ -274,16 +274,16 @@ db_sql_endpoint_start <- function(id, host = db_host(), token = db_token(),
 #' Stop SQL Endpoint
 #'
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_delete
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_delete
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family SQL Endpoints API
 #'
 #' @export
-db_sql_endpoint_stop <- function(id, host = db_host(), token = db_token(),
+db_sql_warehouse_stop <- function(id, host = db_host(), token = db_token(),
                                  perform_request = TRUE) {
   req <- db_request(
-    endpoint = paste("sql/endpoints", id, "stop", sep = "/"),
+    endpoint = paste("sql/warehouses", id, "stop", sep = "/"),
     method = "POST",
     version = "2.0",
     host = host,
@@ -298,18 +298,18 @@ db_sql_endpoint_stop <- function(id, host = db_host(), token = db_token(),
 
 }
 
-#' Get Global SQL endpoint Config
+#' Get Global SQL warehouse Config
 #'
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family SQL Endpoints API
 #'
 #' @export
-db_sql_global_endpoint_get <- function(host = db_host(), token = db_token(),
+db_sql_global_warehouse_get <- function(host = db_host(), token = db_token(),
                                        perform_request = TRUE) {
   req <- db_request(
-    endpoint = "sql/config/endpoints",
+    endpoint = "sql/config/warehouses",
     method = "GET",
     version = "2.0",
     host = host,
@@ -324,27 +324,27 @@ db_sql_global_endpoint_get <- function(host = db_host(), token = db_token(),
 
 }
 
-#' Edit Global SQL endpoint Config
+#' Edit Global SQL warehouse Config
 #'
 #' @param data_access_config Named list of key-value pairs containing properties
 #' for an external Hive metastore.
 #' @param sql_configuration_parameters Named List of SQL configuration
 #' parameters.
 #' @param instance_profile_arn Instance profile used to access storage from SQL
-#' endpoints.
+#' warehouses.
 #' @param security_policy The policy for controlling access to datasets. Must be
 #' `DATA_ACCESS_CONTROL`.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details Important:
 #' - All fields are required.
-#' - Invoking this method restarts **all** running SQL endpoints.
+#' - Invoking this method restarts **all** running SQL warehouses.
 #'
 #' @family SQL Endpoints API
 
 #' @export
-db_sql_global_endpoint_edit <- function(data_access_config = list(),
+db_sql_global_warehouse_edit <- function(data_access_config = list(),
                                         sql_configuration_parameters = list(),
                                         instance_profile_arn = NULL,
                                         security_policy = "DATA_ACCESS_CONTROL",
@@ -372,7 +372,7 @@ db_sql_global_endpoint_edit <- function(data_access_config = list(),
   )
 
   req <- db_request(
-    endpoint = "sql/config/endpoints",
+    endpoint = "sql/config/warehouses",
     method = "PUT",
     version = "2.0",
     body = body,
@@ -395,46 +395,46 @@ db_sql_global_endpoint_edit <- function(data_access_config = list(),
 #'
 #' @param polling_interval Number of seconds to wait between status checks
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_start
+#' @inheritParams db_sql_warehouse_start
 #'
 #' @details Get information regarding a Databricks cluster. If the cluster is
 #' inactive it will be started and wait until the cluster is active.
 #'
-#' @seealso [db_sql_endpoint_get()] and [db_sql_endpoint_start()].
+#' @seealso [db_sql_warehouse_get()] and [db_sql_warehouse_start()].
 #'
 #' @family SQL Endpoints API
 #' @family Endpoint Helpers
 #'
-#' @return `db_sql_endpoint_get()`
+#' @return `db_sql_warehouse_get()`
 #' @export
-get_and_start_endpoint <- function(id, polling_interval = 5,
+get_and_start_warehouse <- function(id, polling_interval = 5,
                                    host = db_host(), token = db_token()) {
 
   # get cluster status
-  endpoint_status <- db_sql_endpoint_get(
+  warehouse_status <- db_sql_warehouse_get(
     id = id,
     host = host,
     token = token
   )
 
-  # if the endpoint isn't running, start it
-  if (!endpoint_status$state %in% c("RUNNING", "STARTING")) {
-    db_sql_endpoint_start(
+  # if the warehouse isn't running, start it
+  if (!warehouse_status$state %in% c("RUNNING", "STARTING")) {
+    db_sql_warehouse_start(
       id = id,
       host = host,
       token = token
     )
   }
 
-  # wait for endpoint to become active
-  while (endpoint_status$state != "RUNNING") {
+  # wait for warehouse to become active
+  while (warehouse_status$state != "RUNNING") {
     Sys.sleep(polling_interval)
-    endpoint_status <- db_sql_endpoint_get(
+    warehouse_status <- db_sql_warehouse_get(
       id = id,
       host = host,
       token = token
     )
   }
 
-  endpoint_status
+  warehouse_status
 }

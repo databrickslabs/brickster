@@ -20,9 +20,6 @@ db_secrets_scope_acl_delete(
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
 \item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}
-
-\item{perform_request}{If \code{TRUE} (default) the request is performed, if
-\code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \description{
 Delete the given ACL on the given scope.
