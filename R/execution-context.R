@@ -6,7 +6,7 @@
 #' @param language The language for the context. One of `python`, `sql`, `scala`,
 #' `r`.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Execution Context API
 #'
@@ -45,7 +45,7 @@ db_context_create <- function(cluster_id,
 #' @param context_id The ID of the execution context.
 #' @inheritParams auth_params
 #' @inheritParams db_context_create
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Execution Context API
 #'
@@ -81,7 +81,7 @@ db_context_destroy <- function(cluster_id,
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_context_destroy
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Execution Context API
 #'
@@ -121,7 +121,7 @@ db_context_status <- function(cluster_id,
 #' @inheritParams auth_params
 #' @inheritParams db_context_destroy
 #' @inheritParams db_context_create
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Execution Context API
 #'
@@ -173,7 +173,7 @@ db_context_command_run <- function(cluster_id,
 #' @param command_id The ID of the command to get information about.
 #' @inheritParams auth_params
 #' @inheritParams db_context_status
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Execution Context API
 #'
@@ -211,7 +211,7 @@ db_context_command_status <- function(cluster_id,
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_context_command_status
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Execution Context API
 #'

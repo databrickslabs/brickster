@@ -10,7 +10,7 @@
 #' @param overwrite Boolean, specifies whether to overwrite existing file or
 #' files.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' There is a 10 minute idle timeout on this handle. If a file or directory
@@ -65,7 +65,7 @@ db_dbfs_create <- function(path, overwrite = FALSE,
 #' @param convert_to_raw Boolean (Default: `FALSE`), if `TRUE` will convert
 #' character vector to raw via [base::as.raw()].
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #'  * If the handle does not exist, this call will throw an exception with
@@ -137,7 +137,7 @@ db_dbfs_add_block <- function(handle, data, convert_to_raw = FALSE,
 #'
 #' @param handle The handle on an open stream. This field is required.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' If the handle does not exist, this call throws an exception with
@@ -179,7 +179,7 @@ db_dbfs_close <- function(handle,
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_dbfs_create
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' * If the file or directory does not exist, this call throws an exception with
@@ -217,7 +217,7 @@ db_dbfs_get_status <- function(path,
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_dbfs_create
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' When calling list on a large directory, the list operation will time out
@@ -267,7 +267,7 @@ db_dbfs_list <- function(path,
 #'
 #' @inheritParams db_dbfs_create
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' * If there exists a file (not a directory) at any prefix of the input path,
@@ -313,7 +313,7 @@ db_dbfs_mkdirs <- function(path,
 #' path should be the absolute DBFS path (for example,
 #' `/mnt/my-destination-folder/`).
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' If the given source path is a directory, this call always recursively moves
@@ -367,7 +367,7 @@ db_dbfs_move <- function(source_path, destination_path,
 #' contents. Deleting empty directories can be done without providing the recursive flag.
 #' @inheritParams auth_params
 #' @inheritParams db_dbfs_create
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family DBFS API
 #'
@@ -436,7 +436,7 @@ db_dbfs_put <- function(path, file = NULL, contents = NULL, overwrite = FALSE,
     # contents must be base64 encoded string
     body$contents <- base64enc::base64encode(base::charToRaw(contents))
   } else if (!is.null(file)) {
-    body$data <- curl::form_file(path = file)
+    body$contents <- curl::form_file(path = file)
   } else {
     stop(cli::format_error(c(
       "Nothing to upload:",
@@ -448,16 +448,20 @@ db_dbfs_put <- function(path, file = NULL, contents = NULL, overwrite = FALSE,
     endpoint = "dbfs/put",
     method = "POST",
     version = "2.0",
-    body = body,
     host = host,
     token = token
   )
 
   req %>%
-    httr2::req_body_multipart(body) %>%
-    httr2::req_error(body = db_req_error_body()) %>%
+    httr2::req_body_multipart(
+      path = body$path,
+      contents = body$contents,
+      overwrite = body$overwrite
+    ) %>%
+    httr2::req_error(body = db_req_error_body) %>%
     httr2::req_perform() %>%
     httr2::resp_check_status()
+
 }
 
 
@@ -470,7 +474,7 @@ db_dbfs_put <- function(path, file = NULL, contents = NULL, overwrite = FALSE,
 #' limit of 1 MB, and a default value of 0.5 MB.
 #' @inheritParams auth_params
 #' @inheritParams db_dbfs_create
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' If offset + length exceeds the number of bytes in a file, reads contents

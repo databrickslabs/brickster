@@ -12,7 +12,7 @@
 #' also installed on this specific cluster.
 #'
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Libraries API
 #'
@@ -41,7 +41,7 @@ db_libs_all_cluster_statuses <- function(host = db_host(), token = db_token(),
 #'
 #' @param cluster_id Unique identifier of a Databricks cluster.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Libraries API
 #' @seealso [wait_for_lib_installs()]
@@ -95,7 +95,7 @@ db_libs_cluster_status <- function(cluster_id,
 #' `lib_*()` functions.
 #' @inheritParams db_libs_cluster_status
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #' @seealso [lib_egg()], [lib_cran()], [lib_jar()], [lib_maven()], [lib_pypi()],
 #' [lib_whl()]
 #'
@@ -140,7 +140,7 @@ db_libs_install <- function(cluster_id, libraries,
 #'
 #' @inheritParams db_libs_install
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Libraries API
 #'

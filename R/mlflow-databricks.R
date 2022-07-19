@@ -4,7 +4,7 @@
 #'
 #' @param name Name of the model.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Model Registry API
 #'
@@ -43,7 +43,7 @@ db_mlflow_registered_model_details <- function(name,
 #' @param comment User-provided comment on the action.
 #' @inheritParams auth_params
 #' @inheritParams db_mlflow_registered_model_details
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' This is a Databricks version of the MLflow endpoint that also accepts a
@@ -89,7 +89,7 @@ db_mlflow_model_transition_stage <- function(name, version,
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_mlflow_model_transition_stage
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Model Registry API
 #'
@@ -129,7 +129,7 @@ db_mlflow_model_transition_req <- function(name, version,
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_mlflow_model_transition_stage
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Model Registry API
 #'
@@ -163,7 +163,7 @@ db_mlflow_model_open_transition_reqs <- function(name, version,
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_mlflow_model_transition_stage
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Model Registry API
 #'
@@ -205,7 +205,7 @@ db_mlflow_model_approve_transition_req <- function(name, version,
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_mlflow_model_transition_stage
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Model Registry API
 #'
@@ -248,7 +248,7 @@ db_mlflow_model_reject_transition_req <- function(name, version,
 #' created by this user will be deleted.
 #' @inheritParams auth_params
 #' @inheritParams db_mlflow_model_transition_stage
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Model Registry API
 #'
@@ -289,7 +289,7 @@ db_mlflow_model_delete_transition_req <- function(name, version,
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_mlflow_model_transition_stage
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Model Registry API
 #'
@@ -325,7 +325,7 @@ db_mlflow_model_version_comment <- function(name, version, comment,
 #' @param id Unique identifier of an activity.
 #' @inheritParams auth_params
 #' @inheritParams db_mlflow_model_transition_stage
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Model Registry API
 #'
@@ -359,7 +359,7 @@ db_mlflow_model_version_comment_edit <- function(id, comment,
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_mlflow_model_version_comment_edit
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @family Model Registry API
 #'

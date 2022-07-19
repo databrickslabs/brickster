@@ -6,7 +6,7 @@
 #' @param initial_manage_principal The principal that is initially granted
 #' `MANAGE` permission to the created scope.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' Create a Databricks-backed secret scope in which secrets are stored in
@@ -66,7 +66,7 @@ db_secrets_scope_create <- function(scope, initial_manage_principal = NULL,
 #'
 #' @param scope Name of the scope to delete.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' * Throws `RESOURCE_DOES_NOT_EXIST` if the scope does not exist.
@@ -103,7 +103,7 @@ db_secrets_scope_delete <- function(scope,
 #' List Secret Scopes
 #'
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' * Throws `PERMISSION_DENIED` if you do not have permission to make this API
@@ -140,7 +140,7 @@ db_secrets_scope_list_all <- function(host = db_host(), token = db_token(),
 #' @param as_bytes Boolean (default: `FALSE`). Determines if `value` is stored
 #' as bytes.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' If a secret already exists with the same name, this command overwrites the
@@ -211,7 +211,7 @@ db_secrets_put <- function(scope, key, value, as_bytes = FALSE,
 #' @param scope Name of the scope that contains the secret to delete.
 #' @param key Name of the secret to delete.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' You must have `WRITE` or `MANAGE` permission on the secret scope.
@@ -252,7 +252,7 @@ db_secrets_delete <- function(scope, key,
 #'
 #' @param scope Name of the scope whose secrets you want to list
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' This is a metadata-only operation; you cannot retrieve secret data using this
@@ -298,7 +298,7 @@ db_secrets_list <- function(scope,
 #' @param permission Permission level applied to the principal. One of `READ`,
 #' `WRITE`, `MANAGE`.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' Create or overwrite the ACL associated with the given principal (user or
@@ -363,7 +363,7 @@ db_secrets_scope_acl_put <- function(scope, principal,
 #' @param scope Name of the scope to remove permissions.
 #' @param principal Principal to remove an existing ACL.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' You must have the `MANAGE` permission to invoke this API.
@@ -406,7 +406,7 @@ db_secrets_scope_acl_delete <- function(scope, principal,
 #' @param scope Name of the scope to fetch ACL information from.
 #' @param principal Principal to fetch ACL information from.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' You must have the `MANAGE` permission to invoke this
@@ -448,7 +448,7 @@ db_secrets_scope_acl_get <- function(scope, principal,
 #'
 #' @param scope Name of the scope to fetch ACL information from.
 #' @inheritParams auth_params
-#' @inheritParams db_sql_endpoint_create
+#' @inheritParams db_sql_warehouse_create
 #'
 #' @details
 #' You must have the `MANAGE` permission to invoke this API.
