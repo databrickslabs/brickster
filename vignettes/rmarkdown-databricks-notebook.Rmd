@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 R users that user Databricks have the choice of the following developer experiences:
 
-1.  Databricks motebooks
+1.  Databricks notebooks
 2.  RStudio server on a Databricks cluster
 3.  Databricks connect (restricted to specific Databricks runtimes)
 

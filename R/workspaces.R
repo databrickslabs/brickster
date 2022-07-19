@@ -208,13 +208,18 @@ db_workspace_import <- function(path,
     endpoint = "workspace/import",
     method = "POST",
     version = "2.0",
-    body = body,
     host = host,
     token = token
   )
 
   req <- req %>%
-    httr2::req_body_multipart(body)
+    httr2::req_body_multipart(
+      path = body$path,
+      format = body$format,
+      overwrite = body$overwrite,
+      language = body$language,
+      content = body$content
+    )
 
   if (perform_request) {
     db_perform_request(req)

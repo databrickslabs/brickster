@@ -436,7 +436,7 @@ db_dbfs_put <- function(path, file = NULL, contents = NULL, overwrite = FALSE,
     # contents must be base64 encoded string
     body$contents <- base64enc::base64encode(base::charToRaw(contents))
   } else if (!is.null(file)) {
-    body$data <- curl::form_file(path = file)
+    body$contents <- curl::form_file(path = file)
   } else {
     stop(cli::format_error(c(
       "Nothing to upload:",
@@ -448,16 +448,20 @@ db_dbfs_put <- function(path, file = NULL, contents = NULL, overwrite = FALSE,
     endpoint = "dbfs/put",
     method = "POST",
     version = "2.0",
-    body = body,
     host = host,
     token = token
   )
 
   req %>%
-    httr2::req_body_multipart(body) %>%
-    httr2::req_error(body = db_req_error_body()) %>%
+    httr2::req_body_multipart(
+      path = body$path,
+      contents = body$contents,
+      overwrite = body$overwrite
+    ) %>%
+    httr2::req_error(body = db_req_error_body) %>%
     httr2::req_perform() %>%
     httr2::resp_check_status()
+
 }
 
 
