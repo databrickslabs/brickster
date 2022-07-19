@@ -1,6 +1,6 @@
 # https://docs.databricks.com/sql/api/query-history.html
 
-#' List SQL Endpoints Query History
+#' List Warehouse Query History
 #'
 #' For more details refer to the [query history documentation](https://docs.databricks.com/sql/api/query-history.html#list).
 #' This function elevates the sub-components of `filter_by` parameter to the R
