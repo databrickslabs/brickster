@@ -14,8 +14,8 @@
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.1.0/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.1.0/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link href="../deps/bootstrap-5.1.3/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.1.3/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Job Management">
 <meta property="og:description" content="brickster">
@@ -96,16 +96,16 @@
 <p>When listing the jobs the default behaviour is to returns the first 25 jobs, to configure the number of jobs returned you can specify <code>limit</code> and <code>offset</code>.</p>
 <p>The <code>expand_tasks</code> parameter will return task and cluster details for each job (default <code>FALSE)</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># list all jobs within Databricks workspace</span>
-<span class="co"># can control limit, offset, and if cluster/jobs details are returned</span>
-<span class="va">jobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_jobs_list.html">db_jobs_list</a></span><span class="op">(</span>limit <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>
-
-<span class="co"># list all runs within a specific job</span>
-<span class="va">job_runs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_jobs_runs_list.html">db_jobs_runs_list</a></span><span class="op">(</span>job_id <span class="op">=</span> <span class="va">jobs</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">job_id</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># list all jobs within Databricks workspace</span></span>
+<span><span class="co"># can control limit, offset, and if cluster/jobs details are returned</span></span>
+<span><span class="va">jobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_jobs_list.html">db_jobs_list</a></span><span class="op">(</span>limit <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># list all runs within a specific job</span></span>
+<span><span class="va">job_runs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_jobs_runs_list.html">db_jobs_runs_list</a></span><span class="op">(</span>job_id <span class="op">=</span> <span class="va">jobs</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">job_id</span><span class="op">)</span></span></code></pre></div>
 <p>To return the details of a specific job you can use <code><a href="../reference/db_jobs_get.html">db_jobs_get()</a></code>, this requires knowledge of the <code>job_id</code> which can be found via the user interface in Databricks or using <code><a href="../reference/db_jobs_list.html">db_jobs_list()</a></code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># details of a specific job</span>
-<span class="va">job_details</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_jobs_get.html">db_jobs_get</a></span><span class="op">(</span>job_id <span class="op">=</span> <span class="va">jobs</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">job_id</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># details of a specific job</span></span>
+<span><span class="va">job_details</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_jobs_get.html">db_jobs_get</a></span><span class="op">(</span>job_id <span class="op">=</span> <span class="va">jobs</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">job_id</span><span class="op">)</span></span></code></pre></div>
 <p>Each job has one or more tasks which may have dependence upon each other, execution of a job will flow through these tasks - this is known as a “run” of a job. Jobs can be scheduled to start a run on a particular schedule, or by a direct trigger such as <code><a href="../reference/db_jobs_run_now.html">db_jobs_run_now()</a></code>.</p>
 <p>There are a number of functions that are specific to job runs execution and metadata:</p>
 <table class="table">
@@ -161,32 +161,32 @@
 </ul>
 <p>Below is the creation of a simple job that runs a notebook and has a paused schedule:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># define a job task</span>
-<span class="va">simple_task</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/job_task.html">job_task</a></span><span class="op">(</span>
-  task_key <span class="op">=</span> <span class="st">"simple_task"</span>,
-  description <span class="op">=</span> <span class="st">"a simple task that runs a notebook"</span>,
-  <span class="co"># specify a cluster for the job</span>
-  new_cluster <span class="op">=</span> <span class="fu"><a href="../reference/new_cluster.html">new_cluster</a></span><span class="op">(</span>
-    spark_version <span class="op">=</span> <span class="st">"9.1.x-scala2.12"</span>,
-    driver_node_type_id <span class="op">=</span> <span class="st">"m5a.large"</span>,
-    node_type_id <span class="op">=</span> <span class="st">"m5a.large"</span>,
-    num_workers <span class="op">=</span> <span class="fl">2</span>,
-    cloud_attr <span class="op">=</span> <span class="fu"><a href="../reference/aws_attributes.html">aws_attributes</a></span><span class="op">(</span>ebs_volume_size <span class="op">=</span> <span class="fl">32</span><span class="op">)</span>
-  <span class="op">)</span>,
-  <span class="co"># this task will be a notebook</span>
-  task <span class="op">=</span> <span class="fu"><a href="../reference/notebook_task.html">notebook_task</a></span><span class="op">(</span>notebook_path <span class="op">=</span> <span class="st">"/brickster/simple-notebook"</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># define a job task</span></span>
+<span><span class="va">simple_task</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/job_task.html">job_task</a></span><span class="op">(</span></span>
+<span>  task_key <span class="op">=</span> <span class="st">"simple_task"</span>,</span>
+<span>  description <span class="op">=</span> <span class="st">"a simple task that runs a notebook"</span>,</span>
+<span>  <span class="co"># specify a cluster for the job</span></span>
+<span>  new_cluster <span class="op">=</span> <span class="fu"><a href="../reference/new_cluster.html">new_cluster</a></span><span class="op">(</span></span>
+<span>    spark_version <span class="op">=</span> <span class="st">"9.1.x-scala2.12"</span>,</span>
+<span>    driver_node_type_id <span class="op">=</span> <span class="st">"m5a.large"</span>,</span>
+<span>    node_type_id <span class="op">=</span> <span class="st">"m5a.large"</span>,</span>
+<span>    num_workers <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>    cloud_attr <span class="op">=</span> <span class="fu"><a href="../reference/aws_attributes.html">aws_attributes</a></span><span class="op">(</span>ebs_volume_size <span class="op">=</span> <span class="fl">32</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="co"># this task will be a notebook</span></span>
+<span>  task <span class="op">=</span> <span class="fu"><a href="../reference/notebook_task.html">notebook_task</a></span><span class="op">(</span>notebook_path <span class="op">=</span> <span class="st">"/brickster/simple-notebook"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># create job with simple task</span>
-<span class="va">simple_task_job</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_jobs_create.html">db_jobs_create</a></span><span class="op">(</span>
-  name <span class="op">=</span> <span class="st">"brickster example: simple"</span>,
-  tasks <span class="op">=</span> <span class="fu"><a href="../reference/job_tasks.html">job_tasks</a></span><span class="op">(</span><span class="va">simple_task</span><span class="op">)</span>,
-  <span class="co"># 9am every day, paused currently</span>
-  schedule <span class="op">=</span> <span class="fu"><a href="../reference/cron_schedule.html">cron_schedule</a></span><span class="op">(</span>
-    quartz_cron_expression <span class="op">=</span> <span class="st">"0 0 9 * * ?"</span>,
-    pause_status <span class="op">=</span> <span class="st">"PAUSED"</span>
-  <span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># create job with simple task</span></span>
+<span><span class="va">simple_task_job</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_jobs_create.html">db_jobs_create</a></span><span class="op">(</span></span>
+<span>  name <span class="op">=</span> <span class="st">"brickster example: simple"</span>,</span>
+<span>  tasks <span class="op">=</span> <span class="fu"><a href="../reference/job_tasks.html">job_tasks</a></span><span class="op">(</span><span class="va">simple_task</span><span class="op">)</span>,</span>
+<span>  <span class="co"># 9am every day, paused currently</span></span>
+<span>  schedule <span class="op">=</span> <span class="fu"><a href="../reference/cron_schedule.html">cron_schedule</a></span><span class="op">(</span></span>
+<span>    quartz_cron_expression <span class="op">=</span> <span class="st">"0 0 9 * * ?"</span>,</span>
+<span>    pause_status <span class="op">=</span> <span class="st">"PAUSED"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="multiple-tasks">Multiple Tasks<a class="anchor" aria-label="anchor" href="#multiple-tasks"></a>
@@ -194,53 +194,53 @@
 <p>Jobs can be extended beyond a singular task, this next example extends the simple job example by now having three tasks. Each subsequent task depends on the priors completion before it can proceed, each task also will define its own <code>new_cluster</code>.</p>
 <p>Whilst this job runs the same notebook each time for the sake of example it demonstrates how to build dependencies.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># one cluster definition, repeatedly use for each task</span>
-<span class="va">multitask_cluster</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/new_cluster.html">new_cluster</a></span><span class="op">(</span>
-  spark_version <span class="op">=</span> <span class="st">"9.1.x-scala2.12"</span>,
-  driver_node_type_id <span class="op">=</span> <span class="st">"m5a.large"</span>,
-  node_type_id <span class="op">=</span> <span class="st">"m5a.large"</span>,
-  num_workers <span class="op">=</span> <span class="fl">2</span>,
-  cloud_attr <span class="op">=</span> <span class="fu"><a href="../reference/aws_attributes.html">aws_attributes</a></span><span class="op">(</span>ebs_volume_size <span class="op">=</span> <span class="fl">32</span><span class="op">)</span>
-<span class="op">)</span>
-
-<span class="co"># each task will run the same notebook (just for this example)</span>
-<span class="va">multitask_task</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/notebook_task.html">notebook_task</a></span><span class="op">(</span>notebook_path <span class="op">=</span> <span class="st">"/brickster/simple-notebook"</span><span class="op">)</span>
-
-<span class="co"># create three simple tasks that will depend on each other</span>
-<span class="co"># task_a -&gt; task_b -&gt; task_c</span>
-<span class="va">task_a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/job_task.html">job_task</a></span><span class="op">(</span>
-  task_key <span class="op">=</span> <span class="st">"task_a"</span>,
-  description <span class="op">=</span> <span class="st">"First task in the sequence"</span>,
-  new_cluster <span class="op">=</span> <span class="va">multitask_cluster</span>,
-  task <span class="op">=</span> <span class="va">multitask_task</span>
-<span class="op">)</span>
-
-<span class="va">task_b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/job_task.html">job_task</a></span><span class="op">(</span>
-  task_key <span class="op">=</span> <span class="st">"task_b"</span>,
-  description <span class="op">=</span> <span class="st">"Second task in the sequence"</span>,
-  new_cluster <span class="op">=</span> <span class="va">multitask_cluster</span>,
-  task <span class="op">=</span> <span class="va">multitask_task</span>,
-  depends_on <span class="op">=</span> <span class="st">"task_a"</span>
-<span class="op">)</span>
-
-<span class="va">task_c</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/job_task.html">job_task</a></span><span class="op">(</span>
-  task_key <span class="op">=</span> <span class="st">"task_c"</span>,
-  description <span class="op">=</span> <span class="st">"Third task in the sequence"</span>,
-  new_cluster <span class="op">=</span> <span class="va">multitask_cluster</span>,
-  task <span class="op">=</span> <span class="va">multitask_task</span>,
-  depends_on <span class="op">=</span> <span class="st">"task_b"</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># one cluster definition, repeatedly use for each task</span></span>
+<span><span class="va">multitask_cluster</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/new_cluster.html">new_cluster</a></span><span class="op">(</span></span>
+<span>  spark_version <span class="op">=</span> <span class="st">"9.1.x-scala2.12"</span>,</span>
+<span>  driver_node_type_id <span class="op">=</span> <span class="st">"m5a.large"</span>,</span>
+<span>  node_type_id <span class="op">=</span> <span class="st">"m5a.large"</span>,</span>
+<span>  num_workers <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  cloud_attr <span class="op">=</span> <span class="fu"><a href="../reference/aws_attributes.html">aws_attributes</a></span><span class="op">(</span>ebs_volume_size <span class="op">=</span> <span class="fl">32</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># each task will run the same notebook (just for this example)</span></span>
+<span><span class="va">multitask_task</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/notebook_task.html">notebook_task</a></span><span class="op">(</span>notebook_path <span class="op">=</span> <span class="st">"/brickster/simple-notebook"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># create three simple tasks that will depend on each other</span></span>
+<span><span class="co"># task_a -&gt; task_b -&gt; task_c</span></span>
+<span><span class="va">task_a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/job_task.html">job_task</a></span><span class="op">(</span></span>
+<span>  task_key <span class="op">=</span> <span class="st">"task_a"</span>,</span>
+<span>  description <span class="op">=</span> <span class="st">"First task in the sequence"</span>,</span>
+<span>  new_cluster <span class="op">=</span> <span class="va">multitask_cluster</span>,</span>
+<span>  task <span class="op">=</span> <span class="va">multitask_task</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">task_b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/job_task.html">job_task</a></span><span class="op">(</span></span>
+<span>  task_key <span class="op">=</span> <span class="st">"task_b"</span>,</span>
+<span>  description <span class="op">=</span> <span class="st">"Second task in the sequence"</span>,</span>
+<span>  new_cluster <span class="op">=</span> <span class="va">multitask_cluster</span>,</span>
+<span>  task <span class="op">=</span> <span class="va">multitask_task</span>,</span>
+<span>  depends_on <span class="op">=</span> <span class="st">"task_a"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">task_c</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/job_task.html">job_task</a></span><span class="op">(</span></span>
+<span>  task_key <span class="op">=</span> <span class="st">"task_c"</span>,</span>
+<span>  description <span class="op">=</span> <span class="st">"Third task in the sequence"</span>,</span>
+<span>  new_cluster <span class="op">=</span> <span class="va">multitask_cluster</span>,</span>
+<span>  task <span class="op">=</span> <span class="va">multitask_task</span>,</span>
+<span>  depends_on <span class="op">=</span> <span class="st">"task_b"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># create job with multiple tasks</span>
-<span class="va">multitask_job</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_jobs_create.html">db_jobs_create</a></span><span class="op">(</span>
-  name <span class="op">=</span> <span class="st">"brickster example: multi-task"</span>,
-  tasks <span class="op">=</span> <span class="fu"><a href="../reference/job_tasks.html">job_tasks</a></span><span class="op">(</span><span class="va">task_a</span>, <span class="va">task_b</span>, <span class="va">task_c</span><span class="op">)</span>,
-  <span class="co"># 9am every day, paused currently</span>
-  schedule <span class="op">=</span> <span class="fu"><a href="../reference/cron_schedule.html">cron_schedule</a></span><span class="op">(</span>
-    quartz_cron_expression <span class="op">=</span> <span class="st">"0 0 9 * * ?"</span>,
-    pause_status <span class="op">=</span> <span class="st">"PAUSED"</span>
-  <span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># create job with multiple tasks</span></span>
+<span><span class="va">multitask_job</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_jobs_create.html">db_jobs_create</a></span><span class="op">(</span></span>
+<span>  name <span class="op">=</span> <span class="st">"brickster example: multi-task"</span>,</span>
+<span>  tasks <span class="op">=</span> <span class="fu"><a href="../reference/job_tasks.html">job_tasks</a></span><span class="op">(</span><span class="va">task_a</span>, <span class="va">task_b</span>, <span class="va">task_c</span><span class="op">)</span>,</span>
+<span>  <span class="co"># 9am every day, paused currently</span></span>
+<span>  schedule <span class="op">=</span> <span class="fu"><a href="../reference/cron_schedule.html">cron_schedule</a></span><span class="op">(</span></span>
+<span>    quartz_cron_expression <span class="op">=</span> <span class="st">"0 0 9 * * ?"</span>,</span>
+<span>    pause_status <span class="op">=</span> <span class="st">"PAUSED"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="cluster-reuse">Cluster Reuse<a class="anchor" aria-label="anchor" href="#cluster-reuse"></a>
@@ -250,44 +250,44 @@
 <p>This example is the same as the previous multi-task job however it now shares a single cluster for each task.</p>
 <p><code>new_cluster</code> is replaced with <code>job_cluster_key</code> in each task:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># create three simple tasks that will depend on each other</span>
-<span class="co"># this time we will use a shared cluster to reduce startup overhead</span>
-<span class="co"># task_a -&gt; task_b -&gt; task_c</span>
-<span class="va">task_a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/job_task.html">job_task</a></span><span class="op">(</span>
-  task_key <span class="op">=</span> <span class="st">"task_a"</span>,
-  description <span class="op">=</span> <span class="st">"First task in the sequence"</span>,
-  job_cluster_key <span class="op">=</span> <span class="st">"shared_cluster"</span>,
-  task <span class="op">=</span> <span class="va">multitask_task</span>
-<span class="op">)</span>
-
-<span class="va">task_b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/job_task.html">job_task</a></span><span class="op">(</span>
-  task_key <span class="op">=</span> <span class="st">"task_b"</span>,
-  description <span class="op">=</span> <span class="st">"Second task in the sequence"</span>,
-  job_cluster_key <span class="op">=</span> <span class="st">"shared_cluster"</span>,
-  task <span class="op">=</span> <span class="va">multitask_task</span>,
-  depends_on <span class="op">=</span> <span class="st">"task_a"</span>
-<span class="op">)</span>
-
-<span class="va">task_c</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/job_task.html">job_task</a></span><span class="op">(</span>
-  task_key <span class="op">=</span> <span class="st">"task_c"</span>,
-  description <span class="op">=</span> <span class="st">"Third task in the sequence"</span>,
-  job_cluster_key <span class="op">=</span> <span class="st">"shared_cluster"</span>,
-  task <span class="op">=</span> <span class="va">multitask_task</span>,
-  depends_on <span class="op">=</span> <span class="st">"task_b"</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># create three simple tasks that will depend on each other</span></span>
+<span><span class="co"># this time we will use a shared cluster to reduce startup overhead</span></span>
+<span><span class="co"># task_a -&gt; task_b -&gt; task_c</span></span>
+<span><span class="va">task_a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/job_task.html">job_task</a></span><span class="op">(</span></span>
+<span>  task_key <span class="op">=</span> <span class="st">"task_a"</span>,</span>
+<span>  description <span class="op">=</span> <span class="st">"First task in the sequence"</span>,</span>
+<span>  job_cluster_key <span class="op">=</span> <span class="st">"shared_cluster"</span>,</span>
+<span>  task <span class="op">=</span> <span class="va">multitask_task</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">task_b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/job_task.html">job_task</a></span><span class="op">(</span></span>
+<span>  task_key <span class="op">=</span> <span class="st">"task_b"</span>,</span>
+<span>  description <span class="op">=</span> <span class="st">"Second task in the sequence"</span>,</span>
+<span>  job_cluster_key <span class="op">=</span> <span class="st">"shared_cluster"</span>,</span>
+<span>  task <span class="op">=</span> <span class="va">multitask_task</span>,</span>
+<span>  depends_on <span class="op">=</span> <span class="st">"task_a"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">task_c</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/job_task.html">job_task</a></span><span class="op">(</span></span>
+<span>  task_key <span class="op">=</span> <span class="st">"task_c"</span>,</span>
+<span>  description <span class="op">=</span> <span class="st">"Third task in the sequence"</span>,</span>
+<span>  job_cluster_key <span class="op">=</span> <span class="st">"shared_cluster"</span>,</span>
+<span>  task <span class="op">=</span> <span class="va">multitask_task</span>,</span>
+<span>  depends_on <span class="op">=</span> <span class="st">"task_b"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><code>job_clusters</code> is now defined in the <code><a href="../reference/db_jobs_create.html">db_jobs_create()</a></code> call where it accepts a named list of <code>new_clusters()</code>, we will reuse our example from earlier:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># define job_clusters as a named list of new_cluster()</span>
-<span class="va">multitask_job_with_reuse</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_jobs_create.html">db_jobs_create</a></span><span class="op">(</span>
-  name <span class="op">=</span> <span class="st">"brickster example: multi-task with reuse"</span>,
-  job_clusters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"shared_cluster"</span> <span class="op">=</span> <span class="va">multitask_cluster</span><span class="op">)</span>,
-  tasks <span class="op">=</span> <span class="fu"><a href="../reference/job_tasks.html">job_tasks</a></span><span class="op">(</span><span class="va">task_a</span>, <span class="va">task_b</span>, <span class="va">task_c</span><span class="op">)</span>,
-  <span class="co"># 9am every day, paused currently</span>
-  schedule <span class="op">=</span> <span class="fu"><a href="../reference/cron_schedule.html">cron_schedule</a></span><span class="op">(</span>
-    quartz_cron_expression <span class="op">=</span> <span class="st">"0 0 9 * * ?"</span>,
-    pause_status <span class="op">=</span> <span class="st">"PAUSED"</span>
-  <span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># define job_clusters as a named list of new_cluster()</span></span>
+<span><span class="va">multitask_job_with_reuse</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_jobs_create.html">db_jobs_create</a></span><span class="op">(</span></span>
+<span>  name <span class="op">=</span> <span class="st">"brickster example: multi-task with reuse"</span>,</span>
+<span>  job_clusters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"shared_cluster"</span> <span class="op">=</span> <span class="va">multitask_cluster</span><span class="op">)</span>,</span>
+<span>  tasks <span class="op">=</span> <span class="fu"><a href="../reference/job_tasks.html">job_tasks</a></span><span class="op">(</span><span class="va">task_a</span>, <span class="va">task_b</span>, <span class="va">task_c</span><span class="op">)</span>,</span>
+<span>  <span class="co"># 9am every day, paused currently</span></span>
+<span>  schedule <span class="op">=</span> <span class="fu"><a href="../reference/cron_schedule.html">cron_schedule</a></span><span class="op">(</span></span>
+<span>    quartz_cron_expression <span class="op">=</span> <span class="st">"0 0 9 * * ?"</span>,</span>
+<span>    pause_status <span class="op">=</span> <span class="st">"PAUSED"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>There can be multiple shared clusters and it may be beneficial to give some demanding tasks a larger cluster alone (or to share with other demanding tasks).</p>
 </div>
 <div class="section level4">
@@ -295,14 +295,14 @@
 </h4>
 <p>It’s possible to create one-off jobs that do not have a schedule and only appears under the “jobs runs” tab, not “jobs”. <code><a href="../reference/db_jobs_runs_submit.html">db_jobs_runs_submit()</a></code> permits the use of an <code>idempotency_token</code> which can avoid re-submission of a run.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># submit a one off job run</span>
-<span class="co"># reuse the simple task from first example</span>
-<span class="co"># idempotency_token guarentees no additional triggers</span>
-<span class="va">oneoff_job</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_jobs_runs_submit.html">db_jobs_runs_submit</a></span><span class="op">(</span>
-  tasks <span class="op">=</span> <span class="fu"><a href="../reference/job_tasks.html">job_tasks</a></span><span class="op">(</span><span class="va">simple_task</span><span class="op">)</span>,
-  run_name <span class="op">=</span> <span class="st">"brickster example: one-off job"</span>,
-  idempotency_token <span class="op">=</span> <span class="st">"my_job_run_token"</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># submit a one off job run</span></span>
+<span><span class="co"># reuse the simple task from first example</span></span>
+<span><span class="co"># idempotency_token guarentees no additional triggers</span></span>
+<span><span class="va">oneoff_job</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_jobs_runs_submit.html">db_jobs_runs_submit</a></span><span class="op">(</span></span>
+<span>  tasks <span class="op">=</span> <span class="fu"><a href="../reference/job_tasks.html">job_tasks</a></span><span class="op">(</span><span class="va">simple_task</span><span class="op">)</span>,</span>
+<span>  run_name <span class="op">=</span> <span class="st">"brickster example: one-off job"</span>,</span>
+<span>  idempotency_token <span class="op">=</span> <span class="st">"my_job_run_token"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="remote-git-repos">Remote Git Repos<a class="anchor" aria-label="anchor" href="#remote-git-repos"></a>
@@ -311,42 +311,42 @@
 <p>Let’s revisit the simple job example from before and adjust to use <code><a href="../reference/git_source.html">git_source()</a></code>.<br>
 In this example the repo will have a folder <code>example</code> which contains <code>simple-notebook.py</code>.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># define a job task</span>
-<span class="co"># this time, the notebook_path is relative to the git root directory</span>
-<span class="co"># omit file extensions like .py or .r</span>
-<span class="va">simple_task</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/job_task.html">job_task</a></span><span class="op">(</span>
-  task_key <span class="op">=</span> <span class="st">"simple_task"</span>,
-  description <span class="op">=</span> <span class="st">"a simple task that runs a notebook"</span>,
-  <span class="co"># specify a cluster for the job</span>
-  new_cluster <span class="op">=</span> <span class="fu"><a href="../reference/new_cluster.html">new_cluster</a></span><span class="op">(</span>
-    spark_version <span class="op">=</span> <span class="st">"9.1.x-scala2.12"</span>,
-    driver_node_type_id <span class="op">=</span> <span class="st">"m5a.large"</span>,
-    node_type_id <span class="op">=</span> <span class="st">"m5a.large"</span>,
-    num_workers <span class="op">=</span> <span class="fl">2</span>,
-    cloud_attr <span class="op">=</span> <span class="fu"><a href="../reference/aws_attributes.html">aws_attributes</a></span><span class="op">(</span>ebs_volume_size <span class="op">=</span> <span class="fl">32</span><span class="op">)</span>
-  <span class="op">)</span>,
-  <span class="co"># this task will be a notebook</span>
-  task <span class="op">=</span> <span class="fu"><a href="../reference/notebook_task.html">notebook_task</a></span><span class="op">(</span>notebook_path <span class="op">=</span> <span class="st">"example/simple-notebook"</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># define a job task</span></span>
+<span><span class="co"># this time, the notebook_path is relative to the git root directory</span></span>
+<span><span class="co"># omit file extensions like .py or .r</span></span>
+<span><span class="va">simple_task</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/job_task.html">job_task</a></span><span class="op">(</span></span>
+<span>  task_key <span class="op">=</span> <span class="st">"simple_task"</span>,</span>
+<span>  description <span class="op">=</span> <span class="st">"a simple task that runs a notebook"</span>,</span>
+<span>  <span class="co"># specify a cluster for the job</span></span>
+<span>  new_cluster <span class="op">=</span> <span class="fu"><a href="../reference/new_cluster.html">new_cluster</a></span><span class="op">(</span></span>
+<span>    spark_version <span class="op">=</span> <span class="st">"9.1.x-scala2.12"</span>,</span>
+<span>    driver_node_type_id <span class="op">=</span> <span class="st">"m5a.large"</span>,</span>
+<span>    node_type_id <span class="op">=</span> <span class="st">"m5a.large"</span>,</span>
+<span>    num_workers <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>    cloud_attr <span class="op">=</span> <span class="fu"><a href="../reference/aws_attributes.html">aws_attributes</a></span><span class="op">(</span>ebs_volume_size <span class="op">=</span> <span class="fl">32</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="co"># this task will be a notebook</span></span>
+<span>  task <span class="op">=</span> <span class="fu"><a href="../reference/notebook_task.html">notebook_task</a></span><span class="op">(</span>notebook_path <span class="op">=</span> <span class="st">"example/simple-notebook"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>Within the call to <code><a href="../reference/db_jobs_create.html">db_jobs_create()</a></code> use <code><a href="../reference/git_source.html">git_source()</a></code> to point to the repo containing the notebook.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># create job with simple task</span>
-<span class="va">simple_task_job</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_jobs_create.html">db_jobs_create</a></span><span class="op">(</span>
-  name <span class="op">=</span> <span class="st">"brickster example: simple"</span>,
-  tasks <span class="op">=</span> <span class="fu"><a href="../reference/job_tasks.html">job_tasks</a></span><span class="op">(</span><span class="va">simple_task</span><span class="op">)</span>,
-  <span class="co"># git source points to repo</span>
-  git_source <span class="op">=</span> <span class="fu"><a href="../reference/git_source.html">git_source</a></span><span class="op">(</span>
-    git_url <span class="op">=</span> <span class="st">"www.github.com/&lt;user&gt;/&lt;repo&gt;"</span>,
-    git_provider <span class="op">=</span> <span class="st">"github"</span>,
-    reference <span class="op">=</span> <span class="st">"main"</span>,
-    type <span class="op">=</span> <span class="st">"branch"</span>
-  <span class="op">)</span>,
-  <span class="co"># 9am every day, paused currently</span>
-  schedule <span class="op">=</span> <span class="fu"><a href="../reference/cron_schedule.html">cron_schedule</a></span><span class="op">(</span>
-    quartz_cron_expression <span class="op">=</span> <span class="st">"0 0 9 * * ?"</span>,
-    pause_status <span class="op">=</span> <span class="st">"PAUSED"</span>
-  <span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># create job with simple task</span></span>
+<span><span class="va">simple_task_job</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_jobs_create.html">db_jobs_create</a></span><span class="op">(</span></span>
+<span>  name <span class="op">=</span> <span class="st">"brickster example: simple"</span>,</span>
+<span>  tasks <span class="op">=</span> <span class="fu"><a href="../reference/job_tasks.html">job_tasks</a></span><span class="op">(</span><span class="va">simple_task</span><span class="op">)</span>,</span>
+<span>  <span class="co"># git source points to repo</span></span>
+<span>  git_source <span class="op">=</span> <span class="fu"><a href="../reference/git_source.html">git_source</a></span><span class="op">(</span></span>
+<span>    git_url <span class="op">=</span> <span class="st">"www.github.com/&lt;user&gt;/&lt;repo&gt;"</span>,</span>
+<span>    git_provider <span class="op">=</span> <span class="st">"github"</span>,</span>
+<span>    reference <span class="op">=</span> <span class="st">"main"</span>,</span>
+<span>    type <span class="op">=</span> <span class="st">"branch"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="co"># 9am every day, paused currently</span></span>
+<span>  schedule <span class="op">=</span> <span class="fu"><a href="../reference/cron_schedule.html">cron_schedule</a></span><span class="op">(</span></span>
+<span>    quartz_cron_expression <span class="op">=</span> <span class="st">"0 0 9 * * ?"</span>,</span>
+<span>    pause_status <span class="op">=</span> <span class="st">"PAUSED"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>When specifying <code><a href="../reference/git_source.html">git_source()</a></code> all <code><a href="../reference/notebook_task.html">notebook_task()</a></code> must be repo paths - it’s not possible to have a mix of repo and workspace based notebooks. Additionally, this behaviour only works for <code><a href="../reference/notebook_task.html">notebook_task()</a></code>, other tasks such as <code><a href="../reference/spark_python_task.html">spark_python_task()</a></code> are unsupported.</p>
 </div>
 </div>
@@ -358,19 +358,19 @@ In this example the repo will have a folder <code>example</code> which contains 
 </h4>
 <p>Jobs can be partially updated, for example to rename an existing job:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># only change the job name</span>
-<span class="fu"><a href="../reference/db_jobs_update.html">db_jobs_update</a></span><span class="op">(</span>
-  job_id <span class="op">=</span> <span class="va">multitask_job_with_reuse</span><span class="op">$</span><span class="va">job_id</span>,
-  name <span class="op">=</span> <span class="st">"brickster example: renamed job"</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># only change the job name</span></span>
+<span><span class="fu"><a href="../reference/db_jobs_update.html">db_jobs_update</a></span><span class="op">(</span></span>
+<span>  job_id <span class="op">=</span> <span class="va">multitask_job_with_reuse</span><span class="op">$</span><span class="va">job_id</span>,</span>
+<span>  name <span class="op">=</span> <span class="st">"brickster example: renamed job"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>Adding a timeout and adjusting maximum concurrent runs allowed:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># adding timeout and increasing max concurrent runs</span>
-<span class="fu"><a href="../reference/db_jobs_update.html">db_jobs_update</a></span><span class="op">(</span>
-  job_id <span class="op">=</span> <span class="va">multitask_job_with_reuse</span><span class="op">$</span><span class="va">job_id</span>,
-  timeout_seconds <span class="op">=</span> <span class="fl">60</span> <span class="op">*</span> <span class="fl">5</span>,
-  max_concurrent_runs <span class="op">=</span> <span class="fl">2</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># adding timeout and increasing max concurrent runs</span></span>
+<span><span class="fu"><a href="../reference/db_jobs_update.html">db_jobs_update</a></span><span class="op">(</span></span>
+<span>  job_id <span class="op">=</span> <span class="va">multitask_job_with_reuse</span><span class="op">$</span><span class="va">job_id</span>,</span>
+<span>  timeout_seconds <span class="op">=</span> <span class="fl">60</span> <span class="op">*</span> <span class="fl">5</span>,</span>
+<span>  max_concurrent_runs <span class="op">=</span> <span class="fl">2</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>You can add new tasks but it may involve some extra steps, either:</p>
 <ul>
 <li><p>Having <code><a href="../reference/job_task.html">job_task()</a></code> required for job defined already within R and adding new tasks</p></li>
@@ -399,12 +399,12 @@ In this example the repo will have a folder <code>example</code> which contains 
 </ul>
 <p>The only example yet to be covered is <code><a href="../reference/db_jobs_run_now.html">db_jobs_run_now()</a></code>, it accepts parameters as named lists:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># invoke simple job example</span>
-<span class="va">triggered_run</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_jobs_run_now.html">db_jobs_run_now</a></span><span class="op">(</span>job_id <span class="op">=</span> <span class="va">simple_task_job</span><span class="op">$</span><span class="va">job_id</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># invoke simple job example</span></span>
+<span><span class="va">triggered_run</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_jobs_run_now.html">db_jobs_run_now</a></span><span class="op">(</span>job_id <span class="op">=</span> <span class="va">simple_task_job</span><span class="op">$</span><span class="va">job_id</span><span class="op">)</span></span></code></pre></div>
 <p>Runs can also be cancelled:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># cancel run whilst it is in progress</span>
-<span class="fu"><a href="../reference/db_jobs_runs_cancel.html">db_jobs_runs_cancel</a></span><span class="op">(</span>run_id <span class="op">=</span> <span class="va">triggered_run</span><span class="op">$</span><span class="va">run_id</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># cancel run whilst it is in progress</span></span>
+<span><span class="fu"><a href="../reference/db_jobs_runs_cancel.html">db_jobs_runs_cancel</a></span><span class="op">(</span>run_id <span class="op">=</span> <span class="va">triggered_run</span><span class="op">$</span><span class="va">run_id</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="deletion">Deletion<a class="anchor" aria-label="anchor" href="#deletion"></a>
@@ -412,9 +412,9 @@ In this example the repo will have a folder <code>example</code> which contains 
 <p>Jobs and runs can be deleted with <code><a href="../reference/db_jobs_delete.html">db_jobs_delete()</a></code> and <code><a href="../reference/db_jobs_runs_delete.html">db_jobs_runs_delete()</a></code> respectively.</p>
 <p>Cleaning up all jobs created in this documentation:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/db_jobs_delete.html">db_jobs_delete</a></span><span class="op">(</span>job_id <span class="op">=</span> <span class="va">simple_task_job</span><span class="op">$</span><span class="va">job_id</span><span class="op">)</span>
-<span class="fu"><a href="../reference/db_jobs_delete.html">db_jobs_delete</a></span><span class="op">(</span>job_id <span class="op">=</span> <span class="va">multitask_job</span><span class="op">$</span><span class="va">job_id</span><span class="op">)</span>
-<span class="fu"><a href="../reference/db_jobs_delete.html">db_jobs_delete</a></span><span class="op">(</span>job_id <span class="op">=</span> <span class="va">multitask_job_with_reuse</span><span class="op">$</span><span class="va">job_id</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/db_jobs_delete.html">db_jobs_delete</a></span><span class="op">(</span>job_id <span class="op">=</span> <span class="va">simple_task_job</span><span class="op">$</span><span class="va">job_id</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/db_jobs_delete.html">db_jobs_delete</a></span><span class="op">(</span>job_id <span class="op">=</span> <span class="va">multitask_job</span><span class="op">$</span><span class="va">job_id</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/db_jobs_delete.html">db_jobs_delete</a></span><span class="op">(</span>job_id <span class="op">=</span> <span class="va">multitask_job_with_reuse</span><span class="op">$</span><span class="va">job_id</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 </div>
@@ -431,7 +431,7 @@ In this example the repo will have a folder <code>example</code> which contains 
 
 <div class="pkgdown-footer-right">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
     </footer>

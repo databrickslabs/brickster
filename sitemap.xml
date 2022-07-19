@@ -310,34 +310,34 @@
     <loc>https://zacdav-db.github.io/brickster/reference/db_secrets_scope_list_all.html</loc>
   </url>
   <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_endpoint_create.html</loc>
+    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_global_warehouse_edit.html</loc>
   </url>
   <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_endpoint_delete.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_endpoint_edit.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_endpoint_get.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_endpoint_list.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_endpoint_start.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_endpoint_stop.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_global_endpoint_edit.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_global_endpoint_get.html</loc>
+    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_global_warehouse_get.html</loc>
   </url>
   <url>
     <loc>https://zacdav-db.github.io/brickster/reference/db_sql_query_history.html</loc>
+  </url>
+  <url>
+    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_warehouse_create.html</loc>
+  </url>
+  <url>
+    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_warehouse_delete.html</loc>
+  </url>
+  <url>
+    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_warehouse_edit.html</loc>
+  </url>
+  <url>
+    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_warehouse_get.html</loc>
+  </url>
+  <url>
+    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_warehouse_list.html</loc>
+  </url>
+  <url>
+    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_warehouse_start.html</loc>
+  </url>
+  <url>
+    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_warehouse_stop.html</loc>
   </url>
   <url>
     <loc>https://zacdav-db.github.io/brickster/reference/db_token.html</loc>
@@ -379,7 +379,7 @@
     <loc>https://zacdav-db.github.io/brickster/reference/get_and_start_cluster.html</loc>
   </url>
   <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/get_and_start_endpoint.html</loc>
+    <loc>https://zacdav-db.github.io/brickster/reference/get_and_start_warehouse.html</loc>
   </url>
   <url>
     <loc>https://zacdav-db.github.io/brickster/reference/git_source.html</loc>
