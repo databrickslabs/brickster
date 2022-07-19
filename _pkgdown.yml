@@ -77,10 +77,10 @@ reference:
   contents: starts_with("db_repo", internal = TRUE)
 - title: Secrets
   contents: starts_with("db_secrets", internal = TRUE)
-- title: SQL Endpoints
+- title: Warehouses
   contents:
   - starts_with("db_sql", internal = TRUE)
-  - get_and_start_endpoint
+  - get_and_start_warehouse
 - title: Workspaces
   contents: starts_with("db_workspace", internal = TRUE)
 - title: Request Helpers

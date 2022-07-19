@@ -1,6 +1,6 @@
 # https://docs.databricks.com/sql/api/sql-endpoints.html
 
-#' Create SQL Endpoint
+#' Create Warehouse
 #'
 #' @param name Name of the SQL warehouse. Must be unique.
 #' @param cluster_size Size of the clusters allocated to the warehouse. One of
@@ -34,7 +34,7 @@
 #'
 #' @inheritParams auth_params
 #'
-#' @family SQL Endpoints API
+#' @family Warehouse API
 #'
 #' @export
 db_sql_warehouse_create <- function(name,
@@ -89,13 +89,13 @@ db_sql_warehouse_create <- function(name,
 
 }
 
-#' Delete SQL Endpoint
+#' Delete Warehouse
 #'
 #' @param id ID of the SQL warehouse.
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create
 #'
-#' @family SQL Endpoints API
+#' @family Warehouse API
 #'
 #' @export
 db_sql_warehouse_delete <- function(id,
@@ -118,7 +118,7 @@ db_sql_warehouse_delete <- function(id,
 
 }
 
-#' Edit SQL Endpoint
+#' Edit Warehouse
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create
@@ -127,7 +127,7 @@ db_sql_warehouse_delete <- function(id,
 #' @details Modify a SQL warehouse. All fields are optional. Missing fields
 #' default to the current values.
 #'
-#' @family SQL Endpoints API
+#' @family Warehouse API
 #'
 #' @export
 db_sql_warehouse_edit <- function(id,
@@ -190,13 +190,13 @@ db_sql_warehouse_edit <- function(id,
 
 }
 
-#' Get SQL Endpoint
+#' Get Warehouse
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_delete
 #' @inheritParams db_sql_warehouse_create
 #'
-#' @family SQL Endpoints API
+#' @family Warehouse API
 #'
 #' @export
 db_sql_warehouse_get <- function(id, host = db_host(), token = db_token(),
@@ -217,12 +217,12 @@ db_sql_warehouse_get <- function(id, host = db_host(), token = db_token(),
 
 }
 
-#' List SQL Endpoints
+#' List Warehouses
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create
 #'
-#' @family SQL Endpoints API
+#' @family Warehouse API
 #'
 #' @export
 db_sql_warehouse_list <- function(host = db_host(), token = db_token(),
@@ -237,20 +237,20 @@ db_sql_warehouse_list <- function(host = db_host(), token = db_token(),
   )
 
   if (perform_request) {
-    db_perform_request(req)
+    db_perform_request(req)$warehouses
   } else {
     req
   }
 
 }
 
-#' Start SQL Endpoint
+#' Start Warehouse
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_delete
 #' @inheritParams db_sql_warehouse_create
 #'
-#' @family SQL Endpoints API
+#' @family Warehouse API
 #'
 #' @export
 db_sql_warehouse_start <- function(id, host = db_host(), token = db_token(),
@@ -271,13 +271,13 @@ db_sql_warehouse_start <- function(id, host = db_host(), token = db_token(),
 
 }
 
-#' Stop SQL Endpoint
+#' Stop Warehouse
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_delete
 #' @inheritParams db_sql_warehouse_create
 #'
-#' @family SQL Endpoints API
+#' @family Warehouse API
 #'
 #' @export
 db_sql_warehouse_stop <- function(id, host = db_host(), token = db_token(),
@@ -298,12 +298,12 @@ db_sql_warehouse_stop <- function(id, host = db_host(), token = db_token(),
 
 }
 
-#' Get Global SQL warehouse Config
+#' Get Global Warehouse Config
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create
 #'
-#' @family SQL Endpoints API
+#' @family Warehouse API
 #'
 #' @export
 db_sql_global_warehouse_get <- function(host = db_host(), token = db_token(),
@@ -324,7 +324,7 @@ db_sql_global_warehouse_get <- function(host = db_host(), token = db_token(),
 
 }
 
-#' Edit Global SQL warehouse Config
+#' Edit Global Warehouse Config
 #'
 #' @param data_access_config Named list of key-value pairs containing properties
 #' for an external Hive metastore.
@@ -341,7 +341,7 @@ db_sql_global_warehouse_get <- function(host = db_host(), token = db_token(),
 #' - All fields are required.
 #' - Invoking this method restarts **all** running SQL warehouses.
 #'
-#' @family SQL Endpoints API
+#' @family Warehouse API
 
 #' @export
 db_sql_global_warehouse_edit <- function(data_access_config = list(),
@@ -391,7 +391,7 @@ db_sql_global_warehouse_edit <- function(data_access_config = list(),
 
 ### Higher Functions ###########################################################
 
-#' Get and Start Endpoint
+#' Get and Start Warehouse
 #'
 #' @param polling_interval Number of seconds to wait between status checks
 #' @inheritParams auth_params
@@ -402,8 +402,8 @@ db_sql_global_warehouse_edit <- function(data_access_config = list(),
 #'
 #' @seealso [db_sql_warehouse_get()] and [db_sql_warehouse_start()].
 #'
-#' @family SQL Endpoints API
-#' @family Endpoint Helpers
+#' @family Warehouse API
+#' @family Warehouse Helpers
 #'
 #' @return `db_sql_warehouse_get()`
 #' @export

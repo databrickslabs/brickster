@@ -1,7 +1,7 @@
-clusters_and_endpoints_widget <- function() {
+clusters_and_warehouses_widget <- function() {
   get_cluster_infos <- function() {
     clusters <- brickster::db_cluster_list()
-    purrr::map_dfr(clusters$clusters, ~ {
+    purrr::map_dfr(clusters, ~ {
       list(
         id = .x$cluster_id,
         name = .x$cluster_name,
@@ -14,9 +14,9 @@ clusters_and_endpoints_widget <- function() {
     })
   }
 
-  get_endpoint_infos <- function() {
-    endpoints <- brickster::db_sql_warehouse_list()
-    purrr::map_dfr(endpoints$endpoints, ~ {
+  get_warehouse_infos <- function() {
+    warehouses <- brickster::db_sql_warehouse_list()
+    purrr::map_dfr(warehouses, ~ {
       list(
         id = .x$id,
         name = .x$name,
@@ -58,11 +58,11 @@ clusters_and_endpoints_widget <- function() {
         )
       ),
       miniUI::miniTabPanel(
-        value = "endpoint",
-        title = "Endpoints",
+        value = "warehouse",
+        title = "Warehouses",
         icon = shiny::icon("cloud"),
         miniUI::miniContentPanel(
-          DT::dataTableOutput("endpoint_tbl")
+          DT::dataTableOutput("warehouse_tbl")
         )
       )
     )
@@ -79,9 +79,9 @@ clusters_and_endpoints_widget <- function() {
       ignoreNULL = FALSE
     )
 
-    endpoints <- shiny::eventReactive(input$refresh,
+    warehouses <- shiny::eventReactive(input$refresh,
       {
-        get_endpoint_infos()
+        get_warehouse_infos()
       },
       ignoreNULL = FALSE
     )
@@ -95,9 +95,9 @@ clusters_and_endpoints_widget <- function() {
       options = list(dom = "ft", pageLength = 10)
     )
 
-    output$endpoint_tbl <- DT::renderDataTable(
+    output$warehouse_tbl <- DT::renderDataTable(
       {
-        endpoints()[, -1]
+        warehouses()[, -1]
       },
       selection = "single",
       options = list(dom = "ft", pageLength = 10)
@@ -111,7 +111,7 @@ clusters_and_endpoints_widget <- function() {
     })
     shiny::observe({
       last_selected_id(
-        list(type = "endpoint", id = endpoints()$id[input$endpoint_tbl_rows_selected])
+        list(type = "warehouse", id = warehouses()$id[input$warehouse_tbl_rows_selected])
       )
     })
 
@@ -124,8 +124,8 @@ clusters_and_endpoints_widget <- function() {
 
     shiny::observeEvent(input$open_in_db, {
       shiny::req(last_selected_id())
-      if (last_selected_id()$type == "endpoint") {
-        url <- paste0(Sys.getenv("DATABRICKS_HOST"), "sql/endpoints/", last_selected_id()$id)
+      if (last_selected_id()$type == "warehouse") {
+        url <- paste0(Sys.getenv("DATABRICKS_HOST"), "sql/warehouses/", last_selected_id()$id)
       } else {
         url <- paste0(Sys.getenv("DATABRICKS_HOST"), "?o=#setting/clusters/", last_selected_id()$id, "/congifuration")
       }
