@@ -2,7 +2,7 @@
 % Please edit documentation in R/warehouses.R
 \name{db_sql_global_warehouse_edit}
 \alias{db_sql_global_warehouse_edit}
-\title{Edit Global SQL warehouse Config}
+\title{Edit Global Warehouse Config}
 \usage{
 db_sql_global_warehouse_edit(
   data_access_config = list(),
@@ -35,7 +35,7 @@ warehouses.}
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \description{
-Edit Global SQL warehouse Config
+Edit Global Warehouse Config
 }
 \details{
 Important:
@@ -45,7 +45,7 @@ Important:
 }
 }
 \seealso{
-Other SQL Endpoints API: 
+Other Warehouse API: 
 \code{\link{db_sql_global_warehouse_get}()},
 \code{\link{db_sql_warehouse_create}()},
 \code{\link{db_sql_warehouse_delete}()},
@@ -56,4 +56,4 @@ Other SQL Endpoints API:
 \code{\link{db_sql_warehouse_stop}()},
 \code{\link{get_and_start_warehouse}()}
 }
-\concept{SQL Endpoints API}
+\concept{Warehouse API}

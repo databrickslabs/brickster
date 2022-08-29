@@ -2,7 +2,7 @@
 % Please edit documentation in R/warehouses.R
 \name{get_and_start_warehouse}
 \alias{get_and_start_warehouse}
-\title{Get and Start Endpoint}
+\title{Get and Start Warehouse}
 \usage{
 get_and_start_warehouse(
   id,
@@ -24,7 +24,7 @@ get_and_start_warehouse(
 \code{db_sql_warehouse_get()}
 }
 \description{
-Get and Start Endpoint
+Get and Start Warehouse
 }
 \details{
 Get information regarding a Databricks cluster. If the cluster is
@@ -33,7 +33,7 @@ inactive it will be started and wait until the cluster is active.
 \seealso{
 \code{\link[=db_sql_warehouse_get]{db_sql_warehouse_get()}} and \code{\link[=db_sql_warehouse_start]{db_sql_warehouse_start()}}.
 
-Other SQL Endpoints API: 
+Other Warehouse API: 
 \code{\link{db_sql_global_warehouse_edit}()},
 \code{\link{db_sql_global_warehouse_get}()},
 \code{\link{db_sql_warehouse_create}()},
@@ -44,5 +44,5 @@ Other SQL Endpoints API:
 \code{\link{db_sql_warehouse_start}()},
 \code{\link{db_sql_warehouse_stop}()}
 }
-\concept{Endpoint Helpers}
-\concept{SQL Endpoints API}
+\concept{Warehouse API}
+\concept{Warehouse Helpers}

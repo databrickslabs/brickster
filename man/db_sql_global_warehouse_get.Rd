@@ -2,7 +2,7 @@
 % Please edit documentation in R/warehouses.R
 \name{db_sql_global_warehouse_get}
 \alias{db_sql_global_warehouse_get}
-\title{Get Global SQL warehouse Config}
+\title{Get Global Warehouse Config}
 \usage{
 db_sql_global_warehouse_get(
   host = db_host(),
@@ -19,10 +19,10 @@ db_sql_global_warehouse_get(
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \description{
-Get Global SQL warehouse Config
+Get Global Warehouse Config
 }
 \seealso{
-Other SQL Endpoints API: 
+Other Warehouse API: 
 \code{\link{db_sql_global_warehouse_edit}()},
 \code{\link{db_sql_warehouse_create}()},
 \code{\link{db_sql_warehouse_delete}()},
@@ -33,4 +33,4 @@ Other SQL Endpoints API:
 \code{\link{db_sql_warehouse_stop}()},
 \code{\link{get_and_start_warehouse}()}
 }
-\concept{SQL Endpoints API}
+\concept{Warehouse API}

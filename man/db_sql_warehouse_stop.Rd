@@ -2,7 +2,7 @@
 % Please edit documentation in R/warehouses.R
 \name{db_sql_warehouse_stop}
 \alias{db_sql_warehouse_stop}
-\title{Stop SQL Endpoint}
+\title{Stop Warehouse}
 \usage{
 db_sql_warehouse_stop(
   id,
@@ -22,10 +22,10 @@ db_sql_warehouse_stop(
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \description{
-Stop SQL Endpoint
+Stop Warehouse
 }
 \seealso{
-Other SQL Endpoints API: 
+Other Warehouse API: 
 \code{\link{db_sql_global_warehouse_edit}()},
 \code{\link{db_sql_global_warehouse_get}()},
 \code{\link{db_sql_warehouse_create}()},
@@ -36,4 +36,4 @@ Other SQL Endpoints API:
 \code{\link{db_sql_warehouse_start}()},
 \code{\link{get_and_start_warehouse}()}
 }
-\concept{SQL Endpoints API}
+\concept{Warehouse API}

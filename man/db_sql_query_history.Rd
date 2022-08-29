@@ -2,7 +2,7 @@
 % Please edit documentation in R/query-history.R
 \name{db_sql_query_history}
 \alias{db_sql_query_history}
-\title{List SQL Endpoints Query History}
+\title{List Warehouse Query History}
 \usage{
 db_sql_query_history(
   statuses = NULL,

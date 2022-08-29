@@ -18,6 +18,7 @@ Read .netrc File
 \seealso{
 Other Databricks Authentication Helpers: 
 \code{\link{db_host}()},
-\code{\link{db_token}()}
+\code{\link{db_token}()},
+\code{\link{db_wsid}()}
 }
 \concept{Databricks Authentication Helpers}

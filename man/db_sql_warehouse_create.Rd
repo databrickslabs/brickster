@@ -2,7 +2,7 @@
 % Please edit documentation in R/warehouses.R
 \name{db_sql_warehouse_create}
 \alias{db_sql_warehouse_create}
-\title{Create SQL Endpoint}
+\title{Create Warehouse}
 \usage{
 db_sql_warehouse_create(
   name,
@@ -66,10 +66,10 @@ production workloads. The default is \code{CHANNEL_NAME_CURRENT.}}
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \description{
-Create SQL Endpoint
+Create Warehouse
 }
 \seealso{
-Other SQL Endpoints API: 
+Other Warehouse API: 
 \code{\link{db_sql_global_warehouse_edit}()},
 \code{\link{db_sql_global_warehouse_get}()},
 \code{\link{db_sql_warehouse_delete}()},
@@ -80,4 +80,4 @@ Other SQL Endpoints API:
 \code{\link{db_sql_warehouse_stop}()},
 \code{\link{get_and_start_warehouse}()}
 }
-\concept{SQL Endpoints API}
+\concept{Warehouse API}

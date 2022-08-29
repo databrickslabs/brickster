@@ -16,7 +16,16 @@
 #' @import httr2
 #' @importFrom magrittr `%>%`
 db_request <- function(endpoint, method, version = NULL, body = NULL, host, token, ...) {
-  req <- httr2::request(base_url = paste0(host, "api/", version, "/")) %>%
+
+  # if (ajax) {
+  #   api <- "ajax-api"
+  #   host <- paste0(host, "?o=", wsid)
+  # } else {
+  #   api <- "api"
+  # }
+  api <- "api"
+
+  req <- httr2::request(base_url = paste0(host, api, "/", version, "/")) %>%
     httr2::req_auth_bearer_token(token) %>%
     httr2::req_user_agent(string = "brickster") %>%
     httr2::req_url_path_append(endpoint) %>%

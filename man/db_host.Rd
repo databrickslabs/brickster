@@ -24,6 +24,7 @@ E.g. \verb{https://<prefix>.<id>.cloud.databricks.com/} is the form to follow.
 \seealso{
 Other Databricks Authentication Helpers: 
 \code{\link{db_read_netrc}()},
-\code{\link{db_token}()}
+\code{\link{db_token}()},
+\code{\link{db_wsid}()}
 }
 \concept{Databricks Authentication Helpers}
