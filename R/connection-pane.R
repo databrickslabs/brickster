@@ -62,7 +62,6 @@ brickster_actions <- function(host) {
             lang <- NULL
             format <- toupper(ifelse(ext == "ipynb", "jupyter", ext))
           }
-          print(list(path, ws_path, format, lang))
           brickster::db_workspace_import(
             file = path,
             path = ws_path,
@@ -422,7 +421,6 @@ open_workspace <- function(host = db_host(), token = db_token(), name = NULL) {
         return(columns)
       },
       previewObject = function(rowLimit, ...) {
-        print(list(...))
         preview_object(host = host, token = token, rowLimit = rowLimit, ...)
       },
       actions = brickster_actions(host),
