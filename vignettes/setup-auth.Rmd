@@ -27,10 +27,15 @@ To get started add the following to your `.Renviron`:
 
 -   `DATABRICKS_TOKEN`: Personal access token
 
+-   `DATABRICKS_WSID`: The workspace ID ([docs](https://docs.databricks.com/workspace/workspace-details.html#workspace-instance-names-urls-and-ids))
+
+`DATABRICKS_WSID` is only required for the RStudio IDE integration with the connection pane.
+
 Example of entries in `.Renviron`:
 
     DATABRICKS_HOST=https://xxxxxxx.cloud.databricks.com/
     DATABRICKS_TOKEN=dapi123456789012345678a9bc01234defg5
+    DATABRICKS_WSID=123123123123123
 
 **Note**: Recommend creating an `.Renviron` for each project. You can create `.Renviron` within your user home directory if required.
 
