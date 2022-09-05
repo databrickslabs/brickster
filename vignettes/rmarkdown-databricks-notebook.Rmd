@@ -48,21 +48,10 @@ The setup chunk of this template demonstrates how to establish connection with a
 library(brickster)
 
 # you can use Addins -> `Databricks Compute` to get and insert cluster ID
-cluster_id <- "<insert cluster id>"
-cluster_status <- brickster::get_and_start_cluster(cluster_id)
-
-# create execution context
-exec_context <- brickster::db_context_create(cluster_id = cluster_id, language = "r")
-
-# set knitr options
-knitr::opts_chunk$set(echo = TRUE)
-
-# these are databricks specific and required in order to hook into execution context on cluster
-knitr::opts_chunk$set(db_cluster_id = cluster_id)
-knitr::opts_chunk$set(db_exec_context = exec_context$id)
+brickster::setup_databricks_rmd(cluster_id = "<insert cluster id>")
 ```
 
-The setup chunk is not mandatory, but its the recommended way to start your R Markdown notebooks when using a Databricks cluster for analysis as it will:
+The setup chunk is not mandatory, but its the recommended way to start your R Markdown notebooks when using a Databricks cluster for analysis as `setup_databricks_rmd()` conveniently does the following:
 
 1.  Get the details of the specified Databricks cluster
 
@@ -72,7 +61,7 @@ The setup chunk is not mandatory, but its the recommended way to start your R Ma
 
 4.  Set the chunk options `db_cluster_id` and `db_exec_context` for the whole notebook
 
-You can choose to manually specify `db_cluster_id` and `db_exec_context` for each chunk, this would likely be tedious. There may be certain situations where a R Markdown notebook will process against more than one Databricks cluster - in these cases you can create the additional execution contexts and specify the options deliberately.
+You can choose to manually specify `db_cluster_id` and `db_exec_context` for each chunk, this would likely be tedious. There may be certain situations where a R Markdown notebook will process against more than one Databricks cluster - in these cases you can create the additional execution contexts and specify the options explicitly.
 
 ### Cluster ID
 
