@@ -114,26 +114,15 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># you can use Addins -&gt; `Databricks Compute` to get and insert cluster ID</span></span>
-<span><span class="va">cluster_id</span> <span class="op">&lt;-</span> <span class="st">"&lt;insert cluster id&gt;"</span></span>
-<span><span class="va">cluster_status</span> <span class="op">&lt;-</span> <span class="fu">brickster</span><span class="fu">::</span><span class="fu"><a href="../reference/get_and_start_cluster.html">get_and_start_cluster</a></span><span class="op">(</span><span class="va">cluster_id</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># create execution context</span></span>
-<span><span class="va">exec_context</span> <span class="op">&lt;-</span> <span class="fu">brickster</span><span class="fu">::</span><span class="fu"><a href="../reference/db_context_create.html">db_context_create</a></span><span class="op">(</span>cluster_id <span class="op">=</span> <span class="va">cluster_id</span>, language <span class="op">=</span> <span class="st">"r"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># set knitr options</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/knitr/man/opts_chunk.html" class="external-link">opts_chunk</a></span><span class="op">$</span><span class="fu">set</span><span class="op">(</span>echo <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># these are databricks specific and required in order to hook into execution context on cluster</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/knitr/man/opts_chunk.html" class="external-link">opts_chunk</a></span><span class="op">$</span><span class="fu">set</span><span class="op">(</span>db_cluster_id <span class="op">=</span> <span class="va">cluster_id</span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/knitr/man/opts_chunk.html" class="external-link">opts_chunk</a></span><span class="op">$</span><span class="fu">set</span><span class="op">(</span>db_exec_context <span class="op">=</span> <span class="va">exec_context</span><span class="op">$</span><span class="va">id</span><span class="op">)</span></span></code></pre></div>
-<p>The setup chunk is not mandatory, but its the recommended way to start your R Markdown notebooks when using a Databricks cluster for analysis as it will:</p>
+<span><span class="fu">brickster</span><span class="fu">::</span><span class="fu"><a href="../reference/setup_databricks_rmd.html">setup_databricks_rmd</a></span><span class="op">(</span>cluster_id <span class="op">=</span> <span class="st">"&lt;insert cluster id&gt;"</span><span class="op">)</span></span></code></pre></div>
+<p>The setup chunk is not mandatory, but its the recommended way to start your R Markdown notebooks when using a Databricks cluster for analysis as <code><a href="../reference/setup_databricks_rmd.html">setup_databricks_rmd()</a></code> conveniently does the following:</p>
 <ol style="list-style-type: decimal">
 <li><p>Get the details of the specified Databricks cluster</p></li>
 <li><p>Start the cluster (if inactive) and wait for the cluster to be running</p></li>
 <li><p>Establish an execution context on the specified Databricks cluster</p></li>
 <li><p>Set the chunk options <code>db_cluster_id</code> and <code>db_exec_context</code> for the whole notebook</p></li>
 </ol>
-<p>You can choose to manually specify <code>db_cluster_id</code> and <code>db_exec_context</code> for each chunk, this would likely be tedious. There may be certain situations where a R Markdown notebook will process against more than one Databricks cluster - in these cases you can create the additional execution contexts and specify the options deliberately.</p>
+<p>You can choose to manually specify <code>db_cluster_id</code> and <code>db_exec_context</code> for each chunk, this would likely be tedious. There may be certain situations where a R Markdown notebook will process against more than one Databricks cluster - in these cases you can create the additional execution contexts and specify the options explicitly.</p>
 <div class="section level3">
 <h3 id="cluster-id">Cluster ID<a class="anchor" aria-label="anchor" href="#cluster-id"></a>
 </h3>

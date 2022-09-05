@@ -43,6 +43,9 @@
     <loc>https://zacdav-db.github.io/brickster/reference/azure_attributes.html</loc>
   </url>
   <url>
+    <loc>https://zacdav-db.github.io/brickster/reference/close_workspace.html</loc>
+  </url>
+  <url>
     <loc>https://zacdav-db.github.io/brickster/reference/cluster_autoscale.html</loc>
   </url>
   <url>
@@ -361,6 +364,9 @@
     <loc>https://zacdav-db.github.io/brickster/reference/db_workspace_mkdirs.html</loc>
   </url>
   <url>
+    <loc>https://zacdav-db.github.io/brickster/reference/db_wsid.html</loc>
+  </url>
+  <url>
     <loc>https://zacdav-db.github.io/brickster/reference/dbfs_storage_info.html</loc>
   </url>
   <url>
@@ -523,6 +529,9 @@
     <loc>https://zacdav-db.github.io/brickster/reference/notebook_task.html</loc>
   </url>
   <url>
+    <loc>https://zacdav-db.github.io/brickster/reference/open_workspace.html</loc>
+  </url>
+  <url>
     <loc>https://zacdav-db.github.io/brickster/reference/pipeline_task.html</loc>
   </url>
   <url>
@@ -536,6 +545,9 @@
   </url>
   <url>
     <loc>https://zacdav-db.github.io/brickster/reference/set_lib_path.html</loc>
+  </url>
+  <url>
+    <loc>https://zacdav-db.github.io/brickster/reference/setup_databricks_rmd.html</loc>
   </url>
   <url>
     <loc>https://zacdav-db.github.io/brickster/reference/spark_jar_task.html</loc>
