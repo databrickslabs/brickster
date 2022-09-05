@@ -85,8 +85,8 @@ get_dbfs_items <- function(path = "/", host, token, is_file = FALSE) {
     data.frame(
       name = c("file size", "modification time"),
       type = c(
-        utils:::format.object_size(items$file_size, "auto"),
-        as.character(as.POSIXct(1661687817000/1000, origin = "1970-01-01", tz = "UTC"))
+        base::format(base::structure(items$file_size, class = "object_size"), units = "auto"),
+        as.character(as.POSIXct(items$modification_time/1000, origin = "1970-01-01", tz = "UTC"))
       )
     )
   } else {
@@ -97,6 +97,7 @@ get_dbfs_items <- function(path = "/", host, token, is_file = FALSE) {
   }
 }
 
+#' @importFrom rlang .data
 get_notebook_items <- function(path = "/", host, token, is_nb = FALSE) {
 
   items <- brickster::db_workspace_list(path = path, host = host, token = token)
@@ -114,8 +115,8 @@ get_notebook_items <- function(path = "/", host, token, is_nb = FALSE) {
       )
     })
     if (nrow(info) > 0) {
-      info <- dplyr::filter(info, type %in% c("DIRECTORY", "NOTEBOOK"))
-      info <- dplyr::mutate(info, type = dplyr::if_else(type == "NOTEBOOK", "notebook", "folder"))
+      info <- dplyr::filter(info, .data$type %in% c("DIRECTORY", "NOTEBOOK"))
+      info <- dplyr::mutate(info, type = dplyr::if_else(.data$type == "NOTEBOOK", "notebook", "folder"))
     } else {
       data.frame(name = NULL, type = NULL)
     }
@@ -127,16 +128,16 @@ get_notebook_items <- function(path = "/", host, token, is_nb = FALSE) {
 
 get_clusters <- function(host, token) {
   clusters <- brickster::db_cluster_list(host = host, token = token)
-  purrr:::map_dfr(clusters, function(x) {
+  purrr::map_dfr(clusters, function(x) {
     status <- dplyr::case_when(
-      x$state == "PENDING"     ~ "🟡",
-      x$state == "RUNNING"     ~ "🟢",
-      x$state == "RESTARTING"  ~ "🔄",
-      x$state == "RESIZING"    ~ "🔄",
-      x$state == "TERMINATING" ~ "🔴",
-      x$state == "TERMINATED"  ~ "⚪️",
-      x$state == "ERROR"       ~ "⚠️",
-      x$state == "UNKNOWN"     ~ "❓"
+      x$state == "PENDING"     ~ "\U0001f7e1",
+      x$state == "RUNNING"     ~ "\U0001f7e2",
+      x$state == "RESTARTING"  ~ "\U0001f504",
+      x$state == "RESIZING"    ~ "\U0001f504",
+      x$state == "TERMINATING" ~ "\U0001f534",
+      x$state == "TERMINATED"  ~ "\u26aa\ufe0f",
+      x$state == "ERROR"       ~ "\u26a0️",
+      x$state == "UNKNOWN"     ~ "\u2753"
     )
     list(
       name = as.character(glue::glue("{status}{x$cluster_name} ({x$cluster_id})")),
@@ -168,14 +169,14 @@ get_cluster <- function(id, host, token) {
 
 get_warehouses <- function(host, token) {
   warehouses <- brickster::db_sql_warehouse_list(host = host, token = token)
-  purrr:::map_dfr(warehouses, function(x) {
+  purrr::map_dfr(warehouses, function(x) {
     status <- dplyr::case_when(
-      x$state == "STARTING" ~ "🟡",
-      x$state == "RUNNING"  ~ "🟢",
-      x$state == "STOPPING" ~ "🔴",
-      x$state == "STOPPED"  ~ "⚪️",
-      x$state == "DELETING" ~ "🔴️",
-      x$state == "DELETED"  ~ "🔴"
+      x$state == "STARTING" ~ "",
+      x$state == "RUNNING"  ~ "\U0001f7e2",
+      x$state == "STOPPING" ~ "\U0001f534",
+      x$state == "STOPPED"  ~ "\u26aa\ufe0f",
+      x$state == "DELETING" ~ "\U0001f534",
+      x$state == "DELETED"  ~ "\U0001f534"
     )
     list(
       name = as.character(glue::glue("{status}{x$name} ({x$id})")),
@@ -370,6 +371,7 @@ preview_object <- function(host, token, rowLimit,
 #' \dontrun{
 #' open_workspace(host = db_host(), token = db_token, name = "MyWorkspace")
 #' }
+#' @importFrom glue glue
 open_workspace <- function(host = db_host(), token = db_token(), name = NULL) {
   observer <- getOption("connectionObserver")
   if (!is.null(observer)) {

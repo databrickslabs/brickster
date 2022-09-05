@@ -23,10 +23,12 @@ Imports:
     curl,
     data.table,
     dplyr,
+    glue,
     httr2,
     jsonlite,
     magrittr,
-    purrr
+    purrr,
+    rlang
 Suggests: 
     testthat (>= 3.0.0),
     DT,
