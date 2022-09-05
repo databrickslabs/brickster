@@ -26,6 +26,8 @@
 #' warehouses for the workspace. If Serverless SQL warehouses are disabled for the
 #' workspace, the default is `FALSE` If Serverless SQL warehouses are enabled for
 #' the workspace, the default is `TRUE`.
+#' @param disable_uc If `TRUE` will use Hive Metastore (HMS). If `FALSE`
+#' (default), then it will be enabled for Unity Catalog (UC).
 #' @param channel Whether to use the current SQL warehouse compute version or the
 #' preview version. Databricks does not recommend using preview versions for
 #' production workloads. The default is `CHANNEL_NAME_CURRENT.`
@@ -46,6 +48,7 @@ db_sql_warehouse_create <- function(name,
                                    spot_instance_policy = c("COST_OPTIMIZED", "RELIABILITY_OPTIMIZED"),
                                    enable_photon = TRUE,
                                    enable_serverless_compute = NULL,
+                                   disable_uc = FALSE,
                                    channel = c("CHANNEL_NAME_CURRENT", "CHANNEL_NAME_PREVIEW"),
                                    host = db_host(), token = db_token(),
                                    perform_request = TRUE) {
@@ -69,6 +72,7 @@ db_sql_warehouse_create <- function(name,
     spot_instance_policy = spot_instance_policy,
     enable_photon = enable_photon,
     enable_serverless_compute = enable_serverless_compute,
+    disable_uc = disable_uc,
     channel = list(name = channel)
   )
 

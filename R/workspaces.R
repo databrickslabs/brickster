@@ -196,7 +196,7 @@ db_workspace_import <- function(path,
     # contents must be base64 encoded string
     body$content <- base64enc::base64encode(base::charToRaw(content))
   } else if (!is.null(file)) {
-    body$data <- curl::form_file(path = file)
+    body$content <- curl::form_file(path = file)
   } else {
     stop(cli::format_error(c(
       "Nothing to upload:",

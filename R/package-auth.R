@@ -58,6 +58,32 @@ db_token <- function() {
   token
 }
 
+#' Fetch Databricks Workspace ID
+#'
+#' @description
+#' Workspace ID, optionally specificied to make connections pane more powerful.
+#' Specified as an environment variable `DATABRICKS_WSID`.
+#'
+#' Refer to [api authentication docs](https://docs.databricks.com/dev-tools/api/latest/authentication.html)
+#'
+#' @family Databricks Authentication Helpers
+#'
+#' @return databricks workspace ID
+#' @import cli
+#' @export
+db_wsid <- function() {
+  token <- Sys.getenv("DATABRICKS_WSID")
+
+  if (token == "") {
+    stop(cli::format_error(c(
+      "`DATABRICKS_WSID` not found in `.Renviron`:",
+      "x" = "Need to specify `DATABRICKS_WSID` within `.Renviron` file."
+    )))
+  }
+
+  token
+}
+
 
 #' Read .netrc File
 #'

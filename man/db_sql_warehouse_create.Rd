@@ -2,7 +2,7 @@
 % Please edit documentation in R/warehouses.R
 \name{db_sql_warehouse_create}
 \alias{db_sql_warehouse_create}
-\title{Create SQL Endpoint}
+\title{Create Warehouse}
 \usage{
 db_sql_warehouse_create(
   name,
@@ -14,6 +14,7 @@ db_sql_warehouse_create(
   spot_instance_policy = c("COST_OPTIMIZED", "RELIABILITY_OPTIMIZED"),
   enable_photon = TRUE,
   enable_serverless_compute = NULL,
+  disable_uc = FALSE,
   channel = c("CHANNEL_NAME_CURRENT", "CHANNEL_NAME_PREVIEW"),
   host = db_host(),
   token = db_token(),
@@ -54,6 +55,9 @@ warehouses for the workspace. If Serverless SQL warehouses are disabled for the
 workspace, the default is \code{FALSE} If Serverless SQL warehouses are enabled for
 the workspace, the default is \code{TRUE}.}
 
+\item{disable_uc}{If \code{TRUE} will use Hive Metastore (HMS). If \code{FALSE}
+(default), then it will be enabled for Unity Catalog (UC).}
+
 \item{channel}{Whether to use the current SQL warehouse compute version or the
 preview version. Databricks does not recommend using preview versions for
 production workloads. The default is \code{CHANNEL_NAME_CURRENT.}}
@@ -66,10 +70,10 @@ production workloads. The default is \code{CHANNEL_NAME_CURRENT.}}
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \description{
-Create SQL Endpoint
+Create Warehouse
 }
 \seealso{
-Other SQL Endpoints API: 
+Other Warehouse API: 
 \code{\link{db_sql_global_warehouse_edit}()},
 \code{\link{db_sql_global_warehouse_get}()},
 \code{\link{db_sql_warehouse_delete}()},
@@ -80,4 +84,4 @@ Other SQL Endpoints API:
 \code{\link{db_sql_warehouse_stop}()},
 \code{\link{get_and_start_warehouse}()}
 }
-\concept{SQL Endpoints API}
+\concept{Warehouse API}

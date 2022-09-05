@@ -228,8 +228,7 @@ db_cluster_edit <- function(cluster_id,
 
   # NOTES:
   # edit is annoying and requires node size/spark version for edit even if
-  # they aren't being changed from exisisting config
-
+  # they aren't being changed from existing config
 
   # input checks
   # - cloud_attrs must be of class AwsAttributes or AzureAttributes

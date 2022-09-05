@@ -2,7 +2,7 @@
 % Please edit documentation in R/warehouses.R
 \name{db_sql_warehouse_edit}
 \alias{db_sql_warehouse_edit}
-\title{Edit SQL Endpoint}
+\title{Edit Warehouse}
 \usage{
 db_sql_warehouse_edit(
   id,
@@ -69,14 +69,14 @@ production workloads. The default is \code{CHANNEL_NAME_CURRENT.}}
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \description{
-Edit SQL Endpoint
+Edit Warehouse
 }
 \details{
 Modify a SQL warehouse. All fields are optional. Missing fields
 default to the current values.
 }
 \seealso{
-Other SQL Endpoints API: 
+Other Warehouse API: 
 \code{\link{db_sql_global_warehouse_edit}()},
 \code{\link{db_sql_global_warehouse_get}()},
 \code{\link{db_sql_warehouse_create}()},
@@ -87,4 +87,4 @@ Other SQL Endpoints API:
 \code{\link{db_sql_warehouse_stop}()},
 \code{\link{get_and_start_warehouse}()}
 }
-\concept{SQL Endpoints API}
+\concept{Warehouse API}

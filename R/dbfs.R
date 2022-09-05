@@ -253,7 +253,7 @@ db_dbfs_list <- function(path,
   )
 
   if (perform_request) {
-    db_perform_request(req, simplifyDataFrame = T)
+    db_perform_request(req, simplifyDataFrame = T)$files
   } else {
     req
   }
