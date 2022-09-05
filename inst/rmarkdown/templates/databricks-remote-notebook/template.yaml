@@ -1,4 +1,4 @@
-name: Datebricks Remote Notebook
+name: Databricks Remote Notebook
 description: >
    Notebook with code to enable execution against a Databricks Cluster
 create_dir: FALSE

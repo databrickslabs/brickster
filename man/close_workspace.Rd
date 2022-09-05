@@ -7,7 +7,7 @@
 close_workspace(host = db_host())
 }
 \arguments{
-\item{host}{TODO}
+\item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 }
 \description{
 Close Databricks Workspace Connection

@@ -361,9 +361,8 @@ preview_object <- function(host, token, rowLimit,
 
 #' Connect to Databricks Workspace
 #'
-#' @param host TODO
-#' @param token TODO
-#' @param name TODO
+#' @inheritParams auth_params
+#' @param name Desired name to assign the connection
 #'
 #' @export
 #'
@@ -431,7 +430,7 @@ open_workspace <- function(host = db_host(), token = db_token(), name = NULL) {
 
 #' Close Databricks Workspace Connection
 #'
-#' @param host TODO
+#' @inheritParams auth_params
 #'
 #' @export
 #'
@@ -480,6 +479,3 @@ list_objects_types <- function() {
     ))
   )
 }
-
-close_workspace()
-open_workspace(name = "E2 Field Eng Demo")
