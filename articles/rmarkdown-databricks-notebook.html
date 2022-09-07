@@ -184,7 +184,7 @@
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="st">```</span><span class="dt">{databricks_r}</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a><span class="dt"># no syntax highlighting</span></span>
 <span id="cb3-3"><a href="#cb3-3"></a><span class="dt">library(ggplot2)</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a><span class="dt">ggplot(mpg, aes(displ, hwy, colour = class)) + </span></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="dt">ggplot(mpg, aes(disp, hwy, colour = class)) + </span></span>
 <span id="cb3-5"><a href="#cb3-5"></a><span class="dt">  geom_point()</span></span>
 <span id="cb3-6"><a href="#cb3-6"></a><span class="st">```</span></span></code></pre></div>
 <p>Want to use SQL instead? No problem.</p>
@@ -208,13 +208,13 @@
 <p>The graphic will be rendered on the remote Databricks cluster and then downloaded locally to present in the R Markdown notebook.</p>
 <pre><code>```{sql, engine = "databricks_sql", keep_as = "tables"}
 library(ggplot2)
-ggplot(mpg, aes(displ, hwy, colour = class)) + 
+ggplot(mpg, aes(disp, hwy, colour = class)) + 
   geom_point()
 ```</code></pre>
 <div class="section level4">
 <h4 id="interactive-content">Interactive Content<a class="anchor" aria-label="anchor" href="#interactive-content"></a>
 </h4>
-<p>Databricks notebooks support rendering HTML in their outputs, this works best for Python. R’s preferred way of rendering HTML using <a href="https://github.com/ramnathv/htmlwidgets" class="external-link">htmlwidgets</a> requires a work-around to function on Databricks.Below is an example of interactive content that is generated on a remote Databricks cluster and then presented in the local R Markdown notebook.</p>
+<p>Databricks notebooks support rendering HTML in their outputs, this works best for Python. R’s preferred way of rendering HTML using <a href="https://github.com/ramnathv/htmlwidgets" class="external-link">htmlwidgets</a> requires a work-around to function on Databricks. Below is an example of interactive content that is generated on a remote Databricks cluster and then presented in the local R Markdown notebook.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="st">```</span><span class="dt">{python, engine = "databricks_py"}</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a><span class="dt">import folium</span></span>
 <span id="cb7-3"><a href="#cb7-3"></a><span class="dt">m = folium.Map(location=[45.5236, -122.6750])</span></span>

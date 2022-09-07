@@ -95,10 +95,13 @@
 <ul>
 <li><p><code>DATABRICKS_HOST</code>: The workspace URL</p></li>
 <li><p><code>DATABRICKS_TOKEN</code>: Personal access token</p></li>
+<li><p><code>DATABRICKS_WSID</code>: The workspace ID (<a href="https://docs.databricks.com/workspace/workspace-details.html#workspace-instance-names-urls-and-ids" class="external-link">docs</a>)</p></li>
 </ul>
+<p><code>DATABRICKS_WSID</code> is only required for the RStudio IDE integration with the connection pane.</p>
 <p>Example of entries in <code>.Renviron</code>:</p>
 <pre><code>DATABRICKS_HOST=https://xxxxxxx.cloud.databricks.com/
-DATABRICKS_TOKEN=dapi123456789012345678a9bc01234defg5</code></pre>
+DATABRICKS_TOKEN=dapi123456789012345678a9bc01234defg5
+DATABRICKS_WSID=123123123123123</code></pre>
 <p><strong>Note</strong>: Recommend creating an <code>.Renviron</code> for each project. You can create <code>.Renviron</code> within your user home directory if required.</p>
 <p>Restarting your R session will allow those variable to be picked up via the <a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> package.</p>
 </div>
