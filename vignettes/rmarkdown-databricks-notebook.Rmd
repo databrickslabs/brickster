@@ -107,7 +107,7 @@ The advantage of the first way is that chunks will have the proper syntax highli
 `r ''````{databricks_r}
 # no syntax highlighting
 library(ggplot2)
-ggplot(mpg, aes(displ, hwy, colour = class)) + 
+ggplot(mpg, aes(disp, hwy, colour = class)) + 
   geom_point()
 ```
 ````
@@ -140,13 +140,13 @@ The graphic will be rendered on the remote Databricks cluster and then downloade
 
     `r ''````{sql, engine = "databricks_sql", keep_as = "tables"}
     library(ggplot2)
-    ggplot(mpg, aes(displ, hwy, colour = class)) + 
+    ggplot(mpg, aes(disp, hwy, colour = class)) + 
       geom_point()
     ```
 
 #### Interactive Content
 
-Databricks notebooks support rendering HTML in their outputs, this works best for Python. R's preferred way of rendering HTML using `{htmlwidgets}` requires a work-around to function on Databricks.Below is an example of interactive content that is generated on a remote Databricks cluster and then presented in the local R Markdown notebook.
+Databricks notebooks support rendering HTML in their outputs, this works best for Python. R's preferred way of rendering HTML using `{htmlwidgets}` requires a work-around to function on Databricks. Below is an example of interactive content that is generated on a remote Databricks cluster and then presented in the local R Markdown notebook.
 
 ```` r
 `r ''````{python, engine = "databricks_py"}
