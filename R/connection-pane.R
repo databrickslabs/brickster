@@ -330,18 +330,21 @@ preview_object <- function(host, token, rowLimit,
   }
 
   if (!is.null(notebook)) {
-    # export notebook as source
+    # export notebook as ipynb
     content <- brickster::db_workspace_export(
       path = paste0(path, "/", notebook),
-      format = "SOURCE"
+      format = "JUPYTER"
     )
 
     # save to temporary directory and open
     dir <- tempdir()
     content_text <- rawToChar(base64enc::base64decode(content$content))
     nb_path <- file.path(dir, paste(notebook, content$file_type, sep = "."))
+    rmd_path <- file.path(dir, paste(notebook, "rmd", sep = "."))
     base::writeLines(content_text, con = nb_path)
-    rstudioapi::navigateToFile(file = nb_path)
+    rmarkdown::convert_ipynb(input = nb_path, output = rmd_path)
+    rstudioapi::navigateToFile(file = rmd_path)
+
   }
 
   if (!is.null(files)) {
