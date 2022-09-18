@@ -10,7 +10,9 @@ coverage](https://codecov.io/gh/zacdav-db/brickster/branch/main/graph/badge.svg)
 
 -   Providing 1:1 bindings to relevant Databricks API's
 
--   Mechanism to use Rmarkdown as a Databricks notebook
+-   Use Rmarkdown as a Databricks notebook
+
+-   Integrate with RStudio Connections Pane (`open_workspace()`)
 
 -   Utility functions to streamline workloads
 
@@ -40,11 +42,12 @@ Please read the vignette, you can open it by running `vignette("setup-auth", pac
 | [Query History](https://docs.databricks.com/sql/api/query-history.html)                                              | Yes       | 2.0     |
 | [Jobs](https://docs.databricks.com/dev-tools/api/latest/jobs.html)                                                   | Yes       | 2.1     |
 | [REST 1.2 Commands](https://docs.databricks.com/dev-tools/api/1.2/index.html)                                        | Partially | 1.2     |
-| [Tokens](https://docs.databricks.com/dev-tools/api/latest/tokens.html)                                               | Later     | 2.0     |
-| [Delta Live Tables](https://docs.databricks.com/data-engineering/delta-live-tables/delta-live-tables-api-guide.html) | Later     | 2.0     |
+| [Unity Catalog](https://api-docs.databricks.com/rest/latest/unity-catalog-api-specification-2-1.html)                | Partially | 2.1     |
+| [Tokens](https://docs.databricks.com/dev-tools/api/latest/tokens.html)                                               | Undecided | 2.0     |
+| [Delta Live Tables](https://docs.databricks.com/data-engineering/delta-live-tables/delta-live-tables-api-guide.html) | Undecided | 2.0     |
 | mlflow webhooks (Private Preview)                                                                                    | Later     | 2.0     |
-| [Queries & Dashboards](https://docs.databricks.com/sql/api/queries-dashboards.html)                                  | Later     | 2.0     |
-| [Instance Pools](https://docs.databricks.com/dev-tools/api/latest/instance-pools.html)                               | Later     | 2.0     |
+| [Queries & Dashboards](https://docs.databricks.com/sql/api/queries-dashboards.html)                                  | Undecided | 2.0     |
+| [Instance Pools](https://docs.databricks.com/dev-tools/api/latest/instance-pools.html)                               | Undecided | 2.0     |
 | mlflow OSS                                                                                                           | Undecided | 2.0     |
 | [Cluster Policies](https://docs.databricks.com/dev-tools/api/latest/policies.html)                                   | Never     | 2.0     |
 | [Permissions](https://docs.databricks.com/dev-tools/api/latest/permissions.html)                                     | Never     | 2.0     |
