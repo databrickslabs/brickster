@@ -26,7 +26,7 @@ db_mlflow_registered_model_details <- function(name,
   )
 
   if (perform_request) {
-    db_perform_request(req)
+    db_perform_request(req)[[1]]
   } else {
     req
   }
@@ -386,4 +386,91 @@ db_mlflow_model_version_comment_delete <- function(id,
     req
   }
 
+}
+
+# undocumented endpoints
+db_mlflow_registered_models_list <- function(max_results = 100,
+                                             page_token = NULL,
+                                             host = db_host(), token = db_token(),
+                                             perform_request = TRUE) {
+
+  body <- list(
+    max_results = max_results,
+    page_token = page_token
+  )
+
+  req <- db_request(
+    endpoint = "mlflow/registered-models/list",
+    method = "GET",
+    version = "2.0",
+    body = body,
+    host = host,
+    token = token
+  )
+
+  if (perform_request) {
+    db_perform_request(req)
+  } else {
+    req
+  }
+}
+
+db_mlflow_registered_models_search <- function(filter = NULL,
+                                               max_results = 100,
+                                               order_by = list(),
+                                               page_token = NULL,
+                                               host = db_host(), token = db_token(),
+                                               perform_request = TRUE) {
+
+  body <- list(
+    filter = filter,
+    max_results = max_results,
+    page_token = page_token,
+    order_by = order_by
+  )
+
+  req <- db_request(
+    endpoint = "mlflow/registered-models/search",
+    method = "GET",
+    version = "2.0",
+    body = body,
+    host = host,
+    token = token
+  )
+
+  if (perform_request) {
+    db_perform_request(req)
+  } else {
+    req
+  }
+}
+
+db_mlflow_registered_models_search_versions <- function(name,
+                                                        max_results = 10000,
+                                                        order_by = list(),
+                                                        page_token = NULL,
+                                                        host = db_host(), token = db_token(),
+                                                        perform_request = TRUE) {
+
+  body <- list(
+    filter = paste0("name='", name, "'"),
+    max_results = max_results,
+    page_token = page_token,
+    order_by = order_by
+  )
+
+  req <- db_request(
+    endpoint = "mlflow/model-versions/search",
+    method = "GET",
+    version = "2.0",
+    body = body,
+    host = host,
+    token = token
+  )
+
+  if (perform_request) {
+    db_perform_request(req)$model_versions
+  } else {
+    req
+  }
 }

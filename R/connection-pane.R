@@ -1,3 +1,7 @@
+# BACKLOG:
+# - can only return so many objects at once, how to paginate via UI?
+#   - impacts experiments, model registry, etc.
+
 brickster_actions <- function(host) {
   list(
     Workspace = list(
@@ -126,6 +130,196 @@ get_notebook_items <- function(path = "/", host, token, is_nb = FALSE) {
 
 }
 
+get_catalogs <- function(host, token) {
+  catalogs <- brickster:::db_uc_catalogs_list(host = host, token = token)
+  data.frame(
+    name = purrr::map_chr(catalogs, "name"),
+    type = "catalog"
+  )
+  if (length(catalogs) > 0) {
+    data.frame(
+      name = purrr::map_chr(catalogs, "name"),
+      type = "catalog"
+    )
+  } else {
+    data.frame(name = NULL, type = NULL)
+  }
+}
+
+get_schemas <- function(catalog, host, token) {
+  schemas <- brickster:::db_uc_schemas_list(
+    catalog = catalog,
+    host = host,
+    token = token
+  )
+  if (length(schemas) > 0) {
+    data.frame(
+      name = purrr::map_chr(schemas, "name"),
+      type = "schema"
+    )
+  } else {
+    data.frame(name = NULL, type = NULL)
+  }
+}
+
+get_tables <- function(catalog, schema, host, token) {
+  tables <- brickster:::db_uc_tables_list(
+    catalog = catalog,
+    schema = schema,
+    host = host,
+    token = token
+  )
+  if (length(tables) > 0) {
+    data.frame(
+      name = purrr::map_chr(tables, "name"),
+      type = "table"
+    )
+  } else {
+    data.frame(name = NULL, type = NULL)
+  }
+}
+
+get_table_data <- function(catalog, schema, table, host, token, metadata = TRUE) {
+  # if metadata is TRUE then return metadata, otherwise columns
+  tbl <- brickster:::db_uc_tables_get(
+    catalog = catalog,
+    schema = schema,
+    table = table,
+    host = host,
+    token = token,
+  )
+  if (metadata) {
+    print(tbl)
+    print("-----")
+    if (tbl$table_type == "VIEW") {
+      info <- list(
+        "table type" = tbl$table_type,
+        "view definition" = tbl$view_definition,
+        "full name" = tbl$full_name,
+        "owner" = tbl$owner,
+        "created at" = as.character(as.POSIXct(tbl$created_at/1000, origin = "1970-01-01", tz = "UTC")),
+        "created by" = tbl$created_by,
+        "updated at" = as.character(as.POSIXct(tbl$updated_at/1000, origin = "1970-01-01", tz = "UTC")),
+        "updated by" = tbl$updated_by
+      )
+    } else {
+      info <- list(
+        "table type" = tbl$table_type,
+        "data source format" = tbl$data_source_format,
+        "full name" = tbl$full_name,
+        "owner" = tbl$owner,
+        "storage location" = tbl$storage_location,
+        "created at" = as.character(as.POSIXct(tbl$created_at/1000, origin = "1970-01-01", tz = "UTC")),
+        "created by" = tbl$created_by,
+        "updated at" = as.character(as.POSIXct(tbl$updated_at/1000, origin = "1970-01-01", tz = "UTC")),
+        "updated by" = tbl$updated_by,
+        "last commit at" = as.character(as.POSIXct(as.numeric(tbl$properties$delta.lastCommitTimestamp)/1000, origin = "1970-01-01", tz = "UTC")),
+        "min reader version" = tbl$properties$delta.minReaderVersion,
+        "min writer version" = tbl$properties$delta.minWriterVersion
+      )
+    }
+    print(info)
+    print("-----")
+  } else {
+    info <- purrr::map_chr(tbl$columns, function(x) {
+      paste0(x$type_name, " (nullable: ", x$nullable, ")")
+    })
+    names(info) <- purrr::map_chr(tbl$columns, "name")
+  }
+
+  data.frame(
+    name = names(info),
+    type = unname(unlist(info))
+  )
+
+}
+
+
+get_models <- function(host, token) {
+  models <- brickster:::db_mlflow_registered_models_list(
+    max_results = 1000,
+    host = host,
+    token = token
+  )
+  models <- models$registered_models
+  data.frame(
+    name = purrr::map_chr(models, "name"),
+    type = "model"
+  )
+}
+
+get_model_metadata <- function(id, host, token) {
+  model <- brickster:::db_mlflow_registered_model_details(
+    name = id,
+    host = host,
+    token = token
+  )
+
+  info <- list(
+    "name" = model$name,
+    "latest version" = model$latest_versions[[1]]$version,
+    "user id" = model$user_id,
+    "created at" = as.character(as.POSIXct(model$creation_timestamp/1000, origin = "1970-01-01", tz = "UTC")),
+    "last updated" = as.character(as.POSIXct(model$last_updated_timestamp/1000, origin = "1970-01-01", tz = "UTC")),
+    "permissions" = model$permission_level,
+    "id" = model$id
+  )
+
+  data.frame(
+    name = names(info),
+    type = unname(unlist(info))
+  )
+}
+
+get_model_versions <- function(id, host, token, version = NULL) {
+
+  # if version is NULL get all, otherwise specific versions
+  versions <- brickster:::db_mlflow_registered_models_search_versions(
+    name = id,
+    host = host,
+    token = token
+  )
+
+  version_names <- purrr::map_chr(versions, function(x) {
+    if (x$current_stage == "None") {
+      x$version
+    } else {
+      paste0(x$version, " (", x$current_stage, ")")
+    }
+  })
+
+  if (is.null(version)) {
+
+    res <- data.frame(
+      name = version_names,
+      type = "version"
+    )
+
+  } else {
+
+    version_meta <- versions[[which(version_names == version)]]
+
+    info <- list(
+      "current stage" = version_meta$current_stage,
+      "created at" = as.character(as.POSIXct(version_meta$creation_timestamp/1000, origin = "1970-01-01", tz = "UTC")),
+      "last updated" = as.character(as.POSIXct(version_meta$last_updated_timestamp/1000, origin = "1970-01-01", tz = "UTC")),
+      "user id" = version_meta$user_id,
+      "source" = version_meta$source,
+      "run id" = version_meta$run_id,
+      "status" = version_meta$status
+    )
+
+    res <- data.frame(
+      name = names(info),
+      type = unname(unlist(info))
+    )
+
+  }
+
+  res
+
+}
+
 get_clusters <- function(host, token) {
   clusters <- brickster::db_cluster_list(host = host, token = token)
   purrr::map_dfr(clusters, function(x) {
@@ -213,7 +407,65 @@ list_objects <- function(host, token,
                          folder = NULL,
                          clusters = NULL,
                          warehouses = NULL,
+                         metastore = NULL,
+                         catalog = NULL,
+                         schema = NULL,
+                         table = NULL,
+                         modelregistry = NULL,
+                         model = NULL,
+                         versions = NULL,
+                         featurestore = NULL,
+                         experiments = NULL,
                          ...) {
+
+  # uc metastore
+  if (!is.null(metastore)) {
+
+    if (!is.null(table)) {
+      objects <- data.frame(
+        name = c("metadata", "columns"),
+        type = c("metadata", "columns")
+      )
+      return(objects)
+    }
+
+    if (!is.null(schema)) {
+      objects <- get_tables(catalog = catalog, schema = schema, host = host, token = token)
+      return(objects)
+    }
+
+    if (!is.null(catalog)) {
+      objects <- get_schemas(catalog = catalog, host = host, token = token)
+      return(objects)
+    }
+
+    # catch all, return catalogs
+    objects <- get_catalogs(host = host, token = token)
+    return(objects)
+
+  }
+
+  # model registry
+  if (!is.null(modelregistry)) {
+
+    if (!is.null(versions)) {
+      objects <- get_model_versions(id = model, host = host, token = token)
+      return(objects)
+    }
+
+    if (!is.null(model)) {
+      objects <- data.frame(
+        name = c("metadata", "versions"),
+        type = c("metadata", "versions")
+      )
+      return(objects)
+    }
+
+    # catch all to return models
+    objects <- get_models(host = host, token = token)
+    return(objects)
+
+  }
 
   # clusters
   if (!is.null(clusters)) {
@@ -249,8 +501,8 @@ list_objects <- function(host, token,
 
   # baseline view (static)
   data.frame(
-    name = c("Clusters", "SQL Warehouses", "File System (DBFS)", "Workspace (Notebooks)"),
-    type = c("clusters", "warehouses", "dbfs", "notebooks")
+    name = c("Data", "Model Registry", "Experiments", "Feature Store", "Clusters", "SQL Warehouses", "File System (DBFS)", "Workspace (Notebooks)"),
+    type = c("metastore", "modelregistry", "experiments", "featurestore", "clusters", "warehouses", "dbfs", "notebooks")
   )
 
 }
@@ -260,6 +512,9 @@ list_columns <- function(host, token, path = "", ...) {
   dots <- list(...)
   leaf <- dots[length(dots)]
   leaf_type <- names(leaf)
+
+  print(list(dots = dots, leaf = leaf, leaf_type = leaf_type))
+  print("----")
 
   # for clusters and warehouses things are simple
   if (leaf_type == "cluster") {
@@ -296,6 +551,30 @@ list_columns <- function(host, token, path = "", ...) {
       host = host,
       token = token,
       is_nb = TRUE
+    )
+  }
+
+  if ("model" %in% names(dots)) {
+    if (leaf_type == "metadata") {
+      info <- get_model_metadata(id = dots$model, host = host, token = token)
+    } else if (leaf_type == "version") {
+      info <- get_model_versions(
+        id = dots$model,
+        version = leaf$version,
+        host = host,
+        token = token
+      )
+    }
+  }
+
+  if ("table" %in% names(dots)) {
+    info <- get_table_data(
+      catalog = dots$catalog,
+      schema = dots$schema,
+      table = dots$table,
+      host = host,
+      token = token,
+      metadata = leaf_type == "metadata"
     )
   }
 
@@ -416,7 +695,16 @@ open_workspace <- function(host = db_host(), token = db_token(), name = NULL) {
           warehouses = dots$warehouses,
           clusters = dots$clusters,
           dbfs = dots$dbfs,
-          notebooks = dots$notebooks
+          notebooks = dots$notebooks,
+          metastore = dots$metastore,
+          catalog = dots$catalog,
+          schema = dots$schema,
+          table = dots$table,
+          featurestore = dots$featurestore,
+          experiments = dots$experiments,
+          modelregistry = dots$modelregistry,
+          model = dots[["model"]],
+          versions = dots$versions
         )
         return(objects)
       },
@@ -458,6 +746,30 @@ list_objects_types <- function() {
           icon = system.file("icons", "magnify.png", package = "brickster"),
           contains = "data"
         )
+      )),
+      metastore = list(contains = list(
+        catalog = list(contains = list(
+          schema = list(contains = list(
+            table = list(contains = list(
+              metadata = list(contains = "data"),
+              columns = list(contains = "data")
+            ))
+          ))
+        ))
+      )),
+      experiments = list(contains = list(
+        experiment = list(contains = "data")
+      )),
+      featurestore = list(contains = list(
+        featuretable = list(contains = "data")
+      )),
+      modelregistry = list(contains = list(
+        model = list(contains = list(
+          metadata = list(contains = "data"),
+          versions = list(contains = list(
+            version = list(contains = "data")
+          ))
+        ))
       )),
       warehouses = list(contains = list(
         warehouse = list(
