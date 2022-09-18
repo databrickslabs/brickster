@@ -469,7 +469,7 @@ db_mlflow_registered_models_search_versions <- function(name,
   )
 
   if (perform_request) {
-    db_perform_request(req)$model_versions
+    db_perform_request(req)
   } else {
     req
   }

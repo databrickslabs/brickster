@@ -31,7 +31,7 @@ brickster_actions <- function(host) {
           )
         }
         if (dbfs_path != "") {
-          brickster::db_dbfs_put(
+          db_dbfs_put(
             path = dbfs_path,
             file = path,
             overwrite = TRUE
@@ -66,7 +66,7 @@ brickster_actions <- function(host) {
             lang <- NULL
             format <- toupper(ifelse(ext == "ipynb", "jupyter", ext))
           }
-          brickster::db_workspace_import(
+          db_workspace_import(
             file = path,
             path = ws_path,
             format = format,
@@ -79,12 +79,12 @@ brickster_actions <- function(host) {
   )
 }
 
-get_id_from_panel_name <- function(x, host, token) {
+get_id_from_panel_name <- function(x) {
   id <- sub(pattern = ".*\\((.*)\\)", replacement = "\\1", x = x)
 }
 
 get_dbfs_items <- function(path = "/", host, token, is_file = FALSE) {
-  items <- brickster::db_dbfs_list(path = path, host = host, token = token)
+  items <- db_dbfs_list(path = path, host = host, token = token)
   if (is_file) {
     data.frame(
       name = c("file size", "modification time"),
@@ -104,7 +104,7 @@ get_dbfs_items <- function(path = "/", host, token, is_file = FALSE) {
 #' @importFrom rlang .data
 get_notebook_items <- function(path = "/", host, token, is_nb = FALSE) {
 
-  items <- brickster::db_workspace_list(path = path, host = host, token = token)
+  items <- db_workspace_list(path = path, host = host, token = token)
 
   if (is_nb) {
     info <- data.frame(
@@ -131,7 +131,7 @@ get_notebook_items <- function(path = "/", host, token, is_nb = FALSE) {
 }
 
 get_catalogs <- function(host, token) {
-  catalogs <- brickster:::db_uc_catalogs_list(host = host, token = token)
+  catalogs <- db_uc_catalogs_list(host = host, token = token)
   data.frame(
     name = purrr::map_chr(catalogs, "name"),
     type = "catalog"
@@ -147,7 +147,7 @@ get_catalogs <- function(host, token) {
 }
 
 get_schemas <- function(catalog, host, token) {
-  schemas <- brickster:::db_uc_schemas_list(
+  schemas <- db_uc_schemas_list(
     catalog = catalog,
     host = host,
     token = token
@@ -163,7 +163,7 @@ get_schemas <- function(catalog, host, token) {
 }
 
 get_tables <- function(catalog, schema, host, token) {
-  tables <- brickster:::db_uc_tables_list(
+  tables <- db_uc_tables_list(
     catalog = catalog,
     schema = schema,
     host = host,
@@ -181,22 +181,33 @@ get_tables <- function(catalog, schema, host, token) {
 
 get_table_data <- function(catalog, schema, table, host, token, metadata = TRUE) {
   # if metadata is TRUE then return metadata, otherwise columns
-  tbl <- brickster:::db_uc_tables_get(
+  tbl <- db_uc_tables_get(
     catalog = catalog,
     schema = schema,
     table = table,
     host = host,
     token = token,
   )
+  # TODO: handle edge case errors?
   if (metadata) {
-    print(tbl)
-    print("-----")
     if (tbl$table_type == "VIEW") {
       info <- list(
         "table type" = tbl$table_type,
         "view definition" = tbl$view_definition,
         "full name" = tbl$full_name,
         "owner" = tbl$owner,
+        "created at" = as.character(as.POSIXct(tbl$created_at/1000, origin = "1970-01-01", tz = "UTC")),
+        "created by" = tbl$created_by,
+        "updated at" = as.character(as.POSIXct(tbl$updated_at/1000, origin = "1970-01-01", tz = "UTC")),
+        "updated by" = tbl$updated_by
+      )
+    } else if (tbl$data_source_format == "DELTASHARING") {
+      info <- list(
+        "table type" = tbl$table_type,
+        "data source format" = tbl$data_source_format,
+        "full name" = tbl$full_name,
+        "owner" = tbl$owner,
+        "storage location" = tbl$storage_location,
         "created at" = as.character(as.POSIXct(tbl$created_at/1000, origin = "1970-01-01", tz = "UTC")),
         "created by" = tbl$created_by,
         "updated at" = as.character(as.POSIXct(tbl$updated_at/1000, origin = "1970-01-01", tz = "UTC")),
@@ -218,8 +229,6 @@ get_table_data <- function(catalog, schema, table, host, token, metadata = TRUE)
         "min writer version" = tbl$properties$delta.minWriterVersion
       )
     }
-    print(info)
-    print("-----")
   } else {
     info <- purrr::map_chr(tbl$columns, function(x) {
       paste0(x$type_name, " (nullable: ", x$nullable, ")")
@@ -234,9 +243,38 @@ get_table_data <- function(catalog, schema, table, host, token, metadata = TRUE)
 
 }
 
+get_experiments <- function(host, token) {
+  experiments <- db_experiments_list(host = host, token = token)
+  exp_names <- purrr::map_chr(experiments, "name")
+  exp_ids <-  purrr::map_chr(experiments, "experiment_id")
+  data.frame(
+    name = paste0(gsub(".*\\/(.*)", "\\1", exp_names), " (", exp_ids, ")"),
+    type = "experiment"
+  )
+}
+
+get_experiment <- function(id, host, token) {
+  id <- get_id_from_panel_name(x = id)
+  exp <- db_experiments_get(id = id)
+
+  info <- list(
+    "name" = exp$name,
+    "experiment id" = exp$experiment_id,
+    "artifact location" = exp$artifact_location,
+    "user id" = exp$lifecycle_stage,
+    "created at" = as.character(as.POSIXct(exp$creation_time/1000, origin = "1970-01-01", tz = "UTC")),
+    "last updated" = as.character(as.POSIXct(exp$last_update_time/1000, origin = "1970-01-01", tz = "UTC"))
+  )
+
+  data.frame(
+    name = names(info),
+    type = unname(unlist(info))
+  )
+}
+
 
 get_models <- function(host, token) {
-  models <- brickster:::db_mlflow_registered_models_list(
+  models <- db_mlflow_registered_models_list(
     max_results = 1000,
     host = host,
     token = token
@@ -249,7 +287,7 @@ get_models <- function(host, token) {
 }
 
 get_model_metadata <- function(id, host, token) {
-  model <- brickster:::db_mlflow_registered_model_details(
+  model <- db_mlflow_registered_model_details(
     name = id,
     host = host,
     token = token
@@ -274,11 +312,11 @@ get_model_metadata <- function(id, host, token) {
 get_model_versions <- function(id, host, token, version = NULL) {
 
   # if version is NULL get all, otherwise specific versions
-  versions <- brickster:::db_mlflow_registered_models_search_versions(
+  versions <- db_mlflow_registered_models_search_versions(
     name = id,
     host = host,
     token = token
-  )
+  )[[1]]
 
   version_names <- purrr::map_chr(versions, function(x) {
     if (x$current_stage == "None") {
@@ -305,7 +343,8 @@ get_model_versions <- function(id, host, token, version = NULL) {
       "last updated" = as.character(as.POSIXct(version_meta$last_updated_timestamp/1000, origin = "1970-01-01", tz = "UTC")),
       "user id" = version_meta$user_id,
       "source" = version_meta$source,
-      "run id" = version_meta$run_id,
+      # can be missing, not sure worth including for now
+      # "run id" = version_meta$run_id,
       "status" = version_meta$status
     )
 
@@ -320,28 +359,62 @@ get_model_versions <- function(id, host, token, version = NULL) {
 
 }
 
+get_feature_tables <- function(host, token) {
+  tables <- db_feature_tables_search(max_results = 2000)[[1]]
+  data.frame(
+    name = purrr::map_chr(tables, "name"),
+    type = "featuretable"
+  )
+}
+
+get_feature_table <- function(table, host, token) {
+  tbl <- db_feature_tables_get(
+    feature_table = table,
+    host = host,
+    token = token
+  )
+  info <- list(
+    "description" = tbl$description,
+    "primary keys" = paste(unlist(tbl$primary_keys), collapse = ", "),
+    "created at" = as.character(as.POSIXct(tbl$creation_timestamp/1000, origin = "1970-01-01", tz = "UTC")),
+    "created by" = tbl$creator_id,
+    "last updated at" = as.character(as.POSIXct(tbl$last_updated_timestamp/1000, origin = "1970-01-01", tz = "UTC")),
+    "last updated by" = tbl$last_update_user_id,
+    "permission level" = tbl$permission_level,
+    "is imported" = tbl$is_imported
+  )
+  data.frame(
+    name = names(info),
+    type = unname(unlist(info))
+  )
+}
+
+get_feature_table_columns <- function(table, host, token) {
+  features <- db_feature_table_features(
+    feature_table = table,
+    host = host,
+    token = token
+  )
+
+  data.frame(
+    name = purrr::map_chr(features, "name"),
+    type = purrr::map_chr(features, "data_type")
+  )
+
+}
+
 get_clusters <- function(host, token) {
-  clusters <- brickster::db_cluster_list(host = host, token = token)
+  clusters <- db_cluster_list(host = host, token = token)
   purrr::map_dfr(clusters, function(x) {
-    status <- dplyr::case_when(
-      x$state == "PENDING"     ~ "\U0001f7e1",
-      x$state == "RUNNING"     ~ "\U0001f7e2",
-      x$state == "RESTARTING"  ~ "\U0001f504",
-      x$state == "RESIZING"    ~ "\U0001f504",
-      x$state == "TERMINATING" ~ "\U0001f534",
-      x$state == "TERMINATED"  ~ "\u26aa\ufe0f",
-      x$state == "ERROR"       ~ "\u26a0️",
-      x$state == "UNKNOWN"     ~ "\u2753"
-    )
     list(
-      name = as.character(glue::glue("{status}{x$cluster_name} ({x$cluster_id})")),
+      name = as.character(glue::glue("[{x$state}] {x$cluster_name} ({x$cluster_id})")),
       type = "cluster"
     )
   })
 }
 
 get_cluster <- function(id, host, token) {
-  x <- brickster::db_cluster_get(id, host, token)
+  x <- db_cluster_get(id, host, token)
   info <- list(
     "name" = x$cluster_name,
     "id" = id,
@@ -362,25 +435,17 @@ get_cluster <- function(id, host, token) {
 }
 
 get_warehouses <- function(host, token) {
-  warehouses <- brickster::db_sql_warehouse_list(host = host, token = token)
+  warehouses <- db_sql_warehouse_list(host = host, token = token)
   purrr::map_dfr(warehouses, function(x) {
-    status <- dplyr::case_when(
-      x$state == "STARTING" ~ "",
-      x$state == "RUNNING"  ~ "\U0001f7e2",
-      x$state == "STOPPING" ~ "\U0001f534",
-      x$state == "STOPPED"  ~ "\u26aa\ufe0f",
-      x$state == "DELETING" ~ "\U0001f534",
-      x$state == "DELETED"  ~ "\U0001f534"
-    )
     list(
-      name = as.character(glue::glue("{status}{x$name} ({x$id})")),
+      name = as.character(glue::glue("[{x$state}] {x$name} ({x$id})")),
       type = "warehouse"
     )
   })
 }
 
 get_warehouse <- function(id, host, token) {
-  x <- brickster::db_sql_warehouse_get(id, host, token)
+  x <- db_sql_warehouse_get(id, host, token)
   info <- list(
     "name" = x$name,
     "id" = id,
@@ -415,6 +480,8 @@ list_objects <- function(host, token,
                          model = NULL,
                          versions = NULL,
                          featurestore = NULL,
+                         featuretable = NULL,
+                         columns = NULL,
                          experiments = NULL,
                          ...) {
 
@@ -443,6 +510,27 @@ list_objects <- function(host, token,
     objects <- get_catalogs(host = host, token = token)
     return(objects)
 
+  }
+
+  # feature store
+  if (!is.null(featurestore)) {
+
+    if (!is.null(featuretable)) {
+      objects <- data.frame(
+        name = c("metadata", "columns"),
+        type = c("metadata", "columns")
+      )
+      return(objects)
+    }
+
+    objects <- get_feature_tables(host = host, token = token)
+    return(objects)
+  }
+
+  # experiments
+  if (!is.null(experiments)) {
+    objects <- get_experiments(host = host, token = token)
+    return(objects)
   }
 
   # model registry
@@ -513,9 +601,6 @@ list_columns <- function(host, token, path = "", ...) {
   leaf <- dots[length(dots)]
   leaf_type <- names(leaf)
 
-  print(list(dots = dots, leaf = leaf, leaf_type = leaf_type))
-  print("----")
-
   # for clusters and warehouses things are simple
   if (leaf_type == "cluster") {
     info <- get_cluster(id = get_id_from_panel_name(leaf), host = host, token = token)
@@ -578,6 +663,30 @@ list_columns <- function(host, token, path = "", ...) {
     )
   }
 
+  if ("featuretable" %in% names(dots)) {
+    if (leaf_type == "metadata") {
+      info <- get_feature_table(
+        table = dots$featuretable,
+        host = host,
+        token = token
+      )
+    } else if (leaf_type == "columns") {
+      info <- get_feature_table_columns(
+        table = dots$featuretable,
+        host = host,
+        token = token
+      )
+    }
+  }
+
+  if (leaf_type == "experiment") {
+    info <- get_experiment(
+      id = leaf$experiment,
+      host = host,
+      token = token
+    )
+  }
+
   info
 
 }
@@ -610,7 +719,7 @@ preview_object <- function(host, token, rowLimit,
 
   if (!is.null(notebook)) {
     # export notebook as ipynb
-    content <- brickster::db_workspace_export(
+    content <- db_workspace_export(
       path = paste0(path, "/", notebook),
       format = "JUPYTER"
     )
@@ -630,7 +739,7 @@ preview_object <- function(host, token, rowLimit,
 
     # TODO: check file size first, don't download if >10mb
     # download from dbfs
-    content <- brickster::db_dbfs_read(path = paste0(path, "/", files))
+    content <- db_dbfs_read(path = paste0(path, "/", files))
 
     # save to temporary directory and open
     dir <- tempdir()
@@ -701,6 +810,8 @@ open_workspace <- function(host = db_host(), token = db_token(), name = NULL) {
           schema = dots$schema,
           table = dots$table,
           featurestore = dots$featurestore,
+          featuretable = dots$featuretable,
+          columns = dots$columns,
           experiments = dots$experiments,
           modelregistry = dots$modelregistry,
           model = dots[["model"]],
@@ -761,7 +872,10 @@ list_objects_types <- function() {
         experiment = list(contains = "data")
       )),
       featurestore = list(contains = list(
-        featuretable = list(contains = "data")
+        featuretable = list(contains = list(
+          metadata = list(contains = "data"),
+          columns = list(contains = "data")
+        ))
       )),
       modelregistry = list(contains = list(
         model = list(contains = list(
