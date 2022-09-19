@@ -83,7 +83,8 @@
 <p><a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> aims to reduce friction for R users on Databricks by:</p>
 <ul>
 <li><p>Providing 1:1 bindings to relevant Databricks API’s</p></li>
-<li><p>Mechanism to use Rmarkdown as a Databricks notebook</p></li>
+<li><p>Use Rmarkdown as a Databricks notebook</p></li>
+<li><p>Integrate with RStudio Connections Pane (<code><a href="reference/open_workspace.html">open_workspace()</a></code>)</p></li>
 <li><p>Utility functions to streamline workloads</p></li>
 <li><p>Shiny widgets for RStudio</p></li>
 </ul>
@@ -95,7 +96,7 @@
 <div class="section level2">
 <h2 id="setup-authentication">Setup Authentication<a class="anchor" aria-label="anchor" href="#setup-authentication"></a>
 </h2>
-<p>Please read the vignette, you can open it by running <code><a href="articles/setup-auth.html">vignette("setup-auth", package = "brickster")</a></code> after installation.</p>
+<p>Docs website has <a href="https://zacdav-db.github.io/brickster/articles/setup-auth.html">an article</a> that provides details on how to connect to a Databricks workspace.</p>
 </div>
 <div class="section level2">
 <h2 id="api-coverage">API Coverage<a class="anchor" aria-label="anchor" href="#api-coverage"></a>
@@ -168,76 +169,81 @@
 <td>1.2</td>
 </tr>
 <tr class="odd">
+<td><a href="https://api-docs.databricks.com/rest/latest/unity-catalog-api-specification-2-1.html" class="external-link">Unity Catalog</a></td>
+<td>Partially</td>
+<td>2.1</td>
+</tr>
+<tr class="even">
 <td><a href="https://docs.databricks.com/dev-tools/api/latest/tokens.html" class="external-link">Tokens</a></td>
-<td>Later</td>
-<td>2.0</td>
-</tr>
-<tr class="even">
-<td><a href="https://docs.databricks.com/data-engineering/delta-live-tables/delta-live-tables-api-guide.html" class="external-link">Delta Live Tables</a></td>
-<td>Later</td>
-<td>2.0</td>
-</tr>
-<tr class="odd">
-<td>mlflow webhooks (Private Preview)</td>
-<td>Later</td>
-<td>2.0</td>
-</tr>
-<tr class="even">
-<td><a href="https://docs.databricks.com/sql/api/queries-dashboards.html" class="external-link">Queries &amp; Dashboards</a></td>
-<td>Later</td>
-<td>2.0</td>
-</tr>
-<tr class="odd">
-<td><a href="https://docs.databricks.com/dev-tools/api/latest/instance-pools.html" class="external-link">Instance Pools</a></td>
-<td>Later</td>
-<td>2.0</td>
-</tr>
-<tr class="even">
-<td>mlflow OSS</td>
 <td>Undecided</td>
 <td>2.0</td>
 </tr>
 <tr class="odd">
+<td><a href="https://docs.databricks.com/data-engineering/delta-live-tables/delta-live-tables-api-guide.html" class="external-link">Delta Live Tables</a></td>
+<td>Undecided</td>
+<td>2.0</td>
+</tr>
+<tr class="even">
+<td>mlflow webhooks (Private Preview)</td>
+<td>Later</td>
+<td>2.0</td>
+</tr>
+<tr class="odd">
+<td><a href="https://docs.databricks.com/sql/api/queries-dashboards.html" class="external-link">Queries &amp; Dashboards</a></td>
+<td>Undecided</td>
+<td>2.0</td>
+</tr>
+<tr class="even">
+<td><a href="https://docs.databricks.com/dev-tools/api/latest/instance-pools.html" class="external-link">Instance Pools</a></td>
+<td>Undecided</td>
+<td>2.0</td>
+</tr>
+<tr class="odd">
+<td>mlflow OSS</td>
+<td>Undecided</td>
+<td>2.0</td>
+</tr>
+<tr class="even">
 <td><a href="https://docs.databricks.com/dev-tools/api/latest/policies.html" class="external-link">Cluster Policies</a></td>
 <td>Never</td>
 <td>2.0</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="https://docs.databricks.com/dev-tools/api/latest/permissions.html" class="external-link">Permissions</a></td>
 <td>Never</td>
 <td>2.0</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="https://docs.databricks.com/dev-tools/api/latest/token-management.html" class="external-link">Token Management</a></td>
 <td>Never</td>
 <td>2.0</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="https://docs.databricks.com/dev-tools/api/latest/tokens.html" class="external-link">Token</a></td>
 <td>Never</td>
 <td>2.0</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="https://docs.databricks.com/dev-tools/api/latest/scim/index.html" class="external-link">SCIM</a></td>
 <td>Never</td>
 <td>2.0</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="https://docs.databricks.com/dev-tools/api/latest/account.html" class="external-link">Account</a></td>
 <td>Never</td>
 <td>2.0</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="https://docs.databricks.com/dev-tools/api/latest/groups.html" class="external-link">Groups</a></td>
 <td>Never</td>
 <td>2.0</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="https://docs.databricks.com/dev-tools/api/latest/instance-profiles.html" class="external-link">Instance Profiles</a></td>
 <td>Never</td>
 <td>2.0</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="https://docs.databricks.com/dev-tools/api/latest/ip-access-list.html" class="external-link">IP Access List</a></td>
 <td>Never</td>
 <td>2.0</td>
