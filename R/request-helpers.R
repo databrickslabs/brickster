@@ -17,19 +17,12 @@
 #' @importFrom magrittr `%>%`
 db_request <- function(endpoint, method, version = NULL, body = NULL, host, token, ...) {
 
-  # if (ajax) {
-  #   api <- "ajax-api"
-  #   host <- paste0(host, "?o=", wsid)
-  # } else {
-  #   api <- "api"
-  # }
-  api <- "api"
-
-  req <- httr2::request(base_url = paste0(host, api, "/", version, "/")) %>%
+  req <- httr2::request(base_url = paste0(host, "api", "/", version, "/")) %>%
     httr2::req_auth_bearer_token(token) %>%
     httr2::req_user_agent(string = "brickster") %>%
     httr2::req_url_path_append(endpoint) %>%
-    httr2::req_method(method)
+    httr2::req_method(method) %>%
+    httr2::req_retry(max_tries = 3, backoff = ~ 2)
 
   if (!is.null(body)) {
     body <- base::Filter(length, body)

@@ -588,9 +588,48 @@ list_objects <- function(host, token,
   }
 
   # baseline view (static)
+  # first we should determine if workspace is single-tenant (no SQL/uc)
+
+  # check if sql endpoint fails
+  sql_active <- tryCatch(
+    expr = {
+      db_sql_warehouse_list(host = host, token = token)
+      TRUE
+    },
+    error = function(e) FALSE
+  )
+
+  # check if UC catalogs endpoint fails
+  uc_active <- tryCatch(
+    expr = {
+      db_uc_catalogs_list(host = host, token = token)
+      TRUE
+    },
+    error = function(e) FALSE
+  )
+
+  info <- list(
+    "Data" = "metastore",
+    "Model Registry" = "modelregistry",
+    "Experiments" = "experiments",
+    "Feature Store" = "featurestore",
+    "Clusters" = "clusters",
+    "SQL Warehouses" = "warehouses",
+    "File System (DBFS)" = "dbfs",
+    "Workspace (Notebooks)" = "notebooks"
+  )
+
+  if (!sql_active) {
+    info[["SQL Warehouses"]] <- NULL
+  }
+
+  if (!uc_active) {
+    info[["Data"]] <- NULL
+  }
+
   data.frame(
-    name = c("Data", "Model Registry", "Experiments", "Feature Store", "Clusters", "SQL Warehouses", "File System (DBFS)", "Workspace (Notebooks)"),
-    type = c("metastore", "modelregistry", "experiments", "featurestore", "clusters", "warehouses", "dbfs", "notebooks")
+    name = names(info),
+    type = unname(unlist(info))
   )
 
 }
@@ -697,7 +736,62 @@ preview_object <- function(host, token, rowLimit,
                            warehouse = NULL,
                            files = NULL,
                            notebook = NULL,
+                           model = NULL,
+                           version = NULL,
+                           experiment = NULL,
+                           featuretable = NULL,
+                           catalog = NULL,
+                           schema = NULL,
+                           table = NULL,
                            ...) {
+
+  print(list(
+    path = path,
+    cluster = cluster,
+    warehouse = warehouse,
+    files = files,
+    notebook = notebook,
+    model = model,
+    version = version,
+    experiment = experiment,
+    featuretable = featuretable,
+    catalog = catalog,
+    schema = schema,
+    table = table
+  ))
+
+  # explore data
+  if (!is.null(catalog)) {
+    path <- paste0(c(catalog, schema, table), collapse = "/")
+    url <- glue::glue("{host}explore/data/{path}?o={db_wsid()}")
+    return(utils::browseURL(url))
+  }
+
+  # version of model
+  if (!is.null(version) && !is.null(model)) {
+    version <- gsub("(\\d+) .*", "\\1", version)
+    url <- glue::glue("{host}?o={db_wsid()}#mlflow/models/{model}/versions/{version}")
+    return(utils::browseURL(url))
+  }
+
+  # model
+  if (is.null(version) && !is.null(model)) {
+    url <- glue::glue("{host}?o={db_wsid()}#mlflow/models/{model}")
+    return(utils::browseURL(url))
+  }
+
+  # experiment
+  if (!is.null(experiment)) {
+    id <- get_id_from_panel_name(experiment)
+    url <- glue::glue("{host}?o={db_wsid()}#mlflow/experiments/{id}")
+    return(utils::browseURL(url))
+  }
+
+  # feature store table
+  if (!is.null(featuretable)) {
+    url <- glue::glue("{host}?o={db_wsid()}#feature-store/feature-store/{featuretable}")
+    return(utils::browseURL(url))
+  }
 
   if (!is.null(cluster)) {
     id <- get_id_from_panel_name(cluster)
@@ -736,7 +830,6 @@ preview_object <- function(host, token, rowLimit,
   }
 
   if (!is.null(files)) {
-
     # TODO: check file size first, don't download if >10mb
     # download from dbfs
     content <- db_dbfs_read(path = paste0(path, "/", files))
@@ -869,19 +962,30 @@ list_objects_types <- function() {
         ))
       )),
       experiments = list(contains = list(
-        experiment = list(contains = "data")
+        experiment = list(
+          icon = system.file("icons", "microscope.png", package = "brickster"),
+          contains = "data"
+        )
       )),
       featurestore = list(contains = list(
-        featuretable = list(contains = list(
-          metadata = list(contains = "data"),
-          columns = list(contains = "data")
-        ))
+        featuretable = list(
+          icon = system.file("icons", "cardbox.png", package = "brickster"),
+          contains = list(
+            metadata = list(contains = "data"),
+            columns = list(contains = "data")
+          )
+        )
       )),
       modelregistry = list(contains = list(
-        model = list(contains = list(
-          metadata = list(contains = "data"),
-          versions = list(contains = list(
-            version = list(contains = "data")
+        model = list(
+          icon = system.file("icons", "abacus.png", package = "brickster"),
+          contains = list(
+            metadata = list(contains = "data"),
+            versions = list(contains = list(
+              version = list(
+                icon = system.file("icons", "package.png", package = "brickster"),
+                contains = "data"
+              )
           ))
         ))
       )),

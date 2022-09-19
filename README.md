@@ -24,7 +24,8 @@ coverage](https://codecov.io/gh/zacdav-db/brickster/branch/main/graph/badge.svg)
 
 ## Setup Authentication
 
-Please read the vignette, you can open it by running `vignette("setup-auth", package = "brickster")` after installation.
+Docs website has [an article](https://zacdav-db.github.io/brickster/articles/setup-auth.html)
+that provides details on how to connect to a Databricks workspace.
 
 ## API Coverage
 
