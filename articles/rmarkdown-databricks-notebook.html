@@ -206,7 +206,7 @@
 </h3>
 <p>Databricks notebooks and execution contexts support rendering of graphics, this allows you to use libraries such as <a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a> in R or <code>matplotlib</code> in python.</p>
 <p>The graphic will be rendered on the remote Databricks cluster and then downloaded locally to present in the R Markdown notebook.</p>
-<pre><code>```{sql, engine = "databricks_sql", keep_as = "tables"}
+<pre><code>```{r, engine = "databricks_r"}
 library(ggplot2)
 ggplot(mpg, aes(disp, hwy, colour = class)) + 
   geom_point()
