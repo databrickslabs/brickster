@@ -745,21 +745,6 @@ preview_object <- function(host, token, rowLimit,
                            table = NULL,
                            ...) {
 
-  print(list(
-    path = path,
-    cluster = cluster,
-    warehouse = warehouse,
-    files = files,
-    notebook = notebook,
-    model = model,
-    version = version,
-    experiment = experiment,
-    featuretable = featuretable,
-    catalog = catalog,
-    schema = schema,
-    table = table
-  ))
-
   # explore data
   if (!is.null(catalog)) {
     path <- paste0(c(catalog, schema, table), collapse = "/")
