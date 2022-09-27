@@ -53,3 +53,9 @@ println("hello from Databricks")
 print("hello from Databricks")
 
 ```
+
+```{python, engine = "databricks_py"}
+import folium
+m = folium.Map(location=[45.5236, -122.6750])
+m
+```

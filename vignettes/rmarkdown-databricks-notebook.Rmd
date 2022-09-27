@@ -138,7 +138,7 @@ Databricks notebooks and execution contexts support rendering of graphics, this 
 
 The graphic will be rendered on the remote Databricks cluster and then downloaded locally to present in the R Markdown notebook.
 
-    `r ''````{sql, engine = "databricks_sql", keep_as = "tables"}
+    `r ''````{r, engine = "databricks_r"}
     library(ggplot2)
     ggplot(mpg, aes(disp, hwy, colour = class)) + 
       geom_point()
