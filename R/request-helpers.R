@@ -19,8 +19,8 @@ db_request <- function(endpoint, method, version = NULL, body = NULL, host, toke
 
   req <- httr2::request(base_url = paste0(host, "api", "/", version, "/")) %>%
     httr2::req_auth_bearer_token(token) %>%
-    httr2::req_headers("User-Agent" = "brickster") %>%
-    # httr2::req_user_agent(string = "brickster") %>%
+    httr2::req_headers("User-Agent" = "brickster/1.0") %>%
+    httr2::req_user_agent(string = "brickster/1.0") %>%
     httr2::req_url_path_append(endpoint) %>%
     httr2::req_method(method) %>%
     httr2::req_retry(max_tries = 3, backoff = ~ 2)
