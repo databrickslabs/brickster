@@ -70,7 +70,7 @@ clean_command_results <- function(x, options, language) {
 
   if (x$results$resultType == "error") {
     msg <- paste(x$results$summary, x$results$cause, sep = "\n")
-    stop(msg)
+    stop(msg, call. = FALSE)
   }
 
   # create data.table and return as {kable} table
@@ -139,7 +139,7 @@ clean_command_results <- function(x, options, language) {
   # otherwise treat the results as standard output
   # each language needs its own special treatment
   if (language == "r") {
-    out <- rvest::html_text(rvest::read_html(x$results$data))
+    out <- x$results$data
   } else if (language == "python") {
     out <- x$results$data
     is_html <- grepl(pattern = "<html|<div", out)
