@@ -142,25 +142,29 @@ db_context_command_run <- function(cluster_id,
     stop("Must `command` OR `command_file` not both.")
   }
 
-  body <- list(
-    clusterId = cluster_id,
-    contextId = context_id,
-    language = language,
-    command = command,
-    commandFile = command_file,
-    options = options
-  )
+  if (!is.null(command_file)) {
+    command <- curl::form_file(command_file)
+  }
 
   req <- db_request(
     endpoint = "commands/execute",
     method = "POST",
     version = "1.2",
-    body = body,
+    body = NULL,
     host = host,
     token = token
   )
 
-  if (perform_request) {
+  req <- httr2::req_body_multipart(
+    req,
+    clusterId = cluster_id,
+    contextId = context_id,
+    language = language,
+    command = command,
+    options = options
+  )
+
+    if (perform_request) {
     db_perform_request(req)
   } else {
     req
