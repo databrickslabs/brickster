@@ -6,7 +6,7 @@
 \usage{
 db_workspace_export(
   path,
-  format = c("SOURCE", "HTML", "JUPYTER", "DBC"),
+  format = c("SOURCE", "HTML", "JUPYTER", "DBC", "R_MARKDOWN"),
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
@@ -15,7 +15,8 @@ db_workspace_export(
 \arguments{
 \item{path}{Absolute path of the notebook or directory.}
 
-\item{format}{One of \code{SOURCE}, \code{HTML}, \code{JUPYTER}, \code{DBC}. Default is \code{SOURCE}.}
+\item{format}{One of \code{SOURCE}, \code{HTML}, \code{JUPYTER}, \code{DBC}, \code{R_MARKDOWN}.
+Default is \code{SOURCE}.}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
