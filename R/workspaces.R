@@ -47,7 +47,8 @@ db_workspace_delete <- function(path, recursive = FALSE,
 
 #' Export Notebook or Directory (Workspaces)
 #'
-#' @param format One of `SOURCE`, `HTML`, `JUPYTER`, `DBC`. Default is `SOURCE`.
+#' @param format One of `SOURCE`, `HTML`, `JUPYTER`, `DBC`, `R_MARKDOWN`.
+#' Default is `SOURCE`.
 #' @inheritParams auth_params
 #' @inheritParams db_workspace_delete
 #' @inheritParams db_sql_warehouse_create
@@ -70,7 +71,7 @@ db_workspace_delete <- function(path, recursive = FALSE,
 #' @return base64 encoded string
 #' @export
 db_workspace_export <- function(path,
-                                format = c("SOURCE", "HTML", "JUPYTER", "DBC"),
+                                format = c("SOURCE", "HTML", "JUPYTER", "DBC", "R_MARKDOWN"),
                                 host = db_host(), token = db_token(),
                                 perform_request = TRUE) {
 
@@ -173,7 +174,7 @@ db_workspace_get_status <- function(path,
 db_workspace_import <- function(path,
                                 file = NULL,
                                 content = NULL,
-                                format = c("SOURCE", "HTML", "JUPYTER", "DBC"),
+                                format = c("SOURCE", "HTML", "JUPYTER", "DBC", "R_MARKDOWN"),
                                 language = NULL,
                                 overwrite = FALSE,
                                 host = db_host(), token = db_token(),
