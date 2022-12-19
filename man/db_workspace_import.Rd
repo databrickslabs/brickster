@@ -8,7 +8,7 @@ db_workspace_import(
   path,
   file = NULL,
   content = NULL,
-  format = c("SOURCE", "HTML", "JUPYTER", "DBC"),
+  format = c("SOURCE", "HTML", "JUPYTER", "DBC", "R_MARKDOWN"),
   language = NULL,
   overwrite = FALSE,
   host = db_host(),
@@ -24,7 +24,8 @@ db_workspace_import(
 \item{content}{Content to upload, this will be base64-encoded and has a limit
 of 10MB.}
 
-\item{format}{One of \code{SOURCE}, \code{HTML}, \code{JUPYTER}, \code{DBC}. Default is \code{SOURCE}.}
+\item{format}{One of \code{SOURCE}, \code{HTML}, \code{JUPYTER}, \code{DBC}, \code{R_MARKDOWN}.
+Default is \code{SOURCE}.}
 
 \item{language}{One of \code{R}, \code{PYTHON}, \code{SCALA}, \code{SQL}. Required when \code{format}
 is \code{SOURCE} otherwise ignored.}
