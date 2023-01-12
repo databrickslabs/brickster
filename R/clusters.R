@@ -69,6 +69,7 @@
 #' @param enable_local_disk_encryption Boolean (Default: `TRUE`), whether
 #' encryption of disks locally attached to the cluster is enabled.
 #' @param docker_image Instance of [docker_image()].
+#' @param policy_id String, ID of a cluster policy.
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create
 #'
@@ -113,6 +114,7 @@ db_cluster_create <- function(name,
                               apply_policy_default_values = TRUE,
                               enable_local_disk_encryption = TRUE,
                               docker_image = NULL,
+                              policy_id = NULL,
                               host = db_host(), token = db_token(),
                               perform_request = TRUE) {
 
@@ -140,7 +142,8 @@ db_cluster_create <- function(name,
     idempotency_token = idempotency_token,
     apply_policy_default_values = apply_policy_default_values,
     enable_local_disk_encryption = enable_local_disk_encryption,
-    docker_image = docker_image
+    docker_image = docker_image,
+    policy_id = policy_id
   )
 
   if (is.null(num_workers)) {
@@ -223,6 +226,7 @@ db_cluster_edit <- function(cluster_id,
                             apply_policy_default_values = NULL,
                             enable_local_disk_encryption = NULL,
                             docker_image = NULL,
+                            policy_id = NULL,
                             host = db_host(), token = db_token(),
                             perform_request = TRUE) {
 
@@ -255,7 +259,8 @@ db_cluster_edit <- function(cluster_id,
     idempotency_token = idempotency_token,
     apply_policy_default_values = apply_policy_default_values,
     enable_local_disk_encryption = enable_local_disk_encryption,
-    docker_image = docker_image
+    docker_image = docker_image,
+    policy_id = policy_id
   )
 
   if (!(is.null(num_workers) && is.null(autoscale))) {
