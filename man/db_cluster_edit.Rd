@@ -27,6 +27,7 @@ db_cluster_edit(
   apply_policy_default_values = NULL,
   enable_local_disk_encryption = NULL,
   docker_image = NULL,
+  policy_id = NULL,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
@@ -120,6 +121,8 @@ policy default values for missing cluster attributes.}
 encryption of disks locally attached to the cluster is enabled.}
 
 \item{docker_image}{Instance of \code{\link[=docker_image]{docker_image()}}.}
+
+\item{policy_id}{String, ID of a cluster policy.}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
