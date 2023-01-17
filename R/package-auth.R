@@ -18,7 +18,8 @@
 #' @export
 db_host <- function(id = NULL, prefix = NULL) {
   if (is.null(id) && is.null(prefix)) {
-    host <- Sys.getenv("DATABRICKS_HOST")
+    #host <- Sys.getenv("DATABRICKS_HOST")
+    host=db_get_param('dbHost')
 
     if (host == "") {
       stop(format_error(c(
@@ -46,8 +47,8 @@ db_host <- function(id = NULL, prefix = NULL) {
 #' @import cli
 #' @export
 db_token <- function() {
-  token <- Sys.getenv("DATABRICKS_TOKEN")
-
+  #token <- Sys.getenv("DATABRICKS_TOKEN")
+  token=db_get_param('dbToken')
   if (token == "") {
     stop(cli::format_error(c(
       "`DATABRICKS_TOKEN` not found in `.Renviron`:",
@@ -72,16 +73,17 @@ db_token <- function() {
 #' @import cli
 #' @export
 db_wsid <- function() {
-  token <- Sys.getenv("DATABRICKS_WSID")
+  #token <- Sys.getenv("DATABRICKS_WSID")
+  wsid=db_get_param('dbWsId')
 
-  if (token == "") {
+  if (wsid == "") {
     stop(cli::format_error(c(
       "`DATABRICKS_WSID` not found in `.Renviron`:",
       "x" = "Need to specify `DATABRICKS_WSID` within `.Renviron` file."
     )))
   }
 
-  token
+  wsid
 }
 
 
@@ -106,4 +108,50 @@ db_read_netrc <- function(path = "~/.netrc") {
 #' @param token Databricks workspace token, defaults to calling [db_token()].
 #'
 NULL
+
+
+
+#' Parses .databrickscfg file for parameters related to brickster
+#' Uses db_env variable that is set with options(db_env,...)
+#' @param lParm name of the parameter to extract from cfg file. Default value is DB workspace ID (dbWsId)
+#'
+#' @return
+#' @export
+#'
+#' @examples
+db_get_param=function(lParm='dbWsId'){
+ # browser()
+  lHome=ifelse(Sys.info()[[1]]=="Windows",Sys.getenv("USERPROFILE"),Sys.getenv("HOME"))
+  con=base::file(file.path(lHome,".databrickscfg"),"r",blocking=F)
+  fileLines=base::readLines(con)
+  close(con)
+  fileLines=fileLines[stringr::str_trim(fileLines)!=""]
+
+  parms=list(dbWsId="DATABRICKS_WSID",
+             dbToken="token",
+             dbHost="host")
+  lDbEnv=ifelse(is.null(getOption("db_env")),"DEFAULT",getOption("db_env"))
+  # lParm='DATABRICKS_HOST'
+
+  sections=c(base::which(stringr::str_detect(fileLines,'^\\[.{1,}\\]$')),base::length(fileLines))
+  envLine=base::which(stringr::str_detect(fileLines[sections],lDbEnv))
+  if (purrr::is_empty(envLine)) {
+    stop(cli::format_error(c(
+      "{.var lDbEnv} workspace not found in `.databrickscfg`:",
+      "x" = "Need to specify `DATABRICKS_WSID` within `.databrickscfg` file."
+    )))
+  }
+
+  lLines=fileLines[(sections[envLine]):(sections[envLine+1])]
+  prmLine=lLines[which(stringr::str_detect(lLines,parms[[lParm]]))]
+  if (purrr::is_empty(prmLine)) {
+    stop(cli::format_error(c(
+      paste0("Parameter {.var ",parms[lParm],"} does not exist in {.var ",lDbEnv,"} workspace section of `.databrickscfg` file:"),
+      "x" = paste0("Need to specify {.var ",parms[lParm],"} within {.var ",lDbEnv,"} workspace section.")
+    )))
+  }
+
+  lVal=stringr::str_trim((base::strsplit(prmLine,"=")[[1]])[2])
+  lVal
+}
 
