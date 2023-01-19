@@ -4,7 +4,11 @@
 \alias{db_token}
 \title{Fetch Databricks Token}
 \usage{
-db_token()
+db_token(profile = getOption("db_profile"))
+}
+\arguments{
+\item{profile}{Profile to use when fetching from environment variable or
+\code{.databricksfg} file}
 }
 \value{
 databricks token

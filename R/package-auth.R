@@ -10,24 +10,28 @@
 #' E.g. `https://<prefix>.<id>.cloud.databricks.com/` is the form to follow.
 #'
 #' @param id The workspace string
-#' @param prefix workspace prefix
+#' @param prefix Workspace prefix
+#' @param profile Profile to use when fetching from environment variable or
+#' `.databricksfg` file
 #'
 #' @family Databricks Authentication Helpers
 #'
 #' @return workspace URL
 #' @export
-db_host <- function(id = NULL, prefix = NULL,env=getOption("db_env")) {
-  if (is.null(id) && is.null(prefix)) {
-    #host <- Sys.getenv("DATABRICKS_HOST")
-    host=db_get_param('dbHost',env)
+db_host <- function(id = NULL, prefix = NULL, profile = getOption("db_profile", NULL)) {
 
-    if (host == "") {
-      stop(format_error(c(
-        "`DATABRICKS_HOST` not found in `.Renviron`:",
-        "x" = "Need to specify `DATABRICKS_HOST` within `.Renviron` file."
-      )))
-    }
+  # if option `use_databrickscfg` is `TRUE` then fetch the associated env.
+  # env is specified via `db_env` option, if missing use default.
+  # this behaviour can only be changed via setting of config
+  if (getOption("use_databrickscfg", FALSE)) {
+    host <- read_databrickscfg(key = "host", profile = profile)
+    return(host)
+  }
+
+  if (is.null(id) && is.null(prefix)) {
+    host <- read_env_var(key = "host", profile = profile)
   } else {
+    # otherwise construct host string
     host <- paste0("https://", prefix, id, ".cloud.databricks.com")
   }
 
@@ -43,20 +47,21 @@ db_host <- function(id = NULL, prefix = NULL,env=getOption("db_env")) {
 #'
 #' @family Databricks Authentication Helpers
 #'
+#' @inheritParams db_host
 #' @return databricks token
 #' @import cli
 #' @export
-db_token <- function(env=getOption("db_env")) {
-  #token <- Sys.getenv("DATABRICKS_TOKEN")
-  token=db_get_param('dbToken',env)
-  if (token == "") {
-    stop(cli::format_error(c(
-      "`DATABRICKS_TOKEN` not found in `.Renviron`:",
-      "x" = "Need to specify `DATABRICKS_TOKEN` within `.Renviron` file."
-    )))
+db_token <- function(profile = getOption("db_profile")) {
+
+  # if option `use_databrickscfg` is `TRUE` then fetch the associated env.
+  # env is specified via `db_env` option, if missing use default.
+  # this behaviour can only be changed via setting of config
+  if (getOption("use_databrickscfg", FALSE)) {
+    token <- read_databrickscfg(key = "token", profile = profile)
+    return(token)
   }
 
-  token
+  read_env_var(key = "token", profile = profile)
 }
 
 #' Fetch Databricks Workspace ID
@@ -69,23 +74,18 @@ db_token <- function(env=getOption("db_env")) {
 #'
 #' @family Databricks Authentication Helpers
 #'
+#' @inheritParams db_host
 #' @return databricks workspace ID
 #' @import cli
 #' @export
-db_wsid <- function(env=getOption("db_env")) {
-  #token <- Sys.getenv("DATABRICKS_WSID")
-  wsid=db_get_param('dbWsId',env)
-
-  if (wsid == "") {
-    stop(cli::format_error(c(
-      "`DATABRICKS_WSID` not found in `.Renviron`:",
-      "x" = "Need to specify `DATABRICKS_WSID` within `.Renviron` file."
-    )))
+db_wsid <- function(profile = getOption("db_profile")) {
+  if (getOption("use_databrickscfg", FALSE)) {
+    wsid <- read_databrickscfg(key = "wsid", profile = profile)
+    return(wsid)
   }
 
-  wsid
+  read_env_var(key = "wsid", profile = profile)
 }
-
 
 #' Read .netrc File
 #'
@@ -110,72 +110,74 @@ db_read_netrc <- function(path = "~/.netrc") {
 NULL
 
 
-
-#' Parses .databrickscfg file for parameters related to brickster
-#' Uses db_env variable that is set with options(db_env,...)
-#' @param lParm name of the parameter to extract from cfg file. Default value is DB workspace ID (dbWsId)
+#' Reads Databricks CLI Config
+#' @details Reads `.databrickscfg` file and retrieves the values associated to
+#' a given profile. Brickster searches for this file in the home directory.
 #'
-#' @return
-#' @export
+#' @param key The value to fetch from profile. One of `token`, `host`, or `wsid`
+#' @param profile Character, the name of the profile to retrieve values
 #'
-#' @examples
-db_get_param=function(lParm='dbWsId',lEnv=NULL){
-  # browser()
-  if(is.null(getOption("use_databrickscfg"))){
-    #Read .Renviron
-    parms=list(dbWsId="DATABRICKS_WSID",
-               dbToken="DATABRICKS_TOKEN",
-               dbHost="DATABRICKS_HOST")
+#' @return named list of values associated with profile
+#' @import cli
+read_databrickscfg <- function(key = c("token", "host", "wsid"), profile = NULL) {
+  key <- match.arg(key)
 
-
-    lVar=paste0(parms[lParm],ifelse(is.null(lEnv),"",paste0("_",stringr::str_to_upper(lEnv))))
-
-    lVal=Sys.getenv(lVar)
-    if(lVal=="") {
-      stop(cli::format_error(c(
-        paste0("Parameter {.var ",lVar,"} does not exist in {.var .Renviron} file:"),
-        "x" = paste0("Need to specify {.var ",lVar,"} within {.var .Renviron} file.")
-      )))
-    }
-
-
-
-  }else{
-    # Read .databrickscfg
-
-
-    lHome=ifelse(Sys.info()[[1]]=="Windows",Sys.getenv("USERPROFILE"),Sys.getenv("HOME"))
-    con=base::file(file.path(lHome,".databrickscfg"),"r",blocking=F)
-    fileLines=base::readLines(con)
-    close(con)
-    fileLines=fileLines[stringr::str_trim(fileLines)!=""]
-
-    parms=list(dbWsId="DATABRICKS_WSID",
-               dbToken="token",
-               dbHost="host")
-    lDbEnv=ifelse(is.null(lEnv),"DEFAULT",lEnv)
-    # lParm='DATABRICKS_HOST'
-
-    sections=c(base::which(stringr::str_detect(fileLines,'^\\[.{1,}\\]$')),base::length(fileLines))
-    envLine=base::which(stringr::str_detect(fileLines[sections],lDbEnv))
-    if (purrr::is_empty(envLine)) {
-      stop(cli::format_error(c(
-        paste0("{.var ",lDbEnv,"} profile not found in `.databrickscfg`:"),
-        "x" = paste0("Need to specify {.var ",lDbEnv,"} profile within `.databrickscfg` file.")
-      )))
-    }
-
-    lLines=fileLines[(sections[envLine]):(sections[envLine+1])]
-    prmLine=lLines[which(stringr::str_detect(lLines,parms[[lParm]]))]
-    if (purrr::is_empty(prmLine)) {
-      stop(cli::format_error(c(
-        paste0("Parameter {.var ",parms[lParm],"} does not exist in {.var ",lDbEnv,"} workspace section of `.databrickscfg` file:"),
-        "x" = paste0("Need to specify {.var ",parms[lParm],"} within {.var ",lDbEnv,"} workspace section.")
-      )))
-    }
-
-    lVal=stringr::str_trim((base::strsplit(prmLine,"=")[[1]])[2])
+  if (is.null(profile)) {
+    profile <- "DEFAULT"
   }
-  lVal
+
+  home_dir <- Sys.getenv("HOME")
+  config_path <- file.path(home_dir, ".databrickscfg")
+
+  # read config file (ini format) and fetch values from specified profile
+  vars <- ini::read.ini(config_path)[[profile]]
+
+  # return error in case of empty profile
+  if (is.null(vars)) {
+    stop(cli::format_error(c(
+      "Specified {.var profile} not found in {.file `~/.databrickscfg`}:",
+      "x" = "Need to specify {.envvar {profile}} profile within {.file {config_path}} file."
+    )))
+  }
+
+  # attempt to fetch required key & value pair from profile
+  # error if key isn't found
+  value <- vars[[key]]
+  if (is.null(vars)) {
+    stop(cli::format_error(c(
+      "Parameter {.var key} not found in profile of {.file {config_path}}:",
+      "x" = "Need to specify {.envvar {key}} in {.envvar {profile}} profile."
+    )))
+  }
+
+  value
 }
 
+#' Reads Environment Variables
+#' @details Fetches relevant environment variables based on profile
+#'
+#' @param key The value to fetch from profile. One of `token`, `host`, or `wsid`
+#' @param profile Character, the name of the profile to retrieve values
+#'
+#' @return named list of values associated with profile
+read_env_var <- function(key = c("token", "host", "wsid"), profile = NULL) {
+  key <- match.arg(key)
+
+  # fetch value based on profile
+  if (is.null(profile)) {
+    key_name <- paste("DATABRICKS", toupper(key), sep = "_")
+  } else {
+    key_name <- paste("DATABRICKS", toupper(key), toupper(profile), sep = "_")
+  }
+
+  value <- Sys.getenv(key_name)
+
+  if (value == "") {
+    stop(cli::format_error(c(
+      "{.var {key}} not found:",
+      "x" = "Need to specify {.var {key}} environment variable."
+    )))
+  }
+
+  value
+}

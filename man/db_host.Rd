@@ -4,12 +4,15 @@
 \alias{db_host}
 \title{Generate/Fetch Databricks Host}
 \usage{
-db_host(id = NULL, prefix = NULL)
+db_host(id = NULL, prefix = NULL, profile = getOption("db_profile", NULL))
 }
 \arguments{
 \item{id}{The workspace string}
 
-\item{prefix}{workspace prefix}
+\item{prefix}{Workspace prefix}
+
+\item{profile}{Profile to use when fetching from environment variable or
+\code{.databricksfg} file}
 }
 \value{
 workspace URL

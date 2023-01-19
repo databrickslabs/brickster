@@ -4,7 +4,11 @@
 \alias{db_wsid}
 \title{Fetch Databricks Workspace ID}
 \usage{
-db_wsid()
+db_wsid(profile = getOption("db_profile"))
+}
+\arguments{
+\item{profile}{Profile to use when fetching from environment variable or
+\code{.databricksfg} file}
 }
 \value{
 databricks workspace ID
