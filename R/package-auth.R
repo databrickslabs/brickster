@@ -130,6 +130,7 @@ NULL
 #'
 #' @return named list of values associated with profile
 #' @import cli
+#' @keywords internal
 read_databrickscfg <- function(key = c("token", "host", "wsid"), profile = NULL) {
   key <- match.arg(key)
 
@@ -176,6 +177,7 @@ read_databrickscfg <- function(key = c("token", "host", "wsid"), profile = NULL)
 #' @param profile Character, the name of the profile to retrieve values
 #'
 #' @return named list of values associated with profile
+#' @keywords internal
 read_env_var <- function(key = c("token", "host", "wsid"), profile = NULL) {
   key <- match.arg(key)
 
