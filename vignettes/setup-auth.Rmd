@@ -59,4 +59,77 @@ All `{brickster}` functions have their host/token parameters default to calling 
 clusters <- db_cluster_list()
 ```
 
-The only situation where you may need to specify host/token is dealing with multiple workspaces, or tokens with varying levels of permissions. In these circumstances it is still recommended that you store credentials in `.Renviron` and access them via `Sys.getenv()`.
+## Managing Multiple Credentials
+
+There are two methods that `{brickster}` supports to simplify switching of credentials within an R project/session:
+
+1.  Adding multiple credentials to `.Renviron`, each additional set of credentials is differentiated via a suffix (e.g. `DATABRICKS_TOKEN_DEV`)
+2.  Using a `.databrickscfg` file (primary method in [Databricks CLI](https://docs.databricks.com/dev-tools/cli/index.html#set-up-authentication))
+
+To differentiate between (1) and (2) the option `use_databrickscfg` is used, the following example shows how to switch the session to use `.databrickscfg`.
+
+```{r}
+# will use the `DEFAULT` profile in `.databrickscfg`
+options(use_databrickscfg = TRUE)
+
+# values returned should be those in profile of `.databrickscfg`
+db_host()
+db_token()
+```
+
+The default behaviour is to read credentials from `.Renviron`. If you wish to change this it's recommended to set the option within `.Rprofile` so that it's set during initialization of the R session.
+
+### Switching Between Credentials
+
+The `db_profile` option controls which profiles credentials are returned by `db_host()`/`db_token()`/`db_wsid()`.
+
+Profiles enable you to switch contexts between:
+
+-   Different workspaces (e.g. development or production)
+
+-   Different permissions (e.g. admin or restricted user)
+
+This behaviour works when using credentials specified in either `.Renviron` or `.databrickscfg`:
+
+```{r}
+# using .Renviron
+db_host() # returns `DB_HOST` (.Renviron)
+
+# switch profile to 'prod'
+options(db_profile = "prod")
+db_host() # returns `DB_HOST_PROD` (.Renviron)
+
+# set back to default (NULL)
+options(db_profile = NULL)
+# use .databrickcfg
+options(use_databrickscfg = TRUE)
+db_host() # returns host from `DEFAULT` profile (.databrickscfg)
+
+options(db_profile = "prod")
+db_host() # returns host from `prod` profile in (.datarickscfg)
+```
+
+It is expected that profiles in `.Renviron` will adhere to the same naming convention as default but add an additional suffix.
+
+Here is an example of an `.Renviron` file that has three profiles (default, dev, prod):
+
+    # default
+    DATABRICKS_HOST=https://xxxxxxx.cloud.databricks.com/
+    DATABRICKS_TOKEN=dapi123456789012345678a9bc01234defg5
+    DATABRICKS_WSID=123123123123123
+    # dev
+    DATABRICKS_HOST_DEV=https://xxxxxxx-dev.cloud.databricks.com/
+    DATABRICKS_TOKEN_DEV=dapi123456789012345678a9bc01234defg6
+    DATABRICKS_WSID_DEV=123123123123124
+    # prod
+    DATABRICKS_HOST_PROD=https://xxxxxxx-prod.cloud.databricks.com/
+    DATABRICKS_TOKEN_PROD=dapi123456789012345678a9bc01234defg7
+    DATABRICKS_WSID_PROD=123123123123125
+
+### Configuring `.databrickscfg`
+
+For details on configuring please refer to [documentation from Databricks CLI](https://docs.databricks.com/dev-tools/cli/index.html#connection-profiles).
+
+There is only one `{brickster}` specific feature and it is the inclusion of `wsid` alongside `host`/`token`.
+
+`wsid` is used by the connections pane integration in RStudio as the underlying API's require it.

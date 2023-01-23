@@ -126,7 +126,12 @@ read_databrickscfg <- function(key = c("token", "host", "wsid"), profile = NULL)
     profile <- "DEFAULT"
   }
 
-  home_dir <- Sys.getenv("HOME")
+  if (.Platform$OS.type == "windows") {
+    home_dir <- Sys.getenv("USERPROFILE")
+  } else {
+    home_dir <- Sys.getenv("HOME")
+  }
+
   config_path <- file.path(home_dir, ".databrickscfg")
 
   # read config file (ini format) and fetch values from specified profile
