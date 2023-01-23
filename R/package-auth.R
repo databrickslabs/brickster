@@ -11,8 +11,17 @@
 #'
 #' @param id The workspace string
 #' @param prefix Workspace prefix
-#' @param profile Profile to use when fetching from environment variable or
-#' `.databricksfg` file
+#' @param profile Profile to use when fetching from environment variable
+#' (e.g. `.Renviron`) or `.databricksfg` file
+#'
+#' @details
+#' The behaviour is subject to change depending if `db_profile` and
+#' `use_databrickscfg` options are set.
+#' - `use_databrickscfg`: Boolean (default: `FALSE`), determines if credentials
+#' are fetched from profile of `.databrickscfg` or `.Renviron`
+#' - `db_profile`: String (default: `NULL`), determines profile used.
+#'
+#' See vignette on authentication for more details.
 #'
 #' @family Databricks Authentication Helpers
 #'
@@ -47,6 +56,7 @@ db_host <- function(id = NULL, prefix = NULL, profile = getOption("db_profile", 
 #'
 #' @family Databricks Authentication Helpers
 #'
+#' @inherit db_host details
 #' @inheritParams db_host
 #' @return databricks token
 #' @import cli
@@ -74,6 +84,7 @@ db_token <- function(profile = getOption("db_profile")) {
 #'
 #' @family Databricks Authentication Helpers
 #'
+#' @inherit db_host details
 #' @inheritParams db_host
 #' @return databricks workspace ID
 #' @import cli

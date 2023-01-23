@@ -11,8 +11,8 @@ db_host(id = NULL, prefix = NULL, profile = getOption("db_profile", NULL))
 
 \item{prefix}{Workspace prefix}
 
-\item{profile}{Profile to use when fetching from environment variable or
-\code{.databricksfg} file}
+\item{profile}{Profile to use when fetching from environment variable
+(e.g. \code{.Renviron}) or \code{.databricksfg} file}
 }
 \value{
 workspace URL
@@ -23,6 +23,17 @@ If both \code{id} and \code{prefix} are \code{NULL} function will search for the
 
 When defining \code{id} and \code{prefix} you do not need to specify the whole URL.
 E.g. \verb{https://<prefix>.<id>.cloud.databricks.com/} is the form to follow.
+}
+\details{
+The behaviour is subject to change depending if \code{db_profile} and
+\code{use_databrickscfg} options are set.
+\itemize{
+\item \code{use_databrickscfg}: Boolean (default: \code{FALSE}), determines if credentials
+are fetched from profile of \code{.databrickscfg} or \code{.Renviron}
+\item \code{db_profile}: String (default: \code{NULL}), determines profile used.
+}
+
+See vignette on authentication for more details.
 }
 \seealso{
 Other Databricks Authentication Helpers: 
