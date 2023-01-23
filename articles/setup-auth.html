@@ -138,11 +138,90 @@ explicit calls to the functions.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># all host/token parameters default to db_host()/db_token()</span></span>
 <span><span class="va">clusters</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_cluster_list.html">db_cluster_list</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>The only situation where you may need to specify host/token is
-dealing with multiple workspaces, or tokens with varying levels of
-permissions. In these circumstances it is still recommended that you
-store credentials in <code>.Renviron</code> and access them via
-<code><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv()</a></code>.</p>
+</div>
+<div class="section level2">
+<h2 id="managing-multiple-credentials">Managing Multiple Credentials<a class="anchor" aria-label="anchor" href="#managing-multiple-credentials"></a>
+</h2>
+<p>There are two methods that <a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> supports to
+simplify switching of credentials within an R project/session:</p>
+<ol style="list-style-type: decimal">
+<li>Adding multiple credentials to <code>.Renviron</code>, each
+additional set of credentials is differentiated via a suffix
+(e.g. <code>DATABRICKS_TOKEN_DEV</code>)</li>
+<li>Using a <code>.databrickscfg</code> file (primary method in <a href="https://docs.databricks.com/dev-tools/cli/index.html#set-up-authentication" class="external-link">Databricks
+CLI</a>)</li>
+</ol>
+<p>To differentiate between (1) and (2) the option
+<code>use_databrickscfg</code> is used, the following example shows how
+to switch the session to use <code>.databrickscfg</code>.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># will use the `DEFAULT` profile in `.databrickscfg`</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>use_databrickscfg <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># values returned should be those in profile of `.databrickscfg`</span></span>
+<span><span class="fu"><a href="../reference/db_host.html">db_host</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/db_token.html">db_token</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>The default behaviour is to read credentials from
+<code>.Renviron</code>. If you wish to change this it’s recommended to
+set the option within <code>.Rprofile</code> so that it’s set during
+initialization of the R session.</p>
+<div class="section level3">
+<h3 id="switching-between-credentials">Switching Between Credentials<a class="anchor" aria-label="anchor" href="#switching-between-credentials"></a>
+</h3>
+<p>The <code>db_profile</code> option controls which profiles
+credentials are returned by
+<code><a href="../reference/db_host.html">db_host()</a></code>/<code><a href="../reference/db_token.html">db_token()</a></code>/<code><a href="../reference/db_wsid.html">db_wsid()</a></code>.</p>
+<p>Profiles enable you to switch contexts between:</p>
+<ul>
+<li><p>Different workspaces (e.g. development or production)</p></li>
+<li><p>Different permissions (e.g. admin or restricted user)</p></li>
+</ul>
+<p>This behaviour works when using credentials specified in either
+<code>.Renviron</code> or <code>.databrickscfg</code>:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># using .Renviron</span></span>
+<span><span class="fu"><a href="../reference/db_host.html">db_host</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># returns `DB_HOST` (.Renviron)</span></span>
+<span></span>
+<span><span class="co"># switch profile to 'prod'</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>db_profile <span class="op">=</span> <span class="st">"prod"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/db_host.html">db_host</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># returns `DB_HOST_PROD` (.Renviron)</span></span>
+<span></span>
+<span><span class="co"># set back to default (NULL)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>db_profile <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="co"># use .databrickcfg</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>use_databrickscfg <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/db_host.html">db_host</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># returns host from `DEFAULT` profile (.databrickscfg)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>db_profile <span class="op">=</span> <span class="st">"prod"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/db_host.html">db_host</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># returns host from `prod` profile in (.datarickscfg)</span></span></code></pre></div>
+<p>It is expected that profiles in <code>.Renviron</code> will adhere to
+the same naming convention as default but add an additional suffix.</p>
+<p>Here is an example of an <code>.Renviron</code> file that has three
+profiles (default, dev, prod):</p>
+<pre><code># default
+DATABRICKS_HOST=https://xxxxxxx.cloud.databricks.com/
+DATABRICKS_TOKEN=dapi123456789012345678a9bc01234defg5
+DATABRICKS_WSID=123123123123123
+# dev
+DATABRICKS_HOST_DEV=https://xxxxxxx-dev.cloud.databricks.com/
+DATABRICKS_TOKEN_DEV=dapi123456789012345678a9bc01234defg6
+DATABRICKS_WSID_DEV=123123123123124
+# prod
+DATABRICKS_HOST_PROD=https://xxxxxxx-prod.cloud.databricks.com/
+DATABRICKS_TOKEN_PROD=dapi123456789012345678a9bc01234defg7
+DATABRICKS_WSID_PROD=123123123123125</code></pre>
+</div>
+<div class="section level3">
+<h3 id="configuring--databrickscfg">Configuring <code>.databrickscfg</code><a class="anchor" aria-label="anchor" href="#configuring--databrickscfg"></a>
+</h3>
+<p>For details on configuring please refer to <a href="https://docs.databricks.com/dev-tools/cli/index.html#connection-profiles" class="external-link">documentation
+from Databricks CLI</a>.</p>
+<p>There is only one <a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> specific feature and it is
+the inclusion of <code>wsid</code> alongside
+<code>host</code>/<code>token</code>.</p>
+<p><code>wsid</code> is used by the connections pane integration in
+RStudio as the underlying API’s require it.</p>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

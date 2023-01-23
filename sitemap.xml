@@ -538,6 +538,12 @@
     <loc>https://zacdav-db.github.io/brickster/reference/python_wheel_task.html</loc>
   </url>
   <url>
+    <loc>https://zacdav-db.github.io/brickster/reference/read_databrickscfg.html</loc>
+  </url>
+  <url>
+    <loc>https://zacdav-db.github.io/brickster/reference/read_env_var.html</loc>
+  </url>
+  <url>
     <loc>https://zacdav-db.github.io/brickster/reference/remove_lib_path.html</loc>
   </url>
   <url>
