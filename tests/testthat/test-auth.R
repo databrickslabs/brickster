@@ -13,11 +13,25 @@ test_that("auth functions - baseline behaviour", {
   expect_identical(read_env_var("host"), host)
   expect_identical(read_env_var("token"), token)
   expect_identical(read_env_var("wsid"), wsid)
+  expect_error(read_env_var("nope"))
 
   # higher level funcs should return as expected
   expect_identical(db_host(), host)
   expect_identical(db_token(), token)
   expect_identical(db_wsid(), wsid)
+
+  # when not specified should error
+  Sys.setenv("DATABRICKS_HOST" = "")
+  expect_error(db_host())
+
+  expect_identical(
+    db_host(id = "mock", prefix = "dev-"),
+    "https://dev-mock.cloud.databricks.com"
+  )
+  expect_identical(
+    db_host(id = "mock"),
+    "https://mock.cloud.databricks.com"
+  )
 
 })
 
