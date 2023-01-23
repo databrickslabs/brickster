@@ -4,7 +4,11 @@
 \alias{db_token}
 \title{Fetch Databricks Token}
 \usage{
-db_token()
+db_token(profile = getOption("db_profile"))
+}
+\arguments{
+\item{profile}{Profile to use when fetching from environment variable
+(e.g. \code{.Renviron}) or \code{.databricksfg} file}
 }
 \value{
 databricks token
@@ -13,6 +17,17 @@ databricks token
 Token must be specified as an environment variable \code{DATABRICKS_TOKEN}.
 
 Refer to \href{https://docs.databricks.com/dev-tools/api/latest/authentication.html}{api authentication docs}
+}
+\details{
+The behaviour is subject to change depending if \code{db_profile} and
+\code{use_databrickscfg} options are set.
+\itemize{
+\item \code{use_databrickscfg}: Boolean (default: \code{FALSE}), determines if credentials
+are fetched from profile of \code{.databrickscfg} or \code{.Renviron}
+\item \code{db_profile}: String (default: \code{NULL}), determines profile used.
+}
+
+See vignette on authentication for more details.
 }
 \seealso{
 Other Databricks Authentication Helpers: 
