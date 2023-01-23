@@ -92,11 +92,15 @@ clean_command_results <- function(x, options, language) {
       if (!is.null(options$keep_as)) {
         base::assign(options$keep_as, value = tbl, envir = .GlobalEnv)
       }
-      outputs$table <- knitr::engine_output(
-        options = options,
-        out = list(paste0(knitr::kable(tbl, "simple"), collapse = "\n"))
-      )
-      knitr::knit_print(tbl)
+      if (isTRUE(getOption('knitr.in.progress'))) {
+        outputs$table <- knitr::engine_output(
+          options = options,
+          out = list(paste0(knitr::kable(tbl), collapse = "\n"))
+        )
+      } else {
+        knitr::knit_print(tbl)
+      }
+
     }
 
     return(do.call(paste, outputs))
@@ -124,12 +128,15 @@ clean_command_results <- function(x, options, language) {
       file <- tempfile(fileext = ".png")
       magick::image_write(img, path = file)
       # knitr things...
-      outputs$plot <- knitr::engine_output(
-        options = options,
-        out = list(knitr::include_graphics(path = file))
-      )
-      res <- structure(file, class = c("knit_image_paths", "knit_asis"), dpi = options$dpi)
-      print(res)
+      if (isTRUE(getOption('knitr.in.progress'))) {
+        outputs$plot <- knitr::engine_output(
+          options = options,
+          out = list(knitr::include_graphics(path = file))
+        )
+      } else {
+        res <- structure(file, class = c("knit_image_paths", "knit_asis"), dpi = options$dpi)
+        print(res)
+      }
     }
 
     return(do.call(paste, outputs))
