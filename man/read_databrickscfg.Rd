@@ -21,3 +21,4 @@ Reads Databricks CLI Config
 Reads \code{.databrickscfg} file and retrieves the values associated to
 a given profile. Brickster searches for this file in the home directory.
 }
+\keyword{internal}
