@@ -185,7 +185,7 @@ db_uc_tables_list <- function(catalog, schema,
                               host = db_host(), token = db_token(),
                               perform_request = TRUE) {
 
-  req <- db_request(
+   req <- db_request(
     endpoint = "unity-catalog/tables",
     method = "GET",
     version = "2.1",
@@ -198,7 +198,14 @@ db_uc_tables_list <- function(catalog, schema,
     )
 
   if (perform_request) {
-    db_perform_request(req)$tables
+    table_list=db_perform_request(req)$tables
+    purrr::map(table_list,function(x){
+      data.frame("name"=x$name,"type"=x$table_type)
+
+    })%>%purrr::list_rbind()
+
+
+
   } else {
     req
   }

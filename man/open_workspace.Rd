@@ -4,7 +4,7 @@
 \alias{open_workspace}
 \title{Connect to Databricks Workspace}
 \usage{
-open_workspace(host = db_host(), token = db_token(), name = NULL)
+open_workspace(host = db_host(), token = db_token(), name = db_wsid())
 }
 \arguments{
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}

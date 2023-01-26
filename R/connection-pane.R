@@ -163,17 +163,21 @@ get_schemas <- function(catalog, host, token) {
 }
 
 get_tables <- function(catalog, schema, host, token) {
+  # browser()
   tables <- db_uc_tables_list(
     catalog = catalog,
     schema = schema,
     host = host,
     token = token
   )
-  if (length(tables) > 0) {
-    data.frame(
-      name = purrr::map_chr(tables, "name"),
-      type = "table"
-    )
+  # if (length(tables) > 0) {
+  if (nrow(tables) > 0) {
+    # data.frame(
+    #   name = purrr::map_chr(tables, "name"),
+    #   type = purrr::map_chr(tables, "type")
+    # )
+    tables
+
   } else {
     data.frame(name = NULL, type = NULL)
   }
@@ -841,12 +845,12 @@ preview_object <- function(host, token, rowLimit,
 #' open_workspace(host = db_host(), token = db_token, name = "MyWorkspace")
 #' }
 #' @importFrom glue glue
-open_workspace <- function(host = db_host(), token = db_token(), name = NULL) {
+open_workspace <- function(host = db_host(), token = db_token(), name = db_wsid()) {
   observer <- getOption("connectionObserver")
   if (!is.null(observer)) {
 
     connection_string <- glue::glue(
-      "library(brickster)\nopen_workspace(host = db_host(), token = db_token())
+      "library(brickster)\nopen_workspace(host = db_host(), token = db_token(),name=db_wsid())
     ")
 
     display_name <- if (!is.null(name)) name else host
@@ -873,7 +877,7 @@ open_workspace <- function(host = db_host(), token = db_token(), name = NULL) {
         } else {
           path <- "/"
         }
-
+        # browser()
         objects <- list_objects(
           host,
           token,
