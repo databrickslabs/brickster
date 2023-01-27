@@ -198,14 +198,7 @@ db_uc_tables_list <- function(catalog, schema,
     )
 
   if (perform_request) {
-    table_list=db_perform_request(req)$tables
-    purrr::map(table_list,function(x){
-      data.frame("name"=x$name,"type"=x$table_type)
-
-    })%>%purrr::list_rbind()
-
-
-
+    db_perform_request(req)$tables
   } else {
     req
   }

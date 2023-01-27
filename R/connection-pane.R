@@ -170,13 +170,13 @@ get_tables <- function(catalog, schema, host, token) {
     host = host,
     token = token
   )
-  # if (length(tables) > 0) {
-  if (nrow(tables) > 0) {
-    # data.frame(
-    #   name = purrr::map_chr(tables, "name"),
-    #   type = purrr::map_chr(tables, "type")
-    # )
-    tables
+  if (length(tables) > 0) {
+
+    data.frame(
+      name = purrr::map_chr(tables, "name"),
+      type = "table"
+    )
+
 
   } else {
     data.frame(name = NULL, type = NULL)
