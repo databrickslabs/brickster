@@ -162,8 +162,8 @@ read_databrickscfg <- function(key = c("token", "host", "wsid"), profile = NULL)
   value <- vars[[key]]
   if (is.null(value)) {
     stop(cli::format_error(c(
-      "Parameter {.var {key}} not found in profile of {.envvar {profile}}:",
-      "x" = "Need to specify {.envvar {key}} variable in {.envvar {profile}} profile within {.file {config_path}} file."
+      "Parameter {.var {key}} not found in {.envvar {profile}} profile of {.file {config_path}}:",
+      "x" = "Need to specify {.envvar {key}} in {.envvar {profile}} profile."
     )))
   }
 
