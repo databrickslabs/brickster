@@ -66,6 +66,7 @@
 <span>  tags <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  spot_instance_policy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"COST_OPTIMIZED"</span>, <span class="st">"RELIABILITY_OPTIMIZED"</span><span class="op">)</span>,</span>
 <span>  enable_photon <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  warehouse_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CLASSIC"</span>, <span class="st">"PRO"</span><span class="op">)</span>,</span>
 <span>  enable_serverless_compute <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  disable_uc <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  channel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CHANNEL_NAME_CURRENT"</span>, <span class="st">"CHANNEL_NAME_PREVIEW"</span><span class="op">)</span>,</span>
@@ -120,6 +121,10 @@ warehouse.</p></dd>
 engine that speeds up query execution. The default is <code>TRUE</code>.</p></dd>
 
 
+<dt>warehouse_type</dt>
+<dd><p>Either "CLASSIC" (default), or "PRO"</p></dd>
+
+
 <dt>enable_serverless_compute</dt>
 <dd><p>Whether this SQL warehouse is a Serverless
 warehouse. To use a Serverless SQL warehouse, you must enable Serverless SQL
@@ -155,7 +160,6 @@ production workloads. The default is <code>CHANNEL_NAME_CURRENT.</code></p></dd>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Other Warehouse API: 
-<code><a href="db_sql_global_warehouse_edit.html">db_sql_global_warehouse_edit</a>()</code>,
 <code><a href="db_sql_global_warehouse_get.html">db_sql_global_warehouse_get</a>()</code>,
 <code><a href="db_sql_warehouse_delete.html">db_sql_warehouse_delete</a>()</code>,
 <code><a href="db_sql_warehouse_edit.html">db_sql_warehouse_edit</a>()</code>,

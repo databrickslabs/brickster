@@ -100,6 +100,9 @@
     <loc>https://zacdav-db.github.io/brickster/reference/db_cluster_start.html</loc>
   </url>
   <url>
+    <loc>https://zacdav-db.github.io/brickster/reference/db_cluster_terminate.html</loc>
+  </url>
+  <url>
     <loc>https://zacdav-db.github.io/brickster/reference/db_cluster_unpin.html</loc>
   </url>
   <url>
@@ -311,9 +314,6 @@
   </url>
   <url>
     <loc>https://zacdav-db.github.io/brickster/reference/db_secrets_scope_list_all.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_global_warehouse_edit.html</loc>
   </url>
   <url>
     <loc>https://zacdav-db.github.io/brickster/reference/db_sql_global_warehouse_get.html</loc>

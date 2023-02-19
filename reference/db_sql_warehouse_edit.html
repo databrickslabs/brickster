@@ -67,6 +67,7 @@
 <span>  tags <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  spot_instance_policy <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  enable_photon <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  warehouse_type <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  enable_serverless_compute <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  channel <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  host <span class="op">=</span> <span class="fu"><a href="db_host.html">db_host</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -124,6 +125,10 @@ warehouse.</p></dd>
 engine that speeds up query execution. The default is <code>TRUE</code>.</p></dd>
 
 
+<dt>warehouse_type</dt>
+<dd><p>Either "CLASSIC" (default), or "PRO"</p></dd>
+
+
 <dt>enable_serverless_compute</dt>
 <dd><p>Whether this SQL warehouse is a Serverless
 warehouse. To use a Serverless SQL warehouse, you must enable Serverless SQL
@@ -159,7 +164,6 @@ default to the current values.</p>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Other Warehouse API: 
-<code><a href="db_sql_global_warehouse_edit.html">db_sql_global_warehouse_edit</a>()</code>,
 <code><a href="db_sql_global_warehouse_get.html">db_sql_global_warehouse_get</a>()</code>,
 <code><a href="db_sql_warehouse_create.html">db_sql_warehouse_create</a>()</code>,
 <code><a href="db_sql_warehouse_delete.html">db_sql_warehouse_delete</a>()</code>,

@@ -122,8 +122,8 @@ for a number of the parameters. There are functions to assist with
 this:</p>
 <table class="table">
 <colgroup>
-<col width="21%">
-<col width="78%">
+<col width="23%">
+<col width="76%">
 </colgroup>
 <thead><tr class="header">
 <th align="right">Function</th>
@@ -217,8 +217,8 @@ cluster is “pinned” or not.</p>
 an existing cluster</p>
 <table class="table">
 <colgroup>
-<col width="23%">
-<col width="76%">
+<col width="25%">
+<col width="75%">
 </colgroup>
 <thead><tr class="header">
 <th align="right">Function</th>
@@ -234,7 +234,10 @@ an existing cluster</p>
 <td>Restart a cluster, cluster must already be running</td>
 </tr>
 <tr class="odd">
-<td align="right"><code><a href="../reference/db_cluster_delete.html">db_cluster_delete()</a></code></td>
+<td align="right">
+<code><a href="../reference/db_cluster_delete.html">db_cluster_delete()</a></code>
+/<code><a href="../reference/db_cluster_terminate.html">db_cluster_terminate()</a></code>
+</td>
 <td>Terminate an active cluster, does not remove the cluster
 configuration from Databricks</td>
 </tr>
@@ -252,11 +255,7 @@ longer appear in Databricks</td>
 <p>Databricks clusters can have libraries installed from a number of
 sources using <code><a href="../reference/db_libs_install.html">db_libs_install()</a></code> and the associated
 <code>libs_*()</code> functions:</p>
-<table style="width:90%;" class="table">
-<colgroup>
-<col width="22%">
-<col width="68%">
-</colgroup>
+<table class="table">
 <thead><tr class="header">
 <th align="right">Function</th>
 <th>Library Source</th>
