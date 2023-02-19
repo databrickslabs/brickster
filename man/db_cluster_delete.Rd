@@ -25,29 +25,5 @@ db_cluster_delete(
 Delete/Terminate a Cluster
 }
 \details{
-The cluster is removed asynchronously. Once the termination has completed,
-the cluster will be in the \code{TERMINATED} state. If the cluster is already in a
-\code{TERMINATING} or \code{TERMINATED} state, nothing will happen.
-
-Unless a cluster is pinned, 30 days after the cluster is terminated, it is
-permanently deleted.
+The cluster must be in the \code{RUNNING} state.
 }
-\seealso{
-Other Clusters API: 
-\code{\link{db_cluster_create}()},
-\code{\link{db_cluster_edit}()},
-\code{\link{db_cluster_events}()},
-\code{\link{db_cluster_get}()},
-\code{\link{db_cluster_list_node_types}()},
-\code{\link{db_cluster_list_zones}()},
-\code{\link{db_cluster_list}()},
-\code{\link{db_cluster_perm_delete}()},
-\code{\link{db_cluster_pin}()},
-\code{\link{db_cluster_resize}()},
-\code{\link{db_cluster_restart}()},
-\code{\link{db_cluster_runtime_versions}()},
-\code{\link{db_cluster_start}()},
-\code{\link{db_cluster_unpin}()},
-\code{\link{get_and_start_cluster}()}
-}
-\concept{Clusters API}

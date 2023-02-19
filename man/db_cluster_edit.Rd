@@ -149,7 +149,6 @@ Clusters created by the Databricks Jobs service cannot be edited.
 \seealso{
 Other Clusters API: 
 \code{\link{db_cluster_create}()},
-\code{\link{db_cluster_delete}()},
 \code{\link{db_cluster_events}()},
 \code{\link{db_cluster_get}()},
 \code{\link{db_cluster_list_node_types}()},
@@ -161,6 +160,7 @@ Other Clusters API:
 \code{\link{db_cluster_restart}()},
 \code{\link{db_cluster_runtime_versions}()},
 \code{\link{db_cluster_start}()},
+\code{\link{db_cluster_terminate}()},
 \code{\link{db_cluster_unpin}()},
 \code{\link{get_and_start_cluster}()}
 }

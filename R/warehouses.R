@@ -21,6 +21,7 @@
 #' warehouse.
 #' @param enable_photon Whether queries are executed on a native vectorized
 #' engine that speeds up query execution. The default is `TRUE`.
+#' @param warehouse_type Either "CLASSIC" (default), or "PRO"
 #' @param enable_serverless_compute Whether this SQL warehouse is a Serverless
 #' warehouse. To use a Serverless SQL warehouse, you must enable Serverless SQL
 #' warehouses for the workspace. If Serverless SQL warehouses are disabled for the
@@ -47,6 +48,7 @@ db_sql_warehouse_create <- function(name,
                                    tags = list(),
                                    spot_instance_policy = c("COST_OPTIMIZED", "RELIABILITY_OPTIMIZED"),
                                    enable_photon = TRUE,
+                                   warehouse_type = c("CLASSIC", "PRO"),
                                    enable_serverless_compute = NULL,
                                    disable_uc = FALSE,
                                    channel = c("CHANNEL_NAME_CURRENT", "CHANNEL_NAME_PREVIEW"),
@@ -56,6 +58,7 @@ db_sql_warehouse_create <- function(name,
   # checks
   spot_instance_policy <- match.arg(spot_instance_policy, several.ok = FALSE)
   channel <- match.arg(channel, several.ok = FALSE)
+  warehouse_type <- match.arg(warehouse_type, several.ok = FALSE)
   sizes <- c(
     "2X-Small", "X-Small", "Small",
     "Medium", "Large", "X-Large",
@@ -71,6 +74,7 @@ db_sql_warehouse_create <- function(name,
     auto_stop_mins = auto_stop_mins,
     spot_instance_policy = spot_instance_policy,
     enable_photon = enable_photon,
+    warehouse_type = warehouse_type,
     enable_serverless_compute = enable_serverless_compute,
     disable_uc = disable_uc,
     channel = list(name = channel)
@@ -143,6 +147,7 @@ db_sql_warehouse_edit <- function(id,
                                  tags = NULL,
                                  spot_instance_policy = NULL,
                                  enable_photon = NULL,
+                                 warehouse_type = NULL,
                                  enable_serverless_compute = NULL,
                                  channel = NULL,
                                  host = db_host(), token = db_token(),
@@ -158,7 +163,8 @@ db_sql_warehouse_edit <- function(id,
   stopifnot(
     cluster_size %in% sizes,
     spot_instance_policy %in% c("COST_OPTIMIZED", "RELIABILITY_OPTIMIZED"),
-    channel %in% c("CHANNEL_NAME_CURRENT", "CHANNEL_NAME_PREVIEW")
+    channel %in% c("CHANNEL_NAME_CURRENT", "CHANNEL_NAME_PREVIEW"),
+    warehouse_type <- match.arg(warehouse_type, several.ok = FALSE)
   )
 
   if (!is.null(channel)) {
@@ -173,6 +179,7 @@ db_sql_warehouse_edit <- function(id,
     auto_stop_mins = auto_stop_mins,
     spot_instance_policy = spot_instance_policy,
     enable_photon = enable_photon,
+    warehouse_type = warehouse_type,
     enable_serverless_compute = enable_serverless_compute,
     channel = channel
   )
@@ -327,71 +334,6 @@ db_sql_global_warehouse_get <- function(host = db_host(), token = db_token(),
   }
 
 }
-
-#' Edit Global Warehouse Config
-#'
-#' @param data_access_config Named list of key-value pairs containing properties
-#' for an external Hive metastore.
-#' @param sql_configuration_parameters Named List of SQL configuration
-#' parameters.
-#' @param instance_profile_arn Instance profile used to access storage from SQL
-#' warehouses.
-#' @param security_policy The policy for controlling access to datasets. Must be
-#' `DATA_ACCESS_CONTROL`.
-#' @inheritParams auth_params
-#' @inheritParams db_sql_warehouse_create
-#'
-#' @details Important:
-#' - All fields are required.
-#' - Invoking this method restarts **all** running SQL warehouses.
-#'
-#' @family Warehouse API
-
-#' @export
-db_sql_global_warehouse_edit <- function(data_access_config = list(),
-                                        sql_configuration_parameters = list(),
-                                        instance_profile_arn = NULL,
-                                        security_policy = "DATA_ACCESS_CONTROL",
-                                        host = db_host(), token = db_token(),
-                                        perform_request = TRUE) {
-  data_access_config <- purrr::imap(
-    .x = data_access_config,
-    .f = function(x, y) list(key = x, value = y)
-  )
-
-  sql_configuration_parameters <- purrr::imap(
-    .x = sql_configuration_parameters,
-    .f = function(x, y) list(key = x, value = y)
-  )
-
-  sql_configuration_parameters <- list(
-    configuration_pairs = unname(sql_configuration_parameters)
-  )
-
-  body <- list(
-    data_access_config = unname(data_access_config),
-    sql_configuration_parameters = sql_configuration_parameters,
-    instance_profile_arn = instance_profile_arn,
-    security_policy = security_policy
-  )
-
-  req <- db_request(
-    endpoint = "sql/config/warehouses",
-    method = "PUT",
-    version = "2.0",
-    body = body,
-    host = host,
-    token = token
-  )
-
-  if (perform_request) {
-    db_perform_request(req)
-  } else {
-    req
-  }
-
-}
-
 
 ### Higher Functions ###########################################################
 
