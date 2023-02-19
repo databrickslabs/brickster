@@ -23,7 +23,6 @@ Get Global Warehouse Config
 }
 \seealso{
 Other Warehouse API: 
-\code{\link{db_sql_global_warehouse_edit}()},
 \code{\link{db_sql_warehouse_create}()},
 \code{\link{db_sql_warehouse_delete}()},
 \code{\link{db_sql_warehouse_edit}()},

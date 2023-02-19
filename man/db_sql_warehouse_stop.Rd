@@ -26,7 +26,6 @@ Stop Warehouse
 }
 \seealso{
 Other Warehouse API: 
-\code{\link{db_sql_global_warehouse_edit}()},
 \code{\link{db_sql_global_warehouse_get}()},
 \code{\link{db_sql_warehouse_create}()},
 \code{\link{db_sql_warehouse_delete}()},
