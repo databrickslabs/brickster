@@ -123,7 +123,7 @@ NULL
 
 #' Reads Databricks CLI Config
 #' @details Reads `.databrickscfg` file and retrieves the values associated to
-#' a given profile. Brickster searches for this file in the home directory.
+#' a given profile. Brickster searches for this file in the '$HOME' directory (unix-like systems) or '%USERPROFILE%' directory (windows).
 #'
 #' @param key The value to fetch from profile. One of `token`, `host`, or `wsid`
 #' @param profile Character, the name of the profile to retrieve values
@@ -152,7 +152,7 @@ read_databrickscfg <- function(key = c("token", "host", "wsid"), profile = NULL)
   # return error in case of empty profile
   if (is.null(vars)) {
     stop(cli::format_error(c(
-      "Specified {.var profile} not found in {.file `~/.databrickscfg`}:",
+      "Specified {.var profile} not found in {.file `{config_path}`}:",
       "x" = "Need to specify {.envvar {profile}} profile within {.file {config_path}} file."
     )))
   }
@@ -160,9 +160,9 @@ read_databrickscfg <- function(key = c("token", "host", "wsid"), profile = NULL)
   # attempt to fetch required key & value pair from profile
   # error if key isn't found
   value <- vars[[key]]
-  if (is.null(vars)) {
+  if (is.null(value)) {
     stop(cli::format_error(c(
-      "Parameter {.var key} not found in profile of {.file {config_path}}:",
+      "Parameter {.var {key}} not found in {.envvar {profile}} profile of {.file {config_path}}:",
       "x" = "Need to specify {.envvar {key}} in {.envvar {profile}} profile."
     )))
   }
@@ -192,8 +192,8 @@ read_env_var <- function(key = c("token", "host", "wsid"), profile = NULL) {
 
   if (value == "") {
     stop(cli::format_error(c(
-      "{.var {key}} not found:",
-      "x" = "Need to specify {.var {key}} environment variable."
+      "Environment variable {.var {key_name}} not found:",
+      "x" = "Need to specify {.var {key_name}} environment variable."
     )))
   }
 
