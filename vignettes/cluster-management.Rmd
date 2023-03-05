@@ -49,15 +49,11 @@ Refer to documentation for details on how to use other parameters not mentioned 
 
 Before creating a cluster you may want to check the supported values for a number of the parameters. There are functions to assist with this:
 
-+---------------------------------+------------------------------------------------------------------------------------------------------------------------------+
-| Function                        | Purpose                                                                                                                      |
-+================================:+==============================================================================================================================+
+|                        Function | Purpose                                                                                                                      |
+|----------------:|-------------------------------------------------------|
 | `db_cluster_runtime_versions()` | List of runtime versions available for the workspace, useful for finding relevant `spark_version`                            |
-+---------------------------------+------------------------------------------------------------------------------------------------------------------------------+
-| `db_cluster_list_node_types()`  | List of supported node types available in workspace/region, useful for finding relevant `node_type_id`/`driver_node_type_id` |
-+---------------------------------+------------------------------------------------------------------------------------------------------------------------------+
-| `db_cluster_list_zones()`       | AWS Only, lists availability zones (AZ) clusters can occupy                                                                  |
-+---------------------------------+------------------------------------------------------------------------------------------------------------------------------+
+|  `db_cluster_list_node_types()` | List of supported node types available in workspace/region, useful for finding relevant `node_type_id`/`driver_node_type_id` |
+|       `db_cluster_list_zones()` | AWS Only, lists availability zones (AZ) clusters can occupy                                                                  |
 
 `db_cluster_get()` will provide details for the cluster we just created, including information such as the state.
 
@@ -119,37 +115,25 @@ db_cluster_pin(cluster_id = new_cluster$cluster_id)
 
 There are a few functions that can be used to to manage the state of an existing cluster
 
-+----------------------------+----------------------------------------------------------------------------------------------+
-| Function                   | Purpose                                                                                      |
-+===========================:+==============================================================================================+
-| `db_cluster_start()`       | Start a cluster that is inactive                                                             |
-+----------------------------+----------------------------------------------------------------------------------------------+
-| `db_cluster_restart()`     | Restart a cluster, cluster must already be running                                           |
-+----------------------------+----------------------------------------------------------------------------------------------+
-| `db_cluster_delete()`      | Terminate an active cluster, does not remove the cluster configuration from Databricks       |
-+----------------------------+----------------------------------------------------------------------------------------------+
-| `db_cluster_perm_delete()` | Stops (if active) and permanently deletes a cluster, it will not longer appear in Databricks |
-+----------------------------+----------------------------------------------------------------------------------------------+
+|                                         Function | Purpose                                                                                      |
+|-----------------:|------------------------------------------------------|
+|                             `db_cluster_start()` | Start a cluster that is inactive                                                             |
+|                           `db_cluster_restart()` | Restart a cluster, cluster must already be running                                           |
+|  `db_cluster_delete()` /`db_cluster_terminate()` | Terminate an active cluster, does not remove the cluster configuration from Databricks       |
+|                       `db_cluster_perm_delete()` | Stops (if active) and permanently deletes a cluster, it will not longer appear in Databricks |
 
 ## Cluster Libraries
 
 Databricks clusters can have libraries installed from a number of sources using `db_libs_install()` and the associated `libs_*()` functions:
 
-+---------------+------------------------------------------------+
-| Function      | Library Source                                 |
-+==============:+================================================+
-| `lib_cran()`  | CRAN                                           |
-+---------------+------------------------------------------------+
-| `lib_pypi()`  | PyPi                                           |
-+---------------+------------------------------------------------+
-| `lib_egg()`   | Python egg (file)                              |
-+---------------+------------------------------------------------+
-| `lib_whl()`   | Python wheel (file)                            |
-+---------------+------------------------------------------------+
-| `lib_maven()` | Maven                                          |
-+---------------+------------------------------------------------+
-| `lib_jar()`   | JAR (file)                                     |
-+---------------+------------------------------------------------+
+|      Function | Library Source      |
+|--------------:|---------------------|
+|  `lib_cran()` | CRAN                |
+|  `lib_pypi()` | PyPi                |
+|   `lib_egg()` | Python egg (file)   |
+|   `lib_whl()` | Python wheel (file) |
+| `lib_maven()` | Maven               |
+|   `lib_jar()` | JAR (file)          |
 
 ```{r, results='hide'}
 # installing a package from CRAN on cluster
@@ -162,8 +146,8 @@ db_libs_install(
 )
 ```
 
-For convenience the `wait_for_lib_installs()` function will block until all
-the libraries for the specified cluster have finished installing.
+For convenience the `wait_for_lib_installs()` function will block until all the libraries for the specified cluster have finished installing.
+
 ```{r, results='hide'}
 wait_for_lib_installs(cluster_id = new_cluster$cluster_id)
 ```

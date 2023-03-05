@@ -40,7 +40,6 @@ of nodes.
 \seealso{
 Other Clusters API: 
 \code{\link{db_cluster_create}()},
-\code{\link{db_cluster_delete}()},
 \code{\link{db_cluster_edit}()},
 \code{\link{db_cluster_events}()},
 \code{\link{db_cluster_get}()},
@@ -52,6 +51,7 @@ Other Clusters API:
 \code{\link{db_cluster_resize}()},
 \code{\link{db_cluster_restart}()},
 \code{\link{db_cluster_runtime_versions}()},
+\code{\link{db_cluster_terminate}()},
 \code{\link{db_cluster_unpin}()},
 \code{\link{get_and_start_cluster}()}
 }
