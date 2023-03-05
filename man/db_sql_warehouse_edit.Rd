@@ -14,6 +14,7 @@ db_sql_warehouse_edit(
   tags = NULL,
   spot_instance_policy = NULL,
   enable_photon = NULL,
+  warehouse_type = NULL,
   enable_serverless_compute = NULL,
   channel = NULL,
   host = db_host(),
@@ -51,6 +52,8 @@ warehouse.}
 \item{enable_photon}{Whether queries are executed on a native vectorized
 engine that speeds up query execution. The default is \code{TRUE}.}
 
+\item{warehouse_type}{Either "CLASSIC" (default), or "PRO"}
+
 \item{enable_serverless_compute}{Whether this SQL warehouse is a Serverless
 warehouse. To use a Serverless SQL warehouse, you must enable Serverless SQL
 warehouses for the workspace. If Serverless SQL warehouses are disabled for the
@@ -77,7 +80,6 @@ default to the current values.
 }
 \seealso{
 Other Warehouse API: 
-\code{\link{db_sql_global_warehouse_edit}()},
 \code{\link{db_sql_global_warehouse_get}()},
 \code{\link{db_sql_warehouse_create}()},
 \code{\link{db_sql_warehouse_delete}()},

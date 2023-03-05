@@ -387,6 +387,21 @@ db_cluster_restart <- function(cluster_id,
 #' @inheritParams db_cluster_edit
 #' @inheritParams db_sql_warehouse_create
 #'
+#' @inherit db_cluster_restart details
+#'
+#' @export
+db_cluster_delete <- function(cluster_id,
+                              host = db_host(), token = db_token(),
+                              perform_request = TRUE) {
+  db_cluster_action(cluster_id, "delete", host, token, perform_request)
+}
+
+#' Delete/Terminate a Cluster
+#'
+#' @inheritParams auth_params
+#' @inheritParams db_cluster_edit
+#' @inheritParams db_sql_warehouse_create
+#'
 #' @details
 #' The cluster is removed asynchronously. Once the termination has completed,
 #' the cluster will be in the `TERMINATED` state. If the cluster is already in a
@@ -398,9 +413,9 @@ db_cluster_restart <- function(cluster_id,
 #' @family Clusters API
 #'
 #' @export
-db_cluster_delete <- function(cluster_id,
-                              host = db_host(), token = db_token(),
-                              perform_request = TRUE) {
+db_cluster_terminate <- function(cluster_id,
+                                  host = db_host(), token = db_token(),
+                                  perform_request = TRUE) {
   db_cluster_action(cluster_id, "delete", host, token, perform_request)
 }
 

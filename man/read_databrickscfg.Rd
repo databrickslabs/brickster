@@ -19,6 +19,8 @@ Reads Databricks CLI Config
 }
 \details{
 Reads \code{.databrickscfg} file and retrieves the values associated to
-a given profile. Brickster searches for this file in the home directory.
+a given profile. Brickster searches for the config file in the user's home directory.
+To see where this is you can run Sys.getenv("HOME") on unix-like operating systems,
+or, Sys.getenv("USERPROFILE") on windows.
 }
 \keyword{internal}

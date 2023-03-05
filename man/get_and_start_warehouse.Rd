@@ -34,7 +34,6 @@ inactive it will be started and wait until the cluster is active.
 \code{\link[=db_sql_warehouse_get]{db_sql_warehouse_get()}} and \code{\link[=db_sql_warehouse_start]{db_sql_warehouse_start()}}.
 
 Other Warehouse API: 
-\code{\link{db_sql_global_warehouse_edit}()},
 \code{\link{db_sql_global_warehouse_get}()},
 \code{\link{db_sql_warehouse_create}()},
 \code{\link{db_sql_warehouse_delete}()},
