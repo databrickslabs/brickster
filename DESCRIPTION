@@ -29,7 +29,8 @@ Imports:
     jsonlite,
     magrittr,
     purrr,
-    rlang
+    rlang,
+    stringr
 Suggests: 
     testthat (>= 3.0.0),
     DT,
