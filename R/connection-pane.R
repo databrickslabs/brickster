@@ -528,8 +528,6 @@ list_objects <- function(host, token,
                          experiments = NULL,
                          ### Skodman
                          skodman_test=NULL,
-                         personalClusters=NULL,
-                         jobClusters=NULL,
                          ...) {
 
   if (!is.null(skodman_test)) {
@@ -974,9 +972,7 @@ open_workspace <- function(host = db_host(), token = db_token(), name = db_wsid(
           modelregistry = dots$modelregistry,
           model = dots[["model"]],
           versions = dots$versions,
-          skodman_test=dots$skodman_test,
-          personalClusters=dots$personalClusters,
-          jobClusters=dots$jobClusters
+          skodman_test=dots$skodman_test
 
         )
         return(objects)
