@@ -69,8 +69,3 @@ db_feature_table_features <- function(feature_table,
   }
 
 }
-
-
-
-
-table <- "ab_data_an.churn_features"
