@@ -47,6 +47,8 @@ reference:
   - wait_for_lib_installs
 - title: DBFS
   contents: starts_with("db_dbfs", internal = TRUE)
+- title: Volume FileSystem
+  contents: starts_with("db_volume", internal = TRUE)
 - title: Execution Contexts
   contents: starts_with("db_context", internal = TRUE)
 - title: Global Init Scripts
