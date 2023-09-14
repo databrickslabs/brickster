@@ -346,6 +346,18 @@
     <loc>https://zacdav-db.github.io/brickster/reference/db_token.html</loc>
   </url>
   <url>
+    <loc>https://zacdav-db.github.io/brickster/reference/db_volume_delete.html</loc>
+  </url>
+  <url>
+    <loc>https://zacdav-db.github.io/brickster/reference/db_volume_file_exists.html</loc>
+  </url>
+  <url>
+    <loc>https://zacdav-db.github.io/brickster/reference/db_volume_read.html</loc>
+  </url>
+  <url>
+    <loc>https://zacdav-db.github.io/brickster/reference/db_volume_write.html</loc>
+  </url>
+  <url>
     <loc>https://zacdav-db.github.io/brickster/reference/db_workspace_delete.html</loc>
   </url>
   <url>
