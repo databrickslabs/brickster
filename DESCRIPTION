@@ -1,6 +1,6 @@
 Package: brickster
 Title: R interface to Databricks REST 2.0 APIs
-Version: 0.1.1
+Version: 0.2.0
 Authors@R: 
   c(
     person(given = "Zac",
@@ -13,7 +13,7 @@ Authors@R:
            email = "rafi.kurlansik@databricks.com"),
     person("Databricks", role = c("cph", "fnd"))
   )
-Description: R interface to Databricks REST 2.0 APIs.
+Description: Toolkit to work with Databricks from R
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
