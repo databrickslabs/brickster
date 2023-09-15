@@ -58,6 +58,15 @@ db_engine_sql <- function(options) {
   db_engine_template(options, language = "sql")
 }
 
+#' Databricks knitr Engine (Shell)
+#'
+#' @inheritParams db_engine_templat
+#' @noRd
+db_engine_sh <- function(options) {
+  options$code <- paste0("%%sh\n", options$code)
+  db_engine_template(options, language = "python")
+}
+
 #' Clean Command Output From Execution Context
 #'
 #' @param x Output from [ke_check_command_status()].
