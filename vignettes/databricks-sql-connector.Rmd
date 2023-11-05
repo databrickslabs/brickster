@@ -1,0 +1,30 @@
+
+<!-- client <- db_sql_client(id = "475b94ddc7cd5211") -->
+<!-- client$catalogs() -->
+<!-- client$schemas(catalog_name = "zacdav") -->
+<!-- client$schemas(catalog_name = "main") -->
+<!-- client$tables(catalog_name = "main") -->
+<!-- client$tables(catalog_name = "zac%") -->
+<!-- client$columns(catalog_name = "zac%") -->
+<!-- client$columns(catalog_name = "zacdav", table_name = "big%") -->
+<!-- client$execute("select 1") -->
+
+
+<!-- client$execute("select * from zacdav.default.big_example limit 1000000") -->
+<!-- client$set_cloud_fetch(enabled = TRUE) -->
+<!-- client$execute("select * from zacdav.default.big_example limit 1000001") -->
+<!-- client$execute( -->
+<!--   operation = "select * from zacdav.default.big_example where a < %(threshold)s limit 1000", -->
+<!--   parameters = list(threshold = 100) -->
+<!-- ) -->
+<!-- client$execute_many( -->
+<!--   operation = "select * from zacdav.default.big_example where a < %(threshold)s limit 1000", -->
+<!--   seq_of_parameters = list( -->
+<!--     list(threshold = 100), -->
+<!--     list(threshold = 200), -->
+<!--     list(threshold = 300) -->
+<!--   ) -->
+<!-- ) -->
+
+
+

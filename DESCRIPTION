@@ -1,6 +1,6 @@
 Package: brickster
 Title: R interface to Databricks REST 2.0 APIs
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: 
   c(
     person(given = "Zac",
@@ -31,6 +31,7 @@ Imports:
     purrr,
     rlang
 Suggests: 
+    arrow,
     testthat (>= 3.0.0),
     DT,
     htmltools,

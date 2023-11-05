@@ -1,3 +1,10 @@
+#' Databricks SQL Connector (Python)
+#'
+#' @details TODO
+#'
+#' @export
+py_db_sql_connector <- NULL
+
 .onLoad <- function(libname, pkgname) {
   if (requireNamespace("knitr", quietly = TRUE)) {
     knitr::knit_engines$set(
@@ -13,4 +20,8 @@
       db_sh = db_engine_sh
     )
   }
+
+  py_db_sql_connector <<- reticulate::import("databricks.sql", delay_load = TRUE)
+  reticulate::use_virtualenv("r-brickster", required = FALSE)
+
 }

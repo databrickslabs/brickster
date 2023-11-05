@@ -17,10 +17,19 @@
 #' @importFrom magrittr `%>%`
 db_request <- function(endpoint, method, version = NULL, body = NULL, host, token, ...) {
 
-  req <- httr2::request(base_url = paste0(host, "api", "/", version, "/")) %>%
+  url <- list(
+    scheme = "https",
+    hostname = host,
+    path = paste0("/api/", version)
+  )
+
+  url <- httr2::url_build(url)
+  user_agent_str <- paste0("brickster/", packageVersion("brickster"))
+
+  req <- httr2::request(base_url = url) %>%
     httr2::req_auth_bearer_token(token) %>%
-    httr2::req_headers("User-Agent" = "brickster/1.0") %>%
-    httr2::req_user_agent(string = "brickster/1.0") %>%
+    httr2::req_headers("User-Agent" = user_agent_str) %>%
+    httr2::req_user_agent(string = user_agent_str) %>%
     httr2::req_url_path_append(endpoint) %>%
     httr2::req_method(method) %>%
     httr2::req_retry(max_tries = 3, backoff = ~ 2)

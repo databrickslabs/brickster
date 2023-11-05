@@ -1,6 +1,7 @@
 # https://docs.databricks.com/api/workspace/statementexecution
 # https://docs.databricks.com/en/sql/admin/sql-execution-tutorial.html#language-curl
 
+# "https://",
 
 #' Execute SQL Query
 #'
@@ -21,7 +22,7 @@
 #' @family SQL Execution APIs
 #'
 #' @export
-db_sql_query <- function(statement, warehouse_id,
+db_sql_exec_query <- function(statement, warehouse_id,
                          catalog = NULL, schema = NULL, parameters = NULL,
                          row_limit = NULL, byte_limit = NULL,
                          disposition = c("INLINE", "EXTERNAL_LINKS"),
@@ -76,7 +77,7 @@ db_sql_query <- function(statement, warehouse_id,
 #' @family SQL Execution APIs
 #'
 #' @export
-db_sql_cancel <- function(statement_id,
+db_sql_exec_cancel <- function(statement_id,
                           host = db_host(), token = db_token(),
                           perform_request = TRUE) {
 
@@ -107,7 +108,7 @@ db_sql_cancel <- function(statement_id,
 #' @family SQL Execution APIs
 #'
 #' @export
-db_sql_status <- function(statement_id,
+db_sql_exec_status <- function(statement_id,
                           host = db_host(), token = db_token(),
                           perform_request = TRUE) {
 
@@ -139,7 +140,7 @@ db_sql_status <- function(statement_id,
 #' @family SQL Execution APIs
 #'
 #' @export
-db_sql_result <- function(statement_id, chunk_index,
+db_sql_exec_result <- function(statement_id, chunk_index,
                           host = db_host(), token = db_token(),
                           perform_request = TRUE) {
 

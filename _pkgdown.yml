@@ -80,6 +80,8 @@ reference:
   contents: starts_with("db_repo", internal = TRUE)
 - title: Secrets
   contents: starts_with("db_secrets", internal = TRUE)
+- title: SQL Statement Execution
+  contents: starts_with("db_sql_exec", internal = TRUE)
 - title: Warehouses
   contents:
   - starts_with("db_sql", internal = TRUE)
