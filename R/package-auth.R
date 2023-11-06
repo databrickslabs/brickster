@@ -39,6 +39,9 @@ db_host <- function(id = NULL, prefix = NULL, profile = getOption("db_profile", 
 
   if (is.null(id) && is.null(prefix)) {
     host <- read_env_var(key = "host", profile = profile)
+    if (!grepl("^https://", host)) {
+      host <- paste0("https://", host)
+    }
     host <- httr2::url_parse(host)$hostname
   } else {
     # otherwise construct host string
