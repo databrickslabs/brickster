@@ -10,7 +10,7 @@
 #' @export
 #'
 #' @examples
-#' \donttest{install_db_sql_connector()}
+#' \dontrun{install_db_sql_connector()}
 install_db_sql_connector <- function(envname = determine_brickster_venv(),
                                      method = "auto", ...) {
   reticulate::py_install(
@@ -52,6 +52,7 @@ install_db_sql_connector <- function(envname = determine_brickster_venv(),
 #' \dontrun{
 #'   client <- db_sql_client(id = "<warehouse_id>", use_cloud_fetch = TRUE)
 #' }
+#' @export
 db_sql_client <- function(id,
                           catalog = NULL, schema = NULL,
                           compute_type = c("warehouse", "cluster"),
@@ -88,6 +89,7 @@ db_sql_client <- function(id,
 #' using [reticulate](https://rstudio.github.io/reticulate/).
 #'
 #' [API reference on Databricks docs](https://docs.databricks.com/en/dev-tools/python-sql-connector.html#api-reference)
+#' @import R6
 #' @export
 DatabricksSqlClient <- R6::R6Class(
   classname = "db_sql_client",
