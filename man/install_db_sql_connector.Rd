@@ -5,24 +5,35 @@
 \title{Install Databricks SQL Connector (Python)}
 \usage{
 install_db_sql_connector(
-  envname = detect_brickster_venv(),
+  envname = determine_brickster_venv(),
   method = "auto",
   ...
 )
 }
 \arguments{
-\item{envname}{TODO}
+\item{envname}{The name, or full path, of the environment in which Python
+packages are to be installed. When \code{NULL} (the default), the active
+environment as set by the \code{RETICULATE_PYTHON_ENV} variable will be used;
+if that is unset, then the \code{r-reticulate} environment will be used.}
 
-\item{method}{TODO}
+\item{method}{Installation method. By default, "auto" automatically finds a
+method that will work in the local environment. Change the default to force
+a specific installation method. Note that the "virtualenv" method is not
+available on Windows.}
 
-\item{...}{TODO}
+\item{...}{Additional arguments passed to \code{\link[reticulate:conda_install]{conda_install()}}
+or \code{\link[reticulate:virtualenv_install]{virtualenv_install()}}.}
 }
 \description{
 Install Databricks SQL Connector (Python)
 }
 \details{
-TODO
+Installs \href{https://github.com/databricks/databricks-sql-python}{\code{databricks-sql-connector}}.
+Environemnt is resolved by \code{\link[=determine_brickster_venv]{determine_brickster_venv()}} which defaults to
+\code{r-brickster} virtualenv.
+
+When running within Databricks it will use the existing python environment.
 }
 \examples{
-TODO
+\dontrun{install_db_sql_connector()}
 }

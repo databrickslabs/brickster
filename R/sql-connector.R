@@ -1,16 +1,17 @@
 #' Install Databricks SQL Connector (Python)
 #'
-#' @param envname TODO
-#' @param method TODO
-#' @param ... TODO
+#' @inheritParams reticulate::py_install
+#' @details Installs [`databricks-sql-connector`](https://github.com/databricks/databricks-sql-python).
+#' Environemnt is resolved by [determine_brickster_venv()] which defaults to
+#' `r-brickster` virtualenv.
 #'
-#' @details TODO
+#' When running within Databricks it will use the existing python environment.
 #'
 #' @export
 #'
 #' @examples
-#' TODO
-install_db_sql_connector <- function(envname = detect_brickster_venv(),
+#' \dontrun{install_db_sql_connector()}
+install_db_sql_connector <- function(envname = determine_brickster_venv(),
                                      method = "auto", ...) {
   reticulate::py_install(
     "databricks-sql-connector",
@@ -36,9 +37,11 @@ install_db_sql_connector <- function(envname = detect_brickster_venv(),
 #'
 #' @return TODO
 #' @import arrow
-#' @export
 #'
-#' @examples TODO
+#' @examples
+#' \dontrun{
+#'   client <- db_sql_client(id = "<warehouse_id>", use_cloud_fetch = TRUE)
+#' }
 db_sql_client <- function(id,
                           catalog = NULL, schema = NULL,
                           compute_type = c("warehouse", "cluster"),
@@ -85,14 +88,6 @@ DatabricksSqlClient <- R6::R6Class(
         session_configuration = session_configuration,
         ...
       )
-    },
-
-    use_cloud_fetch = function() {
-      private$connection$use_cloud_fetch
-    },
-
-    set_cloud_fetch = function(enabled = TRUE) {
-      private$connection$use_cloud_fetch <- enabled
     },
 
     columns = function(catalog_name = NULL, schema_name = NULL,
@@ -164,7 +159,11 @@ DatabricksSqlClient <- R6::R6Class(
 
   ),
   private = list(
-    connection = NULL
+    connection = NULL,
+
+    finalize = function() {
+      private$connection$close()
+    }
   )
 )
 

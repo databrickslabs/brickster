@@ -1,8 +1,6 @@
 # https://docs.databricks.com/api/workspace/statementexecution
 # https://docs.databricks.com/en/sql/admin/sql-execution-tutorial.html#language-curl
 
-# "https://",
-
 #' Execute SQL Query
 #'
 #' @details TODO

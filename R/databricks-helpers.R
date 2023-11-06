@@ -3,13 +3,13 @@ on_databricks <- function() {
   dbr != ""
 }
 
-#' Detect brickster virtualenv
+#' Determine brickster virtualenv
 #'
 #' @details Returns `NULL` when running within Databricks,
-#' otherwise "r-brickster"
+#' otherwise `"r-brickster"`
 #'
 #' @export
-detect_brickster_venv <- function() {
+determine_brickster_venv <- function() {
   if (on_databricks()) {
     NULL
   } else {

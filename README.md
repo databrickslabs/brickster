@@ -1,9 +1,9 @@
-# brickster <a href='https://zacdav-db.github.io/brickster/'><img src='man/figures/logo.png' align="right" height="139" /></a>
+# brickster <a href='https://zacdav-db.github.io/brickster/'><img src="man/figures/logo.png" align="right" height="139"/></a>
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/zacdav-db/brickster/workflows/R-CMD-check/badge.svg)](https://github.com/zacdav-db/brickster/actions)
-[![Codecov test
-coverage](https://codecov.io/gh/zacdav-db/brickster/branch/main/graph/badge.svg)](https://app.codecov.io/gh/zacdav-db/brickster?branch=main)
+
+[![R-CMD-check](https://github.com/zacdav-db/brickster/workflows/R-CMD-check/badge.svg)](https://github.com/zacdav-db/brickster/actions) [![Codecov test coverage](https://codecov.io/gh/zacdav-db/brickster/branch/main/graph/badge.svg)](https://app.codecov.io/gh/zacdav-db/brickster?branch=main)
+
 <!-- badges: end -->
 
 `{brickster}` aims to reduce friction for R users on Databricks by:
@@ -16,7 +16,7 @@ coverage](https://codecov.io/gh/zacdav-db/brickster/branch/main/graph/badge.svg)
 
 -   Utility functions to streamline workloads
 
--   Shiny widgets for RStudio
+-   Expose the [`databricks-sql-connector`](https://github.com/databricks/databricks-sql-python) via `{reticulate}`
 
 ## Installation
 
@@ -24,13 +24,12 @@ coverage](https://codecov.io/gh/zacdav-db/brickster/branch/main/graph/badge.svg)
 
 ## Setup Authentication
 
-Docs website has [an article](https://zacdav-db.github.io/brickster/articles/setup-auth.html)
-that provides details on how to connect to a Databricks workspace.
+Docs website has [an article](https://zacdav-db.github.io/brickster/articles/setup-auth.html) that provides details on how to connect to a Databricks workspace.
 
 ## API Coverage
 
 | API                                                                                                                  | Available | Version |
-|----------------------------------------------------------------------------------------------------------------------|-----------|---------|
+|----------------------------------------------------|----------|----------|
 | [DBFS](https://docs.databricks.com/dev-tools/api/latest/dbfs.html)                                                   | Yes       | 2.0     |
 | [Secrets](https://docs.databricks.com/dev-tools/api/latest/secrets.html)                                             | Yes       | 2.0     |
 | [Repos](https://docs.databricks.com/dev-tools/api/latest/repos.html)                                                 | Yes       | 2.0     |
@@ -45,12 +44,12 @@ that provides details on how to connect to a Databricks workspace.
 | [SQL Statement Execution](https://docs.databricks.com/api/workspace/statementexecution)                              | Yes       | 2.0     |
 | [REST 1.2 Commands](https://docs.databricks.com/dev-tools/api/1.2/index.html)                                        | Partially | 1.2     |
 | [Unity Catalog](https://api-docs.databricks.com/rest/latest/unity-catalog-api-specification-2-1.html)                | Partially | 2.1     |
-| [Tokens](https://docs.databricks.com/dev-tools/api/latest/tokens.html)                                               | Undecided | 2.0     |
-| [Delta Live Tables](https://docs.databricks.com/data-engineering/delta-live-tables/delta-live-tables-api-guide.html) | Undecided | 2.0     |
 | mlflow webhooks (Private Preview)                                                                                    | Later     | 2.0     |
-| [Queries & Dashboards](https://docs.databricks.com/sql/api/queries-dashboards.html)                                  | Undecided | 2.0     |
-| [Instance Pools](https://docs.databricks.com/dev-tools/api/latest/instance-pools.html)                               | Undecided | 2.0     |
-| mlflow OSS                                                                                                           | Undecided | 2.0     |
+| [Tokens](https://docs.databricks.com/dev-tools/api/latest/tokens.html)                                               | Never     | 2.0     |
+| [Delta Live Tables](https://docs.databricks.com/data-engineering/delta-live-tables/delta-live-tables-api-guide.html) | Never     | 2.0     |
+| [Queries & Dashboards](https://docs.databricks.com/sql/api/queries-dashboards.html)                                  | Never     | 2.0     |
+| [Instance Pools](https://docs.databricks.com/dev-tools/api/latest/instance-pools.html)                               | Never     | 2.0     |
+| mlflow OSS                                                                                                           | Never     | 2.0     |
 | [Cluster Policies](https://docs.databricks.com/dev-tools/api/latest/policies.html)                                   | Never     | 2.0     |
 | [Permissions](https://docs.databricks.com/dev-tools/api/latest/permissions.html)                                     | Never     | 2.0     |
 | [Token Management](https://docs.databricks.com/dev-tools/api/latest/token-management.html)                           | Never     | 2.0     |

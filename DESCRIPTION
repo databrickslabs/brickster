@@ -1,5 +1,5 @@
 Package: brickster
-Title: R interface to Databricks REST APIs
+Title: Databricks Utilities in R
 Version: 0.2.1
 Authors@R: 
   c(
@@ -13,7 +13,7 @@ Authors@R:
            email = "rafi.kurlansik@databricks.com"),
     person("Databricks", role = c("cph", "fnd"))
   )
-Description: Toolkit to work with Databricks from R
+Description: Toolkit to work with Databricks from R.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -31,15 +31,16 @@ Imports:
     magrittr,
     purrr,
     reticulate,
-    rlang
+    R6 (>= 2.4.0),
+    rlang,
+    utils
 Suggests: 
     testthat (>= 3.0.0),
     htmltools,
     knitr,
     magick,
     rmarkdown,
-    rstudioapi,
-    rvest
+    rstudioapi
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.0
 VignetteBuilder: knitr

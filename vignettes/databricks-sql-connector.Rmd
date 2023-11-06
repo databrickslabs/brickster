@@ -10,9 +10,8 @@
 <!-- client$execute("select 1") -->
 
 
-<!-- client$execute("select * from zacdav.default.big_example limit 1000000") -->
-<!-- client$set_cloud_fetch(enabled = TRUE) -->
-<!-- client$execute("select * from zacdav.default.big_example limit 1000001") -->
+<!-- client$execute("select * from zacdav.default.big_example limit 100") -->
+<!-- client$execute("select * from zacdav.default.big_example limit 100") -->
 <!-- client$execute( -->
 <!--   operation = "select * from zacdav.default.big_example where a < %(threshold)s limit 1000", -->
 <!--   parameters = list(threshold = 100) -->

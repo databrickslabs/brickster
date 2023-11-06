@@ -14,6 +14,7 @@
 #'
 #' @return request
 #' @import httr2
+#' @importFrom utils packageVersion
 #' @importFrom magrittr `%>%`
 db_request <- function(endpoint, method, version = NULL, body = NULL, host, token, ...) {
 
@@ -24,7 +25,7 @@ db_request <- function(endpoint, method, version = NULL, body = NULL, host, toke
   )
 
   url <- httr2::url_build(url)
-  user_agent_str <- paste0("brickster/", packageVersion("brickster"))
+  user_agent_str <- paste0("brickster/", utils::packageVersion("brickster"))
 
   req <- httr2::request(base_url = url) %>%
     httr2::req_auth_bearer_token(token) %>%

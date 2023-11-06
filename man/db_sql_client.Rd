@@ -46,5 +46,7 @@ Create Databricks SQL Connector Client
 TODO
 }
 \examples{
-TODO
+\dontrun{
+  client <- db_sql_client(id = "<warehouse_id>", use_cloud_fetch = TRUE)
+}
 }

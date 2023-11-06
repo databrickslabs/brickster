@@ -11,9 +11,14 @@ An object of class \code{python.builtin.module} (inherits from \code{python.buil
 py_db_sql_connector
 }
 \description{
-Databricks SQL Connector (Python)
+Access the Databricks SQL connector from Python via
+{reticulate}.
 }
 \details{
-TODO
+This requires that the connector has been installed via
+\code{\link[=install_db_sql_connector]{install_db_sql_connector()}}.
+
+For more documentation of the methods, refer to the
+\href{https://github.com/databricks/databricks-sql-python}{python documentation}.
 }
 \keyword{datasets}

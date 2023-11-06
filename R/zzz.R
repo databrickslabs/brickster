@@ -1,6 +1,13 @@
 #' Databricks SQL Connector (Python)
 #'
-#' @details TODO
+#' @description  Access the Databricks SQL connector from Python via
+#' {reticulate}.
+#'
+#' @details This requires that the connector has been installed via
+#' [install_db_sql_connector()].
+#'
+#' For more documentation of the methods, refer to the
+#' [python documentation](https://github.com/databricks/databricks-sql-python).
 #'
 #' @export
 py_db_sql_connector <- NULL
@@ -23,7 +30,7 @@ py_db_sql_connector <- NULL
 
   py_db_sql_connector <<- reticulate::import("databricks.sql", delay_load = TRUE)
 
-  venv <- detect_brickster_venv()
+  venv <- determine_brickster_venv()
   reticulate::use_virtualenv(virtualenv = venv, required = FALSE)
 
 }
