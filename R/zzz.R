@@ -22,6 +22,8 @@ py_db_sql_connector <- NULL
   }
 
   py_db_sql_connector <<- reticulate::import("databricks.sql", delay_load = TRUE)
-  reticulate::use_virtualenv("r-brickster", required = FALSE)
+
+  venv <- detect_brickster_venv()
+  reticulate::use_virtualenv(virtualenv = venv, required = FALSE)
 
 }

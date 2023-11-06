@@ -4,7 +4,11 @@
 \alias{install_db_sql_connector}
 \title{Install Databricks SQL Connector (Python)}
 \usage{
-install_db_sql_connector(envname = "r-brickster", method = "auto", ...)
+install_db_sql_connector(
+  envname = detect_brickster_venv(),
+  method = "auto",
+  ...
+)
 }
 \arguments{
 \item{envname}{TODO}

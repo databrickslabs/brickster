@@ -10,7 +10,8 @@
 #'
 #' @examples
 #' TODO
-install_db_sql_connector <- function(envname = "r-brickster", method = "auto", ...) {
+install_db_sql_connector <- function(envname = detect_brickster_venv(),
+                                     method = "auto", ...) {
   reticulate::py_install(
     "databricks-sql-connector",
     envname = envname,
@@ -34,6 +35,7 @@ install_db_sql_connector <- function(envname = "r-brickster", method = "auto", .
 #' @param workspace_id TODO
 #'
 #' @return TODO
+#' @import arrow
 #' @export
 #'
 #' @examples TODO
