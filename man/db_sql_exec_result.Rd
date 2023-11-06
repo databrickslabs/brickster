@@ -13,19 +13,34 @@ db_sql_exec_result(
 )
 }
 \arguments{
-\item{statement_id}{TODO}
+\item{statement_id}{String, query execution \code{statement_id}}
 
-\item{chunk_index}{TODO}
+\item{chunk_index}{Integer, chunk index to fetch result. Starts from \code{0}.}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
 \item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}
+
+\item{perform_request}{If \code{TRUE} (default) the request is performed, if
+\code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \description{
 Get SQL Query Results
 }
 \details{
-TODO
+After the statement execution has \code{SUCCEEDED}, this request can be used to
+fetch any chunk by index.
+
+Whereas the first chunk with chunk_index = \code{0} is typically fetched with
+\code{\link[=db_sql_exec_result]{db_sql_exec_result()}} or \code{\link[=db_sql_exec_status]{db_sql_exec_status()}}, this request can be used
+to fetch subsequent chunks
+
+The response structure is identical to the nested result element described
+in the \code{\link[=db_sql_exec_result]{db_sql_exec_result()}} request, and similarly includes the
+\code{next_chunk_index} and \code{next_chunk_internal_link} fields for simple
+iteration through the result set.
+
+\href{https://docs.databricks.com/api/workspace/statementexecution/getstatementresultchunkn}{Read more on Databricks API docs}
 }
 \seealso{
 Other SQL Execution APIs: 

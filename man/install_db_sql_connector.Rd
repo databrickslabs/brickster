@@ -35,5 +35,5 @@ Environemnt is resolved by \code{\link[=determine_brickster_venv]{determine_bric
 When running within Databricks it will use the existing python environment.
 }
 \examples{
-\dontrun{install_db_sql_connector()}
+\donttest{install_db_sql_connector()}
 }

@@ -18,32 +18,48 @@ db_sql_client(
 )
 }
 \arguments{
-\item{id}{TODO}
+\item{id}{String, ID of either the SQL warehouse or all purpose cluster.
+Important to set \code{compute_type} to the associated type of \code{id}.}
 
-\item{catalog}{TODO}
+\item{catalog}{String, sets default catalog for statement execution, similar
+to \verb{USE CATALOG} in SQL.}
 
-\item{schema}{TODO}
+\item{schema}{String, sets default schema for statement execution, similar
+to \verb{USE SCHEMA} in SQL.}
 
-\item{compute_type}{TODO}
+\item{compute_type}{One of \code{"warehouse"} (default) or \code{"cluster"}, corresponding to
+associated compute type of the resource specified in \code{id}.}
 
-\item{use_cloud_fetch}{TODO}
+\item{use_cloud_fetch}{Boolean (default is \code{FALSE}). \code{TRUE} to send fetch
+requests directly to the cloud object store to download chunks of data.
+False to send fetch requests directly to Databricks.
 
-\item{session_configuration}{TODO}
+If \code{use_cloud_fetch} is set to \code{TRUE} but network access is blocked, then
+the fetch requests will fail.}
 
-\item{host}{TODO}
+\item{session_configuration}{A optional named list of Spark session
+configuration parameters. Setting a configuration is equivalent to using the
+\verb{SET key=val} SQL command.
+Run the SQL command \code{SET -v} to get a full list of available configurations.}
 
-\item{token}{TODO}
+\item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
-\item{workspace_id}{TODO}
+\item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}
+
+\item{workspace_id}{String, workspace Id used to build the http path for the
+connection. This defaults to using \code{\link[=db_wsid]{db_wsid()}} to get \code{DATABRICKS_WSID}
+environment variable. Not required if \code{compute_type} is \code{"cluster"}.}
+
+\item{...}{passed onto \code{\link[=DatabricksSqlClient]{DatabricksSqlClient()}}.}
 }
 \value{
-TODO
+\code{\link[=DatabricksSqlClient]{DatabricksSqlClient()}}
 }
 \description{
 Create Databricks SQL Connector Client
 }
 \details{
-TODO
+Create client using Databricks SQL Connector.
 }
 \examples{
 \dontrun{

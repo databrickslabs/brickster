@@ -41,7 +41,7 @@ Suggests:
     magick,
     rmarkdown,
     rstudioapi
-Roxygen: list(markdown = TRUE)
+Roxygen: list(markdown = TRUE, r6 = TRUE)
 RoxygenNote: 7.2.0
 VignetteBuilder: knitr
 URL: https://github.com/zacdav-db/brickster
