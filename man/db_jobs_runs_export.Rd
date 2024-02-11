@@ -38,8 +38,8 @@ Other Jobs API:
 \code{\link{db_jobs_run_now}()},
 \code{\link{db_jobs_runs_cancel}()},
 \code{\link{db_jobs_runs_delete}()},
-\code{\link{db_jobs_runs_get_output}()},
 \code{\link{db_jobs_runs_get}()},
+\code{\link{db_jobs_runs_get_output}()},
 \code{\link{db_jobs_runs_list}()},
 \code{\link{db_jobs_runs_submit}()},
 \code{\link{db_jobs_update}()}

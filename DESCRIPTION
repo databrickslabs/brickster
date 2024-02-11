@@ -23,13 +23,15 @@ Imports:
     curl,
     data.table,
     dplyr,
+    emoji,
     glue,
     httr2,
     ini,
     jsonlite,
     magrittr,
     purrr,
-    rlang
+    rlang,
+    R6
 Suggests: 
     testthat (>= 3.0.0),
     DT,
@@ -40,7 +42,7 @@ Suggests:
     rstudioapi,
     rvest
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.0
+RoxygenNote: 7.3.1
 VignetteBuilder: knitr
 URL: https://github.com/zacdav-db/brickster
 Config/testthat/edition: 3

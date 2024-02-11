@@ -46,9 +46,9 @@ Other Model Registry API:
 \code{\link{db_mlflow_model_reject_transition_req}()},
 \code{\link{db_mlflow_model_transition_req}()},
 \code{\link{db_mlflow_model_transition_stage}()},
+\code{\link{db_mlflow_model_version_comment}()},
 \code{\link{db_mlflow_model_version_comment_delete}()},
 \code{\link{db_mlflow_model_version_comment_edit}()},
-\code{\link{db_mlflow_model_version_comment}()},
 \code{\link{db_mlflow_registered_model_details}()}
 }
 \concept{Model Registry API}

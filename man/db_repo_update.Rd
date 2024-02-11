@@ -41,7 +41,7 @@ of the detached HEAD.
 Other Repos API: 
 \code{\link{db_repo_create}()},
 \code{\link{db_repo_delete}()},
-\code{\link{db_repo_get_all}()},
-\code{\link{db_repo_get}()}
+\code{\link{db_repo_get}()},
+\code{\link{db_repo_get_all}()}
 }
 \concept{Repos API}
