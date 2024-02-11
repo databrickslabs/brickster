@@ -25,3 +25,11 @@ send_document <- function() {
   code <- prepare_code_for_repl(code)
   rstudioapi::sendToConsole(code = code, execute = TRUE)
 }
+
+send_file <- function() {
+  script <- rstudioapi::selectFile(filter = "*.R", existing = TRUE)
+  if (!is.null(script) || script != "") {
+    code <- prepare_code_for_repl(readLines(script))
+    rstudioapi::sendToConsole(code = code, execute = TRUE)
+  }
+}

@@ -4,6 +4,11 @@ Binding: send_selection
 Interactive: false
 
 Name: Send current document to console
-Description: Send selected documente to console, is compatible with remote REPL
+Description: Send selected document to console, is compatible with remote REPL
 Binding: send_document
+Interactive: false
+
+Name: Send R script to console
+Description: Send selected script to console, is compatible with remote REPL
+Binding: send_file
 Interactive: false
