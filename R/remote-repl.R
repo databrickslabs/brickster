@@ -164,8 +164,10 @@ db_repl <- function(cluster_id, language = c("r", "py", "scala", "sql", "sh")) {
     cmd <- readline(prompt)
     if (cmd != "") {
       result <- manager$cmd_run(cmd, language)
-      clean_result <- clean_cmd_results(result, language)
-      cat(trimws(clean_result), "\n")
+      clean_result <- trimws(clean_cmd_results(result, language))
+      if (clean_result != "") {
+        cat(clean_result, "\n")
+      }
     }
   }
 }
