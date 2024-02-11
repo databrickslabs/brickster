@@ -91,7 +91,11 @@ handle_cmd_error <- function(x, language) {
   }
 
   if (language == "r") {
-    msg <- substring(cause, 62)
+    if (grepl("DATABRICKS_CURRENT_TEMP_CMD__", cause)) {
+      msg <- substring(cause, 62)
+    } else {
+      msg <- cause
+    }
   }
 
   if (language %in% c("sql", "scala")) {
@@ -165,7 +169,7 @@ db_repl <- function(cluster_id, language = c("r", "py", "scala", "sql", "sh")) {
     if (cmd != "") {
       result <- manager$cmd_run(cmd, language)
       clean_result <- trimws(clean_cmd_results(result, language))
-      if (clean_result != "") {
+      if (length(clean_result) > 0 && clean_result != "") {
         cat(clean_result, "\n")
       }
     }
