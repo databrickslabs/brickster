@@ -36,8 +36,8 @@ Creates a repo in the workspace and links it to the remote Git repo specified.
 \seealso{
 Other Repos API: 
 \code{\link{db_repo_delete}()},
-\code{\link{db_repo_get_all}()},
 \code{\link{db_repo_get}()},
+\code{\link{db_repo_get_all}()},
 \code{\link{db_repo_update}()}
 }
 \concept{Repos API}

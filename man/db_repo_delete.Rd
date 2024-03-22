@@ -27,8 +27,8 @@ Deletes the specified repo
 \seealso{
 Other Repos API: 
 \code{\link{db_repo_create}()},
-\code{\link{db_repo_get_all}()},
 \code{\link{db_repo_get}()},
+\code{\link{db_repo_get_all}()},
 \code{\link{db_repo_update}()}
 }
 \concept{Repos API}
