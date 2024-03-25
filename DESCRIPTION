@@ -1,6 +1,6 @@
 Package: brickster
 Title: R interface to Databricks REST 2.0 APIs
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: 
   c(
     person(given = "Zac",
@@ -13,7 +13,7 @@ Authors@R:
            email = "rafi.kurlansik@databricks.com"),
     person("Databricks", role = c("cph", "fnd"))
   )
-Description: Toolkit to work with Databricks from R
+Description: Toolkit to work with Databricks from R.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -32,7 +32,6 @@ Imports:
     rlang
 Suggests: 
     testthat (>= 3.0.0),
-    DT,
     htmltools,
     knitr,
     magick,
@@ -40,7 +39,7 @@ Suggests:
     rstudioapi,
     rvest
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.0
+RoxygenNote: 7.3.1
 VignetteBuilder: knitr
 URL: https://github.com/zacdav-db/brickster
 Config/testthat/edition: 3

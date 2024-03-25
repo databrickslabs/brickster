@@ -26,8 +26,7 @@ db_volume_read <- function(path, destination,
   if (perform_request) {
     req %>%
       httr2::req_error(body = db_req_error_body) %>%
-      # uncomment when available via cran
-      # httr2::req_progress(type = "down") %>%
+      httr2::req_progress(type = "down") %>%
       httr2::req_perform(path = destination) %>%
       httr2::resp_check_status()
   } else {
@@ -75,39 +74,24 @@ db_volume_delete <- function(path,
 #' Upload a file to volume filesystem.
 #'
 #' @param file Path to a file on local system, takes precedent over `path`.
-#' @param contents String that is base64 encoded.
 #' @param overwrite Flag (Default: `FALSE`) that specifies whether to overwrite
 #' existing files.
 #' @inheritParams db_volume_read
 #' @inheritParams auth_params
 #'
 #' @details
-#' Either `contents` or `file` must be specified. `file` takes precedent over
-#' `contents` if both are specified.
-#'
-#' Uploads a file of up to 2 GiB.
+#' Uploads a file of up to 5 GiB.
 #'
 #' @family Volumes FileSystem API
 #'
 #' @export
-db_volume_write <- function(path, file = NULL, contents = NULL, overwrite = FALSE,
-                        host = db_host(), token = db_token()) {
+db_volume_write <- function(path, file = NULL, overwrite = FALSE,
+                        host = db_host(), token = db_token(), perform_request = TRUE) {
 
-  body <- list(
-    path = path,
-    overwrite = ifelse(overwrite, "true", "false")
-  )
-
-  # file takes priority, so don't bother if file is also specified
-  if (!is.null(contents) && is.null(file)) {
-    # contents must be base64 encoded string
-    body$contents <- base64enc::base64encode(base::charToRaw(contents))
-  } else if (!is.null(file)) {
-    body$contents <- curl::form_file(path = file)
-  } else {
+  if (is.null(file)) {
     stop(cli::format_error(c(
       "Nothing to upload:",
-      "x" = "Either `file` or `contents` must be specified."
+      "x" = "Either `file` must be specified."
     )))
   }
 
@@ -119,13 +103,15 @@ db_volume_write <- function(path, file = NULL, contents = NULL, overwrite = FALS
     token = token
   )
 
+  req <- req %>%
+    httr2::req_url_query(
+      overwrite = ifelse(overwrite, "true", "false")
+    )
+
   req %>%
-    httr2::req_body_multipart(
-      path = body$path,
-      contents = body$contents,
-      overwrite = body$overwrite
-    ) %>%
+    httr2::req_body_file(file) %>%
     httr2::req_error(body = db_req_error_body) %>%
+    httr2::req_progress(type = "up") %>%
     httr2::req_perform() %>%
     httr2::resp_check_status()
 
