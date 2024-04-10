@@ -7,7 +7,7 @@
 db_dbfs_close(
   handle,
   host = db_host(),
-  token = db_token,
+  token = db_token(),
   perform_request = TRUE
 )
 }

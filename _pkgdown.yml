@@ -51,8 +51,6 @@ reference:
   contents: starts_with("db_volume", internal = TRUE)
 - title: Execution Contexts
   contents: starts_with("db_context", internal = TRUE)
-- title: Global Init Scripts
-  contents: starts_with("db_global_init_scripts", internal = TRUE)
 - title: Jobs
   contents:
   - starts_with("db_jobs", internal = TRUE)
