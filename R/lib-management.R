@@ -29,8 +29,10 @@ set_lib_path <- function(path, version = FALSE) {
     dir.create(lib_path, recursive = TRUE)
   }
 
+  lib_path <- normalizePath(lib_path, "/")
+
   message("primary package path is now ", lib_path)
-  .libPaths(new = lib_path)
+  .libPaths(new = c(lib_path, .libPaths()))
   lib_path
 }
 
@@ -50,5 +52,6 @@ remove_lib_path <- function(path, version = FALSE) {
     lib_path <- file.path(path)
   }
 
-  .libPaths(new = setdiff(lib_path, .libPaths()))
+  lib_path <- normalizePath(lib_path, "/")
+  .libPaths(new = setdiff(.libPaths(), lib_path))
 }

@@ -150,7 +150,7 @@ db_dbfs_add_block <- function(handle, data, convert_to_raw = FALSE,
 #' @return HTTP Response
 #' @export
 db_dbfs_close <- function(handle,
-                          host = db_host(), token = db_token,
+                          host = db_host(), token = db_token(),
                           perform_request = TRUE) {
 
   body <- list(handle = handle)
@@ -424,7 +424,8 @@ db_dbfs_delete <- function(path, recursive = FALSE,
 #'
 #' @export
 db_dbfs_put <- function(path, file = NULL, contents = NULL, overwrite = FALSE,
-                        host = db_host(), token = db_token()) {
+                        host = db_host(), token = db_token(),
+                        perform_request = TRUE) {
 
   body <- list(
     path = path,
@@ -452,15 +453,19 @@ db_dbfs_put <- function(path, file = NULL, contents = NULL, overwrite = FALSE,
     token = token
   )
 
-  req %>%
-    httr2::req_body_multipart(
-      path = body$path,
-      contents = body$contents,
-      overwrite = body$overwrite
-    ) %>%
-    httr2::req_error(body = db_req_error_body) %>%
-    httr2::req_perform() %>%
-    httr2::resp_check_status()
+  if (perform_request) {
+    req %>%
+      httr2::req_body_multipart(
+        path = body$path,
+        contents = body$contents,
+        overwrite = body$overwrite
+      ) %>%
+      httr2::req_error(body = db_req_error_body) %>%
+      httr2::req_perform() %>%
+      httr2::resp_body_json()
+  } else {
+    req
+  }
 
 }
 
