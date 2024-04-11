@@ -38,5 +38,4 @@ test_that("Feature Store API - don't perform", {
   )
   expect_s3_class(resp_tbl_features, "httr2_request")
 
-
 })

@@ -32,7 +32,6 @@ Imports:
     rlang
 Suggests: 
     testthat (>= 3.0.0),
-    DT,
     htmltools,
     knitr,
     magick,
