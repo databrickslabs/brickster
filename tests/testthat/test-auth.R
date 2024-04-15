@@ -133,7 +133,7 @@ test_that("auth functions - reading .databrickscfg", {
     expect_identical(host, host_w)
     expect_identical(wsid, wsid_w)
   } else {
-    expect_failure(read_databrickscfg())
+    expect_error(read_databrickscfg())
   }
 
   options(use_databrickscfg = FALSE)
