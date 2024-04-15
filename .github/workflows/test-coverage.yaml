@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
     steps:
       - uses: actions/checkout@v2
@@ -24,6 +26,12 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: covr
+
+      - name: Create and populate .Renviron file
+        run: |
+          echo DATABRICKS_HOST="$DATABRICKS_HOST" >> ~/.Renviron
+          echo DATABRICKS_TOKEN="$DATABRICKS_TOKEN" >> ~/.Renviron
+          shell: bash
 
       - name: Test coverage
         run: covr::codecov()
