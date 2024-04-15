@@ -7,10 +7,10 @@
 db_volume_write(
   path,
   file = NULL,
-  contents = NULL,
   overwrite = FALSE,
   host = db_host(),
-  token = db_token()
+  token = db_token(),
+  perform_request = TRUE
 )
 }
 \arguments{
@@ -19,28 +19,30 @@ slash.}
 
 \item{file}{Path to a file on local system, takes precedent over \code{path}.}
 
-\item{contents}{String that is base64 encoded.}
-
 \item{overwrite}{Flag (Default: \code{FALSE}) that specifies whether to overwrite
 existing files.}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
 \item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}
+
+\item{perform_request}{If \code{TRUE} (default) the request is performed, if
+\code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \description{
 Upload a file to volume filesystem.
 }
 \details{
-Either \code{contents} or \code{file} must be specified. \code{file} takes precedent over
-\code{contents} if both are specified.
-
-Uploads a file of up to 2 GiB.
+Uploads a file of up to 5 GiB.
 }
 \seealso{
 Other Volumes FileSystem API: 
 \code{\link{db_volume_delete}()},
+\code{\link{db_volume_dir_create}()},
+\code{\link{db_volume_dir_delete}()},
+\code{\link{db_volume_dir_exists}()},
 \code{\link{db_volume_file_exists}()},
+\code{\link{db_volume_list}()},
 \code{\link{db_volume_read}()}
 }
 \concept{Volumes FileSystem API}

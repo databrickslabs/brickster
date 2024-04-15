@@ -48,7 +48,11 @@ Other Clusters API:
 \code{\link{db_cluster_runtime_versions}()},
 \code{\link{db_cluster_start}()},
 \code{\link{db_cluster_terminate}()},
-\code{\link{db_cluster_unpin}()}
+\code{\link{db_cluster_unpin}()},
+\code{\link{get_latest_dbr}()}
+
+Other Cluster Helpers: 
+\code{\link{get_latest_dbr}()}
 }
 \concept{Cluster Helpers}
 \concept{Clusters API}

@@ -1,7 +1,5 @@
 test_that("DBFS API", {
 
-  options(use_databrickscfg = TRUE)
-
   filename <- file.path("", basename(tempfile(fileext = ".txt")))
   dirname <- file.path("", basename(tempdir()))
 
@@ -50,8 +48,6 @@ test_that("DBFS API", {
 
 
 test_that("DBFS API - don't perform", {
-
-  options(use_databrickscfg = TRUE)
 
   filename <- file.path("", basename(tempfile(fileext = ".txt")))
   dirname <- file.path("", basename(tempdir()))

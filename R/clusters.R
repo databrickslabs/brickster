@@ -804,3 +804,68 @@ get_and_start_cluster <- function(cluster_id, polling_interval = 5,
 
   cluster_status
 }
+
+
+#' Get Latest Databricks Runtime (DBR)
+#'
+#' @inheritParams auth_params
+#' @inheritParams db_sql_warehouse_create
+#' @param lts Boolean, if `TRUE` returns only LTS runtimes
+#' @param ml Boolean, if `TRUE` returns only ML runtimes
+#' @param gpu Boolean, if `TRUE` returns only ML GPU runtimes
+#' @param photon Boolean, if `TRUE` returns only photon runtimes
+#'
+#' @details
+#' There are runtime combinations that are not possible, such as GPU/ML and
+#' photon. This function does not permit invalid combinations.
+#'
+#'
+#' @family Clusters API
+#' @family Cluster Helpers
+#'
+#' @return Named list
+#' @export
+get_latest_dbr <- function(lts, ml, gpu, photon,
+                           host = db_host(), token = db_token()) {
+
+  # don't allow impossible combinations
+  if (gpu) {
+    if (!ml) {
+      stop("GPU runtime only available for ML versions")
+    }
+  }
+
+  if ((gpu || ml) && photon) {
+    stop("Cannot use ML/GPU runtimes with Photon")
+  }
+
+  runtimes <- db_cluster_runtime_versions(host = host, token = token)
+
+  runtimes_adj <- runtimes[[1]] %>%
+    purrr::map_dfr(function(x) {
+      list(key = x[["key"]], name = x[["name"]])
+    }) %>%
+    dplyr::mutate(
+      version = as.numeric(gsub("^(\\d+\\.\\d)\\..*", "\\1", .data$key)),
+      lts = grepl("LTS", .data$name),
+      ml = grepl("ml", .data$key),
+      gpu = grepl("gpu", .data$key),
+      photon = grepl("photon", .data$key),
+    ) %>%
+    dplyr::arrange(dplyr::desc(version))
+
+  runtime_matches <- runtimes_adj %>%
+    dplyr::filter(
+      .data$lts == {{lts}},
+      .data$ml == {{ml}},
+      .data$gpu == {{gpu}},
+      .data$photon == {{photon}}
+    ) %>%
+    dplyr::slice_head(n = 1)
+
+  list(
+    key = runtime_matches[["key"]],
+    name = runtime_matches[["name"]]
+  )
+
+}

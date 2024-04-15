@@ -15,26 +15,15 @@ db_volume_read <- function(path, destination,
                            host = db_host(), token = db_token(),
                            perform_request = TRUE) {
 
-  req <- db_request(
-    endpoint = paste0("fs/files/", path),
-    method = "GET",
-    version = "2.0",
+  db_volume_action(
+    path = path,
+    destination = destination,
+    action = "GET",
+    type = "files",
     host = host,
-    token = token
+    token = token,
+    perform_request = perform_request
   )
-
-  if (perform_request) {
-    req %>%
-      httr2::req_error(body = db_req_error_body) %>%
-      # uncomment when available via cran
-      # httr2::req_progress(type = "down") %>%
-      httr2::req_perform(path = destination) %>%
-      httr2::resp_check_status()
-  } else {
-    req
-  }
-
-  return(destination)
 
 }
 
@@ -48,92 +37,89 @@ db_volume_read <- function(path, destination,
 #'
 #' @export
 db_volume_delete <- function(path,
+                             host = db_host(), token = db_token(),
+                             perform_request = TRUE) {
+
+  db_volume_action(
+    path = path,
+    action = "DELETE",
+    type = "directories",
+    host = host,
+    token = token,
+    perform_request = perform_request
+  )
+
+}
+
+#' Volume FileSystem List Directory Contents
+#'
+#' @inheritParams auth_params
+#' @inheritParams db_volume_read
+#' @inheritParams db_sql_warehouse_create
+#'
+#' @family Volumes FileSystem API
+#'
+#' @export
+db_volume_list <- function(path,
                            host = db_host(), token = db_token(),
                            perform_request = TRUE) {
 
-  req <- db_request(
-    endpoint = paste0("fs/files/", path),
-    method = "DELETE",
-    version = "2.0",
+  # TODO: paginate automatically
+
+  db_volume_action(
+    path = path,
+    action = "GET",
+    type = "directories",
     host = host,
-    token = token
+    token = token,
+    perform_request = perform_request
   )
 
-  if (perform_request) {
-    req %>%
-      httr2::req_error(body = db_req_error_body) %>%
-      httr2::req_perform() %>%
-      httr2::resp_check_status()
-  } else {
-    req
-  }
-
 }
+
 
 #' Volume FileSystem Write
 #'
 #' Upload a file to volume filesystem.
 #'
 #' @param file Path to a file on local system, takes precedent over `path`.
-#' @param contents String that is base64 encoded.
 #' @param overwrite Flag (Default: `FALSE`) that specifies whether to overwrite
 #' existing files.
 #' @inheritParams db_volume_read
 #' @inheritParams auth_params
 #'
 #' @details
-#' Either `contents` or `file` must be specified. `file` takes precedent over
-#' `contents` if both are specified.
-#'
-#' Uploads a file of up to 2 GiB.
+#' Uploads a file of up to 5 GiB.
 #'
 #' @family Volumes FileSystem API
 #'
 #' @export
-db_volume_write <- function(path, file = NULL, contents = NULL, overwrite = FALSE,
-                        host = db_host(), token = db_token()) {
+db_volume_write <- function(path, file = NULL, overwrite = FALSE,
+                        host = db_host(), token = db_token(), perform_request = TRUE) {
 
-  body <- list(
-    path = path,
-    overwrite = ifelse(overwrite, "true", "false")
-  )
-
-  # file takes priority, so don't bother if file is also specified
-  if (!is.null(contents) && is.null(file)) {
-    # contents must be base64 encoded string
-    body$contents <- base64enc::base64encode(base::charToRaw(contents))
-  } else if (!is.null(file)) {
-    body$contents <- curl::form_file(path = file)
-  } else {
+  if (is.null(file)) {
     stop(cli::format_error(c(
       "Nothing to upload:",
-      "x" = "Either `file` or `contents` must be specified."
+      "x" = "`file` must be specified."
     )))
   }
 
-  req <- db_request(
-    endpoint = paste0("fs/files/", path),
-    method = "PUT",
-    version = "2.0",
+  db_volume_action(
+    path = path,
+    file = file,
+    overwrite = overwrite,
+    action = "PUT",
+    type = "files",
     host = host,
-    token = token
+    token = token,
+    perform_request = perform_request
   )
-
-  req %>%
-    httr2::req_body_multipart(
-      path = body$path,
-      contents = body$contents,
-      overwrite = body$overwrite
-    ) %>%
-    httr2::req_error(body = db_req_error_body) %>%
-    httr2::req_perform() %>%
-    httr2::resp_check_status()
 
 }
 
 
 #' Volume FileSystem File Status
-
+#'
 #' @inheritParams db_volume_read
 #' @inheritParams auth_params
 #' @inheritParams db_dbfs_create
@@ -143,27 +129,166 @@ db_volume_write <- function(path, file = NULL, contents = NULL, overwrite = FALS
 #'
 #' @export
 db_volume_file_exists <- function(path,
+                                  host = db_host(), token = db_token(),
+                                  perform_request = TRUE) {
+
+  db_volume_action(
+    path = path,
+    file = file,
+    action = "HEAD",
+    type = "files",
+    host = host,
+    token = token,
+    perform_request = perform_request
+  )
+
+}
+
+#' Volume FileSystem Create Directory
+#'
+#' @inheritParams auth_params
+#' @inheritParams db_volume_read
+#' @inheritParams db_sql_warehouse_create
+#'
+#' @family Volumes FileSystem API
+#'
+#' @export
+db_volume_dir_create <- function(path,
+                                 host = db_host(), token = db_token(),
+                                 perform_request = TRUE) {
+
+  db_volume_action(
+    path = path,
+    action = "PUT",
+    type = "directories",
+    host = host,
+    token = token,
+    perform_request = perform_request
+  )
+
+}
+
+#' Volume FileSystem Delete Directory
+#'
+#' @inheritParams auth_params
+#' @inheritParams db_volume_read
+#' @inheritParams db_sql_warehouse_create
+#'
+#' @family Volumes FileSystem API
+#'
+#' @export
+db_volume_dir_delete <- function(path,
+                                 host = db_host(), token = db_token(),
+                                 perform_request = TRUE) {
+
+  db_volume_action(
+    path = path,
+    action = "DELETE",
+    type = "directories",
+    host = host,
+    token = token,
+    perform_request = perform_request
+  )
+
+}
+
+
+#' Volume FileSystem Check Directory Exists
+#'
+#' @inheritParams auth_params
+#' @inheritParams db_volume_read
+#' @inheritParams db_sql_warehouse_create
+#'
+#' @family Volumes FileSystem API
+#'
+#' @export
+db_volume_dir_exists <- function(path,
+                                 host = db_host(), token = db_token(),
+                                 perform_request = TRUE) {
+
+  db_volume_action(
+    path = path,
+    action = "HEAD",
+    type = "directories",
+    host = host,
+    token = token,
+    perform_request = perform_request
+  )
+
+}
+
+
+is_valid_volume_path <- function(path) {
+  if (!grepl("^/Volumes/", path)) {
+    stop("`path` must start with `/Volumes/`")
+  }
+  path
+}
+
+
+db_volume_action <- function(path,
+                             file = NULL,
+                             overwrite = NULL,
+                             destination = NULL,
+                             action = c("HEAD", "PUT", "DELETE", "GET"),
+                             type = c("directories", "files"),
                              host = db_host(), token = db_token(),
                              perform_request = TRUE) {
 
+  path <- is_valid_volume_path(path)
+  action <- match.arg(action)
+  type <- match.arg(type)
+
   req <- db_request(
-    endpoint = paste0("fs/files/", path),
-    method = "HEAD",
+    endpoint = paste0("fs/", type, path),
+    method = action,
     version = "2.0",
     host = host,
     token = token
   )
 
-  if (perform_request) {
-    status <- req %>%
-      httr2::req_error(is_error = function(resp) httr2::resp_status(resp) == 500) %>%
-      httr2::req_perform() %>%
-      httr2::resp_status()
+  if (!is.null(overwrite)) {
+    req <- req %>%
+      httr2::req_url_query(overwrite = ifelse(overwrite, "true", "false"))
+  }
 
-    return(status == 200)
+  if (type == "files" && action %in% c("GET", "PUT")) {
+    if (action == "PUT") {
+      req <- httr2::req_body_file(req, file)
+    }
+
+    # show progress when uploading and downloading files
+    req <- req %>%
+      httr2::req_progress(type = ifelse(action == "GET", "down", "up"))
+  }
+
+
+  if (perform_request) {
+    resp <- req %>%
+      httr2::req_error(is_error = function(resp) httr2::resp_status(resp) == 500) %>%
+      httr2::req_perform(path = destination) %>%
+      httr2::resp_check_status()
+
+    if (action == "HEAD") {
+      return (httr2::resp_status(resp) == 200)
+    }
+
+    if (action %in% c("PUT", "DELETE")) {
+      return (httr2::resp_status(resp) == 204)
+    }
+
+    # GET on files is used for downloading - useful to return location
+    if (action == "GET") {
+      if (type == "directories") {
+        return(httr2::resp_body_json(resp))
+      } else {
+        return(destination)
+      }
+    }
 
   } else {
     req
   }
+
 
 }

@@ -53,6 +53,7 @@ Other Clusters API:
 \code{\link{db_cluster_runtime_versions}()},
 \code{\link{db_cluster_terminate}()},
 \code{\link{db_cluster_unpin}()},
-\code{\link{get_and_start_cluster}()}
+\code{\link{get_and_start_cluster}()},
+\code{\link{get_latest_dbr}()}
 }
 \concept{Clusters API}

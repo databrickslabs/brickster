@@ -1,3 +1,4 @@
+# nocov start
 #' Setup Databricks RMarkdown
 #'
 #' @param cluster_id Databricks cluster ID
@@ -37,9 +38,5 @@ setup_databricks_rmd <- function(cluster_id) {
   knitr::opts_chunk$set(db_exec_context = exec_context$id)
 
   invisible(exec_context)
-
 }
-
-
-
-
+# nocov end
