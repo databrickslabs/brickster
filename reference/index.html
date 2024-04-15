@@ -6,7 +6,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light" data-bs-theme="light"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">brickster</a>
 
@@ -80,6 +80,21 @@
           <code><a href="db_read_netrc.html">db_read_netrc()</a></code> 
         </dt>
         <dd>Read .netrc File</dd>
+      </dl><dl><dt>
+          
+          <code><a href="db_current_user.html">db_current_user()</a></code> 
+        </dt>
+        <dd>Get Current User Info</dd>
+      </dl><dl><dt>
+          
+          <code><a href="db_current_workspace_id.html">db_current_workspace_id()</a></code> 
+        </dt>
+        <dd>Detect Current Workspace ID</dd>
+      </dl><dl><dt>
+          
+          <code><a href="db_current_cloud.html">db_current_cloud()</a></code> 
+        </dt>
+        <dd>Detect Current Workspaces Cloud</dd>
       </dl></div><div class="section level2">
       <h2 id="clusters">Clusters<a class="anchor" aria-label="anchor" href="#clusters"></a></h2>
       
@@ -181,6 +196,11 @@
           <code><a href="get_and_start_cluster.html">get_and_start_cluster()</a></code> 
         </dt>
         <dd>Get and Start Cluster</dd>
+      </dl><dl><dt>
+          
+          <code><a href="get_latest_dbr.html">get_latest_dbr()</a></code> 
+        </dt>
+        <dd>Get Latest Databricks Runtime (DBR)</dd>
       </dl><dl><dt>
           
           <code><a href="aws_attributes.html">aws_attributes()</a></code> 
@@ -361,9 +381,29 @@
         <dd>Volume FileSystem Delete</dd>
       </dl><dl><dt>
           
+          <code><a href="db_volume_dir_create.html">db_volume_dir_create()</a></code> 
+        </dt>
+        <dd>Volume FileSystem Create Directory</dd>
+      </dl><dl><dt>
+          
+          <code><a href="db_volume_dir_delete.html">db_volume_dir_delete()</a></code> 
+        </dt>
+        <dd>Volume FileSystem Delete Directory</dd>
+      </dl><dl><dt>
+          
+          <code><a href="db_volume_dir_exists.html">db_volume_dir_exists()</a></code> 
+        </dt>
+        <dd>Volume FileSystem Check Directory Exists</dd>
+      </dl><dl><dt>
+          
           <code><a href="db_volume_file_exists.html">db_volume_file_exists()</a></code> 
         </dt>
         <dd>Volume FileSystem File Status</dd>
+      </dl><dl><dt>
+          
+          <code><a href="db_volume_list.html">db_volume_list()</a></code> 
+        </dt>
+        <dd>Volume FileSystem List Directory Contents</dd>
       </dl><dl><dt>
           
           <code><a href="db_volume_read.html">db_volume_read()</a></code> 
@@ -415,42 +455,6 @@
           <code><a href="db_context_status.html">db_context_status()</a></code> 
         </dt>
         <dd>Get Information About an Execution Context</dd>
-      </dl></div><div class="section level2">
-      <h2 id="global-init-scripts">Global Init Scripts<a class="anchor" aria-label="anchor" href="#global-init-scripts"></a></h2>
-      
-      
-
-      
-    </div><div id="" class="section level2">
-      
-      
-      
-
-      <dl><dt>
-          
-          <code><a href="db_global_init_scripts_create.html">db_global_init_scripts_create()</a></code> 
-        </dt>
-        <dd>Create a Global Init Script</dd>
-      </dl><dl><dt>
-          
-          <code><a href="db_global_init_scripts_delete.html">db_global_init_scripts_delete()</a></code> 
-        </dt>
-        <dd>Delete a Global Init Script</dd>
-      </dl><dl><dt>
-          
-          <code><a href="db_global_init_scripts_get.html">db_global_init_scripts_get()</a></code> 
-        </dt>
-        <dd>Get a Global Init Script</dd>
-      </dl><dl><dt>
-          
-          <code><a href="db_global_init_scripts_list.html">db_global_init_scripts_list()</a></code> 
-        </dt>
-        <dd>Get All Global Init Scripts (Summaries)</dd>
-      </dl><dl><dt>
-          
-          <code><a href="db_global_init_scripts_update.html">db_global_init_scripts_update()</a></code> 
-        </dt>
-        <dd>Update a Global Init Script</dd>
       </dl></div><div class="section level2">
       <h2 id="jobs">Jobs<a class="anchor" aria-label="anchor" href="#jobs"></a></h2>
       
@@ -1162,7 +1166,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.8.</p>
 </div>
 
     </footer></div>
