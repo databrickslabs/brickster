@@ -1,3 +1,5 @@
+skip_unless_credentials_set()
+
 test_that("Unity Catalog API - don't perform", {
 
   resp_list <- db_mlflow_registered_models_list(

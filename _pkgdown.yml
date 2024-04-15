@@ -24,10 +24,14 @@ reference:
   - db_token
   - db_wsid
   - db_read_netrc
+  - db_current_user
+  - db_current_workspace_id
+  - db_current_cloud
 - title: Clusters
   contents:
   - starts_with("db_cluster", internal = TRUE)
   - get_and_start_cluster
+  - get_latest_dbr
   - aws_attributes
   - gcp_attributes
   - azure_attributes

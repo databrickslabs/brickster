@@ -1,3 +1,5 @@
+skip_unless_credentials_set()
+
 test_that("Secrets API - don't perform", {
 
   resp_list <- db_secrets_list(

@@ -1,3 +1,5 @@
+skip_unless_credentials_set()
+
 test_that("Execution Contexts API - don't perform", {
 
   resp_ctx_create <- db_context_create(

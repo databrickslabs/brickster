@@ -1,3 +1,5 @@
+skip_unless_credentials_set()
+
 test_that("Warehouse API - don't perform", {
 
   resp_list <- db_sql_warehouse_list(perform_request = F)

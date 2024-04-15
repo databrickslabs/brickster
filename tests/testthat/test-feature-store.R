@@ -1,3 +1,5 @@
+skip_unless_credentials_set()
+
 test_that("Feature Store API - don't perform", {
   resp_search <- db_feature_tables_search(perform_request = FALSE)
   expect_s3_class(resp_search, "httr2_request")

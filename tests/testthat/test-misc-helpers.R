@@ -1,3 +1,5 @@
+skip_unless_credentials_set()
+
 test_that("Misc Helpers - don't perform", {
 
   resp_wsid <- db_current_workspace_id(perform_request = F)

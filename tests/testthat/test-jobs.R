@@ -1,3 +1,4 @@
+skip_unless_credentials_set()
 
 test_that("Jobs API - don't perform", {
 

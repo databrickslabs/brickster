@@ -1,3 +1,5 @@
+skip_unless_credentials_set()
+
 test_that("Volumes API - don't perform", {
 
   valid_volume_path <- "/Volumes/catalog/schema/volume/"

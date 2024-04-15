@@ -1,3 +1,5 @@
+skip_unless_credentials_set()
+
 test_that("DBFS API - don't perform", {
 
   filename <- file.path("", basename(tempfile(fileext = ".txt")))

@@ -22,3 +22,20 @@ skip_unless_authenticated <- function() {
   }
 
 }
+
+skip_unless_credentials_set() {
+  creds_avialable <- tryCatch(
+    {
+      db_host()
+      db_token()
+      TRUE
+    },
+    error = function(cond) {
+      FALSE
+    }
+  )
+
+  if (!creds_avialable) {
+    skip("Test only runs when credentials are available")
+  }
+}

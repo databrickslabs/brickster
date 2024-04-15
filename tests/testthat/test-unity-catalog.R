@@ -1,3 +1,5 @@
+skip_unless_credentials_set()
+
 test_that("Unity Catalog API - don't perform", {
 
   resp_summary <- db_uc_metastore_summary(perform_request = F)

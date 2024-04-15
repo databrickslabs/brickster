@@ -1,3 +1,5 @@
+skip_unless_credentials_set()
+
 test_that("experiments API - don't perform", {
 
   resp_list <- db_experiments_list(max_results = 1, perform_request = FALSE)

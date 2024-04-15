@@ -1,3 +1,5 @@
+skip_unless_credentials_set()
+
 test_that("Workspace API - don't perform", {
 
   resp_list <- db_workspace_list(

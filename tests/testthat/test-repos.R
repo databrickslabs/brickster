@@ -1,3 +1,5 @@
+skip_unless_credentials_set()
+
 test_that("Feature Store API - don't perform", {
 
   resp_get_all <- db_repo_get_all("/", perform_request = FALSE)
