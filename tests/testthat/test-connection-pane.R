@@ -1,3 +1,6 @@
+skip_unless_authenticated()
+skip_unless_aws_workspace()
+
 test_that("Connection Pane Helpers", {
 
   # current behaviour is if not match return original string

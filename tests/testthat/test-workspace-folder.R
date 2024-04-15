@@ -1,34 +1,3 @@
-test_that("Workspace API", {
-
-  expect_no_error({
-    resp_list <- db_workspace_list(path = "/Shared/")
-  })
-  expect_type(resp_list, "list")
-
-  expect_no_error({
-    resp_mkdirs <- db_workspace_mkdirs(path = "/Shared/brickster_dir_test/")
-  })
-  expect_null(resp_mkdirs)
-
-  expect_no_error({
-    resp_get_status <- db_workspace_get_status(
-      path = "/Shared/brickster_dir_test/"
-    )
-  })
-  expect_type(resp_get_status, "list")
-  expect_identical(resp_get_status$object_type, "DIRECTORY")
-  expect_identical(resp_get_status$path, "/Shared/brickster_dir_test")
-
-  expect_no_error({
-    resp_delete <- db_workspace_delete(
-      path = "/Shared/brickster_dir_test/"
-    )
-  })
-  expect_type(resp_delete, "list")
-
-})
-
-
 test_that("Workspace API - don't perform", {
 
   resp_list <- db_workspace_list(
@@ -88,5 +57,38 @@ test_that("Workspace API - don't perform", {
       perform_request = F
     )
   })
+
+})
+
+skip_unless_authenticated()
+skip_unless_aws_workspace()
+
+test_that("Workspace API", {
+
+  expect_no_error({
+    resp_list <- db_workspace_list(path = "/Shared/")
+  })
+  expect_type(resp_list, "list")
+
+  expect_no_error({
+    resp_mkdirs <- db_workspace_mkdirs(path = "/Shared/brickster_dir_test/")
+  })
+  expect_null(resp_mkdirs)
+
+  expect_no_error({
+    resp_get_status <- db_workspace_get_status(
+      path = "/Shared/brickster_dir_test/"
+    )
+  })
+  expect_type(resp_get_status, "list")
+  expect_identical(resp_get_status$object_type, "DIRECTORY")
+  expect_identical(resp_get_status$path, "/Shared/brickster_dir_test")
+
+  expect_no_error({
+    resp_delete <- db_workspace_delete(
+      path = "/Shared/brickster_dir_test/"
+    )
+  })
+  expect_type(resp_delete, "list")
 
 })

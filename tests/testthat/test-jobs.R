@@ -1,104 +1,3 @@
-test_that("Jobs API", {
-
-  # define a job task
-  simple_task <- job_task(
-    task_key = "simple_task",
-    description = "a simple task that runs a notebook",
-    # specify a cluster for the job
-    new_cluster = new_cluster(
-      spark_version = "9.1.x-scala2.12",
-      driver_node_type_id = "m5a.large",
-      node_type_id = "m5a.large",
-      num_workers = 2,
-      cloud_attr = aws_attributes(ebs_volume_size = 32)
-    ),
-    # this task will be a notebook
-    task = notebook_task(notebook_path = "/brickster/simple-notebook")
-  )
-
-  # create job with simple task
-  simple_task_job <- db_jobs_create(
-    name = "brickster example: simple",
-    tasks = job_tasks(simple_task),
-    # 9am every day, paused currently
-    schedule = cron_schedule(
-      quartz_cron_expression = "0 0 9 * * ?",
-      pause_status = "PAUSED"
-    )
-  )
-
-  expect_no_error({
-    resp_list <- db_jobs_list()
-  })
-  expect_type(resp_list, "list")
-
-  expect_no_error({
-    resp_create <- db_jobs_create(
-      name = "brickster example: simple",
-      tasks = job_tasks(simple_task),
-      # 9am every day, paused currently
-      schedule = cron_schedule(
-        quartz_cron_expression = "0 0 9 * * ?",
-        pause_status = "PAUSED"
-      )
-    )
-  })
-  expect_type(resp_create, "list")
-  expect_true(!is.null(resp_create$job_id))
-
-  expect_no_error({
-    resp_update <- db_jobs_update(
-      job_id = resp_create$job_id,
-      name = "brickster example: renamed job",
-    )
-  })
-  expect_type(resp_update, "list")
-
-  expect_no_error({
-    resp_get <- db_jobs_get(
-      job_id = resp_create$job_id
-    )
-  })
-  expect_type(resp_get, "list")
-  expect_identical(resp_get$settings$name, "brickster example: renamed job")
-
-  expect_no_error({
-    resp_reset <- db_jobs_reset(
-      job_id = resp_create$job_id,
-      name = "brickster example: reset job",
-      tasks = job_tasks(simple_task),
-      schedule = cron_schedule(
-        quartz_cron_expression = "0 0 9 * * ?",
-        pause_status = "PAUSED"
-      )
-    )
-  })
-  expect_type(resp_reset, "list")
-
-  # `db_jobs_get` again to validate reset behaviour
-  expect_no_error({
-    resp_get <- db_jobs_get(
-      job_id = resp_create$job_id
-    )
-  })
-  expect_type(resp_get, "list")
-  expect_identical(resp_get$settings$name, "brickster example: reset job")
-
-  expect_no_error({
-    resp_run_get <- db_jobs_runs_list(job_id = resp_create$job_id)
-  })
-  expect_null(resp_run_get)
-
-  expect_no_error({
-    resp_delete <- db_jobs_delete(
-      job_id = resp_create$job_id
-    )
-  })
-  expect_type(resp_get, "list")
-
-
-})
-
 
 test_that("Jobs API - don't perform", {
 
@@ -237,3 +136,108 @@ test_that("Jobs API - don't perform", {
 
 
 })
+
+skip_unless_authenticated()
+skip_unless_aws_workspace()
+
+test_that("Jobs API", {
+
+  # define a job task
+  simple_task <- job_task(
+    task_key = "simple_task",
+    description = "a simple task that runs a notebook",
+    # specify a cluster for the job
+    new_cluster = new_cluster(
+      spark_version = "9.1.x-scala2.12",
+      driver_node_type_id = "m5a.large",
+      node_type_id = "m5a.large",
+      num_workers = 2,
+      cloud_attr = aws_attributes(ebs_volume_size = 32)
+    ),
+    # this task will be a notebook
+    task = notebook_task(notebook_path = "/brickster/simple-notebook")
+  )
+
+  # create job with simple task
+  simple_task_job <- db_jobs_create(
+    name = "brickster example: simple",
+    tasks = job_tasks(simple_task),
+    # 9am every day, paused currently
+    schedule = cron_schedule(
+      quartz_cron_expression = "0 0 9 * * ?",
+      pause_status = "PAUSED"
+    )
+  )
+
+  expect_no_error({
+    resp_list <- db_jobs_list()
+  })
+  expect_type(resp_list, "list")
+
+  expect_no_error({
+    resp_create <- db_jobs_create(
+      name = "brickster example: simple",
+      tasks = job_tasks(simple_task),
+      # 9am every day, paused currently
+      schedule = cron_schedule(
+        quartz_cron_expression = "0 0 9 * * ?",
+        pause_status = "PAUSED"
+      )
+    )
+  })
+  expect_type(resp_create, "list")
+  expect_true(!is.null(resp_create$job_id))
+
+  expect_no_error({
+    resp_update <- db_jobs_update(
+      job_id = resp_create$job_id,
+      name = "brickster example: renamed job",
+    )
+  })
+  expect_type(resp_update, "list")
+
+  expect_no_error({
+    resp_get <- db_jobs_get(
+      job_id = resp_create$job_id
+    )
+  })
+  expect_type(resp_get, "list")
+  expect_identical(resp_get$settings$name, "brickster example: renamed job")
+
+  expect_no_error({
+    resp_reset <- db_jobs_reset(
+      job_id = resp_create$job_id,
+      name = "brickster example: reset job",
+      tasks = job_tasks(simple_task),
+      schedule = cron_schedule(
+        quartz_cron_expression = "0 0 9 * * ?",
+        pause_status = "PAUSED"
+      )
+    )
+  })
+  expect_type(resp_reset, "list")
+
+  # `db_jobs_get` again to validate reset behaviour
+  expect_no_error({
+    resp_get <- db_jobs_get(
+      job_id = resp_create$job_id
+    )
+  })
+  expect_type(resp_get, "list")
+  expect_identical(resp_get$settings$name, "brickster example: reset job")
+
+  expect_no_error({
+    resp_run_get <- db_jobs_runs_list(job_id = resp_create$job_id)
+  })
+  expect_null(resp_run_get)
+
+  expect_no_error({
+    resp_delete <- db_jobs_delete(
+      job_id = resp_create$job_id
+    )
+  })
+  expect_type(resp_get, "list")
+
+
+})
+

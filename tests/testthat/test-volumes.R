@@ -1,10 +1,3 @@
-# Not running as part of tests currently
-# test_that("Volumes API", {
-#
-#
-# })
-
-
 test_that("Volumes API - don't perform", {
 
   valid_volume_path <- "/Volumes/catalog/schema/volume/"

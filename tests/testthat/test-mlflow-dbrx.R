@@ -1,46 +1,3 @@
-test_that("Unity Catalog API", {
-
-  expect_no_error({
-    resp_list <- db_mlflow_registered_models_list(
-      max_results = 1
-    )
-  })
-  expect_type(resp_list, "list")
-
-  expect_no_error({
-    resp_search <- db_mlflow_registered_models_search(
-      max_results = 1
-    )
-  })
-  expect_type(resp_search, "list")
-
-  expect_no_error({
-    resp_search_v <- db_mlflow_registered_models_search_versions(
-      name = resp_search$registered_models[[1]]$name,
-      max_results = 1
-    )
-  })
-  expect_type(resp_search_v, "list")
-
-  expect_no_error({
-    resp_details <- db_mlflow_registered_model_details(
-      name = resp_search$registered_models[[1]]$name
-    )
-  })
-  expect_type(resp_details, "list")
-
-  expect_no_error({
-    resp_tran_open_req <- db_mlflow_model_open_transition_reqs(
-      name = resp_search$registered_models[[1]]$name,
-      version = 1
-    )
-  })
-  expect_type(resp_tran_open_req, "list")
-
-})
-
-
-
 test_that("Unity Catalog API - don't perform", {
 
   resp_list <- db_mlflow_registered_models_list(
@@ -137,3 +94,49 @@ test_that("Unity Catalog API - don't perform", {
 
 
 })
+
+skip_unless_authenticated()
+skip_unless_aws_workspace()
+
+test_that("Unity Catalog API", {
+
+  expect_no_error({
+    resp_list <- db_mlflow_registered_models_list(
+      max_results = 1
+    )
+  })
+  expect_type(resp_list, "list")
+
+  expect_no_error({
+    resp_search <- db_mlflow_registered_models_search(
+      max_results = 1
+    )
+  })
+  expect_type(resp_search, "list")
+
+  expect_no_error({
+    resp_search_v <- db_mlflow_registered_models_search_versions(
+      name = resp_search$registered_models[[1]]$name,
+      max_results = 1
+    )
+  })
+  expect_type(resp_search_v, "list")
+
+  expect_no_error({
+    resp_details <- db_mlflow_registered_model_details(
+      name = resp_search$registered_models[[1]]$name
+    )
+  })
+  expect_type(resp_details, "list")
+
+  expect_no_error({
+    resp_tran_open_req <- db_mlflow_model_open_transition_reqs(
+      name = resp_search$registered_models[[1]]$name,
+      version = 1
+    )
+  })
+  expect_type(resp_tran_open_req, "list")
+
+})
+
+

@@ -1,116 +1,3 @@
-test_that("Clusters API", {
-
-  # basic metadata functions
-  expect_no_error({
-    resp_list <- db_cluster_list()
-  })
-  expect_type(resp_list, "list")
-
-  expect_no_error({
-    resp_list_zones <- db_cluster_list_zones()
-  })
-  expect_type(resp_list_zones, "list")
-
-  expect_no_error({
-    resp_list_ntypes <- db_cluster_list_node_types()
-  })
-  expect_type(resp_list_ntypes, "list")
-
-  expect_no_error({
-    resp_list_dbrv <- db_cluster_runtime_versions()
-  })
-  expect_type(resp_list_dbrv, "list")
-
-  # creating cluster (AWS specific)
-  expect_no_error({
-    resp_create <- db_cluster_create(
-      name = "brickster_test_cluster",
-      spark_version = resp_list_dbrv[[1]][[1]]$key,
-      num_workers = 2,
-      node_type_id = "m5a.xlarge",
-      cloud_attrs = aws_attributes(
-        ebs_volume_size = 32
-      ),
-      autotermination_minutes = 15
-    )
-  })
-
-  expect_no_error({
-    resp_get <- db_cluster_get(resp_create$cluster_id)
-  })
-
-  # test env currently has max number of pins
-  # resp_pin <- db_cluster_pin(resp_create$cluster_id)
-
-  expect_no_error({
-    resp_unpin <- db_cluster_unpin(resp_create$cluster_id)
-  })
-
-  expect_no_error({
-    resp_events <- db_cluster_events(resp_create$cluster_id)
-  })
-
-  expect_no_error({
-    resp_terminate <- db_cluster_terminate(cluster_id = resp_create$cluster_id)
-  })
-
-  expect_no_error({
-    resp_perm_delete <- db_cluster_perm_delete(
-      cluster_id = resp_create$cluster_id
-    )
-  })
-
-  expect_no_error({
-    dbr1 <- get_latest_dbr(lts = TRUE, ml = FALSE, gpu = FALSE, photon = FALSE)
-  })
-  expect_type(dbr1, "list")
-  expect_length(dbr1, 2)
-
-
-  expect_no_error({
-    dbr2 <- get_latest_dbr(lts = FALSE, ml = FALSE, gpu = FALSE, photon = FALSE)
-  })
-  expect_type(dbr2, "list")
-  expect_length(dbr2, 2)
-
-  expect_no_error({
-    dbr3 <- get_latest_dbr(lts = TRUE, ml = TRUE, gpu = FALSE, photon = FALSE)
-  })
-  expect_type(dbr3, "list")
-  expect_length(dbr3, 2)
-
-  expect_no_error({
-    dbr4 <- get_latest_dbr(lts = TRUE, ml = TRUE, gpu = TRUE, photon = FALSE)
-  })
-  expect_type(dbr4, "list")
-  expect_length(dbr4, 2)
-
-  expect_no_error({
-    dbr5 <- get_latest_dbr(lts = TRUE, ml = FALSE, gpu = FALSE, photon = TRUE)
-  })
-  expect_type(dbr5, "list")
-  expect_length(dbr5, 2)
-
-  expect_error({
-    get_latest_dbr(lts = TRUE, ml = TRUE, gpu = TRUE, photon = TRUE)
-  })
-
-  expect_error({
-    get_latest_dbr(lts = TRUE, ml = TRUE, gpu = FALSE, photon = TRUE)
-  })
-
-  expect_error({
-    get_latest_dbr(lts = TRUE, ml = FALSE, gpu = TRUE, photon = TRUE)
-  })
-
-  expect_error({
-    get_latest_dbr(lts = FALSE, ml = FALSE, gpu = TRUE, photon = TRUE)
-  })
-
-
-})
-
-
 
 test_that("Clusters API - don't perform", {
 
@@ -229,3 +116,120 @@ test_that("Clusters API - don't perform", {
   expect_s3_class(resp_delete, "httr2_request")
 
 })
+
+skip_unless_authenticated()
+skip_unless_aws_workspace()
+
+test_that("Clusters API", {
+
+  # basic metadata functions
+  expect_no_error({
+    resp_list <- db_cluster_list()
+  })
+  expect_type(resp_list, "list")
+
+  expect_no_error({
+    resp_list_zones <- db_cluster_list_zones()
+  })
+  expect_type(resp_list_zones, "list")
+
+  expect_no_error({
+    resp_list_ntypes <- db_cluster_list_node_types()
+  })
+  expect_type(resp_list_ntypes, "list")
+
+  expect_no_error({
+    resp_list_dbrv <- db_cluster_runtime_versions()
+  })
+  expect_type(resp_list_dbrv, "list")
+
+  # creating cluster (AWS specific)
+  expect_no_error({
+    resp_create <- db_cluster_create(
+      name = "brickster_test_cluster",
+      spark_version = resp_list_dbrv[[1]][[1]]$key,
+      num_workers = 2,
+      node_type_id = "m5a.xlarge",
+      cloud_attrs = aws_attributes(
+        ebs_volume_size = 32
+      ),
+      autotermination_minutes = 15
+    )
+  })
+
+  expect_no_error({
+    resp_get <- db_cluster_get(resp_create$cluster_id)
+  })
+
+  # test env currently has max number of pins
+  # resp_pin <- db_cluster_pin(resp_create$cluster_id)
+
+  expect_no_error({
+    resp_unpin <- db_cluster_unpin(resp_create$cluster_id)
+  })
+
+  expect_no_error({
+    resp_events <- db_cluster_events(resp_create$cluster_id)
+  })
+
+  expect_no_error({
+    resp_terminate <- db_cluster_terminate(cluster_id = resp_create$cluster_id)
+  })
+
+  expect_no_error({
+    resp_perm_delete <- db_cluster_perm_delete(
+      cluster_id = resp_create$cluster_id
+    )
+  })
+
+  expect_no_error({
+    dbr1 <- get_latest_dbr(lts = TRUE, ml = FALSE, gpu = FALSE, photon = FALSE)
+  })
+  expect_type(dbr1, "list")
+  expect_length(dbr1, 2)
+
+
+  expect_no_error({
+    dbr2 <- get_latest_dbr(lts = FALSE, ml = FALSE, gpu = FALSE, photon = FALSE)
+  })
+  expect_type(dbr2, "list")
+  expect_length(dbr2, 2)
+
+  expect_no_error({
+    dbr3 <- get_latest_dbr(lts = TRUE, ml = TRUE, gpu = FALSE, photon = FALSE)
+  })
+  expect_type(dbr3, "list")
+  expect_length(dbr3, 2)
+
+  expect_no_error({
+    dbr4 <- get_latest_dbr(lts = TRUE, ml = TRUE, gpu = TRUE, photon = FALSE)
+  })
+  expect_type(dbr4, "list")
+  expect_length(dbr4, 2)
+
+  expect_no_error({
+    dbr5 <- get_latest_dbr(lts = TRUE, ml = FALSE, gpu = FALSE, photon = TRUE)
+  })
+  expect_type(dbr5, "list")
+  expect_length(dbr5, 2)
+
+  expect_error({
+    get_latest_dbr(lts = TRUE, ml = TRUE, gpu = TRUE, photon = TRUE)
+  })
+
+  expect_error({
+    get_latest_dbr(lts = TRUE, ml = TRUE, gpu = FALSE, photon = TRUE)
+  })
+
+  expect_error({
+    get_latest_dbr(lts = TRUE, ml = FALSE, gpu = TRUE, photon = TRUE)
+  })
+
+  expect_error({
+    get_latest_dbr(lts = FALSE, ml = FALSE, gpu = TRUE, photon = TRUE)
+  })
+
+
+})
+
+

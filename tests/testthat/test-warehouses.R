@@ -1,3 +1,60 @@
+test_that("Warehouse API - don't perform", {
+
+  resp_list <- db_sql_warehouse_list(perform_request = F)
+  expect_s3_class(resp_list, "httr2_request")
+
+  resp_global_get <- db_sql_global_warehouse_get(perform_request = F)
+  expect_s3_class(resp_global_get, "httr2_request")
+
+  resp_create <- db_sql_warehouse_create(
+    name = "brickster_test_warehouse",
+    cluster_size = "2X-Small",
+    enable_serverless_compute = TRUE,
+    perform_request = F
+  )
+  expect_s3_class(resp_create, "httr2_request")
+
+  resp_get <- db_sql_warehouse_get(
+    id = "some_warehouse_id",
+    perform_request = F
+  )
+  expect_s3_class(resp_get, "httr2_request")
+
+  resp_stop <- db_sql_warehouse_stop(
+    id = "some_warehouse_id",
+    perform_request = F
+  )
+  expect_s3_class(resp_stop, "httr2_request")
+
+  resp_edit <- db_sql_warehouse_edit(
+    id = "some_warehouse_id",
+    name = "some_warehouse_name",
+    cluster_size =  "2X-Small",
+    spot_instance_policy = "COST_OPTIMIZED",
+    channel = "CHANNEL_NAME_CURRENT",
+    warehouse_type = "PRO",
+    perform_request = F
+  )
+  expect_s3_class(resp_edit, "httr2_request")
+
+  resp_start <- db_sql_warehouse_start(
+    id = "some_warehouse_id",
+    perform_request = F
+  )
+  expect_s3_class(resp_start, "httr2_request")
+
+  resp_delete <- db_sql_warehouse_delete(
+    id = "some_warehouse_id",
+    perform_request = F
+  )
+  expect_s3_class(resp_delete, "httr2_request")
+
+})
+
+
+skip_unless_authenticated()
+skip_unless_aws_workspace()
+
 test_that("Warehouse API", {
 
   expect_no_error({
@@ -74,60 +131,5 @@ test_that("Warehouse API", {
   })
   expect_type(resp_delete, "list")
   expect_length(resp_delete, 0L)
-
-})
-
-
-
-test_that("Warehouse API - don't perform", {
-
-  resp_list <- db_sql_warehouse_list(perform_request = F)
-  expect_s3_class(resp_list, "httr2_request")
-
-  resp_global_get <- db_sql_global_warehouse_get(perform_request = F)
-  expect_s3_class(resp_global_get, "httr2_request")
-
-  resp_create <- db_sql_warehouse_create(
-    name = "brickster_test_warehouse",
-    cluster_size = "2X-Small",
-    enable_serverless_compute = TRUE,
-    perform_request = F
-  )
-  expect_s3_class(resp_create, "httr2_request")
-
-  resp_get <- db_sql_warehouse_get(
-    id = "some_warehouse_id",
-    perform_request = F
-  )
-  expect_s3_class(resp_get, "httr2_request")
-
-  resp_stop <- db_sql_warehouse_stop(
-    id = "some_warehouse_id",
-    perform_request = F
-  )
-  expect_s3_class(resp_stop, "httr2_request")
-
-  resp_edit <- db_sql_warehouse_edit(
-    id = "some_warehouse_id",
-    name = "some_warehouse_name",
-    cluster_size =  "2X-Small",
-    spot_instance_policy = "COST_OPTIMIZED",
-    channel = "CHANNEL_NAME_CURRENT",
-    warehouse_type = "PRO",
-    perform_request = F
-  )
-  expect_s3_class(resp_edit, "httr2_request")
-
-  resp_start <- db_sql_warehouse_start(
-    id = "some_warehouse_id",
-    perform_request = F
-  )
-  expect_s3_class(resp_start, "httr2_request")
-
-  resp_delete <- db_sql_warehouse_delete(
-    id = "some_warehouse_id",
-    perform_request = F
-  )
-  expect_s3_class(resp_delete, "httr2_request")
 
 })

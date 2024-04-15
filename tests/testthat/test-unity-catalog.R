@@ -1,3 +1,78 @@
+test_that("Unity Catalog API - don't perform", {
+
+  resp_summary <- db_uc_metastore_summary(perform_request = F)
+  expect_s3_class(resp_summary, "httr2_request")
+
+  resp_sc_list <- db_uc_storage_creds_list(perform_request = F)
+  expect_s3_class(resp_sc_list, "httr2_request")
+
+  resp_sc_get <- db_uc_storage_creds_get(
+    name = "some_name",
+    perform_request = F
+  )
+  expect_s3_class(resp_sc_get, "httr2_request")
+
+  resp_el_list <- db_uc_external_loc_list(
+    perform_request = F
+  )
+  expect_s3_class(resp_el_list, "httr2_request")
+
+  resp_el_get <- db_uc_external_loc_get(
+    name = "some_name",
+    perform_request = F
+  )
+  expect_s3_class(resp_el_get, "httr2_request")
+
+  resp_catalog_list <- db_uc_catalogs_list(perform_request = F)
+  expect_s3_class(resp_catalog_list, "httr2_request")
+
+  resp_catalog_get <- db_uc_catalogs_get(
+    catalog = "some_catalog",
+    perform_request = F
+  )
+  expect_s3_class(resp_catalog_get, "httr2_request")
+
+  resp_schema_list <- db_uc_schemas_list(
+    catalog = "some_catalog",
+    perform_request = F
+  )
+  expect_s3_class(resp_schema_list, "httr2_request")
+
+  resp_schema_get <- db_uc_schemas_get(
+    catalog = "some_catalog",
+    schema = "some_schema",
+    perform_request = F
+  )
+  expect_s3_class(resp_schema_get, "httr2_request")
+
+  resp_table_summaries <- db_uc_table_summaries(
+    catalog = "some_catalog",
+    max_results = 10,
+    perform_request = F
+  )
+  expect_s3_class(resp_table_summaries, "httr2_request")
+
+  resp_tables_list <- db_uc_tables_list(
+    catalog = "some_catalog",
+    schema = "some_schema",
+    perform_request = F
+  )
+  expect_s3_class(resp_tables_list, "httr2_request")
+
+  resp_table_get <- db_uc_tables_get(
+    catalog = "some_catalog",
+    schema = "some_schema",
+    table = "some_table",
+    perform_request = F
+  )
+  expect_s3_class(resp_table_get, "httr2_request")
+
+
+})
+
+skip_unless_authenticated()
+skip_unless_aws_workspace()
+
 test_that("Unity Catalog API", {
 
   expect_no_error({
@@ -88,74 +163,3 @@ test_that("Unity Catalog API", {
 
 
 
-test_that("Unity Catalog API - don't perform", {
-
-  resp_summary <- db_uc_metastore_summary(perform_request = F)
-  expect_s3_class(resp_summary, "httr2_request")
-
-  resp_sc_list <- db_uc_storage_creds_list(perform_request = F)
-  expect_s3_class(resp_sc_list, "httr2_request")
-
-  resp_sc_get <- db_uc_storage_creds_get(
-    name = "some_name",
-    perform_request = F
-  )
-  expect_s3_class(resp_sc_get, "httr2_request")
-
-  resp_el_list <- db_uc_external_loc_list(
-    perform_request = F
-  )
-  expect_s3_class(resp_el_list, "httr2_request")
-
-  resp_el_get <- db_uc_external_loc_get(
-    name = "some_name",
-    perform_request = F
-  )
-  expect_s3_class(resp_el_get, "httr2_request")
-
-  resp_catalog_list <- db_uc_catalogs_list(perform_request = F)
-  expect_s3_class(resp_catalog_list, "httr2_request")
-
-  resp_catalog_get <- db_uc_catalogs_get(
-    catalog = "some_catalog",
-    perform_request = F
-  )
-  expect_s3_class(resp_catalog_get, "httr2_request")
-
-  resp_schema_list <- db_uc_schemas_list(
-    catalog = "some_catalog",
-    perform_request = F
-  )
-  expect_s3_class(resp_schema_list, "httr2_request")
-
-  resp_schema_get <- db_uc_schemas_get(
-    catalog = "some_catalog",
-    schema = "some_schema",
-    perform_request = F
-  )
-  expect_s3_class(resp_schema_get, "httr2_request")
-
-  resp_table_summaries <- db_uc_table_summaries(
-    catalog = "some_catalog",
-    max_results = 10,
-    perform_request = F
-  )
-  expect_s3_class(resp_table_summaries, "httr2_request")
-
-  resp_tables_list <- db_uc_tables_list(
-    catalog = "some_catalog",
-    schema = "some_schema",
-    perform_request = F
-  )
-  expect_s3_class(resp_tables_list, "httr2_request")
-
-  resp_table_get <- db_uc_tables_get(
-    catalog = "some_catalog",
-    schema = "some_schema",
-    table = "some_table",
-    perform_request = F
-  )
-  expect_s3_class(resp_table_get, "httr2_request")
-
-
-})

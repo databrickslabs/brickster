@@ -1,3 +1,57 @@
+
+test_that("Libraries API - don't perform", {
+
+  resp_all_statuses <- db_libs_all_cluster_statuses(
+    perform_request = F
+  )
+  expect_s3_class(resp_all_statuses, "httr2_request")
+
+  expect_error({
+    db_libs_install(
+      cluster_id = "some_cluster_id",
+      libraries = "pandas",
+      perform_request = F
+    )
+  })
+  resp_lib_install <- db_libs_install(
+    cluster_id = "some_cluster_id",
+    libraries = libraries(
+      lib_pypi("pandas")
+    ),
+    perform_request = F
+  )
+  expect_s3_class(resp_lib_install, "httr2_request")
+
+
+  resp_lib_status <- db_libs_cluster_status(
+    cluster_id = "some_cluster_id",
+    perform_request = F
+  )
+  expect_s3_class(resp_lib_status, "httr2_request")
+
+
+  expect_error({
+    db_libs_uninstall(
+      cluster_id = "some_cluster_id",
+      libraries = "pandas",
+      perform_request = F
+    )
+  })
+  resp_lib_uninstall <- db_libs_uninstall(
+    cluster_id = "some_cluster_id",
+    libraries = libraries(
+      lib_pypi("pandas")
+    ),
+    perform_request = F
+  )
+  expect_s3_class(resp_lib_status, "httr2_request")
+
+
+})
+
+skip_unless_authenticated()
+skip_unless_aws_workspace()
+
 test_that("Libraries API", {
 
   expect_no_error({
@@ -53,53 +107,3 @@ test_that("Libraries API", {
 
 })
 
-
-test_that("Libraries API - don't perform", {
-
-  resp_all_statuses <- db_libs_all_cluster_statuses(
-    perform_request = F
-  )
-  expect_s3_class(resp_all_statuses, "httr2_request")
-
-  expect_error({
-    db_libs_install(
-      cluster_id = "some_cluster_id",
-      libraries = "pandas",
-      perform_request = F
-    )
-  })
-  resp_lib_install <- db_libs_install(
-    cluster_id = "some_cluster_id",
-    libraries = libraries(
-      lib_pypi("pandas")
-    ),
-    perform_request = F
-  )
-  expect_s3_class(resp_lib_install, "httr2_request")
-
-
-  resp_lib_status <- db_libs_cluster_status(
-    cluster_id = "some_cluster_id",
-    perform_request = F
-  )
-  expect_s3_class(resp_lib_status, "httr2_request")
-
-
-  expect_error({
-    db_libs_uninstall(
-      cluster_id = "some_cluster_id",
-      libraries = "pandas",
-      perform_request = F
-    )
-  })
-  resp_lib_uninstall <- db_libs_uninstall(
-    cluster_id = "some_cluster_id",
-    libraries = libraries(
-      lib_pypi("pandas")
-    ),
-    perform_request = F
-  )
-  expect_s3_class(resp_lib_status, "httr2_request")
-
-
-})

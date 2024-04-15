@@ -1,3 +1,6 @@
+skip_unless_authenticated()
+skip_unless_aws_workspace()
+
 test_that("query history API", {
 
   expect_no_error(
