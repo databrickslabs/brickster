@@ -23,16 +23,6 @@ test_that("Jobs API - don't perform", {
   )
 
   # create job with simple task
-  simple_task_job <- db_jobs_create(
-    name = "brickster example: simple",
-    tasks = job_tasks(simple_task),
-    # 9am every day, paused currently
-    schedule = cron_schedule(
-      quartz_cron_expression = "0 0 9 * * ?",
-      pause_status = "PAUSED"
-    )
-  )
-
   resp_create <- db_jobs_create(
     name = "brickster example: simple",
     tasks = job_tasks(simple_task),
@@ -137,6 +127,7 @@ test_that("Jobs API - don't perform", {
 
 })
 
+skip_on_cran()
 skip_unless_authenticated()
 skip_unless_aws_workspace()
 

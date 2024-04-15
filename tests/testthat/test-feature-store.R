@@ -16,6 +16,7 @@ test_that("Feature Store API - don't perform", {
 
 })
 
+skip_on_cran()
 skip_unless_authenticated()
 skip_unless_aws_workspace()
 
