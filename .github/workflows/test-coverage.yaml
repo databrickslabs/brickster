@@ -31,7 +31,7 @@ jobs:
         run: |
           echo DATABRICKS_HOST="$DATABRICKS_HOST" >> ~/.Renviron
           echo DATABRICKS_TOKEN="$DATABRICKS_TOKEN" >> ~/.Renviron
-          shell: bash
+        shell: bash
 
       - name: Test coverage
         run: covr::codecov()
