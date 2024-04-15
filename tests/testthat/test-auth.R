@@ -1,3 +1,7 @@
+existing_host <- Sys.getenv("DATABRICKS_HOST")
+existing_token <- Sys.getenv("DATABRICKS_TOKEN")
+existing_wsid <- Sys.getenv("DATABRICKS_WSID")
+
 test_that("auth functions - baseline behaviour", {
 
   host <- "some_url"
@@ -90,3 +94,56 @@ test_that("auth functions - switching profile", {
   expect_identical(db_wsid(), wsid)
 
 })
+
+test_that("auth functions - reading .databrickscfg", {
+
+  options(use_databrickscfg = TRUE)
+
+  # where .databrickscfg should be:
+  if (.Platform$OS.type == "windows") {
+    home_dir <- Sys.getenv("USERPROFILE")
+  } else {
+    home_dir <- Sys.getenv("HOME")
+  }
+  dbcfg_path <- file.path(home_dir, ".databrickscfg")
+
+  if (file.exists(dbcfg_path)) {
+    # using read_databrickscfg directly
+    token <- expect_no_condition(read_databrickscfg("token", profile = NULL))
+    host <- expect_no_condition(read_databrickscfg("host", profile = NULL))
+    wsid <- expect_no_condition(read_databrickscfg("wsid", profile = NULL))
+    expect_true(is.character(token))
+    expect_true(is.character(host))
+    expect_true(is.character(wsid))
+    # using read_databrickscfg directly
+    token <- expect_no_condition(read_databrickscfg("token", profile = "DEFAULT"))
+    host <- expect_no_condition(read_databrickscfg("host", profile = "DEFAULT"))
+    wsid <- expect_no_condition(read_databrickscfg("wsid", profile = "DEFAULT"))
+    expect_true(is.character(token))
+    expect_true(is.character(host))
+    expect_true(is.character(wsid))
+    # via wrappers
+    token_w <- db_token(profile = "DEFAULT")
+    host_w <- db_host(profile = "DEFAULT")
+    wsid_w <- db_wsid(profile = "DEFAULT")
+    expect_identical(token, token_w)
+    expect_identical(host, host_w)
+    expect_identical(wsid, wsid_w)
+    # via wrappers
+    token_w <- db_token(profile = NULL)
+    host_w <- db_host(profile = NULL)
+    wsid_w <- db_wsid(profile = NULL)
+    expect_identical(token, token_w)
+    expect_identical(host, host_w)
+    expect_identical(wsid, wsid_w)
+  } else {
+    expect_error(read_databrickscfg())
+  }
+
+  options(use_databrickscfg = FALSE)
+
+})
+
+Sys.setenv("DATABRICKS_HOST" = existing_host)
+Sys.setenv("DATABRICKS_TOKEN" = existing_token)
+Sys.setenv("DATABRICKS_WSID" = existing_wsid)

@@ -1,13 +1,17 @@
 db_feature_tables_search <- function(filter = NULL,
                                      max_results = 100,
                                      page_token = NULL,
+                                     catalog_names = c(),
+                                     is_multi_catalog = TRUE,
                                      host = db_host(), token = db_token(),
                                      perform_request = TRUE) {
 
   body <- list(
     text = filter,
     max_results = max_results,
-    page_token = page_token
+    page_token = page_token,
+    catalog_names = catalog_names,
+    is_multi_catalog = is_multi_catalog
   )
 
   req <- db_request(

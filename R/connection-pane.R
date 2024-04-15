@@ -2,6 +2,7 @@
 # - can only return so many objects at once, how to paginate via UI?
 #   - impacts experiments, model registry, etc.
 
+# nocov start
 brickster_actions <- function(host) {
   list(
     Workspace = list(
@@ -78,10 +79,21 @@ brickster_actions <- function(host) {
     )
   )
 }
+# nocov end
 
 get_id_from_panel_name <- function(x) {
-  id <- sub(pattern = ".*\\((.*)\\)", replacement = "\\1", x = x)
+  sub(pattern = ".*\\((.*)\\).*", replacement = "\\1", x = x)
 }
+
+readable_time <- function(x) {
+  time <- as.POSIXct(
+    x = x/1000,
+    origin = "1970-01-01",
+    tz = "UTC"
+  )
+  as.character(time)
+}
+
 
 get_dbfs_items <- function(path = "/", host, token, is_file = FALSE) {
   items <- db_dbfs_list(path = path, host = host, token = token)
@@ -90,7 +102,7 @@ get_dbfs_items <- function(path = "/", host, token, is_file = FALSE) {
       name = c("file size", "modification time"),
       type = c(
         base::format(base::structure(items$file_size, class = "object_size"), units = "auto"),
-        as.character(as.POSIXct(items$modification_time/1000, origin = "1970-01-01", tz = "UTC"))
+        readable_time(items$modification_time)
       )
     )
   } else {
@@ -196,9 +208,9 @@ get_table_data <- function(catalog, schema, table, host, token, metadata = TRUE)
         "view definition" = tbl$view_definition,
         "full name" = tbl$full_name,
         "owner" = tbl$owner,
-        "created at" = as.character(as.POSIXct(tbl$created_at/1000, origin = "1970-01-01", tz = "UTC")),
+        "created at" = readable_time(tbl$created_at),
         "created by" = tbl$created_by,
-        "updated at" = as.character(as.POSIXct(tbl$updated_at/1000, origin = "1970-01-01", tz = "UTC")),
+        "updated at" = readable_time(tbl$updated_at),
         "updated by" = tbl$updated_by
       )
     } else if (tbl$data_source_format == "DELTASHARING") {
@@ -208,9 +220,9 @@ get_table_data <- function(catalog, schema, table, host, token, metadata = TRUE)
         "full name" = tbl$full_name,
         "owner" = tbl$owner,
         "storage location" = tbl$storage_location,
-        "created at" = as.character(as.POSIXct(tbl$created_at/1000, origin = "1970-01-01", tz = "UTC")),
+        "created at" = readable_time(tbl$created_at),
         "created by" = tbl$created_by,
-        "updated at" = as.character(as.POSIXct(tbl$updated_at/1000, origin = "1970-01-01", tz = "UTC")),
+        "updated at" = readable_time(tbl$updated_at),
         "updated by" = tbl$updated_by
       )
     } else {
@@ -220,11 +232,11 @@ get_table_data <- function(catalog, schema, table, host, token, metadata = TRUE)
         "full name" = tbl$full_name,
         "owner" = tbl$owner,
         "storage location" = tbl$storage_location,
-        "created at" = as.character(as.POSIXct(tbl$created_at/1000, origin = "1970-01-01", tz = "UTC")),
+        "created at" = readable_time(tbl$created_at),
         "created by" = tbl$created_by,
-        "updated at" = as.character(as.POSIXct(tbl$updated_at/1000, origin = "1970-01-01", tz = "UTC")),
+        "updated at" = readable_time(tbl$updated_at),
         "updated by" = tbl$updated_by,
-        "last commit at" = as.character(as.POSIXct(as.numeric(tbl$properties$delta.lastCommitTimestamp)/1000, origin = "1970-01-01", tz = "UTC")),
+        "last commit at" = readable_time(as.numeric(tbl$properties$delta.lastCommitTimestamp)),
         "min reader version" = tbl$properties$delta.minReaderVersion,
         "min writer version" = tbl$properties$delta.minWriterVersion
       )
@@ -255,15 +267,15 @@ get_experiments <- function(host, token) {
 
 get_experiment <- function(id, host, token) {
   id <- get_id_from_panel_name(x = id)
-  exp <- db_experiments_get(id = id)
+  exp <- db_experiments_get(id = id, host = host, token = token)
 
   info <- list(
     "name" = exp$name,
     "experiment id" = exp$experiment_id,
     "artifact location" = exp$artifact_location,
     "user id" = exp$lifecycle_stage,
-    "created at" = as.character(as.POSIXct(exp$creation_time/1000, origin = "1970-01-01", tz = "UTC")),
-    "last updated" = as.character(as.POSIXct(exp$last_update_time/1000, origin = "1970-01-01", tz = "UTC"))
+    "created at" = readable_time(exp$creation_time),
+    "last updated" = readable_time(exp$last_update_time)
   )
 
   data.frame(
@@ -297,8 +309,8 @@ get_model_metadata <- function(id, host, token) {
     "name" = model$name,
     "latest version" = model$latest_versions[[1]]$version,
     "user id" = model$user_id,
-    "created at" = as.character(as.POSIXct(model$creation_timestamp/1000, origin = "1970-01-01", tz = "UTC")),
-    "last updated" = as.character(as.POSIXct(model$last_updated_timestamp/1000, origin = "1970-01-01", tz = "UTC")),
+    "created at" = readable_time(model$creation_timestamp),
+    "last updated" = readable_time(model$last_updated_timestamp),
     "permissions" = model$permission_level,
     "id" = model$id
   )
@@ -339,8 +351,8 @@ get_model_versions <- function(id, host, token, version = NULL) {
 
     info <- list(
       "current stage" = version_meta$current_stage,
-      "created at" = as.character(as.POSIXct(version_meta$creation_timestamp/1000, origin = "1970-01-01", tz = "UTC")),
-      "last updated" = as.character(as.POSIXct(version_meta$last_updated_timestamp/1000, origin = "1970-01-01", tz = "UTC")),
+      "created at" = readable_time(version_meta$creation_timestamp),
+      "last updated" = readable_time(version_meta$last_updated_timestamp),
       "user id" = version_meta$user_id,
       "source" = version_meta$source,
       # can be missing, not sure worth including for now
@@ -356,50 +368,6 @@ get_model_versions <- function(id, host, token, version = NULL) {
   }
 
   res
-
-}
-
-get_feature_tables <- function(host, token) {
-  tables <- db_feature_tables_search(max_results = 2000)[[1]]
-  data.frame(
-    name = purrr::map_chr(tables, "name"),
-    type = "featuretable"
-  )
-}
-
-get_feature_table <- function(table, host, token) {
-  tbl <- db_feature_tables_get(
-    feature_table = table,
-    host = host,
-    token = token
-  )
-  info <- list(
-    "description" = tbl$description,
-    "primary keys" = paste(unlist(tbl$primary_keys), collapse = ", "),
-    "created at" = as.character(as.POSIXct(tbl$creation_timestamp/1000, origin = "1970-01-01", tz = "UTC")),
-    "created by" = tbl$creator_id,
-    "last updated at" = as.character(as.POSIXct(tbl$last_updated_timestamp/1000, origin = "1970-01-01", tz = "UTC")),
-    "last updated by" = tbl$last_update_user_id,
-    "permission level" = tbl$permission_level,
-    "is imported" = tbl$is_imported
-  )
-  data.frame(
-    name = names(info),
-    type = unname(unlist(info))
-  )
-}
-
-get_feature_table_columns <- function(table, host, token) {
-  features <- db_feature_table_features(
-    feature_table = table,
-    host = host,
-    token = token
-  )
-
-  data.frame(
-    name = purrr::map_chr(features, "name"),
-    type = purrr::map_chr(features, "data_type")
-  )
 
 }
 
@@ -423,7 +391,7 @@ get_cluster <- function(id, host, token) {
     "worker node type" = x$node_type_id,
     "driver node type" = x$driver_node_type_id,
     "autotermination minutes" = x$autotermination_minutes,
-    "start time" = as.character(as.POSIXct(x$start_time/1000, origin = "1970-01-01", tz = "UTC")),
+    "start time" = readable_time(x$start_time),
     "# workers" = ifelse(is.null(x$num_workers), 0L, x$num_workers),
     "cores" = ifelse(is.null(x$cluster_cores), 0L, x$cluster_cores),
     "memory (mb)" = ifelse(is.null(x$cluster_memory_mb), 0L, x$cluster_memory_mb)
@@ -479,8 +447,6 @@ list_objects <- function(host, token,
                          modelregistry = NULL,
                          model = NULL,
                          versions = NULL,
-                         featurestore = NULL,
-                         featuretable = NULL,
                          columns = NULL,
                          experiments = NULL,
                          ...) {
@@ -510,21 +476,6 @@ list_objects <- function(host, token,
     objects <- get_catalogs(host = host, token = token)
     return(objects)
 
-  }
-
-  # feature store
-  if (!is.null(featurestore)) {
-
-    if (!is.null(featuretable)) {
-      objects <- data.frame(
-        name = c("metadata", "columns"),
-        type = c("metadata", "columns")
-      )
-      return(objects)
-    }
-
-    objects <- get_feature_tables(host = host, token = token)
-    return(objects)
   }
 
   # experiments
@@ -609,10 +560,9 @@ list_objects <- function(host, token,
   )
 
   info <- list(
-    "Data" = "metastore",
+    "Catalog" = "metastore",
     "Model Registry" = "modelregistry",
     "Experiments" = "experiments",
-    "Feature Store" = "featurestore",
     "Clusters" = "clusters",
     "SQL Warehouses" = "warehouses",
     "File System (DBFS)" = "dbfs",
@@ -702,22 +652,6 @@ list_columns <- function(host, token, path = "", ...) {
     )
   }
 
-  if ("featuretable" %in% names(dots)) {
-    if (leaf_type == "metadata") {
-      info <- get_feature_table(
-        table = dots$featuretable,
-        host = host,
-        token = token
-      )
-    } else if (leaf_type == "columns") {
-      info <- get_feature_table_columns(
-        table = dots$featuretable,
-        host = host,
-        token = token
-      )
-    }
-  }
-
   if (leaf_type == "experiment") {
     info <- get_experiment(
       id = leaf$experiment,
@@ -739,7 +673,6 @@ preview_object <- function(host, token, rowLimit,
                            model = NULL,
                            version = NULL,
                            experiment = NULL,
-                           featuretable = NULL,
                            catalog = NULL,
                            schema = NULL,
                            table = NULL,
@@ -769,12 +702,6 @@ preview_object <- function(host, token, rowLimit,
   if (!is.null(experiment)) {
     id <- get_id_from_panel_name(experiment)
     url <- glue::glue("{host}?o={db_wsid()}#mlflow/experiments/{id}")
-    return(utils::browseURL(url))
-  }
-
-  # feature store table
-  if (!is.null(featuretable)) {
-    url <- glue::glue("{host}?o={db_wsid()}#feature-store/feature-store/{featuretable}")
     return(utils::browseURL(url))
   }
 
@@ -842,6 +769,7 @@ preview_object <- function(host, token, rowLimit,
 #' }
 #' @importFrom glue glue
 open_workspace <- function(host = db_host(), token = db_token(), name = NULL) {
+  # nocov start
   observer <- getOption("connectionObserver")
   if (!is.null(observer)) {
 
@@ -887,8 +815,6 @@ open_workspace <- function(host = db_host(), token = db_token(), name = NULL) {
           catalog = dots$catalog,
           schema = dots$schema,
           table = dots$table,
-          featurestore = dots$featurestore,
-          featuretable = dots$featuretable,
           columns = dots$columns,
           experiments = dots$experiments,
           modelregistry = dots$modelregistry,
@@ -908,6 +834,7 @@ open_workspace <- function(host = db_host(), token = db_token(), name = NULL) {
       connectionObject = host
     )
   }
+  # nocov end
 }
 
 #' Close Databricks Workspace Connection
@@ -927,6 +854,7 @@ close_workspace <- function(host = db_host()) {
   }
 }
 
+# nocov start
 list_objects_types <- function() {
   list(
     workspace = list(contains = list(
@@ -950,15 +878,6 @@ list_objects_types <- function() {
         experiment = list(
           icon = system.file("icons", "microscope.png", package = "brickster"),
           contains = "data"
-        )
-      )),
-      featurestore = list(contains = list(
-        featuretable = list(
-          icon = system.file("icons", "cardbox.png", package = "brickster"),
-          contains = list(
-            metadata = list(contains = "data"),
-            columns = list(contains = "data")
-          )
         )
       )),
       modelregistry = list(contains = list(
@@ -999,3 +918,4 @@ list_objects_types <- function() {
     ))
   )
 }
+# nocov end

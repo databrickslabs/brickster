@@ -28,6 +28,10 @@ Volume FileSystem File Status
 \seealso{
 Other Volumes FileSystem API: 
 \code{\link{db_volume_delete}()},
+\code{\link{db_volume_dir_create}()},
+\code{\link{db_volume_dir_delete}()},
+\code{\link{db_volume_dir_exists}()},
+\code{\link{db_volume_list}()},
 \code{\link{db_volume_read}()},
 \code{\link{db_volume_write}()}
 }

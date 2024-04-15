@@ -159,12 +159,13 @@ db_sql_warehouse_edit <- function(id,
     "Medium", "Large", "X-Large",
     "2X-Large", "3X-Large", "4X-Large"
   )
+  types <- c("CLASSIC", "PRO")
 
   stopifnot(
     cluster_size %in% sizes,
     spot_instance_policy %in% c("COST_OPTIMIZED", "RELIABILITY_OPTIMIZED"),
     channel %in% c("CHANNEL_NAME_CURRENT", "CHANNEL_NAME_PREVIEW"),
-    warehouse_type <- match.arg(warehouse_type, several.ok = FALSE)
+    warehouse_type %in% types
   )
 
   if (!is.null(channel)) {

@@ -1,11 +1,15 @@
 db_experiments_list <- function(view_type = c("ACTIVE_ONLY", "DELETED_ONLY", "ALL"),
+                                max_results = 1000,
+                                page_token = NULL,
                                 host = db_host(), token = db_token(),
                                 perform_request = TRUE) {
 
   view_type <- match.arg(view_type)
 
   body <- list(
-    view_type = view_type
+    view_type = view_type,
+    max_results = max_results,
+    page_token = page_token
   )
 
   req <- db_request(
