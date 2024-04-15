@@ -23,7 +23,7 @@ skip_unless_authenticated <- function() {
 
 }
 
-skip_unless_credentials_set() {
+skip_unless_credentials_set <- function() {
   creds_avialable <- tryCatch(
     {
       db_host()
