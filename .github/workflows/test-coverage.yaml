@@ -15,7 +15,7 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-      DATABRICKS_WSID: ${{ secrets.$DATABRICKS_WSID }}
+      DATABRICKS_WSID: ${{ secrets.DATABRICKS_WSID }}
 
     steps:
       - uses: actions/checkout@v2
