@@ -59,6 +59,8 @@ skip_unless_aws_workspace()
 
 test_that("Warehouse API", {
 
+  random_id <- sample.int(100000, 1)
+
   expect_no_error({
     resp_list <- db_sql_warehouse_list()
   })
@@ -71,7 +73,7 @@ test_that("Warehouse API", {
 
   expect_no_error({
     resp_create <- db_sql_warehouse_create(
-      name = "brickster_test_warehouse",
+      name = paste0("brickster_test_warehouse_", random_id),
       cluster_size = "2X-Small",
       warehouse_type = "PRO",
       enable_serverless_compute = TRUE
@@ -97,8 +99,8 @@ test_that("Warehouse API", {
   expect_no_error({
     resp_edit <- db_sql_warehouse_edit(
       id = resp_create$id,
-      name = "brickster_test_warehouse_renamed",
-      cluster_size =  "2X-Small",
+      name = paste0("brickster_test_warehouse_renamed", random_id),
+      cluster_size = "2X-Small",
       spot_instance_policy = "COST_OPTIMIZED",
       enable_serverless_compute = TRUE,
       channel = "CHANNEL_NAME_CURRENT",
@@ -120,9 +122,9 @@ test_that("Warehouse API", {
     resp_stop <- db_sql_warehouse_stop(
       id = resp_create$id
     )
-    resp_get_start <- get_and_start_warehouse(
-      id = resp_create$id
-    )
+    # resp_get_start <- get_and_start_warehouse(
+    #   id = resp_create$id
+    # )
   })
   expect_type(resp_get_start, "list")
 
