@@ -560,7 +560,7 @@ list_objects <- function(host, token,
   )
 
   info <- list(
-    "Data" = "metastore",
+    "Catalog" = "metastore",
     "Model Registry" = "modelregistry",
     "Experiments" = "experiments",
     "Clusters" = "clusters",

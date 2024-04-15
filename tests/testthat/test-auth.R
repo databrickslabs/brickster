@@ -1,3 +1,7 @@
+existing_host <- Sys.getenv("DATABRICKS_HOST")
+existing_token <- Sys.getenv("DATABRICKS_TOKEN")
+existing_wsid <- Sys.getenv("DATABRICKS_WSID")
+
 test_that("auth functions - baseline behaviour", {
 
   host <- "some_url"
@@ -140,3 +144,6 @@ test_that("auth functions - reading .databrickscfg", {
 
 })
 
+Sys.setenv("DATABRICKS_HOST" = existing_host)
+Sys.setenv("DATABRICKS_TOKEN" = existing_token)
+Sys.setenv("DATABRICKS_WSID" = existing_wsid)

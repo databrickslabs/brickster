@@ -97,7 +97,7 @@ test_that("Connection Pane Helpers", {
     )
     model_vers_specific <- get_model_versions(
       id = model_id,
-      version = gsub("(\\d+).*", "\\1", model_vers$name[1]),
+      version = model_vers$name[1],
       host = db_host(),
       token = db_token()
     )
@@ -170,7 +170,7 @@ test_that("Connection Pane Helpers", {
     lo_tables = list_objects(
       metastore = "some_metastore",
       catalog = "system",
-      schema = "access",
+      schema = "information_schema",
       host = db_host(),
       token = db_token()
     )
@@ -181,8 +181,8 @@ test_that("Connection Pane Helpers", {
     lo_table = list_objects(
       metastore = "some_metastore",
       catalog = "system",
-      schema = "access",
-      table = "audit",
+      schema = "information_schema",
+      table = "catalogs",
       host = db_host(),
       token = db_token()
     )
