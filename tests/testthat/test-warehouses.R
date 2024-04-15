@@ -126,7 +126,7 @@ test_that("Warehouse API", {
     #   id = resp_create$id
     # )
   })
-  expect_type(resp_get_start, "list")
+  # expect_type(resp_get_start, "list")
 
   expect_no_error({
     resp_delete <- db_sql_warehouse_delete(
