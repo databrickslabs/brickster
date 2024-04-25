@@ -18,6 +18,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
+    arrow,
     base64enc,
     cli,
     curl,
@@ -29,7 +30,10 @@ Imports:
     jsonlite,
     magrittr,
     purrr,
-    rlang
+    reticulate,
+    R6 (>= 2.4.0),
+    rlang,
+    utils
 Suggests: 
     testthat (>= 3.0.0),
     htmltools,

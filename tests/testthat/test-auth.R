@@ -144,6 +144,45 @@ test_that("auth functions - reading .databrickscfg", {
 
 })
 
+
+test_that("auth functions - host handling", {
+
+  expect_identical(
+    db_host(id = "mock", prefix = "dev-"),
+    "dev-mock.cloud.databricks.com"
+  )
+
+  expect_identical(
+    db_host(id = "mock"),
+    "mock.cloud.databricks.com"
+  )
+
+  expect_identical(
+    db_host(id = "mock", prefix = "dev-"),
+    "dev-mock.cloud.databricks.com"
+  )
+
+  # input and output pairs to check
+  hostname_mapping <- list(
+    "https://mock.cloud.databricks.com"  = "mock.cloud.databricks.com",
+    "https://mock.cloud.databricks.com/" = "mock.cloud.databricks.com",
+    "http://mock.cloud.databricks.com"   = "mock.cloud.databricks.com",
+    "mock.cloud.databricks.com"          = "mock.cloud.databricks.com",
+    "mock.cloud.databricks.com/"         = "mock.cloud.databricks.com",
+    "mock.cloud.databricks.com//"        = "mock.cloud.databricks.com",
+    "://mock.cloud.databricks.com"       = NULL,
+    "//mock.cloud.databricks.com"        = "mock.cloud.databricks.com",
+    "tps://mock.cloud.databricks.com"    = "mock.cloud.databricks.com"
+  )
+
+  purrr::iwalk(hostname_mapping, function(output, input) {
+    Sys.setenv("DATABRICKS_HOST" = input)
+    expect_no_error(db_host())
+    expect_identical(db_host(), output)
+  })
+
+})
+
 Sys.setenv("DATABRICKS_HOST" = existing_host)
 Sys.setenv("DATABRICKS_TOKEN" = existing_token)
 Sys.setenv("DATABRICKS_WSID" = existing_wsid)

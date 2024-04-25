@@ -82,6 +82,13 @@ reference:
   contents: starts_with("db_repo", internal = TRUE)
 - title: Secrets
   contents: starts_with("db_secrets", internal = TRUE)
+- title: SQL Statement Execution
+  contents: starts_with("db_sql_exec", internal = TRUE)
+- title: SQL Connector
+  contents:
+  - install_db_sql_connector
+  - db_sql_client
+  - DatabricksSqlClient
 - title: Warehouses
   contents:
   - starts_with("db_sql", internal = TRUE)

@@ -39,9 +39,18 @@ db_host <- function(id = NULL, prefix = NULL, profile = getOption("db_profile", 
 
   if (is.null(id) && is.null(prefix)) {
     host <- read_env_var(key = "host", profile = profile)
+    parsed_url <- httr2::url_parse(host)
+
+    # inject scheme if not present then re-build with https
+    if (is.null(parsed_url$schema)) {
+      parsed_url$scheme <- "https"
+      host <- httr2::url_build(parsed_url)
+    }
+    host <- httr2::url_parse(host)$hostname
+
   } else {
     # otherwise construct host string
-    host <- paste0("https://", prefix, id, ".cloud.databricks.com")
+    host <- paste0(prefix, id, ".cloud.databricks.com")
   }
 
   host
