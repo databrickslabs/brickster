@@ -14,7 +14,7 @@ Authors@R:
     person("Databricks", role = c("cph", "fnd"))
   )
 Description: Toolkit to work with Databricks from R
-License: MIT + file LICENSE
+License: Apache License (>= 2)
 Encoding: UTF-8
 LazyData: true
 Imports:
