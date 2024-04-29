@@ -1,0 +1,70 @@
+Copyright (202X) Databricks, Inc.
+
+This Software includes software developed at Databricks (https://www.databricks.com/) and its use is subject to the included LICENSE file.
+
+This Software contains code from the following open source projects, licensed under the MIT license:
+
+r-lib/cli - https://github.com/r-lib/cli
+Copyright 2023 cli authors
+
+jeroen/curl - https://github.com/jeroen/curl
+Copyright 2022 Jeroen Ooms; RStudio
+
+tidyverse/dplyr - https://github.com/tidyverse/dplyr
+Copyright 2023 dplyr authors
+
+tidyverse/glue - https://github.com/tidyverse/glue
+Copyright 2023 glue authors
+
+r-lib/httr2 - https://github.com/r-lib/httr2
+Copyright 2021 httr2 authors
+
+jeroen/jsonlite - https://github.com/jeroen/jsonlite
+Copyright 2020 Jeroen Ooms
+
+tidyverse/magrittr - https://github.com/tidyverse/magrittr
+Copyright 2023 magrittr authors
+
+tidyverse/purrr - https://github.com/tidyverse/purrr
+Copyright 2023 purrr authors
+
+r-lib/rlang - https://github.com/r-lib/rlang
+Copyright 2020 rlang authors
+
+r-lib/testthat - https://github.com/r-lib/testthat
+Copyright 2023 testthat authors
+
+ropensci/magick - https://github.com/ropensci/magick
+Copyright 2024 Jeroen Ooms
+
+rstudio/rstudionapi - https://github.com/rstudio/rstudioapi
+Copyright 2015 RStudio
+tidyverse/rvest - https://github.com/tidyverse/rvest
+Copyright 2023 rvest authors
+
+__________
+This Software contains code from the following open source projects, licensed under the MPL-2 license:
+
+Rdatatable/data.table - https://github.com/Rdatatable/data.table
+Copyright data.table authors
+
+__________
+This Software contains code from the following open source projects, licensed under the GPL-2/GPL-3 licenses:
+
+Base64enc - https://www.rforge.net/base64enc/
+Copyright Simon Urbanek
+
+dvdscripter/ini - https://github.com/dvdscripter/ini
+Copyright 2018 David Valentim Dias
+
+rstudio/DT - https://github.com/rstudio/DT
+Copyright DT authors
+
+rstudio/htmltools - https://github.com/rstudio/htmltools
+Copyright htmltools authors
+
+yihui/knitr - https://github.com/yihui/knitr
+Copyright 2024 knitr authors
+
+rstudio/rmarkdown - https://github.com/rstudio/rmarkdown
+Copyright rmarkdown authors
