@@ -412,6 +412,9 @@
     <loc>https://zacdav-db.github.io/brickster/reference/git_source.html</loc>
   </url>
   <url>
+    <loc>https://zacdav-db.github.io/brickster/reference/in_databricks_nb.html</loc>
+  </url>
+  <url>
     <loc>https://zacdav-db.github.io/brickster/reference/index.html</loc>
   </url>
   <url>
@@ -547,7 +550,13 @@
     <loc>https://zacdav-db.github.io/brickster/reference/new_cluster.html</loc>
   </url>
   <url>
+    <loc>https://zacdav-db.github.io/brickster/reference/notebook_enable_htmlwidgets.html</loc>
+  </url>
+  <url>
     <loc>https://zacdav-db.github.io/brickster/reference/notebook_task.html</loc>
+  </url>
+  <url>
+    <loc>https://zacdav-db.github.io/brickster/reference/notebook_use_posit_repo.html</loc>
   </url>
   <url>
     <loc>https://zacdav-db.github.io/brickster/reference/open_workspace.html</loc>
