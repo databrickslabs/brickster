@@ -33,6 +33,7 @@ Imports:
 Suggests: 
     testthat (>= 3.0.0),
     htmltools,
+    htmlwidgets,
     knitr,
     magick,
     rmarkdown,

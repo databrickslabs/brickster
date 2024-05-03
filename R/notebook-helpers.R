@@ -72,8 +72,8 @@ notebook_enable_htmlwidgets <- function(height = 450) {
     options(db_htmlwidget_height = height)
 
     system("apt-get --yes install pandoc", intern = T)
-    if (!require(htmlwidgets)) {
-      install.packages("htmlwidgets")
+    if (!base::require("htmlwidgets")) {
+      utils::install.packages("htmlwidgets")
     }
 
     # new method will fetch height based on new option, or default to 450px
@@ -85,7 +85,7 @@ notebook_enable_htmlwidgets <- function(height = 450) {
       displayHTML(contents)
     }
 
-    utils::assignInNamespace("print.htmlwidget", new_method, ns = "htmlwidgets", envir = env)
+    utils::assignInNamespace("print.htmlwidget", new_method, ns = "htmlwidgets")
     invisible(list(default_height = height, print = new_method))
   }
 }
