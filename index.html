@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="index.html">brickster</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -87,6 +87,7 @@
 <li><p>Providing bindings to relevant Databricks API’s</p></li>
 <li><p>Use RMarkdown as a Databricks notebook</p></li>
 <li><p>Integrate with RStudio Connections Pane (<code><a href="reference/open_workspace.html">open_workspace()</a></code>)</p></li>
+<li><p>Exposes the <a href="https://github.com/databricks/databricks-sql-python" class="external-link"><code>databricks-sql-connector</code></a> via <a href="https://rstudio.github.io/reticulate/" class="external-link">reticulate</a></p></li>
 <li><p>Utility functions to streamline workloads</p></li>
 </ul>
 <div class="section level2">
@@ -104,9 +105,9 @@
 </h2>
 <table class="table">
 <colgroup>
-<col width="72%">
-<col width="13%">
-<col width="13%">
+<col width="63%">
+<col width="18%">
+<col width="18%">
 </colgroup>
 <thead><tr class="header">
 <th>API</th>
@@ -170,11 +171,16 @@
 <td>2.0</td>
 </tr>
 <tr class="even">
+<td><a href="https://docs.databricks.com/api/workspace/statementexecution" class="external-link">SQL Statement Execution</a></td>
+<td>Yes</td>
+<td>2.0</td>
+</tr>
+<tr class="odd">
 <td><a href="https://docs.databricks.com/dev-tools/api/1.2/index.html" class="external-link">REST 1.2 Commands</a></td>
 <td>Partially</td>
 <td>1.2</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="https://api-docs.databricks.com/rest/latest/unity-catalog-api-specification-2-1.html" class="external-link">Unity Catalog</a></td>
 <td>Partially</td>
 <td>2.1</td>
