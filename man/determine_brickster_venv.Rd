@@ -13,3 +13,4 @@ Determine brickster virtualenv
 Returns \code{NULL} when running within Databricks,
 otherwise \code{"r-brickster"}
 }
+\keyword{internal}
