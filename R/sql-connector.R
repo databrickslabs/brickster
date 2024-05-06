@@ -27,11 +27,15 @@ install_db_sql_connector <- function(envname = determine_brickster_venv(),
 #'
 #' @param id String, ID of either the SQL warehouse or all purpose cluster.
 #' Important to set `compute_type` to the associated type of `id`.
+#' @param catalog Initial catalog to use for the connection. Defaults to `NULL`
+#' in which case the default catalog will be used.
+#' @param schema Initial schema to use for the connection. Defaults to `NULL`
+#' in which case the default catalog will be used.
 #' @param compute_type One of `"warehouse"` (default) or `"cluster"`, corresponding to
 #' associated compute type of the resource specified in `id`.
 #' @param use_cloud_fetch Boolean (default is `FALSE`). `TRUE` to send fetch
 #' requests directly to the cloud object store to download chunks of data.
-#' False to send fetch requests directly to Databricks.
+#' `FALSE` to send fetch requests directly to Databricks.
 #'
 #' If `use_cloud_fetch` is set to `TRUE` but network access is blocked, then
 #' the fetch requests will fail.
@@ -107,6 +111,8 @@ DatabricksSqlClient <- R6::R6Class(
     #' @param http_path (`character(1)`)\cr
     #'   See [db_sql_client()].
     #' @param catalog (`character(1)`)\cr
+    #'   See [db_sql_client()].
+    #' @param schema (`character(1)`)\cr
     #'   See [db_sql_client()].
     #' @param use_cloud_fetch (`logical(1)`)\cr
     #'   See [db_sql_client()].

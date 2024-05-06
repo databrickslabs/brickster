@@ -30,11 +30,11 @@ test_that("auth functions - baseline behaviour", {
 
   expect_identical(
     db_host(id = "mock", prefix = "dev-"),
-    "https://dev-mock.cloud.databricks.com"
+    "dev-mock.cloud.databricks.com"
   )
   expect_identical(
     db_host(id = "mock"),
-    "https://mock.cloud.databricks.com"
+    "mock.cloud.databricks.com"
   )
 
 })

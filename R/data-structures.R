@@ -718,7 +718,7 @@ is.lib_pypi <- function(x) {
 #' `org.jsoup:jsoup:1.7.2`.
 #' @param repo Maven repo to install the Maven package from. If omitted, both
 #' Maven Central Repository and Spark Packages are searched.
-#' @param exclusions List of dependences to exclude. For example:
+#' @param exclusions List of dependencies to exclude. For example:
 #' `list("slf4j:slf4j", "*:hadoop-client")`.
 #' [Maven dependency exclusions](https://maven.apache.org/guides/introduction/introduction-to-optional-and-excludes-dependencies.html).
 #'

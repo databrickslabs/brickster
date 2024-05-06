@@ -21,18 +21,18 @@ db_sql_client(
 \item{id}{String, ID of either the SQL warehouse or all purpose cluster.
 Important to set \code{compute_type} to the associated type of \code{id}.}
 
-\item{catalog}{String, sets default catalog for statement execution, similar
-to \verb{USE CATALOG} in SQL.}
+\item{catalog}{Initial catalog to use for the connection. Defaults to \code{NULL}
+in which case the default catalog will be used.}
 
-\item{schema}{String, sets default schema for statement execution, similar
-to \verb{USE SCHEMA} in SQL.}
+\item{schema}{Initial schema to use for the connection. Defaults to \code{NULL}
+in which case the default catalog will be used.}
 
 \item{compute_type}{One of \code{"warehouse"} (default) or \code{"cluster"}, corresponding to
 associated compute type of the resource specified in \code{id}.}
 
 \item{use_cloud_fetch}{Boolean (default is \code{FALSE}). \code{TRUE} to send fetch
 requests directly to the cloud object store to download chunks of data.
-False to send fetch requests directly to Databricks.
+\code{FALSE} to send fetch requests directly to Databricks.
 
 If \code{use_cloud_fetch} is set to \code{TRUE} but network access is blocked, then
 the fetch requests will fail.}

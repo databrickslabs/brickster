@@ -112,6 +112,9 @@ See \code{\link[=db_sql_client]{db_sql_client()}}.}
 \item{\code{catalog}}{(\code{character(1)})\cr
 See \code{\link[=db_sql_client]{db_sql_client()}}.}
 
+\item{\code{schema}}{(\code{character(1)})\cr
+See \code{\link[=db_sql_client]{db_sql_client()}}.}
+
 \item{\code{use_cloud_fetch}}{(\code{logical(1)})\cr
 See \code{\link[=db_sql_client]{db_sql_client()}}.}
 

@@ -44,8 +44,15 @@ db_host <- function(id = NULL, prefix = NULL, profile = getOption("db_profile", 
     # inject scheme if not present then re-build with https
     if (is.null(parsed_url$schema)) {
       parsed_url$scheme <- "https"
-      host <- httr2::url_build(parsed_url)
     }
+
+    # if hostname is missing change path to host
+    if (is.null(parsed_url$host)) {
+      parsed_url$hostname <- parsed_url$path
+      parsed_url$path <- NULL
+    }
+
+    host <- httr2::url_build(parsed_url)
     host <- httr2::url_parse(host)$hostname
 
   } else {
