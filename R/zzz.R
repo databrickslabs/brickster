@@ -10,6 +10,7 @@
 #' [python documentation](https://github.com/databricks/databricks-sql-python).
 #'
 #' @export
+#' @keywords internal
 py_db_sql_connector <- NULL
 
 .onLoad <- function(libname, pkgname) {

@@ -21,7 +21,7 @@ use_posit_repo <- function() {
 #' @details Returns `NULL` when running within Databricks,
 #' otherwise `"r-brickster"`
 #'
-#' @export
+#' @keywords internal
 determine_brickster_venv <- function() {
   if (on_databricks()) {
     NULL

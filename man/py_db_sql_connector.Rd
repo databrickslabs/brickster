@@ -21,4 +21,4 @@ This requires that the connector has been installed via
 For more documentation of the methods, refer to the
 \href{https://github.com/databricks/databricks-sql-python}{python documentation}.
 }
-\keyword{datasets}
+\keyword{internal}
