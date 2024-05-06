@@ -12,7 +12,7 @@ py_db_sql_connector
 }
 \description{
 Access the Databricks SQL connector from Python via
-{reticulate}.
+\code{{reticulate}}.
 }
 \details{
 This requires that the connector has been installed via

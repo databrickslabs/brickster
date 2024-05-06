@@ -33,6 +33,7 @@ Imports:
     reticulate,
     R6 (>= 2.4.0),
     rlang,
+    tibble,
     utils
 Suggests: 
     testthat (>= 3.0.0),

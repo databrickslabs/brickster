@@ -94,6 +94,7 @@ db_sql_client <- function(id,
 #'
 #' [API reference on Databricks docs](https://docs.databricks.com/en/dev-tools/python-sql-connector.html#api-reference)
 #' @import R6
+#' @import tibble
 #' @export
 DatabricksSqlClient <- R6::R6Class(
   classname = "db_sql_client",

@@ -1,7 +1,7 @@
 #' Databricks SQL Connector (Python)
 #'
 #' @description  Access the Databricks SQL connector from Python via
-#' {reticulate}.
+#' `{reticulate}`.
 #'
 #' @details This requires that the connector has been installed via
 #' [install_db_sql_connector()].
