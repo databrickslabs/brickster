@@ -1,6 +1,6 @@
 Package: brickster
 Title: R Toolkit for Databricks
-Version: 0.2.1
+Version: 0.2.2
 Authors@R: 
   c(
     person(given = "Zac",
@@ -18,6 +18,7 @@ License: Apache License (>= 2)
 Encoding: UTF-8
 LazyData: true
 Imports:
+    arrow,
     base64enc,
     cli,
     curl,
@@ -29,7 +30,11 @@ Imports:
     jsonlite,
     magrittr,
     purrr,
-    rlang
+    reticulate,
+    R6 (>= 2.4.0),
+    rlang,
+    tibble,
+    utils
 Suggests: 
     testthat (>= 3.0.0),
     htmltools,

@@ -13,7 +13,7 @@ lib_maven(coordinates, repo = NULL, exclusions = NULL)
 \item{repo}{Maven repo to install the Maven package from. If omitted, both
 Maven Central Repository and Spark Packages are searched.}
 
-\item{exclusions}{List of dependences to exclude. For example:
+\item{exclusions}{List of dependencies to exclude. For example:
 \code{list("slf4j:slf4j", "*:hadoop-client")}.
 \href{https://maven.apache.org/guides/introduction/introduction-to-optional-and-excludes-dependencies.html}{Maven dependency exclusions}.}
 }

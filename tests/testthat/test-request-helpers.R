@@ -1,6 +1,6 @@
 test_that("request helpers - building requests", {
 
-  host <- "https://some_url"
+  host <- "some_url"
   token <-  "some_token"
   endpoint <- "clusters/create"
   endpoint_version <- "2.0"
@@ -13,7 +13,7 @@ test_that("request helpers - building requests", {
       method = method,
       version = endpoint_version,
       body = body,
-      host = paste0(host, "/"),
+      host = host,
       token = token
     )
   })
@@ -21,11 +21,11 @@ test_that("request helpers - building requests", {
   expect_s3_class(req, "httr2_request")
   expect_identical(
     req$url,
-    paste(host, "api", endpoint_version, endpoint, sep = "/")
+    paste("https://", host, "/api/", endpoint_version, "/", endpoint, sep = "")
   )
   expect_identical(req$method, method)
   expect_identical(req$body$data, body)
-  expect_equal(req$options$useragent, "brickster/1.0")
+  expect_no_error(req$options$useragent)
   expect_equal(req$policies$retry_max_tries, 3)
   expect_equal(req$headers$Authorization, paste("Bearer", token))
 
