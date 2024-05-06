@@ -39,3 +39,14 @@ skip_unless_credentials_set <- function() {
     skip("Test only runs when credentials are available")
   }
 }
+
+skip_without_venv <- function(env) {
+
+  env_available <- reticulate::virtualenv_exists(env)
+
+  if (!env_available) {
+    skip("Test only runs when venv available")
+  }
+}
+
+

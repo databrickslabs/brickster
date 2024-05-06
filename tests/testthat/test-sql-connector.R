@@ -24,6 +24,7 @@ test_that("SQL Connector Helpers", {
 skip_on_cran()
 skip_unless_authenticated()
 skip_unless_aws_workspace()
+skip_without_venv(env = "r-brickster")
 
 test_that("SQL Connector", {
 
