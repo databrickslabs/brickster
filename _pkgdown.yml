@@ -49,6 +49,11 @@ reference:
   contents:
   - starts_with("db_libs", internal = TRUE)
   - wait_for_lib_installs
+- title: Databricks Notebook Helpers
+  contents:
+   - in_databricks_nb
+   - notebook_use_posit_repo
+   - notebook_enable_htmlwidgets
 - title: DBFS
   contents: starts_with("db_dbfs", internal = TRUE)
 - title: Volume FileSystem

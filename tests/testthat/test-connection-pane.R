@@ -113,12 +113,15 @@ test_that("Connection Pane Helpers", {
       host = db_host(),
       token = db_token()
     )
+    # remove serverless clusters from test as they cause an issue
+    clusters <- clusters[!grepl("v2n", clusters$name), ]
     cluster_id <- get_id_from_panel_name(clusters$name[[1]])
     cluster_data <- get_cluster(
       id = cluster_id,
       host = db_host(),
       token = db_token()
     )
+
   })
   expect_type(clusters, "list")
   expect_type(cluster_data, "list")

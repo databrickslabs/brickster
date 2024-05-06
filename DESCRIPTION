@@ -14,7 +14,7 @@ Authors@R:
     person("Databricks", role = c("cph", "fnd"))
   )
 Description: Collection of utilities that improve using Databricks from R.
-License: MIT + file LICENSE
+License: Apache License (>= 2)
 Encoding: UTF-8
 LazyData: true
 Imports:
@@ -38,6 +38,7 @@ Imports:
 Suggests: 
     testthat (>= 3.0.0),
     htmltools,
+    htmlwidgets,
     knitr,
     magick,
     rmarkdown,
