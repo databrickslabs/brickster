@@ -27,8 +27,9 @@
 ``` r
 library(brickster)
 
-# open RStudio connections pane
-open_workspace()
+# requires `DATABRICKS_HOST` only if using OAuth U2M
+# 
+Sys.setenv(DATABRICKS_HOST = "<workspace-prefix>.cloud.databricks.com")
 
 # list all SQL warehouses
 warehouses <- brickster::db_sql_warehouse_list()
@@ -41,14 +42,14 @@ file <- db_volume_read(
 volume_csv <- readr::read_csv(file)
 ```
 
-Refer to the ["Connect to a Databricks Workspace"](https://databrickslabs.github.io/brickster/articles/setup-auth.html) vignette for more details on getting authentication setup.
+Refer to the ["Connect to a Databricks Workspace"](https://databrickslabs.github.io/brickster/articles/setup-auth.html) article for more details on getting authentication configured.
 
 ## API Coverage
 
 `{brickster}` is very deliberate in what API's are exposed, it isn't intended to replace IaC (e.g. [Terraform](https://www.terraform.io/)) tooling or be used for account and workspace administration.
 
 | API                                                                                                   | Available | Version |
-|---------------------------------------|-----------------|-----------------|
+|-------------------------------------|------------------|------------------|
 | [DBFS](https://docs.databricks.com/dev-tools/api/latest/dbfs.html)                                    | Yes       | 2.0     |
 | [Secrets](https://docs.databricks.com/dev-tools/api/latest/secrets.html)                              | Yes       | 2.0     |
 | [Repos](https://docs.databricks.com/dev-tools/api/latest/repos.html)                                  | Yes       | 2.0     |
