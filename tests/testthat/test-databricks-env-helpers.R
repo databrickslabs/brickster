@@ -4,8 +4,8 @@ test_that(".libPaths helpers", {
   temp_dir <- tempdir()
 
   suppressMessages({
-    temp_with_version <- set_lib_path(temp_dir, version = TRUE)
-    temp_without_version <- set_lib_path(temp_dir, version = FALSE)
+    temp_with_version <- add_lib_path(temp_dir, after = 1, version = TRUE)
+    temp_without_version <- add_lib_path(temp_dir, after = 1, version = FALSE)
   })
 
   expect_true(endsWith(temp_with_version, as.character(r_version)))
