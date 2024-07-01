@@ -211,17 +211,17 @@ read_env_var <- function(key = c("token", "host", "wsid"),
 
   value <- Sys.getenv(key_name)
 
-  if (error) {
-    if (value == "") {
+
+  if (value == "") {
+    if (error) {
       stop(cli::format_error(c(
         "Environment variable {.var {key_name}} not found:",
         "x" = "Need to specify {.var {key_name}} environment variable."
       )))
+    } else {
+      value <- NULL
     }
-  } else {
-    value <- NULL
   }
-
 
   value
 }
@@ -257,4 +257,6 @@ db_oauth_client <- function(host = db_host()) {
   client_and_auth
 
 }
+
+
 
