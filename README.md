@@ -28,10 +28,11 @@
 library(brickster)
 
 # requires `DATABRICKS_HOST` only if using OAuth U2M
+# first request will open browser window to login
 Sys.setenv(DATABRICKS_HOST = "<workspace-prefix>.cloud.databricks.com")
 
 # list all SQL warehouses
-warehouses <- brickster::db_sql_warehouse_list()
+warehouses <- db_sql_warehouse_list()
 
 # read `data.csv` from a volume
 file <- db_volume_read(
@@ -48,7 +49,7 @@ Refer to the ["Connect to a Databricks Workspace"](https://databrickslabs.github
 `{brickster}` is very deliberate in what API's are exposed, it isn't intended to replace IaC (e.g. [Terraform](https://www.terraform.io/)) tooling or be used for account and workspace administration.
 
 | API                                                                                                   | Available | Version |
-|-------------------------------------|------------------|------------------|
+|------------------------------------|------------------|------------------|
 | [DBFS](https://docs.databricks.com/dev-tools/api/latest/dbfs.html)                                    | Yes       | 2.0     |
 | [Secrets](https://docs.databricks.com/dev-tools/api/latest/secrets.html)                              | Yes       | 2.0     |
 | [Repos](https://docs.databricks.com/dev-tools/api/latest/repos.html)                                  | Yes       | 2.0     |
@@ -63,3 +64,4 @@ Refer to the ["Connect to a Databricks Workspace"](https://databrickslabs.github
 | [SQL Statement Execution](https://docs.databricks.com/api/workspace/statementexecution)               | Yes       | 2.0     |
 | [REST 1.2 Commands](https://docs.databricks.com/dev-tools/api/1.2/index.html)                         | Partially | 1.2     |
 | [Unity Catalog](https://api-docs.databricks.com/rest/latest/unity-catalog-api-specification-2-1.html) | Partially | 2.1     |
+
