@@ -1,4 +1,4 @@
-# brickster <a href='https://zacdav-db.github.io/brickster/'><img src="man/figures/logo.png" align="right" height="139"/></a>
+# [brickster](https://databrickslabs.github.io/brickster/) <a href='https://zacdav-db.github.io/brickster/'><img src="man/figures/logo.png" align="right" height="139"/></a>
 
 <!-- badges: start -->
 
@@ -64,4 +64,3 @@ Refer to the ["Connect to a Databricks Workspace"](https://databrickslabs.github
 | [SQL Statement Execution](https://docs.databricks.com/api/workspace/statementexecution)               | Yes       | 2.0     |
 | [REST 1.2 Commands](https://docs.databricks.com/dev-tools/api/1.2/index.html)                         | Partially | 1.2     |
 | [Unity Catalog](https://api-docs.databricks.com/rest/latest/unity-catalog-api-specification-2-1.html) | Partially | 2.1     |
-
