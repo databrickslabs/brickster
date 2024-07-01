@@ -28,7 +28,6 @@
 library(brickster)
 
 # requires `DATABRICKS_HOST` only if using OAuth U2M
-# 
 Sys.setenv(DATABRICKS_HOST = "<workspace-prefix>.cloud.databricks.com")
 
 # list all SQL warehouses
