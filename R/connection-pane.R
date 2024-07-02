@@ -418,7 +418,7 @@ get_warehouse <- function(id, host, token) {
     "name" = x$name,
     "id" = id,
     "creator" = x$creator_name,
-    "channel" = x$channel$name,
+    "channel" = dplyr::coalesce(x$channel$name, NA),
     "serverless" = x$enable_serverless_compute,
     "size" = x$cluster_size,
     "# clusters" = x$num_clusters,
