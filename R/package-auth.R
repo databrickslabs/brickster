@@ -194,6 +194,7 @@ read_databrickscfg <- function(key = c("token", "host", "wsid"), profile = NULL)
 #'
 #' @param key The value to fetch from profile. One of `token`, `host`, or `wsid`
 #' @param profile Character, the name of the profile to retrieve values
+#' @param error Boolean, when key isn't found should error be raised
 #'
 #' @return named list of values associated with profile
 #' @keywords internal

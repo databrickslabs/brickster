@@ -29,7 +29,7 @@ Docs website has [an article](https://zacdav-db.github.io/brickster/articles/set
 ## API Coverage
 
 | API                                                                                                   | Available | Version |
-|----------------------------------------------|-------------|-------------|
+|-------------------------------------------------------------------------------------------------------|-----------|---------|
 | [DBFS](https://docs.databricks.com/dev-tools/api/latest/dbfs.html)                                    | Yes       | 2.0     |
 | [Secrets](https://docs.databricks.com/dev-tools/api/latest/secrets.html)                              | Yes       | 2.0     |
 | [Repos](https://docs.databricks.com/dev-tools/api/latest/repos.html)                                  | Yes       | 2.0     |
