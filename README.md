@@ -46,10 +46,10 @@ Refer to the ["Connect to a Databricks Workspace"](https://databrickslabs.github
 
 ## API Coverage
 
-`{brickster}` is very deliberate in what API's are exposed, it isn't intended to replace IaC (e.g. [Terraform](https://www.terraform.io/)) tooling or be used for account and workspace administration.
+`{brickster}` is very deliberate with choosing what API's are wrapped. `{brickster}` isn't intended to replace IaC tooling (e.g. [Terraform](#0)) or to be used for account/workspace administration.
 
 | API                                                                                                   | Available | Version |
-|------------------------------------|------------------|------------------|
+|------------------------------------|-------------------|-------------------|
 | [DBFS](https://docs.databricks.com/dev-tools/api/latest/dbfs.html)                                    | Yes       | 2.0     |
 | [Secrets](https://docs.databricks.com/dev-tools/api/latest/secrets.html)                              | Yes       | 2.0     |
 | [Repos](https://docs.databricks.com/dev-tools/api/latest/repos.html)                                  | Yes       | 2.0     |
