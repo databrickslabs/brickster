@@ -1,627 +1,212 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/404.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/articles/cluster-management.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/articles/managing-jobs.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/articles/rmarkdown-databricks-notebook.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/articles/setup-auth.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/index.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/DatabricksSqlClient.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/access_control_req_group.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/access_control_req_user.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/access_control_request.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/aws_attributes.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/azure_attributes.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/close_workspace.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/cluster_autoscale.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/cluster_log_conf.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/cron_schedule.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_cluster_action.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_cluster_create.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_cluster_delete.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_cluster_edit.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_cluster_events.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_cluster_get.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_cluster_list.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_cluster_list_node_types.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_cluster_list_zones.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_cluster_perm_delete.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_cluster_pin.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_cluster_resize.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_cluster_restart.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_cluster_runtime_versions.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_cluster_start.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_cluster_terminate.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_cluster_unpin.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_context_command_cancel.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_context_command_run.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_context_command_status.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_context_create.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_context_destroy.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_context_status.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_current_cloud.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_current_user.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_current_workspace_id.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_dbfs_add_block.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_dbfs_close.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_dbfs_create.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_dbfs_delete.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_dbfs_get_status.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_dbfs_list.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_dbfs_mkdirs.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_dbfs_move.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_dbfs_put.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_dbfs_read.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_host.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_jobs_create.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_jobs_delete.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_jobs_get.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_jobs_list.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_jobs_reset.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_jobs_run_now.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_jobs_runs_cancel.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_jobs_runs_delete.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_jobs_runs_export.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_jobs_runs_get.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_jobs_runs_get_output.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_jobs_runs_list.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_jobs_runs_submit.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_jobs_update.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_libs_all_cluster_statuses.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_libs_cluster_status.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_libs_install.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_libs_uninstall.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_mlflow_model_approve_transition_req.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_mlflow_model_delete_transition_req.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_mlflow_model_open_transition_reqs.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_mlflow_model_reject_transition_req.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_mlflow_model_transition_req.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_mlflow_model_transition_stage.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_mlflow_model_version_comment.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_mlflow_model_version_comment_delete.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_mlflow_model_version_comment_edit.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_mlflow_registered_model_details.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_perform_request.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_read_netrc.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_repo_create.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_repo_delete.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_repo_get.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_repo_get_all.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_repo_update.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_req_error_body.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_request.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_request_json.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_secrets_delete.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_secrets_list.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_secrets_put.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_secrets_scope_acl_delete.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_secrets_scope_acl_get.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_secrets_scope_acl_list.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_secrets_scope_acl_put.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_secrets_scope_create.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_secrets_scope_delete.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_secrets_scope_list_all.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_client.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_exec_cancel.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_exec_query.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_exec_result.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_exec_status.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_global_warehouse_get.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_query_history.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_warehouse_create.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_warehouse_delete.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_warehouse_edit.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_warehouse_get.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_warehouse_list.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_warehouse_start.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_sql_warehouse_stop.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_token.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_volume_delete.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_volume_dir_create.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_volume_dir_delete.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_volume_dir_exists.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_volume_file_exists.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_volume_list.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_volume_read.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_volume_write.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_workspace_delete.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_workspace_export.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_workspace_get_status.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_workspace_import.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_workspace_list.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_workspace_mkdirs.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/db_wsid.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/dbfs_storage_info.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/determine_brickster_venv.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/docker_image.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/email_notifications.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/file_storage_info.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/gcp_attributes.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/get_and_start_cluster.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/get_and_start_warehouse.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/get_latest_dbr.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/git_source.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/in_databricks_nb.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/init_script_info.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/install_db_sql_connector.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.access_control_req_group.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.access_control_req_user.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.access_control_request.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.aws_attributes.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.azure_attributes.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.cluster_autoscale.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.cluster_log_conf.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.cron_schedule.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.dbfs_storage_info.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.docker_image.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.email_notifications.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.file_storage_info.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.gcp_attributes.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.git_source.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.init_script_info.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.job_task.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.lib_cran.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.lib_egg.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.lib_jar.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.lib_maven.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.lib_pypi.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.lib_whl.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.libraries.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.library.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.new_cluster.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.notebook_task.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.pipeline_task.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.python_wheel_task.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.s3_storage_info.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.spark_jar_task.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.spark_python_task.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.spark_submit_task.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/is.valid_task_type.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/job_task.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/job_tasks.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/lib_cran.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/lib_egg.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/lib_jar.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/lib_maven.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/lib_pypi.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/lib_whl.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/libraries.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/new_cluster.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/notebook_enable_htmlwidgets.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/notebook_task.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/notebook_use_posit_repo.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/open_workspace.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/pipeline_task.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/py_db_sql_connector.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/python_wheel_task.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/read_databrickscfg.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/read_env_var.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/remove_lib_path.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/s3_storage_info.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/set_lib_path.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/setup_databricks_rmd.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/spark_jar_task.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/spark_python_task.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/spark_submit_task.html</loc>
-  </url>
-  <url>
-    <loc>https://zacdav-db.github.io/brickster/reference/wait_for_lib_installs.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://zacdav-db.github.io/brickster/404.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/LICENSE.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/articles/cluster-management.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/articles/index.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/articles/managing-jobs.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/articles/rmarkdown-databricks-notebook.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/articles/setup-auth.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/authors.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/index.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/DatabricksSqlClient.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/access_control_req_group.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/access_control_req_user.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/access_control_request.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/aws_attributes.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/azure_attributes.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/close_workspace.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/cluster_autoscale.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/cluster_log_conf.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/cron_schedule.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_cluster_action.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_cluster_create.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_cluster_delete.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_cluster_edit.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_cluster_events.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_cluster_get.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_cluster_list.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_cluster_list_node_types.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_cluster_list_zones.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_cluster_perm_delete.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_cluster_pin.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_cluster_resize.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_cluster_restart.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_cluster_runtime_versions.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_cluster_start.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_cluster_terminate.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_cluster_unpin.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_context_command_cancel.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_context_command_run.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_context_command_status.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_context_create.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_context_destroy.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_context_status.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_current_cloud.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_current_user.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_current_workspace_id.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_dbfs_add_block.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_dbfs_close.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_dbfs_create.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_dbfs_delete.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_dbfs_get_status.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_dbfs_list.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_dbfs_mkdirs.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_dbfs_move.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_dbfs_put.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_dbfs_read.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_host.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_jobs_create.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_jobs_delete.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_jobs_get.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_jobs_list.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_jobs_reset.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_jobs_run_now.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_jobs_runs_cancel.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_jobs_runs_delete.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_jobs_runs_export.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_jobs_runs_get.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_jobs_runs_get_output.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_jobs_runs_list.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_jobs_runs_submit.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_jobs_update.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_libs_all_cluster_statuses.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_libs_cluster_status.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_libs_install.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_libs_uninstall.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_mlflow_model_approve_transition_req.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_mlflow_model_delete_transition_req.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_mlflow_model_open_transition_reqs.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_mlflow_model_reject_transition_req.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_mlflow_model_transition_req.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_mlflow_model_transition_stage.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_mlflow_model_version_comment.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_mlflow_model_version_comment_delete.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_mlflow_model_version_comment_edit.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_mlflow_registered_model_details.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_oauth_client.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_perform_request.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_read_netrc.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_repo_create.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_repo_delete.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_repo_get.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_repo_get_all.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_repo_update.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_req_error_body.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_request.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_request_json.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_secrets_delete.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_secrets_list.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_secrets_put.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_secrets_scope_acl_delete.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_secrets_scope_acl_get.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_secrets_scope_acl_list.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_secrets_scope_acl_put.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_secrets_scope_create.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_secrets_scope_delete.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_secrets_scope_list_all.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_sql_client.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_sql_exec_cancel.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_sql_exec_query.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_sql_exec_result.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_sql_exec_status.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_sql_global_warehouse_get.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_sql_query_history.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_sql_warehouse_create.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_sql_warehouse_delete.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_sql_warehouse_edit.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_sql_warehouse_get.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_sql_warehouse_list.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_sql_warehouse_start.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_sql_warehouse_stop.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_token.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_volume_delete.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_volume_dir_create.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_volume_dir_delete.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_volume_dir_exists.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_volume_file_exists.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_volume_list.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_volume_read.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_volume_write.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_workspace_delete.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_workspace_export.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_workspace_get_status.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_workspace_import.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_workspace_list.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_workspace_mkdirs.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_wsid.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/dbfs_storage_info.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/determine_brickster_venv.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/docker_image.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/email_notifications.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/file_storage_info.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/gcp_attributes.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/get_and_start_cluster.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/get_and_start_warehouse.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/get_latest_dbr.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/git_source.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/in_databricks_nb.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/index.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/init_script_info.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/install_db_sql_connector.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.access_control_req_group.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.access_control_req_user.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.access_control_request.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.aws_attributes.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.azure_attributes.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.cluster_autoscale.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.cluster_log_conf.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.cron_schedule.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.dbfs_storage_info.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.docker_image.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.email_notifications.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.file_storage_info.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.gcp_attributes.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.git_source.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.init_script_info.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.job_task.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.lib_cran.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.lib_egg.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.lib_jar.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.lib_maven.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.lib_pypi.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.lib_whl.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.libraries.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.library.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.new_cluster.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.notebook_task.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.pipeline_task.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.python_wheel_task.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.s3_storage_info.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.spark_jar_task.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.spark_python_task.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.spark_submit_task.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.valid_task_type.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/job_task.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/job_tasks.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/lib_cran.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/lib_egg.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/lib_jar.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/lib_maven.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/lib_pypi.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/lib_whl.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/libraries.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/new_cluster.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/notebook_enable_htmlwidgets.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/notebook_task.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/notebook_use_posit_repo.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/open_workspace.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/pipeline_task.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/py_db_sql_connector.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/python_wheel_task.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/read_databrickscfg.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/read_env_var.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/remove_lib_path.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/s3_storage_info.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/set_lib_path.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/setup_databricks_rmd.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/spark_jar_task.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/spark_python_task.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/spark_submit_task.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/wait_for_lib_installs.html</loc></url>
 </urlset>
+
