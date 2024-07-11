@@ -8,10 +8,12 @@
 <url><loc>https://zacdav-db.github.io/brickster/articles/setup-auth.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/authors.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/index.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/news/index.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/DatabricksSqlClient.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/access_control_req_group.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/access_control_req_user.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/access_control_request.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/add_lib_path.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/aws_attributes.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/azure_attributes.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/close_workspace.html</loc></url>
@@ -202,7 +204,6 @@
 <url><loc>https://zacdav-db.github.io/brickster/reference/read_env_var.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/remove_lib_path.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/s3_storage_info.html</loc></url>
-<url><loc>https://zacdav-db.github.io/brickster/reference/set_lib_path.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/setup_databricks_rmd.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/spark_jar_task.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/spark_python_task.html</loc></url>
