@@ -9,3 +9,4 @@
 ^\.covrignore$
 ^LICENSE\.md$
 ^NOTICE
+^cran-comments\.md$

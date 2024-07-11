@@ -30,6 +30,8 @@ R users that user Databricks have the choice of the following developer experien
 
 Some features are sacrificed when not using a Databricks notebook:
 
+-   AI Assistant features
+
 -   Collaboration features such as co-presence
 
 -   Notebook revision history
@@ -138,11 +140,13 @@ Databricks notebooks and execution contexts support rendering of graphics, this 
 
 The graphic will be rendered on the remote Databricks cluster and then downloaded locally to present in the R Markdown notebook.
 
-    `r ''````{r, engine = "databricks_r"}
-    library(ggplot2)
-    ggplot(mpg, aes(disp, hwy, colour = class)) + 
-      geom_point()
-    ```
+````         
+`r ''````{r, engine = "databricks_r"}
+library(ggplot2)
+ggplot(mpg, aes(disp, hwy, colour = class)) + 
+  geom_point()
+```
+````
 
 #### Interactive Content
 
@@ -158,7 +162,7 @@ m
 
 ## Limitations
 
--   Returning interactive HTML content only works for python (using the `databricks_py` engine
+-   Returning interactive HTML content requires a [workaround](https://zacdav-db.github.io/dbrx-r-compendium/chapters/misc/htmlwidgets.html) to be run (e.g. install and run `brickster::notebook_enable_htmlwidgets()`)
 
 -   `{knitr}` chunk options for formatting may not work for Databricks related chunks
 

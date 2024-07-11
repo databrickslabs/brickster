@@ -13,7 +13,9 @@ Authors@R:
            email = "rafi.kurlansik@databricks.com"),
     person("Databricks", role = c("cph", "fnd"))
   )
-Description: Collection of utilities that improve using Databricks from R.
+Description: Collection of utilities that improve using Databricks from R. 
+  Primarily functions that wrap specific Databricks APIs, RStudio connection
+  pane support, quality of life functions to make Databricks simpler to use.
 License: Apache License (>= 2)
 Encoding: UTF-8
 LazyData: true

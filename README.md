@@ -1,4 +1,4 @@
-# brickster <a href='https://zacdav-db.github.io/brickster/'><img src="man/figures/logo.png" align="right" height="139"/></a>
+# [brickster](https://databrickslabs.github.io/brickster/) <a href='https://zacdav-db.github.io/brickster/'><img src="man/figures/logo.png" align="right" height="139"/></a>
 
 <!-- badges: start -->
 
@@ -6,27 +6,47 @@
 
 <!-- badges: end -->
 
-`{brickster}` aims to reduce friction for R users on Databricks by:
+`{brickster}` is the R toolkit for Databricks, it includes:
 
--   Providing bindings to relevant Databricks API's
+-   Wrappers for [Databricks API's](https://docs.databricks.com/api/workspace/introduction) (e.g. [`db_cluster_list`](https://databrickslabs.github.io/brickster/reference/db_cluster_list.html), [`db_volume_read`](https://databrickslabs.github.io/brickster/reference/db_volume_read.html))
 
--   Use RMarkdown as a Databricks notebook
+-   Browser workspace assets via RStudio Connections Pane ([`open_workspace()`](https://databrickslabs.github.io/brickster/reference/open_workspace.html))
 
--   Integrate with RStudio Connections Pane (`open_workspace()`)
+-   Exposes the [`databricks-sql-connector`](https://github.com/databricks/databricks-sql-python) via `{reticulate}` ([docs](https://databrickslabs.github.io/brickster/reference/index.html#sql-connector))
 
--   Exposes the [`databricks-sql-connector`](https://github.com/databricks/databricks-sql-python) via `{reticulate}`
+-   [Utility functions to streamline workloads in Databricks notebooks](https://databrickslabs.github.io/brickster/reference/index.html#databricks-notebook-helpers)
 
--   Utility functions to streamline workloads
+-   [Use `{rmarkdown}` notebooks as a Databricks notebook](https://databrickslabs.github.io/brickster/articles/rmarkdown-databricks-notebook.html)
 
 ## Installation
 
-`remotes::install_github("zacdav-db/brickster")`
+`remotes::install_github("databrickslabs/brickster")`
 
-## Setup Authentication
+## Quick Start
 
-Docs website has [an article](https://zacdav-db.github.io/brickster/articles/setup-auth.html) that provides details on how to connect to a Databricks workspace.
+``` r
+library(brickster)
+
+# requires `DATABRICKS_HOST` only if using OAuth U2M
+# first request will open browser window to login
+Sys.setenv(DATABRICKS_HOST = "<workspace-prefix>.cloud.databricks.com")
+
+# list all SQL warehouses
+warehouses <- db_sql_warehouse_list()
+
+# read `data.csv` from a volume
+file <- db_volume_read(
+  path = "/Volumes/<catalog>/<schema>/<volume>/data.csv",
+  tempfile(pattern = ".csv")
+)
+volume_csv <- readr::read_csv(file)
+```
+
+Refer to the ["Connect to a Databricks Workspace"](https://databrickslabs.github.io/brickster/articles/setup-auth.html) article for more details on getting authentication configured.
 
 ## API Coverage
+
+`{brickster}` is very deliberate with choosing what API's are wrapped. `{brickster}` isn't intended to replace IaC tooling (e.g. [Terraform](#0)) or to be used for account/workspace administration.
 
 | API                                                                                                   | Available | Version |
 |-------------------------------------------------------------------------------------------------------|-----------|---------|
