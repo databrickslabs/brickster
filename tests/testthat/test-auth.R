@@ -37,6 +37,22 @@ test_that("auth functions - baseline behaviour", {
     "mock.cloud.databricks.com"
   )
 
+  # oauth functions require host to be specified and valid
+  expect_error(db_oauth_client(host = NULL))
+  expect_identical(
+    db_oauth_client(host = "")$auth_url,
+    "https:///oidc/v1/authorize"
+  )
+  expect_identical(
+    db_oauth_client(host = "")$client$token_url,
+    "https:///oidc/v1/token"
+  )
+  expect_s3_class(
+    db_oauth_client(host = "")$client,
+    "httr2_oauth_client"
+  )
+
+
 })
 
 test_that("auth functions - switching profile", {
