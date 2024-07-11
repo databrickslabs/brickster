@@ -81,7 +81,7 @@ reference:
   contents: starts_with("db_mlflow", internal = TRUE)
 - title: R Library Management
   contents:
-  - set_lib_path
+  - add_lib_path
   - remove_lib_path
 - title: Repos
   contents: starts_with("db_repo", internal = TRUE)
