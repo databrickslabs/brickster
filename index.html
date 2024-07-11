@@ -17,8 +17,8 @@
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="R Toolkit for Databricks">
-<meta name="description" content="Collection of utilities that improve using Databricks from R.">
-<meta property="og:description" content="Collection of utilities that improve using Databricks from R.">
+<meta name="description" content="Collection of utilities that improve using Databricks from R. Primarily functions that wrap specific Databricks APIs, RStudio connection pane support, quality of life functions to make Databricks simpler to use.">
+<meta property="og:description" content="Collection of utilities that improve using Databricks from R. Primarily functions that wrap specific Databricks APIs, RStudio connection pane support, quality of life functions to make Databricks simpler to use.">
 <meta property="og:image" content="https://zacdav-db.github.io/brickster/logo.png">
 </head>
 <body>
@@ -63,34 +63,52 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header">
-<img src="logo.png" class="logo" alt=""><h1 id="brickster-">brickster 
+<img src="logo.png" class="logo" alt=""><h1 id="brickster-">
+<a href="https://databrickslabs.github.io/brickster/" class="external-link">brickster</a> 
 <a class="anchor" aria-label="anchor" href="#brickster-"></a>
 </h1>
 </div>
 <!-- badges: start -->
 
 <!-- badges: end -->
-<p><a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> aims to reduce friction for R users on Databricks by:</p>
+<p><a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> is the R toolkit for Databricks, it includes:</p>
 <ul>
-<li><p>Providing bindings to relevant Databricks API’s</p></li>
-<li><p>Use RMarkdown as a Databricks notebook</p></li>
-<li><p>Integrate with RStudio Connections Pane (<code><a href="reference/open_workspace.html">open_workspace()</a></code>)</p></li>
-<li><p>Exposes the <a href="https://github.com/databricks/databricks-sql-python" class="external-link"><code>databricks-sql-connector</code></a> via <a href="https://rstudio.github.io/reticulate/" class="external-link">reticulate</a></p></li>
-<li><p>Utility functions to streamline workloads</p></li>
+<li><p>Wrappers for <a href="https://docs.databricks.com/api/workspace/introduction" class="external-link">Databricks API’s</a> (e.g. <a href="https://databrickslabs.github.io/brickster/reference/db_cluster_list.html" class="external-link"><code>db_cluster_list</code></a>, <a href="https://databrickslabs.github.io/brickster/reference/db_volume_read.html" class="external-link"><code>db_volume_read</code></a>)</p></li>
+<li><p>Browser workspace assets via RStudio Connections Pane (<a href="https://databrickslabs.github.io/brickster/reference/open_workspace.html" class="external-link"><code>open_workspace()</code></a>)</p></li>
+<li><p>Exposes the <a href="https://github.com/databricks/databricks-sql-python" class="external-link"><code>databricks-sql-connector</code></a> via <a href="https://rstudio.github.io/reticulate/" class="external-link">reticulate</a> (<a href="https://databrickslabs.github.io/brickster/reference/index.html#sql-connector" class="external-link">docs</a>)</p></li>
+<li><p><a href="https://databrickslabs.github.io/brickster/reference/index.html#databricks-notebook-helpers" class="external-link">Utility functions to streamline workloads in Databricks notebooks</a></p></li>
+<li><p><a href="https://databrickslabs.github.io/brickster/articles/rmarkdown-databricks-notebook.html" class="external-link">Use <code>{rmarkdown}</code> notebooks as a Databricks notebook</a></p></li>
 </ul>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p><code>remotes::install_github("zacdav-db/brickster")</code></p>
+<p><code>remotes::install_github("databrickslabs/brickster")</code></p>
 </div>
 <div class="section level2">
-<h2 id="setup-authentication">Setup Authentication<a class="anchor" aria-label="anchor" href="#setup-authentication"></a>
+<h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
-<p>Docs website has <a href="https://zacdav-db.github.io/brickster/articles/setup-auth.html">an article</a> that provides details on how to connect to a Databricks workspace.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># requires `DATABRICKS_HOST` only if using OAuth U2M</span></span>
+<span><span class="co"># first request will open browser window to login</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>DATABRICKS_HOST <span class="op">=</span> <span class="st">"&lt;workspace-prefix&gt;.cloud.databricks.com"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># list all SQL warehouses</span></span>
+<span><span class="va">warehouses</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/db_sql_warehouse_list.html">db_sql_warehouse_list</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># read `data.csv` from a volume</span></span>
+<span><span class="va">file</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/db_volume_read.html">db_volume_read</a></span><span class="op">(</span></span>
+<span>  path <span class="op">=</span> <span class="st">"/Volumes/&lt;catalog&gt;/&lt;schema&gt;/&lt;volume&gt;/data.csv"</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>pattern <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">volume_csv</span> <span class="op">&lt;-</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu">read_csv</span><span class="op">(</span><span class="va">file</span><span class="op">)</span></span></code></pre></div>
+<p>Refer to the <a href="https://databrickslabs.github.io/brickster/articles/setup-auth.html" class="external-link">“Connect to a Databricks Workspace”</a> article for more details on getting authentication configured.</p>
 </div>
 <div class="section level2">
 <h2 id="api-coverage">API Coverage<a class="anchor" aria-label="anchor" href="#api-coverage"></a>
 </h2>
+<p><a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> is very deliberate with choosing what API’s are wrapped. <a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> isn’t intended to replace IaC tooling (e.g. <a href="#id_0">Terraform</a>) or to be used for account/workspace administration.</p>
 <table class="table">
 <colgroup>
 <col width="83%">

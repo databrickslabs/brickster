@@ -93,6 +93,7 @@ version</p></li>
 <p>Some features are sacrificed when not using a Databricks
 notebook:</p>
 <ul>
+<li><p>AI Assistant features</p></li>
 <li><p>Collaboration features such as co-presence</p></li>
 <li><p>Notebook revision history</p></li>
 <li><p>mlflow experiments integration (sidebar)</p></li>
@@ -262,8 +263,9 @@ Markdown notebook.</p>
 <h2 id="limitations">Limitations<a class="anchor" aria-label="anchor" href="#limitations"></a>
 </h2>
 <ul>
-<li><p>Returning interactive HTML content only works for python (using
-the <code>databricks_py</code> engine</p></li>
+<li><p>Returning interactive HTML content requires a <a href="https://zacdav-db.github.io/dbrx-r-compendium/chapters/misc/htmlwidgets.html" class="external-link">workaround</a>
+to be run (e.g. install and run
+<code><a href="../reference/notebook_enable_htmlwidgets.html">brickster::notebook_enable_htmlwidgets()</a></code>)</p></li>
 <li><p><a href="https://yihui.org/knitr/" class="external-link">knitr</a> chunk options for formatting may not work
 for Databricks related chunks</p></li>
 <li><p>Syntax highlighting is only possible when specifying chunks as
