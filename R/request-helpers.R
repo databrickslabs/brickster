@@ -27,12 +27,34 @@ db_request <- function(endpoint, method, version = NULL, body = NULL, host, toke
   user_agent_str <- paste0("brickster/", utils::packageVersion("brickster"))
 
   req <- httr2::request(base_url = url) %>%
-    httr2::req_auth_bearer_token(token) %>%
     httr2::req_headers("User-Agent" = user_agent_str) %>%
     httr2::req_user_agent(string = user_agent_str) %>%
     httr2::req_url_path_append(endpoint) %>%
     httr2::req_method(method) %>%
     httr2::req_retry(max_tries = 3, backoff = ~ 2)
+
+  # if token is present use directly
+  # otherwise initiate OAuth 2.0 U2M Workspace flow
+  if (!is.null(token)) {
+    req <- httr2::req_auth_bearer_token(req = req, token = token)
+  } else {
+
+    # fetch client
+    oauth_client <- getOption(
+      x = "brickster_oauth_client",
+      db_oauth_client(host = host)
+    )
+
+    # use client to auth
+    req <- httr2::req_oauth_auth_code(
+      req,
+      client = oauth_client$client,
+      scope = "all-apis",
+      auth_url = oauth_client$auth_url,
+      redirect_uri = "http://localhost:8020"
+    )
+
+  }
 
   if (!is.null(body)) {
     body <- base::Filter(length, body)

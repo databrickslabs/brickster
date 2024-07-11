@@ -17,7 +17,14 @@ knitr::opts_chunk$set(
 
 ## Defining Credentials
 
-The `{brickster}` package connects to a Databricks workspace via personal access tokens. Tokens can be generated in a few steps, for a step-by-step breakdown [refer to the documentation](https://docs.databricks.com/dev-tools/api/latest/authentication.html).
+The `{brickster}` package connects to a Databricks workspace is two ways:
+
+1.  [OAuth user-to-machine (U2M) authentication](https://docs.databricks.com/en/dev-tools/auth/oauth-u2m.html#oauth-user-to-machine-u2m-authentication)
+2.  [Personal Access Tokens (PAT)](https://docs.databricks.com/en/dev-tools/auth/pat.htmlhttps://docs.databricks.com/en/dev-tools/auth/pat.html)
+
+It's recommended to use option (1) when using `{brickster}` interactively, if you need to run code via an automated process the only option currently is (2).
+
+Personal Access Tokens can be generated in a few steps, for a step-by-step breakdown [refer to the documentation](https://docs.databricks.com/dev-tools/api/latest/authentication.html).
 
 Once you have a token you'll be able to store it alongside the workspace URL in an `.Renviron` file. The `.Renviron` is used for storing the variables, such as those which may be sensitive (e.g. credentials) and de-couple them from the code (additional reading: [1](https://support.rstudio.com/hc/en-us/articles/360047157094-Managing-R-with-Rprofile-Renviron-Rprofile-site-Renviron-site-rsession-conf-and-repos-conf), [2](https://cran.r-project.org/web/packages/startup/vignettes/startup-intro.html)).
 
@@ -25,7 +32,7 @@ To get started add the following to your `.Renviron`:
 
 -   `DATABRICKS_HOST`: The workspace URL
 
--   `DATABRICKS_TOKEN`: Personal access token
+-   `DATABRICKS_TOKEN`: Personal access token (*not required if using OAuth U2M*)
 
 -   `DATABRICKS_WSID`: The workspace ID ([docs](https://docs.databricks.com/workspace/workspace-details.html#workspace-instance-names-urls-and-ids))
 
@@ -33,9 +40,11 @@ To get started add the following to your `.Renviron`:
 
 Example of entries in `.Renviron`:
 
-    DATABRICKS_HOST=https://xxxxxxx.cloud.databricks.com/
-    DATABRICKS_TOKEN=dapi123456789012345678a9bc01234defg5
-    DATABRICKS_WSID=123123123123123
+```         
+DATABRICKS_HOST=xxxxxxx.cloud.databricks.com
+DATABRICKS_TOKEN=dapi123456789012345678a9bc01234defg5
+DATABRICKS_WSID=123123123123123
+```
 
 **Note**: Recommend creating an `.Renviron` for each project. You can create `.Renviron` within your user home directory if required.
 
@@ -43,7 +52,7 @@ Restarting your R session will allow those variable to be picked up via the `{br
 
 ## Using Credentials with `{brickster}`
 
-Authentication should now be possible without specifying the credentials in your R code. We can now load `{brickster}` and list the clusters within the workspace using `db_cluster_list()`, to access our host/token we use `db_host()`/`db_token()` respectively.
+Authentication should now be possible without specifying the credentials in your R code. You can load `{brickster}` and list the clusters within the workspace using `db_cluster_list()`, to access the host/token use `db_host()`/`db_token()` respectively.
 
 ```{r setup}
 library(brickster)
@@ -58,6 +67,8 @@ All `{brickster}` functions have their host/token parameters default to calling 
 # all host/token parameters default to db_host()/db_token()
 clusters <- db_cluster_list()
 ```
+
+When using OAuth U2M authentication you don't define a token in `.Renviron` and therefore `db_token()` will return `NULL`.
 
 ## Managing Multiple Credentials
 
@@ -113,18 +124,20 @@ It is expected that profiles in `.Renviron` will adhere to the same naming conve
 
 Here is an example of an `.Renviron` file that has three profiles (default, dev, prod):
 
-    # default
-    DATABRICKS_HOST=https://xxxxxxx.cloud.databricks.com/
-    DATABRICKS_TOKEN=dapi123456789012345678a9bc01234defg5
-    DATABRICKS_WSID=123123123123123
-    # dev
-    DATABRICKS_HOST_DEV=https://xxxxxxx-dev.cloud.databricks.com/
-    DATABRICKS_TOKEN_DEV=dapi123456789012345678a9bc01234defg6
-    DATABRICKS_WSID_DEV=123123123123124
-    # prod
-    DATABRICKS_HOST_PROD=https://xxxxxxx-prod.cloud.databricks.com/
-    DATABRICKS_TOKEN_PROD=dapi123456789012345678a9bc01234defg7
-    DATABRICKS_WSID_PROD=123123123123125
+```         
+# default
+DATABRICKS_HOST=xxxxxxx.cloud.databricks.com
+DATABRICKS_TOKEN=dapixxxxxxxxxxxxxxxxxxxxxxxxx
+DATABRICKS_WSID=123123123123123
+# dev
+DATABRICKS_HOST_DEV=xxxxxxx-dev.cloud.databricks.com
+DATABRICKS_TOKEN_DEV=dapixxxxxxxxxxxxxxxxxxxxxxxxx
+DATABRICKS_WSID_DEV=123123123123124
+# prod
+DATABRICKS_HOST_PROD=xxxxxxx-prod.cloud.databricks.com
+DATABRICKS_TOKEN_PROD=dapixxxxxxxxxxxxxxxxxxxxxxxxx
+DATABRICKS_WSID_PROD=123123123123125
+```
 
 ### Configuring `.databrickscfg`
 

@@ -1,10 +1,11 @@
 # functions for managing libraries on databricks
 
-#' Set Library Path
+#' Add Library Path
 #'
-#' @param path Directory that will be the primary location for which packages
+#' @param path Directory that will added as location for which packages
 #' are searched. Recursively creates the directory if it doesn't exist. On
-#' Databricks remember to use `/dbfs/` as a prefix.
+#' Databricks remember to use `/dbfs/` or `/Volumes/...` as a prefix.
+#' @param after Location at which to append the `path` value after.
 #' @param version If `TRUE` will add the R version string to the end
 #' of `path`. This is recommended if using different R versions and sharing a
 #' common `path` between users.
@@ -16,7 +17,7 @@
 #' @seealso [base::.libPaths()], [remove_lib_path()]
 #'
 #' @export
-set_lib_path <- function(path, version = FALSE) {
+add_lib_path <- function(path, after, version = FALSE) {
   if (version) {
     rver <- getRversion()
     lib_path <- file.path(path, rver)
@@ -32,7 +33,7 @@ set_lib_path <- function(path, version = FALSE) {
   lib_path <- normalizePath(lib_path, "/")
 
   message("primary package path is now ", lib_path)
-  .libPaths(new = c(lib_path, .libPaths()))
+  .libPaths(new = append(.libPaths(), lib_path, after = after))
   lib_path
 }
 

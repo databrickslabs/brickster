@@ -67,6 +67,7 @@ db_host <- function(id = NULL, prefix = NULL, profile = getOption("db_profile", 
 #'
 #' @description
 #' Token must be specified as an environment variable `DATABRICKS_TOKEN`.
+#' If `DATABRICKS_TOKEN` is missing will default to using OAuth U2M flow.
 #'
 #' Refer to [api authentication docs](https://docs.databricks.com/dev-tools/api/latest/authentication.html)
 #'
@@ -87,7 +88,7 @@ db_token <- function(profile = getOption("db_profile")) {
     return(token)
   }
 
-  read_env_var(key = "token", profile = profile)
+  read_env_var(key = "token", profile = profile, error = FALSE)
 }
 
 #' Fetch Databricks Workspace ID
@@ -193,10 +194,13 @@ read_databrickscfg <- function(key = c("token", "host", "wsid"), profile = NULL)
 #'
 #' @param key The value to fetch from profile. One of `token`, `host`, or `wsid`
 #' @param profile Character, the name of the profile to retrieve values
+#' @param error Boolean, when key isn't found should error be raised
 #'
 #' @return named list of values associated with profile
 #' @keywords internal
-read_env_var <- function(key = c("token", "host", "wsid"), profile = NULL) {
+read_env_var <- function(key = c("token", "host", "wsid"),
+                         profile = NULL, error = TRUE) {
+
   key <- match.arg(key)
 
   # fetch value based on profile
@@ -208,14 +212,52 @@ read_env_var <- function(key = c("token", "host", "wsid"), profile = NULL) {
 
   value <- Sys.getenv(key_name)
 
+
   if (value == "") {
-    stop(cli::format_error(c(
-      "Environment variable {.var {key_name}} not found:",
-      "x" = "Need to specify {.var {key_name}} environment variable."
-    )))
+    if (error) {
+      stop(cli::format_error(c(
+        "Environment variable {.var {key_name}} not found:",
+        "x" = "Need to specify {.var {key_name}} environment variable."
+      )))
+    } else {
+      value <- NULL
+    }
   }
 
   value
 }
+
+
+#' Create OAuth 2.0 Client
+#' @details Creates an OAuth 2.0 Client, support for U2M flows only.
+#' May later be extended for account U2M and all M2M flows.
+#'
+#' @inheritParams auth_params
+#'
+#' @return List that contains httr2_oauth_client and relevant auth url
+#' @keywords internal
+db_oauth_client <- function(host = db_host()) {
+
+  ws_token_url = glue::glue("https://{host}/oidc/v1/token", host = host)
+  ws_auth_url = glue::glue("https://{host}/oidc/v1/authorize", host = host)
+
+  client <- httr2::oauth_client(
+    id = "databricks-cli",
+    token_url = ws_token_url,
+    name = "brickster"
+  )
+
+  client_and_auth <- list(
+    client = client,
+    auth_url = ws_auth_url
+  )
+
+  # add option for client to be fetched via request helpers
+  options(brickster_oauth_client = client_and_auth)
+
+  client_and_auth
+
+}
+
 
 
