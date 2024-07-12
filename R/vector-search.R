@@ -200,8 +200,8 @@ db_vs_indexes_get <- function(index,
 #'
 #' @param name Name of vector search index
 #' @param endpoint Name of vector search endpoint
-#' @param primary_key Name of vector search index
-#' @param spec Name of vector search index
+#' @param primary_key Vector search primary key column name
+#' @param spec
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create
