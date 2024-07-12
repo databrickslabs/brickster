@@ -5,76 +5,10 @@
 # nocov start
 brickster_actions <- function(host) {
   list(
-    Workspace = list(
+    `Open Workspace` = list(
       icon = "",
       callback = function() {
-        utils::browseURL(host)
-      }
-    ),
-    SQL = list(
-      icon = "",
-      callback = function() {
-        utils::browseURL(paste0(host, "sql"))
-      }
-    ),
-    `Upload to DBFS` = list(
-      icon = "",
-      callback = function() {
-        path <- rstudioapi::selectFile(
-          caption = "Select file to upload to DBFS",
-          existing = TRUE
-        )
-        if (!is.null(path)) {
-          dbfs_path <- rstudioapi::showPrompt(
-            title = "File Destination (DBFS Path)",
-            message = "File Destination (DBFS Path):",
-            default = "/"
-          )
-        }
-        if (dbfs_path != "") {
-          db_dbfs_put(
-            path = dbfs_path,
-            file = path,
-            overwrite = TRUE
-          )
-        }
-      }
-    ),
-    `Workspace Import` = list(
-      icon = "",
-      callback = function() {
-        path <- rstudioapi::selectFile(
-          caption = "Select file to upload to DBFS",
-          existing = TRUE,
-          filter = "Databricks Permitted Files (*.R | *.r | *.py | *.scala | *.sql | *.dbc | *.html | *.ipynb)"
-        )
-        if (!is.null(path)) {
-          ws_path <- rstudioapi::showPrompt(
-            title = "Import Path (Workspace Path)",
-            message = "Workspace Destination:",
-            default = "/Shared/"
-          )
-        }
-        if (ws_path != "") {
-
-          filename <- base::basename(path)
-          ext <- gsub(".*\\.(.*)", "\\1", filename)
-
-          if (ext %in% c("R", "r", "py", "scala", "sql")) {
-            lang <- toupper(ext)
-            format <- "SOURCE"
-          } else {
-            lang <- NULL
-            format <- toupper(ifelse(ext == "ipynb", "jupyter", ext))
-          }
-          db_workspace_import(
-            file = path,
-            path = ws_path,
-            format = format,
-            language = lang,
-            overwrite = TRUE
-          )
-        }
+        utils::browseURL(glue::glue("https://{host}"))
       }
     )
   )
@@ -92,25 +26,6 @@ readable_time <- function(x) {
     tz = "UTC"
   )
   as.character(time)
-}
-
-
-get_dbfs_items <- function(path = "/", host, token, is_file = FALSE) {
-  items <- db_dbfs_list(path = path, host = host, token = token)
-  if (is_file) {
-    data.frame(
-      name = c("file size", "modification time"),
-      type = c(
-        base::format(base::structure(items$file_size, class = "object_size"), units = "auto"),
-        readable_time(items$modification_time)
-      )
-    )
-  } else {
-    data.frame(
-      name = gsub(pattern = "^.*\\/(.*)$", replacement = "\\1", x = items$path),
-      type = ifelse(items$is_dir, "folder", "files")
-    )
-  }
 }
 
 #' @importFrom rlang .data
@@ -189,6 +104,60 @@ get_tables <- function(catalog, schema, host, token) {
   } else {
     data.frame(name = NULL, type = NULL)
   }
+}
+
+get_uc_models <- function(catalog, schema, host, token) {
+  # TODO:
+  # tables <- db_uc_tables_list(
+  #   catalog = catalog,
+  #   schema = schema,
+  #   host = host,
+  #   token = token
+  # )
+  # if (length(tables) > 0) {
+  #   data.frame(
+  #     name = purrr::map_chr(tables, "name"),
+  #     type = "table"
+  #   )
+  # } else {
+  #   data.frame(name = NULL, type = NULL)
+  # }
+}
+
+get_uc_functions <- function(catalog, schema, host, token) {
+  # TODO:
+  # tables <- db_uc_tables_list(
+  #   catalog = catalog,
+  #   schema = schema,
+  #   host = host,
+  #   token = token
+  # )
+  # if (length(tables) > 0) {
+  #   data.frame(
+  #     name = purrr::map_chr(tables, "name"),
+  #     type = "table"
+  #   )
+  # } else {
+  #   data.frame(name = NULL, type = NULL)
+  # }
+}
+
+get_uc_volumes <- function(catalog, schema, host, token) {
+  # TODO:
+  # tables <- db_uc_tables_list(
+  #   catalog = catalog,
+  #   schema = schema,
+  #   host = host,
+  #   token = token
+  # )
+  # if (length(tables) > 0) {
+  #   data.frame(
+  #     name = purrr::map_chr(tables, "name"),
+  #     type = "table"
+  #   )
+  # } else {
+  #   data.frame(name = NULL, type = NULL)
+  # }
 }
 
 get_table_data <- function(catalog, schema, table, host, token, metadata = TRUE) {
@@ -435,7 +404,7 @@ get_warehouse <- function(id, host, token) {
 list_objects <- function(host, token,
                          type = NULL,
                          dbfs = NULL,
-                         notebooks = NULL,
+                         wsfs = NULL,
                          workspace = NULL,
                          folder = NULL,
                          clusters = NULL,
@@ -529,7 +498,7 @@ list_objects <- function(host, token,
   }
 
   # workspace notebooks
-  if (!is.null(notebooks)) {
+  if (!is.null(wsfs)) {
     if (is.null(folder)) {
       objects <- get_notebook_items(path = "/", host = host, token = token)
     } else {
@@ -565,8 +534,7 @@ list_objects <- function(host, token,
     "Experiments" = "experiments",
     "Clusters" = "clusters",
     "SQL Warehouses" = "warehouses",
-    "File System (DBFS)" = "dbfs",
-    "Workspace (Notebooks)" = "notebooks"
+    "Workspace File System (WSFS)" = "wsfs"
   )
 
   if (!sql_active) {
@@ -678,42 +646,60 @@ preview_object <- function(host, token, rowLimit,
                            table = NULL,
                            ...) {
 
+  ws_id <- db_current_workspace_id()
+  message("preview")
+
   # explore data
+  if (!is.null(catalog) & !is.null(schema) & !is.null(table)) {
+    path <- paste0(c(catalog, schema, table), collapse = "/")
+    url <- glue::glue("https://{host}/explore/data/{path}?o={ws_id}")
+    message("Z")
+    return(utils::browseURL(url))
+  }
+
+  if (!is.null(catalog) & !is.null(schema)) {
+    path <- paste0(c(catalog, schema), collapse = "/")
+    url <- glue::glue("https://{host}/explore/data/{path}?o={ws_id}")
+    message("Y")
+    return(utils::browseURL(url))
+  }
+
   if (!is.null(catalog)) {
     path <- paste0(c(catalog, schema, table), collapse = "/")
-    url <- glue::glue("{host}explore/data/{path}?o={db_wsid()}")
+    url <- glue::glue("https://{host}/explore/data/{path}?o={ws_id}")
+    message("X")
     return(utils::browseURL(url))
   }
 
   # version of model
   if (!is.null(version) && !is.null(model)) {
     version <- gsub("(\\d+) .*", "\\1", version)
-    url <- glue::glue("{host}?o={db_wsid()}#mlflow/models/{model}/versions/{version}")
+    url <- glue::glue("https://{host}/?o={ws_id}#mlflow/models/{model}/versions/{version}")
     return(utils::browseURL(url))
   }
 
   # model
   if (is.null(version) && !is.null(model)) {
-    url <- glue::glue("{host}?o={db_wsid()}#mlflow/models/{model}")
+    url <- glue::glue("https://{host}/?o={ws_id}#ml/models/{model}")
     return(utils::browseURL(url))
   }
 
   # experiment
   if (!is.null(experiment)) {
     id <- get_id_from_panel_name(experiment)
-    url <- glue::glue("{host}?o={db_wsid()}#mlflow/experiments/{id}")
+    url <- glue::glue("https://{host}/?o={ws_id}#mlflow/experiments/{id}")
     return(utils::browseURL(url))
   }
 
   if (!is.null(cluster)) {
     id <- get_id_from_panel_name(cluster)
-    url <- glue::glue("{host}?o={db_wsid()}#setting/clusters/{id}/configuration")
+    url <- glue::glue("https://{host}/?o={ws_id}#setting/clusters/{id}/configuration")
     return(utils::browseURL(url))
   }
 
   if (!is.null(warehouse)) {
     id <- get_id_from_panel_name(warehouse)
-    url <- glue::glue("{host}sql/warehouses/{id}")
+    url <- glue::glue("https://{host}/sql/warehouses/{id}")
     return(utils::browseURL(url))
   }
 
@@ -739,19 +725,6 @@ preview_object <- function(host, token, rowLimit,
     rmarkdown::convert_ipynb(input = nb_path, output = rmd_path)
     rstudioapi::navigateToFile(file = rmd_path)
 
-  }
-
-  if (!is.null(files)) {
-    # TODO: check file size first, don't download if >10mb
-    # download from dbfs
-    content <- db_dbfs_read(path = paste0(path, "/", files))
-
-    # save to temporary directory and open
-    dir <- tempdir()
-    content_text <- rawToChar(base64enc::base64decode(content$data))
-    file_path <- file.path(dir, files)
-    base::writeLines(content_text, con = file_path)
-    rstudioapi::navigateToFile(file = file_path)
   }
 
 }
@@ -809,8 +782,7 @@ open_workspace <- function(host = db_host(), token = db_token(), name = NULL) {
           files = dots$files,
           warehouses = dots$warehouses,
           clusters = dots$clusters,
-          dbfs = dots$dbfs,
-          notebooks = dots$notebooks,
+          wsfs = dots$wsfs,
           metastore = dots$metastore,
           catalog = dots$catalog,
           schema = dots$schema,
@@ -828,6 +800,7 @@ open_workspace <- function(host = db_host(), token = db_token(), name = NULL) {
         return(columns)
       },
       previewObject = function(rowLimit, ...) {
+        message("prev")
         preview_object(host = host, token = token, rowLimit = rowLimit, ...)
       },
       actions = brickster_actions(host),
@@ -867,9 +840,40 @@ list_objects_types <- function() {
       metastore = list(contains = list(
         catalog = list(contains = list(
           schema = list(contains = list(
-            table = list(contains = list(
-              metadata = list(contains = "data"),
-              columns = list(contains = "data")
+            tables = list(contains = list(
+              table = list(contains = list(
+                metadata = list(contains = "data"),
+                columns = list(contains = "data")
+              ))
+            )),
+            volumes = list(contains = list(
+              volume = list(contains = list(
+                folder = list(contains = list(
+                  files = list(
+                    icon = system.file("icons", "file.png", package = "brickster"),
+                    contains = "data"
+                  )
+                ))
+              ))
+            )),
+            models = list(contains = list(
+              model = list(
+                icon = system.file("icons", "abacus.png", package = "brickster"),
+                contains = list(
+                  metadata = list(contains = "data"),
+                  versions = list(contains = list(
+                    version = list(
+                      icon = system.file("icons", "package.png", package = "brickster"),
+                      contains = "data"
+                    )
+                  ))
+                ))
+            )),
+            functions = list(contains = list(
+              func = list(
+                icon = system.file("icons", "magnify.png", package = "brickster"),
+                contains = "data"
+              )
             ))
           ))
         ))
@@ -899,15 +903,7 @@ list_objects_types <- function() {
           contains = "data"
         )
       )),
-      dbfs = list(contains = list(
-        folder = list(contains = list(
-          files = list(
-            icon = system.file("icons", "file.png", package = "brickster"),
-            contains = "data"
-          )
-        ))
-      )),
-      notebooks = list(contains = list(
+      wsfs = list(contains = list(
         folder = list(contains = list(
           notebook = list(
             icon = system.file("icons", "notebook.png", package = "brickster"),
