@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">brickster</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -1019,6 +1019,155 @@
         </dt>
         <dd>Databricks SQL Connector</dd>
       </dl></div><div class="section level2">
+      <h2 id="vector-search">Vector Search<a class="anchor" aria-label="anchor" href="#vector-search"></a></h2>
+
+
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="db_vs_endpoints_create.html">db_vs_endpoints_create()</a></code>
+
+        </dt>
+        <dd>Create a Vector Search Endpoint</dd>
+      </dl><dl><dt>
+
+          <code><a href="db_vs_endpoints_delete.html">db_vs_endpoints_delete()</a></code>
+
+        </dt>
+        <dd>Delete a Vector Search Endpoint</dd>
+      </dl><dl><dt>
+
+          <code><a href="db_vs_endpoints_get.html">db_vs_endpoints_get()</a></code>
+
+        </dt>
+        <dd>Get a Vector Search Endpoint</dd>
+      </dl><dl><dt>
+
+          <code><a href="db_vs_endpoints_list.html">db_vs_endpoints_list()</a></code>
+
+        </dt>
+        <dd>List Vector Search Endpoints</dd>
+      </dl><dl><dt>
+
+          <code><a href="db_vs_indexes_create.html">db_vs_indexes_create()</a></code>
+
+        </dt>
+        <dd>Create a Vector Search Index</dd>
+      </dl><dl><dt>
+
+          <code><a href="db_vs_indexes_delete.html">db_vs_indexes_delete()</a></code>
+
+        </dt>
+        <dd>Delete a Vector Search Index</dd>
+      </dl><dl><dt>
+
+          <code><a href="db_vs_indexes_delete_data.html">db_vs_indexes_delete_data()</a></code>
+
+        </dt>
+        <dd>Delete Data from a Vector Search Index</dd>
+      </dl><dl><dt>
+
+          <code><a href="db_vs_indexes_get.html">db_vs_indexes_get()</a></code>
+
+        </dt>
+        <dd>Get a Vector Search Index</dd>
+      </dl><dl><dt>
+
+          <code><a href="db_vs_indexes_list.html">db_vs_indexes_list()</a></code>
+
+        </dt>
+        <dd>List Vector Search Indexes</dd>
+      </dl><dl><dt>
+
+          <code><a href="db_vs_indexes_query.html">db_vs_indexes_query()</a></code>
+
+        </dt>
+        <dd>Query a Vector Search Index</dd>
+      </dl><dl><dt>
+
+          <code><a href="db_vs_indexes_query_next_page.html">db_vs_indexes_query_next_page()</a></code>
+
+        </dt>
+        <dd>Query Vector Search Next Page</dd>
+      </dl><dl><dt>
+
+          <code><a href="db_vs_indexes_scan.html">db_vs_indexes_scan()</a></code>
+
+        </dt>
+        <dd>Scan a Vector Search Index</dd>
+      </dl><dl><dt>
+
+          <code><a href="db_vs_indexes_sync.html">db_vs_indexes_sync()</a></code>
+
+        </dt>
+        <dd>Synchronize a Vector Search Index</dd>
+      </dl><dl><dt>
+
+          <code><a href="db_vs_indexes_upsert_data.html">db_vs_indexes_upsert_data()</a></code>
+
+        </dt>
+        <dd>Upsert Data into a Vector Search Index</dd>
+      </dl><dl><dt>
+
+          <code><a href="embedding_source_column.html">embedding_source_column()</a></code>
+
+        </dt>
+        <dd>Embedding Source Column</dd>
+      </dl><dl><dt>
+
+          <code><a href="is.embedding_source_column.html">is.embedding_source_column()</a></code>
+
+        </dt>
+        <dd>Test if object is of class EmbeddingSourceColumn</dd>
+      </dl><dl><dt>
+
+          <code><a href="embedding_vector_column.html">embedding_vector_column()</a></code>
+
+        </dt>
+        <dd>Embedding Vector Column</dd>
+      </dl><dl><dt>
+
+          <code><a href="is.embedding_vector_column.html">is.embedding_vector_column()</a></code>
+
+        </dt>
+        <dd>Test if object is of class EmbeddingVectorColumn</dd>
+      </dl><dl><dt>
+
+          <code><a href="delta_sync_index_spec.html">delta_sync_index_spec()</a></code>
+
+        </dt>
+        <dd>Delta Sync Vector Search Index Specification</dd>
+      </dl><dl><dt>
+
+          <code><a href="direct_access_index_spec.html">direct_access_index_spec()</a></code>
+
+        </dt>
+        <dd>Delta Sync Vector Search Index Specification</dd>
+      </dl><dl><dt>
+
+          <code><a href="is.vector_search_index_spec.html">is.vector_search_index_spec()</a></code>
+
+        </dt>
+        <dd>Test if object is of class VectorSearchIndexSpec</dd>
+      </dl><dl><dt>
+
+          <code><a href="is.direct_access_index.html">is.direct_access_index()</a></code>
+
+        </dt>
+        <dd>Test if object is of class DirectAccessIndex</dd>
+      </dl><dl><dt>
+
+          <code><a href="is.delta_sync_index.html">is.delta_sync_index()</a></code>
+
+        </dt>
+        <dd>Test if object is of class DeltaSyncIndex</dd>
+      </dl></div><div class="section level2">
       <h2 id="warehouses">Warehouses<a class="anchor" aria-label="anchor" href="#warehouses"></a></h2>
 
 
@@ -1268,6 +1417,18 @@
         <dd>Test if object is of class DbfsStorageInfo</dd>
       </dl><dl><dt>
 
+          <code><a href="is.delta_sync_index.html">is.delta_sync_index()</a></code>
+
+        </dt>
+        <dd>Test if object is of class DeltaSyncIndex</dd>
+      </dl><dl><dt>
+
+          <code><a href="is.direct_access_index.html">is.direct_access_index()</a></code>
+
+        </dt>
+        <dd>Test if object is of class DirectAccessIndex</dd>
+      </dl><dl><dt>
+
           <code><a href="is.docker_image.html">is.docker_image()</a></code>
 
         </dt>
@@ -1278,6 +1439,18 @@
 
         </dt>
         <dd>Test if object is of class JobEmailNotifications</dd>
+      </dl><dl><dt>
+
+          <code><a href="is.embedding_source_column.html">is.embedding_source_column()</a></code>
+
+        </dt>
+        <dd>Test if object is of class EmbeddingSourceColumn</dd>
+      </dl><dl><dt>
+
+          <code><a href="is.embedding_vector_column.html">is.embedding_vector_column()</a></code>
+
+        </dt>
+        <dd>Test if object is of class EmbeddingVectorColumn</dd>
       </dl><dl><dt>
 
           <code><a href="is.file_storage_info.html">is.file_storage_info()</a></code>
@@ -1410,6 +1583,12 @@
 
         </dt>
         <dd>Test if object is of class JobTask</dd>
+      </dl><dl><dt>
+
+          <code><a href="is.vector_search_index_spec.html">is.vector_search_index_spec()</a></code>
+
+        </dt>
+        <dd>Test if object is of class VectorSearchIndexSpec</dd>
       </dl></div><div class="section level2">
       <h2 id="knitr-helpers">knitr helpers<a class="anchor" aria-label="anchor" href="#knitr-helpers"></a></h2>
 
