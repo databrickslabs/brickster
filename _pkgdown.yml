@@ -94,6 +94,18 @@ reference:
   - install_db_sql_connector
   - db_sql_client
   - DatabricksSqlClient
+- title: Vector Search
+  contents:
+  - starts_with("db_vs", internal = TRUE)
+  - embedding_source_column
+  - is.embedding_source_column
+  - embedding_vector_column
+  - is.embedding_vector_column
+  - delta_sync_index_spec
+  - direct_access_index_spec
+  - is.vector_search_index_spec
+  - is.direct_access_index
+  - is.delta_sync_index
 - title: Warehouses
   contents:
   - starts_with("db_sql", internal = TRUE)
