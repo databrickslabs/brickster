@@ -1350,3 +1350,254 @@ is.job_task <- function(x) {
   inherits(x, "JobTaskSettings")
 }
 
+
+#' Embedding Source Column
+#'
+#' @param name Name of the column
+#' @param model_endpoint_name Name of the embedding model endpoint
+#'
+#' @family Vector Search API
+#'
+#' @export
+embedding_source_column <- function(name, model_endpoint_name) {
+
+  obj <- list(
+    name = name,
+    embedding_model_endpoint_name = model_endpoint_name
+  )
+
+  class(obj) <- c("EmbeddingSourceColumn", "list")
+  obj
+}
+
+#' Test if object is of class EmbeddingSourceColumn
+#'
+#' @param x An object
+#' @return `TRUE` if the object inherits from the `EmbeddingSourceColumn` class.
+#' @export
+is.embedding_source_column <- function(x) {
+  inherits(x, "EmbeddingSourceColumn")
+}
+
+#' Embedding Vector Column
+#'
+#' @param name Name of the column
+#' @param dimension dimension of the embedding vector
+#'
+#' @family Vector Search API
+#'
+#' @export
+embedding_vector_column <- function(name, dimension) {
+
+  stopifnot(is.numeric(dimension))
+
+  obj <- list(
+    name = name,
+    embedding_dimension = dimension
+  )
+
+  class(obj) <- c("EmbeddingVectorColumn", "list")
+  obj
+}
+
+#' Test if object is of class EmbeddingVectorColumn
+#'
+#' @param x An object
+#' @return `TRUE` if the object inherits from the `EmbeddingVectorColumn` class.
+#' @export
+is.embedding_vector_column <- function(x) {
+  inherits(x, "EmbeddingVectorColumn")
+}
+
+
+
+#' Delta Sync Vector Search Index Specification
+#'
+#' @param source_table The name of the source table.
+#' @param embedding_writeback_table Name of table to sync index contents and
+#' computed embeddings back to delta table, see details.
+#' @param embedding_source_columns The columns that contain the embedding
+#' source, must be one or list of [embedding_source_column()]
+#' @param embedding_vector_columns The columns that contain the embedding, must
+#' be one or list of [embedding_vector_column()]
+#' @param pipeline_type Pipeline execution mode, see details.
+#'
+#' @details
+#' `pipeline_type` is either:
+#'  - `"TRIGGERED"`:  If the pipeline uses the triggered execution mode, the
+#'  system stops processing after successfully refreshing the source table in
+#'  the pipeline once, ensuring the table is updated based on the data available
+#'  when the update started.
+#'  - `"CONTINUOUS"` If the pipeline uses continuous execution, the pipeline
+#'  processes new data as it arrives in the source table to keep vector index
+#'  fresh.
+#'
+#' The only supported naming convention for `embedding_writeback_table` is
+#' `"<index_name>_writeback_table"`.
+#'
+#' @seealso [db_vs_indexes_create()]
+#' @family Vector Search API
+#'
+#' @export
+delta_sync_index_spec <- function(source_table,
+                                  embedding_writeback_table = NULL,
+                                  embedding_source_columns = NULL,
+                                  embedding_vector_columns = NULL,
+                                  pipeline_type = c("TRIGGERED", "CONTINUOUS")) {
+
+  pipeline_type <- match.arg(pipeline_type)
+
+  # check embedding objects comply
+  if (!is.null(embedding_source_columns)) {
+    if (is.list(embedding_source_columns) && !is.embedding_source_column(embedding_source_columns)) {
+      valid_columns <- vapply(embedding_source_columns, function(x) {
+        is.embedding_source_column(x)
+      }, logical(1))
+      if (!all(valid_columns)) {
+        stop("`embedding_source_columns` must all be defined by `embedding_source_column` function")
+      }
+    } else {
+      stopifnot(is.embedding_source_column(embedding_source_columns))
+    }
+  }
+
+  if (!is.null(embedding_vector_columns)) {
+    if (is.list(embedding_vector_columns) && !is.embedding_vector_column(embedding_vector_columns)) {
+      valid_columns <- vapply(embedding_vector_columns, function(x) {
+        is.embedding_vector_column(x)
+      }, logical(1))
+      if (!all(valid_columns)) {
+        stop("`embedding_vector_columns` must all be defined by `embedding_vector_column` function")
+      }
+    } else {
+      stopifnot(is.embedding_vector_column(embedding_vector_columns))
+    }
+  }
+
+  if (is.null(embedding_vector_columns) & is.null(embedding_source_columns)) {
+    stop("Must specify at least one embedding vector or source column")
+  }
+
+  obj <- list(
+    source_table = source_table,
+    embedding_source_columns = embedding_source_columns,
+    embedding_vector_columns = embedding_vector_columns,
+    embedding_writeback_table = embedding_writeback_table,
+    pipeline_type = pipeline_type
+  )
+
+  class(obj) <- c("VectorSearchIndexSpec", "DeltaSyncIndex", "list")
+  obj
+}
+
+#' Delta Sync Vector Search Index Specification
+#'
+#' @param embedding_source_columns The columns that contain the embedding
+#' source, must be one or list of [embedding_source_column()]
+#' @param embedding_vector_columns The columns that contain the embedding, must
+#' be one or list of [embedding_vector_column()]
+#' vectors.
+#' @param schema Named list, names are column names, values are types. See
+#' details.
+#'
+#' @details
+#' The supported types are:
+#'  - `"integer"`
+#'  - `"long"`
+#'  - `"float"`
+#'  - `"double"`
+#'  - `"boolean"`
+#'  - `"string"`
+#'  - `"date"`
+#'  - `"timestamp"`
+#'  - `"array<float>"`: supported for vector columns
+#'  - `"array<double>"`: supported for vector columns
+#'
+#'
+#' @seealso [db_vs_indexes_create()]
+#' @family Vector Search API
+#'
+#' @export
+direct_access_index_spec <- function(embedding_source_columns = NULL,
+                                     embedding_vector_columns = NULL,
+                                     schema) {
+
+  # check embedding objects comply
+  if (!is.null(embedding_source_columns)) {
+    if (is.list(embedding_source_columns) && !is.embedding_source_column(embedding_source_columns)) {
+      valid_columns <- vapply(embedding_source_columns, function(x) {
+        is.embedding_source_column(x)
+      }, logical(1))
+      if (!all(valid_columns)) {
+        stop("`embedding_source_columns` must all be defined by `embedding_source_column` function")
+      }
+    } else {
+      stopifnot(is.embedding_source_column(embedding_source_columns))
+    }
+  }
+
+  if (!is.null(embedding_vector_columns)) {
+    if (is.list(embedding_vector_columns) && !is.embedding_vector_column(embedding_vector_columns)) {
+      valid_columns <- vapply(embedding_vector_columns, function(x) {
+        is.embedding_vector_column(x)
+      }, logical(1))
+      if (!all(valid_columns)) {
+        stop("`embedding_vector_columns` must all be defined by `embedding_vector_column` function")
+      }
+    } else {
+      stopifnot(is.embedding_vector_column(embedding_vector_columns))
+    }
+  }
+
+  if (is.null(embedding_vector_columns) & is.null(embedding_source_columns)) {
+    stop("Must specify at least one embedding vector or source column")
+  }
+
+  if (is.null(schema)) {
+    stop("`schema` must be present.")
+  }
+
+  if (!(is.list(schema) && rlang::is_named(schema))) {
+    stop("`schema` must be a named list.")
+  }
+
+  obj <- list(
+    schema_json = jsonlite::toJSON(schema, auto_unbox = TRUE),
+    embedding_source_columns = embedding_source_columns,
+    embedding_vector_columns = embedding_vector_columns
+  )
+
+  class(obj) <- c("VectorSearchIndexSpec", "DirectAccessIndex", "list")
+  obj
+}
+
+
+#' Test if object is of class VectorSearchIndexSpec
+#'
+#' @param x An object
+#' @return `TRUE` if the object inherits from the `VectorSearchIndexSpec` class.
+#' @export
+is.vector_search_index_spec <- function(x) {
+  inherits(x, "VectorSearchIndexSpec")
+}
+
+
+#' Test if object is of class DirectAccessIndex
+#'
+#' @param x An object
+#' @return `TRUE` if the object inherits from the `DirectAccessIndex` class.
+#' @export
+is.direct_access_index <- function(x) {
+  inherits(x, "DirectAccessIndex")
+}
+
+
+#' Test if object is of class DeltaSyncIndex
+#'
+#' @param x An object
+#' @return `TRUE` if the object inherits from the `DeltaSyncIndex` class.
+#' @export
+is.delta_sync_index <- function(x) {
+  inherits(x, "DeltaSyncIndex")
+}
+
