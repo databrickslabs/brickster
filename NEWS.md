@@ -1,3 +1,5 @@
+# brickster 0.2.4
+
 # brickster 0.2.3
 
 * Adding NEWS.md
@@ -6,3 +8,4 @@
   `DATABRICKS_TOKEN` isn't specified (e.g `db_token()` returns `NULL`)
 * Updating authentication vignette to include information on OAuth
 * Updating README.md to include quick start and clearer information
+* Adding vector search index functions

@@ -449,7 +449,6 @@ test_that("cluster objects behaviour", {
 
 test_that("git_source behaviour", {
 
-
   gs_git_tag <- brickster::git_source(
     git_url = "mockUrl",
     git_provider = "github",
@@ -507,3 +506,101 @@ test_that("git_source behaviour", {
   expect_error(brickster::git_source())
 
 })
+
+test_that("vector search behaviour", {
+
+  esc <- embedding_source_column(
+    name = "mockColumnName",
+    model_endpoint_name = "mockEndpointName"
+  )
+  expect_s3_class(esc, c("EmbeddingSourceColumn", "list"))
+  expect_true(is.embedding_source_column(esc))
+  expect_error(embedding_source_column())
+
+  evc <- embedding_vector_column(
+    name = "mockColumnName",
+    dimension = 256
+  )
+  expect_s3_class(evc, c("EmbeddingVectorColumn", "list"))
+  expect_true(is.embedding_vector_column(evc))
+  expect_error(embedding_vector_column())
+  expect_error(embedding_vector_column(name = "mockColumn", dimension = "64"))
+
+  ds_index <- delta_sync_index_spec(
+    source_table = "mock.table.name",
+    embedding_writeback_table = "mock_writeback_table",
+    embedding_source_columns = esc,
+    embedding_vector_columns = evc,
+    pipeline_type = "TRIGGERED"
+  )
+  expect_s3_class(ds_index, c("VectorSearchIndexSpec", "DeltaSyncIndex", "list"))
+  expect_true(is.vector_search_index_spec(ds_index))
+  expect_true(is.delta_sync_index(ds_index))
+  expect_error(delta_sync_index_spec())
+
+  # pipeline type must be valid
+  expect_error({
+    delta_sync_index_spec(
+      source_table = "mock.table.name",
+      embedding_writeback_table = "mock_writeback_table",
+      embedding_source_columns = esc,
+      embedding_vector_columns = evc,
+      pipeline_type = "MOCK"
+    )
+  })
+
+  # must have a vector or source column specified - cant all be NULL
+  expect_error({
+    delta_sync_index_spec(
+      source_table = "mock.table.name",
+      embedding_writeback_table = "mock_writeback_table",
+      embedding_source_columns = NULL,
+      embedding_vector_columns = NULL,
+      pipeline_type = "TRIGGERED"
+    )
+  })
+
+  da_index <- direct_access_index_spec(
+    embedding_source_columns = esc,
+    embedding_vector_columns = evc,
+    schema = list("mock_col_a" = "integer")
+  )
+  expect_s3_class(da_index, c("VectorSearchIndexSpec", "DirectAccessIndex", "list"))
+  expect_true(is.vector_search_index_spec(da_index))
+  expect_true(is.direct_access_index(da_index))
+  expect_error(direct_access_index_spec())
+
+  # schema must be named list
+  expect_error({
+    direct_access_index_spec(
+      embedding_source_columns = esc,
+      embedding_vector_columns = evc,
+      schema = list("integer")
+    )
+  })
+
+  expect_error({
+    direct_access_index_spec(
+      embedding_source_columns = esc,
+      embedding_vector_columns = evc,
+      schema = NULL
+    )
+  })
+
+  # must have a vector or source column specified - cant all be NULL
+  expect_error({
+    direct_access_index_spec(
+      embedding_source_columns = NULL,
+      embedding_vector_columns = NULL,
+      schema = list("mock_col_a" = "integer")
+    )
+  })
+
+
+})
+
+
+
+
+
+
