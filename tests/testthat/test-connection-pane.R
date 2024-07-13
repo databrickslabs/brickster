@@ -175,6 +175,7 @@ test_that("Connection Pane Helpers", {
       metastore = "some_metastore",
       catalog = "system",
       schema = "information_schema",
+      tables = "some_tables",
       table = "catalogs",
       host = db_host(),
       token = db_token()
