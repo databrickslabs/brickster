@@ -274,10 +274,10 @@ get_uc_volume <- function(catalog, schema, host, volume, token) {
 get_schema_objects <- function(catalog, schema, host, token) {
 
   objects <- list()
-  objects$tables <- brickster:::get_tables(catalog, schema, host, token)
-  objects$volumes <- brickster:::get_uc_volumes(catalog, schema, host, token)
-  objects$models <- brickster:::get_uc_models(catalog, schema, host, token)
-  objects$funcs <- brickster:::get_uc_functions(catalog, schema, host, token)
+  objects$tables <- get_tables(catalog, schema, host, token)
+  objects$volumes <- get_uc_volumes(catalog, schema, host, token)
+  objects$models <- get_uc_models(catalog, schema, host, token)
+  objects$funcs <- get_uc_functions(catalog, schema, host, token)
 
   # how many objects of each type exist
   # only show when objects exist within
@@ -561,7 +561,6 @@ get_warehouse <- function(id, host, token) {
 list_objects <- function(host, token,
                          type = NULL,
                          workspace = NULL,
-                         folder = NULL,
                          clusters = NULL,
                          warehouses = NULL,
                          metastore = NULL,
@@ -746,24 +745,6 @@ list_columns <- function(host, token, path = "", ...) {
     return(info)
   }
 
-  # folders can be nested indefinitely, resolve folders into a path
-  if ("folder" %in% names(dots)) {
-    path <- paste0("/", dots[names(dots) == "folder"], collapse = "")
-  }
-
-  if (leaf_type == "folder") {
-    info <- get_dbfs_items(path = path, host = host, token = token)
-  }
-
-  if (leaf_type == "files") {
-    info <- get_dbfs_items(
-      path = paste0(path, "/", leaf),
-      host = host,
-      token = token,
-      is_file = TRUE
-    )
-  }
-
   if (!is.null(dots$modelregistry) && "model" %in% names(dots)) {
     if (leaf_type == "metadata") {
       info <- get_model_metadata(id = dots$model, host = host, token = token)
@@ -914,12 +895,6 @@ preview_object <- function(host, token, rowLimit,
     return(utils::browseURL(url))
   }
 
-  # folders can be nested indefinitely
-  dots <- list(...)
-  if ("folder" %in% names(dots)) {
-    path <- paste0("/", dots[names(dots) == "folder"], collapse = "")
-  }
-
 }
 
 #' Connect to Databricks Workspace
@@ -961,17 +936,9 @@ open_workspace <- function(host = db_host(), token = db_token(), name = NULL) {
 
         dots <- list(...)
 
-        # folders can be nested indefinitely
-        if ("folder" %in% names(dots)) {
-          path <- paste0("/", dots[names(dots) == "folder"], collapse = "")
-        } else {
-          path <- "/"
-        }
-
         objects <- list_objects(
           host,
           token,
-          folder = path,
           files = dots[["files"]],
           warehouses = dots[["warehouses"]],
           clusters = dots[["clusters"]],

@@ -825,6 +825,8 @@ get_and_start_cluster <- function(cluster_id, polling_interval = 5,
 #'
 #' @return Named list
 #' @export
+#'
+#' @importFrom rlang .data
 get_latest_dbr <- function(lts, ml, gpu, photon,
                            host = db_host(), token = db_token()) {
 
