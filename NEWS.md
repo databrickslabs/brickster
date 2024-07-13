@@ -1,5 +1,8 @@
 # brickster 0.2.4
 
+* `open_workspace()` and the rstudio connection pane have been heavily revised
+  to enhance browsing unity catalog and also remove DBFS and WSFS browsing (#52)
+
 # brickster 0.2.3
 
 * Adding NEWS.md

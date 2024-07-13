@@ -239,7 +239,7 @@ db_uc_models_list <- function(catalog, schema,
     httr2::req_url_query(
       catalog_name = catalog,
       schema_name = schema,
-      include_browse = TRUE
+      include_browse = 'true'
     )
 
   if (perform_request) {
@@ -250,7 +250,7 @@ db_uc_models_list <- function(catalog, schema,
 }
 
 
-db_uc_models_get <- function(catalog, schema, table,
+db_uc_models_get <- function(catalog, schema, model,
                              host = db_host(), token = db_token(),
                              perform_request = TRUE) {
 
@@ -261,7 +261,31 @@ db_uc_models_get <- function(catalog, schema, table,
     host = host,
     token = token
   ) %>%
-    httr2::req_url_path_append(paste(catalog, schema, table, sep = "."))
+    httr2::req_url_path_append(paste(catalog, schema, model, sep = ".")) %>%
+    httr2::req_url_query(include_aliases = 'true')
+
+  if (perform_request) {
+    db_perform_request(req)
+  } else {
+    req
+  }
+}
+
+
+db_uc_model_versions_get <- function(catalog, schema, model,
+                             host = db_host(), token = db_token(),
+                             perform_request = TRUE) {
+
+  req <- db_request(
+    endpoint = "unity-catalog/models",
+    method = "GET",
+    version = "2.1",
+    host = host,
+    token = token
+  ) %>%
+    httr2::req_url_path_append(paste(catalog, schema, model, sep = ".")) %>%
+    httr2::req_url_path_append("versions") %>%
+    httr2::req_url_query(max_results = 1000)
 
   if (perform_request) {
     db_perform_request(req)

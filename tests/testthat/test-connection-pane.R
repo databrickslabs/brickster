@@ -20,16 +20,6 @@ test_that("Connection Pane Helpers", {
   expect_error(readable_time("1713146793000"))
 
   expect_no_error({
-    dbfs_items <- get_dbfs_items(host = db_host(), token = db_token())
-  })
-  expect_type(dbfs_items, "list")
-
-  expect_no_error({
-    nb_items <- get_notebook_items(host = db_host(), token = db_token())
-  })
-  expect_type(dbfs_items, "list")
-
-  expect_no_error({
     catalog_items <- get_catalogs(host = db_host(), token = db_token())
   })
   expect_type(catalog_items, "list")
