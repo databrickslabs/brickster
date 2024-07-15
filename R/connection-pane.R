@@ -731,8 +731,6 @@ list_columns <- function(host, token, path = "", ...) {
   dots <- list(...)
   leaf <- dots[length(dots)]
   leaf_type <- names(leaf)
-  print(leaf)
-  print(leaf_type)
 
   # for clusters and warehouses things are simple
   if (leaf_type == "cluster") {
