@@ -19,9 +19,9 @@ db_vs_indexes_create(
 
 \item{endpoint}{Name of vector search endpoint}
 
-\item{primary_key}{Name of vector search index}
+\item{primary_key}{Vector search primary key column name}
 
-\item{spec}{Name of vector search index}
+\item{spec}{Either \code{\link[=delta_sync_index_spec]{delta_sync_index_spec()}} or \code{\link[=direct_access_index_spec]{direct_access_index_spec()}}.}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 

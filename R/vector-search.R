@@ -201,7 +201,7 @@ db_vs_indexes_get <- function(index,
 #' @param name Name of vector search index
 #' @param endpoint Name of vector search endpoint
 #' @param primary_key Vector search primary key column name
-#' @param spec
+#' @param spec Either [delta_sync_index_spec()] or [direct_access_index_spec()].
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create

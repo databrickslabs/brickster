@@ -69,6 +69,44 @@ test_that("Unity Catalog API - don't perform", {
   )
   expect_s3_class(resp_table_get, "httr2_request")
 
+  resp_models_get <- db_uc_models_get(
+    catalog = "some_catalog",
+    schema = "some_schema",
+    model = "some_model",
+    perform_request = F
+  )
+  expect_s3_class(resp_models_get, "httr2_request")
+
+  resp_models_list <- db_uc_models_list(
+    catalog = "some_catalog",
+    schema = "some_schema",
+    perform_request = F
+  )
+  expect_s3_class(resp_models_list, "httr2_request")
+
+  resp_funcs_get <- db_uc_funcs_get(
+    catalog = "some_catalog",
+    schema = "some_schema",
+    func = "some_func",
+    perform_request = F
+  )
+  expect_s3_class(resp_funcs_get, "httr2_request")
+
+  resp_funcs_list <- db_uc_funcs_list(
+    catalog = "some_catalog",
+    schema = "some_schema",
+    perform_request = F
+  )
+  expect_s3_class(resp_funcs_list, "httr2_request")
+
+  resp_volumes_list <- db_uc_volumes_list(
+    catalog = "some_catalog",
+    schema = "some_schema",
+    perform_request = F
+  )
+  expect_s3_class(resp_volumes_list, "httr2_request")
+
+
 
 })
 

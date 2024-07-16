@@ -21,12 +21,12 @@ setup_databricks_rmd <- function(cluster_id) {
   # credentials should not be used in rmarkdown content as plain text
 
   # get and start cluster
-  brickster::get_and_start_cluster(
+  get_and_start_cluster(
     cluster_id = cluster_id
   )
 
   # create execution context
-  exec_context <- brickster::db_context_create(
+  exec_context <- db_context_create(
     cluster_id = cluster_id,
     language = "r"
   )

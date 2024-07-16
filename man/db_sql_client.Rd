@@ -13,7 +13,7 @@ db_sql_client(
   session_configuration = list(),
   host = db_host(),
   token = db_token(),
-  workspace_id = db_wsid(),
+  workspace_id = db_current_workspace_id(),
   ...
 )
 }

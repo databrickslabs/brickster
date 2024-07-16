@@ -63,7 +63,7 @@ db_sql_client <- function(id,
                           use_cloud_fetch = FALSE,
                           session_configuration = list(),
                           host = db_host(), token = db_token(),
-                          workspace_id = db_wsid(),
+                          workspace_id = db_current_workspace_id(),
                           ...) {
 
   compute_type <- match.arg(compute_type)
@@ -329,7 +329,7 @@ DatabricksSqlClient <- R6::R6Class(
 )
 
 generate_http_path <- function(id, is_warehouse = TRUE,
-                               workspace_id = db_wsid()) {
+                               workspace_id = db_current_workspace_id()) {
   if (is_warehouse) {
     paste0("/sql/1.0/warehouses/", id)
   } else {

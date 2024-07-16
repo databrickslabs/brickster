@@ -8,7 +8,7 @@ test_that("request helpers - building requests", {
   body <- list(a = 1, b = 2)
 
   expect_no_condition({
-    req <- brickster:::db_request(
+    req <- db_request(
       endpoint = endpoint,
       method = method,
       version = endpoint_version,
