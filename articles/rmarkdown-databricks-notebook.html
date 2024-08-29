@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">brickster</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,7 +50,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/zacdav-db/brickster/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/databrickslabs/brickster/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -66,7 +66,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Using RMarkdown as a Databricks Notebook</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/zacdav-db/brickster/blob/v0.2.4/vignettes/rmarkdown-databricks-notebook.Rmd" class="external-link"><code>vignettes/rmarkdown-databricks-notebook.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/databrickslabs/brickster/blob/main/vignettes/rmarkdown-databricks-notebook.Rmd" class="external-link"><code>vignettes/rmarkdown-databricks-notebook.Rmd</code></a></small>
       <div class="d-none name"><code>rmarkdown-databricks-notebook.Rmd</code></div>
     </div>
 
@@ -79,7 +79,7 @@ developer experiences:</p>
 <li>RStudio server on a Databricks cluster</li>
 <li>Databricks connect (restricted to specific Databricks runtimes)</li>
 </ol>
-<p><a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> introduces another experience for R users,
+<p><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> introduces another experience for R users,
 using an R Markdown notebook as if it were a Databricks notebook. This
 allows R users to:</p>
 <ul>
@@ -103,14 +103,14 @@ commands</p></li>
 <div class="section level2">
 <h2 id="setup-r-markdown-with-brickster">Setup R Markdown with <code>{brickster}</code><a class="anchor" aria-label="anchor" href="#setup-r-markdown-with-brickster"></a>
 </h2>
-<p><a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> contains a template for R Markdown - this
+<p><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> contains a template for R Markdown - this
 template demonstrates how to connect to a Databricks cluster. The
 template can be accessed in RStudio under
 <code>'File' &gt; 'New File' &gt; 'R Markdown …' &gt; 'From Template'</code>.</p>
 <p>The setup chunk of this template demonstrates how to establish
 connection with a Databricks cluster.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># you can use Addins -&gt; `Databricks Compute` to get and insert cluster ID</span></span>
 <span><span class="fu">brickster</span><span class="fu">::</span><span class="fu"><a href="../reference/setup_databricks_rmd.html">setup_databricks_rmd</a></span><span class="op">(</span>cluster_id <span class="op">=</span> <span class="st">"&lt;insert cluster id&gt;"</span><span class="op">)</span></span></code></pre></div>
@@ -141,30 +141,30 @@ explicitly.</p>
 <li><p>Navigating to the cluster in Databricks under ‘compute’. The URL
 of the page where you can see the cluster information will contain the
 ID. (e.g. <code>https:/.</code>)</p></li>
-<li><p>Using the Databricks API’s (e.g. via <a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a>
+<li><p>Using the Databricks API’s (e.g. via <a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a>
 with <code><a href="../reference/db_cluster_list.html">brickster::db_cluster_list()</a></code>) to list all clusters and
 then choose the ID a specific cluster</p></li>
 <li><p>Using the RStudio addin ‘Databricks Compute’ included within
-<a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a></p></li>
+<a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a></p></li>
 </ul>
 </div>
 </div>
 <div class="section level2">
 <h2 id="executing-against-a-databricks-cluster">Executing against a Databricks Cluster<a class="anchor" aria-label="anchor" href="#executing-against-a-databricks-cluster"></a>
 </h2>
-<p><a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> allows you to execute any R/Python/Scala/SQL
+<p><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> allows you to execute any R/Python/Scala/SQL
 code on the remote Databricks cluster whilst having the ability to run
 code locally in standard <code>{r}</code> knitr chunks.</p>
 <div class="section level3">
 <h3 id="supported-languages">Supported Languages<a class="anchor" aria-label="anchor" href="#supported-languages"></a>
 </h3>
 <p><a href="https://yihui.org/knitr/" class="external-link">knitr</a> is what enables this feature of
-<a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> by allowing the definition of custom ‘engines’.
+<a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> by allowing the definition of custom ‘engines’.
 An engine defines how to handle the code within a chunk, one engine is
 defined per supported language.</p>
 <table class="table">
 <caption>
-<a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> R Markdown capability</caption>
+<a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> R Markdown capability</caption>
 <thead><tr class="header">
 <th align="center">Language</th>
 <th align="center">Chunk Engine</th>
@@ -223,9 +223,9 @@ is one such example of this behaviour.</p>
 <h3 id="persisting-tabular-results">Persisting Tabular Results<a class="anchor" aria-label="anchor" href="#persisting-tabular-results"></a>
 </h3>
 <p>When a result is rendered as a table you can persist a copy to the R
-session (<code>.GlobalEnv</code>) by using the <code>keep_as</code>
+session (<code>.GlobalEnv</code>) by using the <code>output.var</code>
 chunk option</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="st">```</span><span class="at">{sql, engine = "databricks_sql", keep_as = "tables"}</span></span>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="st">```</span><span class="at">{sql, engine = "databricks_sql", output.var = "tables"}</span></span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="at">show databases</span></span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="st">```</span></span></code></pre></div>
 </div>
@@ -265,7 +265,7 @@ Markdown notebook.</p>
 <ul>
 <li><p>Returning interactive HTML content requires a <a href="https://zacdav-db.github.io/dbrx-r-compendium/chapters/misc/htmlwidgets.html" class="external-link">workaround</a>
 to be run (e.g. install and run
-<code><a href="../reference/notebook_enable_htmlwidgets.html">brickster::notebook_enable_htmlwidgets()</a></code>)</p></li>
+<code>brickster::notebook_enable_htmlwidgets()</code>)</p></li>
 <li><p><a href="https://yihui.org/knitr/" class="external-link">knitr</a> chunk options for formatting may not work
 for Databricks related chunks</p></li>
 <li><p>Syntax highlighting is only possible when specifying chunks as

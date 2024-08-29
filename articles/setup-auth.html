@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">brickster</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,7 +50,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/zacdav-db/brickster/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/databrickslabs/brickster/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -66,7 +66,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Connect to a Databricks Workspace</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/zacdav-db/brickster/blob/v0.2.4/vignettes/setup-auth.Rmd" class="external-link"><code>vignettes/setup-auth.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/databrickslabs/brickster/blob/main/vignettes/setup-auth.Rmd" class="external-link"><code>vignettes/setup-auth.Rmd</code></a></small>
       <div class="d-none name"><code>setup-auth.Rmd</code></div>
     </div>
 
@@ -75,16 +75,16 @@
 <div class="section level2">
 <h2 id="defining-credentials">Defining Credentials<a class="anchor" aria-label="anchor" href="#defining-credentials"></a>
 </h2>
-<p>The <a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> package connects to a Databricks
+<p>The <a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> package connects to a Databricks
 workspace is two ways:</p>
 <ol style="list-style-type: decimal">
 <li><a href="https://docs.databricks.com/en/dev-tools/auth/oauth-u2m.html#oauth-user-to-machine-u2m-authentication" class="external-link">OAuth
 user-to-machine (U2M) authentication</a></li>
-<li><a href="https://docs.databricks.com/en/dev-tools/auth/pat.htmlhttps://docs.databricks.com/en/dev-tools/auth/pat.html" class="external-link">Personal
+<li><a href="https://docs.databricks.com/en/dev-tools/auth/pat.html" class="external-link">Personal
 Access Tokens (PAT)</a></li>
 </ol>
 <p>It’s recommended to use option (1) when using
-<a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> interactively, if you need to run code via an
+<a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> interactively, if you need to run code via an
 automated process the only option currently is (2).</p>
 <p>Personal Access Tokens can be generated in a few steps, for a
 step-by-step breakdown <a href="https://docs.databricks.com/dev-tools/api/latest/authentication.html" class="external-link">refer
@@ -93,8 +93,8 @@ to the documentation</a>.</p>
 workspace URL in an <code>.Renviron</code> file. The
 <code>.Renviron</code> is used for storing the variables, such as those
 which may be sensitive (e.g. credentials) and de-couple them from the
-code (additional reading: <a href="https://support.rstudio.com/hc/en-us/articles/360047157094-Managing-R-with-Rprofile-Renviron-Rprofile-site-Renviron-site-rsession-conf-and-repos-conf" class="external-link">1</a>,
-<a href="https://cran.r-project.org/web/packages/startup/vignettes/startup-intro.html" class="external-link">2</a>).</p>
+code (additional reading: <a href="https://support.posit.co/hc/en-us/articles/360047157094-Managing-R-with-Rprofile-Renviron-Rprofile-site-Renviron-site-rsession-conf-and-repos-conf" class="external-link">1</a>,
+<a href="https://CRAN.R-project.org/package=startup/vignettes/startup-intro.html" class="external-link">2</a>).</p>
 <p>To get started add the following to your <code>.Renviron</code>:</p>
 <ul>
 <li><p><code>DATABRICKS_HOST</code>: The workspace URL</p></li>
@@ -112,22 +112,22 @@ integration with the connection pane.</p>
 for each project. You can create <code>.Renviron</code> within your user
 home directory if required.</p>
 <p>Restarting your R session will allow those variable to be picked up
-via the <a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> package.</p>
+via the <a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> package.</p>
 </div>
 <div class="section level2">
 <h2 id="using-credentials-with-brickster">Using Credentials with <code>{brickster}</code><a class="anchor" aria-label="anchor" href="#using-credentials-with-brickster"></a>
 </h2>
 <p>Authentication should now be possible without specifying the
-credentials in your R code. You can load <a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> and
+credentials in your R code. You can load <a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> and
 list the clusters within the workspace using
 <code><a href="../reference/db_cluster_list.html">db_cluster_list()</a></code>, to access the host/token use
 <code><a href="../reference/db_host.html">db_host()</a></code>/<code><a href="../reference/db_token.html">db_token()</a></code> respectively.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># using db_host() and db_token() to get credentials</span></span>
 <span><span class="va">clusters</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_cluster_list.html">db_cluster_list</a></span><span class="op">(</span>host <span class="op">=</span> <span class="fu"><a href="../reference/db_host.html">db_host</a></span><span class="op">(</span><span class="op">)</span>, token <span class="op">=</span> <span class="fu"><a href="../reference/db_token.html">db_token</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>All <a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> functions have their host/token
+<p>All <a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> functions have their host/token
 parameters default to calling
 <code><a href="../reference/db_host.html">db_host()</a></code>/<code><a href="../reference/db_token.html">db_token()</a></code> therefore we can omit
 explicit calls to the functions.</p>
@@ -141,7 +141,7 @@ explicit calls to the functions.</p>
 <div class="section level2">
 <h2 id="managing-multiple-credentials">Managing Multiple Credentials<a class="anchor" aria-label="anchor" href="#managing-multiple-credentials"></a>
 </h2>
-<p>There are two methods that <a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> supports to
+<p>There are two methods that <a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> supports to
 simplify switching of credentials within an R project/session:</p>
 <ol style="list-style-type: decimal">
 <li>Adding multiple credentials to <code>.Renviron</code>, each
@@ -215,7 +215,7 @@ profiles (default, dev, prod):</p>
 </h3>
 <p>For details on configuring please refer to <a href="https://docs.databricks.com/dev-tools/cli/index.html#connection-profiles" class="external-link">documentation
 from Databricks CLI</a>.</p>
-<p>There is only one <a href="https://github.com/zacdav-db/brickster" class="external-link">brickster</a> specific feature and it is
+<p>There is only one <a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> specific feature and it is
 the inclusion of <code>wsid</code> alongside
 <code>host</code>/<code>token</code>.</p>
 <p><code>wsid</code> is used by the connections pane integration in
