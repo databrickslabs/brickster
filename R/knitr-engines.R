@@ -96,10 +96,8 @@ clean_command_results <- function(x, options, language) {
     if (options$eval) {
       schema <- data.table::rbindlist(x$results$schema)
       tbl <- data.table::rbindlist(x$results$data)
+
       names(tbl) <- schema$name
-      if (!is.null(options$keep_as)) {
-        base::assign(options$keep_as, value = tbl, envir = .GlobalEnv)
-      }
       if (isTRUE(getOption('knitr.in.progress'))) {
         outputs$table <- knitr::engine_output(
           options = options,
@@ -107,6 +105,12 @@ clean_command_results <- function(x, options, language) {
         )
       } else {
         knitr::knit_print(tbl)
+      }
+
+      # when `output.var` option is used return the table assigned to object
+      varname <- options$output.var
+      if (!is.null(varname)) {
+        assign(varname, tbl, envir = knitr::knit_global())
       }
 
     }
@@ -139,11 +143,14 @@ clean_command_results <- function(x, options, language) {
       if (isTRUE(getOption('knitr.in.progress'))) {
         outputs$plot <- knitr::engine_output(
           options = options,
-          out = list(knitr::include_graphics(path = file))
+          out = list(knitr::include_graphics(path = file, dpi = options$dpi))
         )
       } else {
         res <- structure(file, class = c("knit_image_paths", "knit_asis"), dpi = options$dpi)
         print(res)
+        # img <- magick::image_read(raw)
+        # grid::grid.newpage()
+        # grid::grid.raster(img)
       }
     }
 
