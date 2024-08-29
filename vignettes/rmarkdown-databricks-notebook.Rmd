@@ -126,10 +126,10 @@ Results that are detected as tabular in **any** `databricks_*` chunk will be ren
 
 ### Persisting Tabular Results
 
-When a result is rendered as a table you can persist a copy to the R session (`.GlobalEnv`) by using the `keep_as` chunk option
+When a result is rendered as a table you can persist a copy to the R session (`.GlobalEnv`) by using the `output.var` chunk option
 
 ```` r
-`r ''````{sql, engine = "databricks_sql", keep_as = "tables"}
+`r ''````{sql, engine = "databricks_sql", output.var = "tables"}
 show databases
 ```
 ````
