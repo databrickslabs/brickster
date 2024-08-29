@@ -1,5 +1,5 @@
 Package: brickster
-Title: R Toolkit for Databricks
+Title: R Toolkit for 'Databricks'
 Version: 0.2.4
 Authors@R: 
   c(
@@ -13,9 +13,10 @@ Authors@R:
            email = "rafi.kurlansik@databricks.com"),
     person("Databricks", role = c("cph", "fnd"))
   )
-Description: Collection of utilities that improve using Databricks from R. 
-  Primarily functions that wrap specific Databricks APIs, RStudio connection
-  pane support, quality of life functions to make Databricks simpler to use.
+Description: Collection of utilities that improve using 'Databricks' from R. 
+  Primarily functions that wrap specific 'Databricks' APIs
+  (<https://docs.databricks.com/api>), 'RStudio' connection pane support, quality
+  of life functions to make 'Databricks' simpler to use.
 License: Apache License (>= 2)
 Encoding: UTF-8
 LazyData: true
@@ -49,5 +50,5 @@ Suggests:
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
 VignetteBuilder: knitr
-URL: https://github.com/zacdav-db/brickster
+URL: https://github.com/databrickslabs/brickster
 Config/testthat/edition: 3

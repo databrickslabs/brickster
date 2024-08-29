@@ -13,7 +13,7 @@ cron_schedule(
 \arguments{
 \item{quartz_cron_expression}{Cron expression using Quartz syntax that
 describes the schedule for a job.
-See \href{http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html}{Cron Trigger}
+See \href{https://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html}{Cron Trigger}
 for details.}
 
 \item{timezone_id}{Java timezone ID. The schedule for a job is resolved with

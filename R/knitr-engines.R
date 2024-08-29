@@ -97,9 +97,6 @@ clean_command_results <- function(x, options, language) {
       schema <- data.table::rbindlist(x$results$schema)
       tbl <- data.table::rbindlist(x$results$data)
       names(tbl) <- schema$name
-      if (!is.null(options$keep_as)) {
-        base::assign(options$keep_as, value = tbl, envir = .GlobalEnv)
-      }
       if (isTRUE(getOption('knitr.in.progress'))) {
         outputs$table <- knitr::engine_output(
           options = options,
@@ -139,11 +136,14 @@ clean_command_results <- function(x, options, language) {
       if (isTRUE(getOption('knitr.in.progress'))) {
         outputs$plot <- knitr::engine_output(
           options = options,
-          out = list(knitr::include_graphics(path = file))
+          out = list(knitr::include_graphics(path = file, dpi = options$dpi))
         )
       } else {
         res <- structure(file, class = c("knit_image_paths", "knit_asis"), dpi = options$dpi)
         print(res)
+        # img <- magick::image_read(raw)
+        # grid::grid.newpage()
+        # grid::grid.raster(img)
       }
     }
 

@@ -840,7 +840,7 @@ is.email_notifications <- function(x) {
 #'
 #' @param quartz_cron_expression Cron expression using Quartz syntax that
 #' describes the schedule for a job.
-#' See [Cron Trigger](http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html)
+#' See [Cron Trigger](https://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html)
 #' for details.
 #' @param timezone_id Java timezone ID. The schedule for a job is resolved with
 #' respect to this timezone.

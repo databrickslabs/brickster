@@ -1,8 +1,8 @@
-# [brickster](https://databrickslabs.github.io/brickster/) <a href='https://zacdav-db.github.io/brickster/'><img src="man/figures/logo.png" align="right" height="139"/></a>
+# [brickster](https://databrickslabs.github.io/brickster/) <a href='https://databrickslabs.github.io/brickster/'><img src="man/figures/logo.png" align="right" height="139"/></a>
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/zacdav-db/brickster/workflows/R-CMD-check/badge.svg)](https://github.com/zacdav-db/brickster/actions) [![Codecov test coverage](https://codecov.io/gh/zacdav-db/brickster/branch/main/graph/badge.svg)](https://app.codecov.io/gh/zacdav-db/brickster?branch=main)
+[![R-CMD-check](https://github.com/databrickslabs/brickster/workflows/R-CMD-check/badge.svg)](https://github.com/databrickslabs/brickster/actions) [![Codecov test coverage](https://codecov.io/gh/zacdav-db/brickster/branch/main/graph/badge.svg)](https://app.codecov.io/gh/zacdav-db/brickster?branch=main)
 
 <!-- badges: end -->
 
