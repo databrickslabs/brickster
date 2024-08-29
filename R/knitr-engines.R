@@ -96,6 +96,7 @@ clean_command_results <- function(x, options, language) {
     if (options$eval) {
       schema <- data.table::rbindlist(x$results$schema)
       tbl <- data.table::rbindlist(x$results$data)
+
       names(tbl) <- schema$name
       if (isTRUE(getOption('knitr.in.progress'))) {
         outputs$table <- knitr::engine_output(
@@ -104,6 +105,12 @@ clean_command_results <- function(x, options, language) {
         )
       } else {
         knitr::knit_print(tbl)
+      }
+
+      # when `output.var` option is used return the table assigned to object
+      varname <- options$output.var
+      if (!is.null(varname)) {
+        assign(varname, tbl, envir = knitr::knit_global())
       }
 
     }
