@@ -786,10 +786,20 @@ db_cluster_events <- function(cluster_id,
 #' @return `db_cluster_get()`
 #' @export
 get_and_start_cluster <- function(cluster_id, polling_interval = 5,
-                                  host = db_host(), token = db_token()) {
+                                  host = db_host(), token = db_token(),
+                                  silent = FALSE) {
+
+
+
 
   # get cluster status
   cluster_status <- db_cluster_get(cluster_id = cluster_id, host = host, token = token)
+
+  if (!silent) {
+    msg <- "{.header Checking cluster:} {.emph '{cluster_id}'}"
+    msg_done <- "{.header Checking cluster:} {.emph {cluster_status$cluster_name}}"
+    cli::cli_progress_step(msg, msg_done)
+  }
 
   # if the cluster isn't running, start it
   if (!cluster_status$state %in% c("RUNNING", "PENDING")) {
@@ -797,9 +807,25 @@ get_and_start_cluster <- function(cluster_id, polling_interval = 5,
   }
 
   # wait for cluster to become active
+  if (!silent) {
+    msg <- "{.header Attaching to cluster:} {.emph [{cluster_status$state}] '{cluster_status$state_message}'}"
+    msg_done <- "{.header Attached to cluster}"
+    msg_failed <- "{.header Cluster entered [{cluster_status$state}] state}"
+    cli::cli_progress_step(msg, msg_done, msg_failed)
+  }
   while (cluster_status$state != "RUNNING") {
     Sys.sleep(polling_interval)
     cluster_status <- db_cluster_get(cluster_id = cluster_id, host = host, token = token)
+    if (!silent) cli::cli_progress_update()
+    if (cluster_status$state %in% c("TERMINATED", "TERMINATING")) {
+      if (!silent) cli::cli_progress_done(result = "failed")
+      break
+    }
+  }
+
+  if (!silent) {
+    cli_progress_done()
+    cli_end()
   }
 
   cluster_status

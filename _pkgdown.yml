@@ -125,4 +125,7 @@ reference:
   contents:
   - open_workspace
   - close_workspace
+- title: REPL
+  contents:
+  - db_repl
 

@@ -1,3 +1,12 @@
+# brickster 0.2.5
+
+* Adding `db_repl()` a remote REPL to a Databricks cluster (#53)
+* Removing defunct RStudio add-in for browsing Databricks compute
+* Changes to DESCRIPTION file in preperation for CRAN (#64)
+* Removal of `notebook_use_posit_repo()` and `notebook_enable_htmlwidgets()`
+as they are incompatible with CRAN (#64)
+* Adjusted brickster RMarkdown template to install folium for python (#62, #64)
+
 # brickster 0.2.4
 
 * `open_workspace()` and the rstudio connection pane have been heavily revised

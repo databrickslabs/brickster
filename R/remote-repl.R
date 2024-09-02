@@ -20,9 +20,9 @@ db_context_manager <- R6::R6Class(
   public = list(
     initialize = function(cluster_id, language = c("r", "py", "scala", "sql")) {
       language <- match.arg(language)
-      cli::cli_alert_info("Attaching to {.strong {cluster_id}}...")
       private$cluster_id <- cluster_id
-      brickster::get_and_start_cluster(private$cluster_id)
+      get_and_start_cluster(private$cluster_id)
+      cli::cli_alert_info("Attaching to {.strong {cluster_id}}...")
       ctx <- brickster::db_context_create(
         cluster_id = private$cluster_id,
         language   = language
