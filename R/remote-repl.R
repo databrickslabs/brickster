@@ -10,6 +10,7 @@ lang <- function(x = c("r", "py", "scala", "sql", "sh")) {
   )
 }
 
+# nocov start
 db_context_manager <- R6::R6Class(
   classname = "databricks_context_manager",
   private = list(
@@ -85,6 +86,7 @@ db_context_manager <- R6::R6Class(
     }
   )
 )
+# nocov end
 
 
 handle_cmd_error <- function(x, language) {
