@@ -774,6 +774,8 @@ db_cluster_events <- function(cluster_id,
 #' @param polling_interval Number of seconds to wait between status checks
 #' @inheritParams auth_params
 #' @inheritParams db_cluster_edit
+#' @param silent Boolean (default: `FALSE`), will emit cluster state progress
+#' if `TRUE`.
 #'
 #' @details Get information regarding a Databricks cluster. If the cluster is
 #' inactive it will be started and wait until the cluster is active.

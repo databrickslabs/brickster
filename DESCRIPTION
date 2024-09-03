@@ -45,7 +45,6 @@ Suggests:
     htmlwidgets,
     knitr,
     magick,
-    pander,
     rmarkdown,
     rstudioapi,
     rvest

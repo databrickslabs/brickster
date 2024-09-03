@@ -3,8 +3,8 @@ lang <- function(x = c("r", "py", "scala", "sql", "sh")) {
   switch(
     x,
     "r" = "R",
-    "py" = emoji::emoji("snake"),
-    scala = "scala",
+    "py" = "py",
+    "scala" = "scala",
     "sql" = "sql",
     "sh" = "sh"
   )
@@ -127,7 +127,6 @@ clean_cmd_results <- function(x, language) {
       huxtable::set_position("left")
 
     huxtable::print_screen(output_tbl)
-
     return(NULL)
   }
 
@@ -163,7 +162,7 @@ repl_prompt <- function(language) {
   glue::glue("[Databricks][{lang(language)}]> ")
 }
 
-
+# nocov start
 #' Remote REPL to Databricks Cluster
 #'
 #' @details This function doesn't accept `token` and `host` parameters,
@@ -209,4 +208,4 @@ db_repl <- function(cluster_id, language = c("r", "py", "scala", "sql", "sh")) {
     }
   }
 }
-
+# nocov end

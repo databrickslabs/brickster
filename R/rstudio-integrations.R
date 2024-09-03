@@ -1,3 +1,4 @@
+# nocov start
 rstudio_editor_contents <- function(only_selected = FALSE) {
   if (rstudioapi::isAvailable()) {
     context <- rstudioapi::getSourceEditorContext()
@@ -33,3 +34,4 @@ send_file <- function() {
     rstudioapi::sendToConsole(code = code, execute = TRUE)
   }
 }
+# nocov end

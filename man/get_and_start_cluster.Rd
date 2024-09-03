@@ -20,6 +20,9 @@ get_and_start_cluster(
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
 \item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}
+
+\item{silent}{Boolean (default: \code{FALSE}), will emit cluster state progress
+if \code{TRUE}.}
 }
 \value{
 \code{db_cluster_get()}
