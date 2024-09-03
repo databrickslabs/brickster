@@ -8,7 +8,8 @@ get_and_start_cluster(
   cluster_id,
   polling_interval = 5,
   host = db_host(),
-  token = db_token()
+  token = db_token(),
+  silent = FALSE
 )
 }
 \arguments{

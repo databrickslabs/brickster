@@ -813,6 +813,7 @@ get_and_start_cluster <- function(cluster_id, polling_interval = 5,
     msg_failed <- "{.header Cluster entered [{cluster_status$state}] state}"
     cli::cli_progress_step(msg, msg_done, msg_failed)
   }
+
   while (cluster_status$state != "RUNNING") {
     Sys.sleep(polling_interval)
     cluster_status <- db_cluster_get(cluster_id = cluster_id, host = host, token = token)
@@ -824,8 +825,8 @@ get_and_start_cluster <- function(cluster_id, polling_interval = 5,
   }
 
   if (!silent) {
-    cli_progress_done()
-    cli_end()
+    cli::cli_progress_done()
+    cli::cli_end()
   }
 
   cluster_status

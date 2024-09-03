@@ -21,13 +21,18 @@ db_context_manager <- R6::R6Class(
     initialize = function(cluster_id, language = c("r", "py", "scala", "sql")) {
       language <- match.arg(language)
       private$cluster_id <- cluster_id
-      get_and_start_cluster(private$cluster_id)
-      cli::cli_alert_info("Attaching to {.strong {cluster_id}}...")
+      cluster_info <- get_and_start_cluster(private$cluster_id)
+      cli::cli_progress_step(
+        msg = "{.header Creating execution context...}",
+        msg_done = "{.header Execution context created}"
+      )
       ctx <- brickster::db_context_create(
         cluster_id = private$cluster_id,
         language   = language
       )
       private$context_id <- ctx$id
+      cli::cli_progress_done()
+      cli::cli_end()
     },
 
     close = function() {
@@ -115,7 +120,14 @@ clean_cmd_results <- function(x, language) {
     schema <- data.table::rbindlist(x$results$schema)
     tbl <- data.table::rbindlist(x$results$data)
     names(tbl) <- schema$name
-    pander::pandoc.table(tbl, style = "grid")
+
+    output_tbl <- huxtable::hux(tbl) %>%
+      huxtable::set_all_borders(TRUE) %>%
+      huxtable::set_font_size(10) %>%
+      huxtable::set_position("left")
+
+    huxtable::print_screen(output_tbl)
+
     return(NULL)
   }
 
@@ -147,26 +159,48 @@ clean_cmd_results <- function(x, language) {
   }
 }
 
+repl_prompt <- function(language) {
+  glue::glue("[Databricks][{lang(language)}]> ")
+}
 
-#' @param cluster_id Cluster Id to create REPL context against.
+
+#' Remote REPL to Databricks Cluster
 #'
+#' @details This function doesn't accept `token` and `host` parameters,
+#' credentials must be established as per documentation best practice
+#' (e.g. `.Renviron`).
+#'
+#' `db_repl()` will take over the existing console and allow execution of
+#' commands against a Databricks cluster. For RStudio users there are Addins
+#' which can be bound to keyboard shortcuts to improve usability.
+#'
+#' @param cluster_id Cluster Id to create REPL context against.
 #' @param language for REPL ('r', 'py', 'scala', 'sql', 'sh') are
 #' supported.
 #'
 #' @export
 db_repl <- function(cluster_id, language = c("r", "py", "scala", "sql", "sh")) {
 
-  stopifnot(interactive())
+  if(!interactive()) {
+    cli::cli_abort("{.fn db_repl} can only be called in an interactive context")
+  }
+
   language <- match.arg(language)
   manager <- db_context_manager$new(
     cluster_id,
     if (language == "sh") "py" else language
   )
   on.exit(manager$close())
-  prompt <- glue::glue("[{cluster_id}][{lang(language)}]>")
+  prompt <- repl_prompt(language)
+
   while (TRUE) {
     cmd <- readline(prompt)
-    if (cmd != "") {
+    # change language when command is `:{language}` (e.g. :py)
+    if (cmd %in% c(":r", ":py", ":scala", ":sql", ":sh")) {
+      new_lang <- substr(cmd, 2, 99)
+      language <- new_lang
+      prompt <- repl_prompt(language)
+    } else if (cmd != "") {
       result <- manager$cmd_run(cmd, language)
       clean_result <- trimws(clean_cmd_results(result, language))
       if (length(clean_result) > 0 && clean_result != "") {
@@ -175,3 +209,4 @@ db_repl <- function(cluster_id, language = c("r", "py", "scala", "sql", "sh")) {
     }
   }
 }
+
