@@ -158,22 +158,14 @@ clean_command_results <- function(x, options, language) {
 
   }
 
+  if (grepl(pattern = "<html|<div", out)) {
+    print(htmltools::HTML(out))
+    out <- NULL
+  }
+
   # otherwise treat the results as standard output
   # each language needs its own special treatment
-  if (language == "r") {
-    out <- x$results$data
-  } else if (language == "python") {
-    out <- x$results$data
-    is_html <- grepl(pattern = "<html|<div", out)
-    if (is_html) {
-      print(htmltools::HTML(out))
-      out <- NULL
-    }
-  } else if (language == "scala") {
-    out <- x$results$data
-  } else {
-    out <- x$results$data
-  }
+  out <- x$results$data
 
   knitr::engine_output(options = options, code = options$code, out = out)
 

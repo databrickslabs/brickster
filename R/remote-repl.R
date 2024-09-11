@@ -93,7 +93,7 @@ handle_cmd_error <- function(x, language) {
   summary <- x$results$summary
   cause <- x$results$cause
 
-  if (language == "py") {
+  if (language %in% c("py", "sh")) {
     msg <- cause
   }
 
@@ -113,6 +113,7 @@ handle_cmd_error <- function(x, language) {
 }
 
 clean_cmd_results <- function(x, language) {
+
   if (x$results$resultType == "error") {
     cli_alert_danger(handle_cmd_error(x, language))
     return(NULL)
@@ -144,20 +145,16 @@ clean_cmd_results <- function(x, language) {
 
   # otherwise treat the results as standard output
   # each language needs its own special treatment
-  if (language == "r") {
-    out <- x$results$data
-  } else if (language == "python") {
-    out <- x$results$data
-    is_html <- grepl(pattern = "<html|<div", out)
-    if (is_html) {
-      print(htmltools::HTML(out))
-      out <- NULL
-    }
-  } else if (language == "scala") {
-    out <- x$results$data
-  } else {
-    out <- x$results$data
+  out <- x$results$data
+
+  # if that output is HTML render via htmltools
+  if (grepl(pattern = "<html|<div", out)) {
+    htmltools::html_print(htmltools::HTML(out))
+    out <- NULL
   }
+
+  out
+
 }
 
 repl_prompt <- function(language) {

@@ -804,7 +804,7 @@ get_and_start_cluster <- function(cluster_id, polling_interval = 5,
   }
 
   # if the cluster isn't running, start it
-  if (!cluster_status$state %in% c("RUNNING", "PENDING")) {
+  if (!cluster_status$state %in% c("RUNNING", "PENDING", "RESIZING", "STARTING", "RESTARTING")) {
     db_cluster_start(cluster_id = cluster_id, host = host, token = token)
   }
 
