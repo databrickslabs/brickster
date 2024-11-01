@@ -163,7 +163,13 @@ read_databrickscfg <- function(key = c("token", "host", "wsid"), profile = NULL)
     home_dir <- Sys.getenv("HOME")
   }
 
-  config_path <- file.path(home_dir, ".databrickscfg")
+  # use the .databrickscfg location specified in DATABRICKS_CONFIG_FILE
+  databricks_config_file <- Sys.getenv("DATABRICKS_CONFIG_FILE")
+  if (databricks_config_file != "") {
+    config_path <- databricks_config_file
+  } else {
+    config_path <- file.path(home_dir, ".databrickscfg")
+  }
 
   # read config file (ini format) and fetch values from specified profile
   vars <- ini::read.ini(config_path)[[profile]]
