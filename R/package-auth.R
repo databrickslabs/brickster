@@ -28,17 +28,15 @@
 #' @return workspace URL
 #' @export
 db_host <- function(id = NULL, prefix = NULL, profile = getOption("db_profile", NULL)) {
-
-  # if option `use_databrickscfg` is `TRUE` then fetch the associated env.
-  # env is specified via `db_env` option, if missing use default.
-  # this behaviour can only be changed via setting of config
-  if (getOption("use_databrickscfg", FALSE)) {
-    host <- read_databrickscfg(key = "host", profile = profile)
-    return(host)
-  }
-
   if (is.null(id) && is.null(prefix)) {
-    host <- read_env_var(key = "host", profile = profile)
+    # if option `use_databrickscfg` is `TRUE` then fetch the associated env.
+    # env is specified via `db_env` option, if missing use default.
+    # this behaviour can only be changed via setting of config
+    if (getOption("use_databrickscfg", FALSE)) {
+      host <- read_databrickscfg(key = "host", profile = profile)
+    } else {
+      host <- read_env_var(key = "host", profile = profile)
+    }
     parsed_url <- httr2::url_parse(host)
 
     # inject scheme if not present then re-build with https
