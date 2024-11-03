@@ -14,7 +14,7 @@ authors:
   Databricks:
     href: https://www.databricks.com
     html: <img src='https://databricks.com/wp-content/uploads/2019/12/cropped-databricks-icon-192x192.png'
-      width='25' alt='Databricks' />
+      width='25' alt='Databricks'/>
 development:
   mode: auto
 reference:
@@ -118,9 +118,6 @@ reference:
   - db_request_json
 - title: Low Level Helpers
   contents: starts_with("is.", internal = TRUE)
-- title: knitr helpers
-  contents:
-  - setup_databricks_rmd
 - title: Workspace Connection
   contents:
   - open_workspace
