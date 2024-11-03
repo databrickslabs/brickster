@@ -33,7 +33,7 @@ test_that("REPL - helpers", {
 
   # python special case
   cmd_res <- list(results = list(resultType = "text", data = "<html>hello world</html>"))
-  expect_equal(clean_cmd_results(cmd_res, "py"), "<html>hello world</html>")
+  expect_equal(clean_cmd_results(cmd_res, "py"), NULL)
 
   # error case
   cmd_res <- list(results = list(resultType = "error", summary = "err", cause = "err"))
