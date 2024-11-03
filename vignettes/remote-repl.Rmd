@@ -48,6 +48,8 @@ The REPL temporarily connects the existing R console to a Databricks cluster (vi
 
 ## Limitations
 
--   IDE's (e.g. RStudio, Positron) won't display variables in the remote contexts in environment panes.
+-   Development environments (e.g. RStudio, Positron) won't display variables from the remote contexts in the environment pane
+
+-   HTML content will only render for Python, `{htmlwidgets}` rendering is restricted due to [notebook limitations that require a workaround](https://docs.databricks.com/en/visualizations/htmlwidgets.html) currently
 
 -   
