@@ -15,7 +15,8 @@ databricks token
 }
 \description{
 Token must be specified as an environment variable \code{DATABRICKS_TOKEN}.
-If \code{DATABRICKS_TOKEN} is missing will default to using OAuth U2M flow.
+If \code{DATABRICKS_TOKEN} is missing then managed OAuth credentials in RStudio on Posit Workbench will be checked.
+If neither are found then will default to using OAuth U2M flow.
 
 Refer to \href{https://docs.databricks.com/dev-tools/api/latest/authentication.html}{api authentication docs}
 }

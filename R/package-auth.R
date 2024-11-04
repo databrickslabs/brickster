@@ -65,7 +65,8 @@ db_host <- function(id = NULL, prefix = NULL, profile = getOption("db_profile", 
 #'
 #' @description
 #' Token must be specified as an environment variable `DATABRICKS_TOKEN`.
-#' If `DATABRICKS_TOKEN` is missing will default to using OAuth U2M flow.
+#' If `DATABRICKS_TOKEN` is missing then managed OAuth credentials in RStudio on Posit Workbench will be checked.
+#' If neither are found then will default to using OAuth U2M flow.
 #'
 #' Refer to [api authentication docs](https://docs.databricks.com/dev-tools/api/latest/authentication.html)
 #'
@@ -86,7 +87,14 @@ db_token <- function(profile = getOption("db_profile")) {
     return(token)
   }
 
-  read_env_var(key = "token", profile = profile, error = FALSE)
+  token <- read_env_var(key = "token", profile = profile, error = FALSE)
+
+  # Checks for OAuth Databricks token inside RStudio on Posit Workbench
+  if (is.null(token) && exists(".rs.api.getDatabricksToken")) {
+    getDatabricksToken <- get(".rs.api.getDatabricksToken")
+    token <- getDatabricksToken(db_host())
+  }
+  return(token)
 }
 
 #' Fetch Databricks Workspace ID
@@ -262,6 +270,3 @@ db_oauth_client <- function(host = db_host()) {
   client_and_auth
 
 }
-
-
-
