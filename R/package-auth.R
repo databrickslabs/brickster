@@ -65,7 +65,7 @@ db_host <- function(id = NULL, prefix = NULL, profile = getOption("db_profile", 
 #'
 #' @description
 #' Token must be specified as an environment variable `DATABRICKS_TOKEN`.
-#' If `DATABRICKS_TOKEN` is missing then managed OAuth credentials in RStudio on Posit Workbench will be checked.
+#' If `DATABRICKS_TOKEN` is missing then managed OAuth credentials in RStudio running on Posit Workbench will be used.
 #' If neither are found then will default to using OAuth U2M flow.
 #'
 #' Refer to [api authentication docs](https://docs.databricks.com/dev-tools/api/latest/authentication.html)
@@ -78,23 +78,23 @@ db_host <- function(id = NULL, prefix = NULL, profile = getOption("db_profile", 
 #' @import cli
 #' @export
 db_token <- function(profile = getOption("db_profile")) {
+  use_databrickscfg <- getOption("use_databrickscfg", FALSE)
+
+  # Check if running within RStudio on Posit Workbench so managed OAuth credentials get used
+  if ((Sys.getenv("DATABRICKS_CONFIG_PROFILE") == "workbench") && (Sys.getenv("DATABRICKS_TOKEN") != "")) {
+    use_databrickscfg <- TRUE
+    profile <- "workbench"
+  }
 
   # if option `use_databrickscfg` is `TRUE` then fetch the associated env.
   # env is specified via `db_env` option, if missing use default.
   # this behaviour can only be changed via setting of config
-  if (getOption("use_databrickscfg", FALSE)) {
+  if (use_databrickscfg) {
     token <- read_databrickscfg(key = "token", profile = profile)
     return(token)
   }
 
-  token <- read_env_var(key = "token", profile = profile, error = FALSE)
-
-  # Checks for OAuth Databricks token inside RStudio on Posit Workbench
-  if (is.null(token) && exists(".rs.api.getDatabricksToken")) {
-    getDatabricksToken <- get(".rs.api.getDatabricksToken")
-    token <- getDatabricksToken(db_host())
-  }
-  return(token)
+  read_env_var(key = "token", profile = profile, error = FALSE)
 }
 
 #' Fetch Databricks Workspace ID
