@@ -15,21 +15,32 @@ db_context_manager <- R6::R6Class(
   classname = "databricks_context_manager",
   private = list(
     cluster_id = NULL,
-    context_id = NULL
+    context_id = NULL,
+    host = NULL,
+    token = NULL
   ),
 
   public = list(
-    initialize = function(cluster_id, language = c("r", "py", "scala", "sql")) {
+    initialize = function(cluster_id, language = c("r", "py", "scala", "sql"),
+                          host = db_host(), token = db_token()) {
       language <- match.arg(language)
       private$cluster_id <- cluster_id
-      cluster_info <- get_and_start_cluster(private$cluster_id)
+      private$host <- host
+      private$token <- token
+      cluster_info <- get_and_start_cluster(
+        private$cluster_id,
+        host = host,
+        token = token
+      )
       cli::cli_progress_step(
         msg = "{.header Creating execution context...}",
         msg_done = "{.header Execution context created}"
       )
       ctx <- brickster::db_context_create(
         cluster_id = private$cluster_id,
-        language   = language
+        language   = language,
+        host = host,
+        token = token
       )
       private$context_id <- ctx$id
       cli::cli_progress_done()
@@ -39,7 +50,9 @@ db_context_manager <- R6::R6Class(
     close = function() {
       brickster::db_context_destroy(
         context_id = private$context_id,
-        cluster_id = private$cluster_id
+        cluster_id = private$cluster_id,
+        host = private$host,
+        token = private$token
       )
     },
 
@@ -56,7 +69,9 @@ db_context_manager <- R6::R6Class(
         cluster_id = private$cluster_id,
         context_id = private$context_id,
         language = language,
-        command = cmd
+        command = cmd,
+        host = private$host,
+        token = private$token
       )
 
       cmd_status <- self$cmd_status(cmd)
@@ -73,7 +88,9 @@ db_context_manager <- R6::R6Class(
       brickster::db_context_command_status(
         cluster_id = private$cluster_id,
         context_id = private$context_id,
-        command_id = command$id
+        command_id = command$id,
+        host = private$host,
+        token = private$token
       )
     },
 
@@ -81,7 +98,9 @@ db_context_manager <- R6::R6Class(
       brickster::db_context_command_cancel(
         command_id = command$id,
         context_id = private$context_id,
-        cluster_id = private$cluster_id
+        cluster_id = private$cluster_id,
+        host = private$host,
+        token = private$token
       )
     }
   )
@@ -175,9 +194,11 @@ repl_prompt <- function(language) {
 #' @param cluster_id Cluster Id to create REPL context against.
 #' @param language for REPL ('r', 'py', 'scala', 'sql', 'sh') are
 #' supported.
+#' @inheritParams auth_params
 #'
 #' @export
-db_repl <- function(cluster_id, language = c("r", "py", "scala", "sql", "sh")) {
+db_repl <- function(cluster_id, language = c("r", "py", "scala", "sql", "sh"),
+                    host = db_host(), token = db_token()) {
 
   if(!interactive()) {
     cli::cli_abort("{.fn db_repl} can only be called in an interactive context")
@@ -186,7 +207,9 @@ db_repl <- function(cluster_id, language = c("r", "py", "scala", "sql", "sh")) {
   language <- match.arg(language)
   manager <- db_context_manager$new(
     cluster_id,
-    if (language == "sh") "py" else language
+    if (language == "sh") "py" else language,
+    host = host,
+    token = token
   )
   on.exit(manager$close())
   prompt <- repl_prompt(language)

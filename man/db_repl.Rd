@@ -4,13 +4,22 @@
 \alias{db_repl}
 \title{Remote REPL to Databricks Cluster}
 \usage{
-db_repl(cluster_id, language = c("r", "py", "scala", "sql", "sh"))
+db_repl(
+  cluster_id,
+  language = c("r", "py", "scala", "sql", "sh"),
+  host = db_host(),
+  token = db_token()
+)
 }
 \arguments{
 \item{cluster_id}{Cluster Id to create REPL context against.}
 
 \item{language}{for REPL ('r', 'py', 'scala', 'sql', 'sh') are
 supported.}
+
+\item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
+
+\item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}
 }
 \description{
 Remote REPL to Databricks Cluster

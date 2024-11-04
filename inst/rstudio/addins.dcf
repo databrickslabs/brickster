@@ -1,14 +1,14 @@
-Name: Send selection to console
+Name: [brickster] Send selection to console
 Description: Send selected code to console, is compatible with remote REPL
 Binding: send_selection
 Interactive: false
 
-Name: Send current document to console
+Name: [brickster] Send current document to console
 Description: Send selected document to console, is compatible with remote REPL
 Binding: send_document
 Interactive: false
 
-Name: Send R script to console
+Name: [brickster] Send R script to console
 Description: Send selected script to console, is compatible with remote REPL
 Binding: send_file
 Interactive: false
