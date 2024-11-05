@@ -3,9 +3,10 @@
 #' Generate/Fetch Databricks Host
 #'
 #' @description
-#' If both `id` and `prefix` are `NULL` then the function will search:
-#' `.databrickscfg` if `db_profile` or `use_databrickscfg` is set.
-#' The `DATABRICKS_HOST` environment variable will also be checked.
+#' If both `id` and `prefix` are `NULL` then the function will check for
+#' the `DATABRICKS_HOST` environment variable.
+#' `.databrickscfg` will be searched if `db_profile` and `use_databrickscfg` are set or if
+#' the `workbench` profile is detected.
 #'
 #' When defining `id` and `prefix` you do not need to specify the whole URL.
 #' E.g. `https://<prefix>.<id>.cloud.databricks.com/` is the form to follow.
@@ -33,7 +34,7 @@ db_host <- function(id = NULL, prefix = NULL, profile = default_config_profile()
   if (is.null(id) && is.null(prefix)) {
 
     use_databricks_cfg <- getOption("use_databrickscfg", FALSE)
-    if (!is.null(profile)) {
+    if (profile == "workbench") {
       use_databricks_cfg <- TRUE
     }
 
@@ -73,9 +74,10 @@ db_host <- function(id = NULL, prefix = NULL, profile = default_config_profile()
 #' Fetch Databricks Token
 #'
 #' @description
-#' If `db_profile` is set then the `.databrickscfg` file will be searched for a token.
-#' Next the environment variable `DATABRICKS_TOKEN` will be checked.
-#' If neither are found then will default to using OAuth U2M flow.
+#' The function will check for a token in the `DATABRICKS_HOST` environment variable.
+#' `.databrickscfg` will be searched if `db_profile` and `use_databrickscfg` are set or if
+#' the `workbench` profile is detected.
+#' If none of the above are found then will default to using OAuth U2M flow.
 #'
 #' Refer to [api authentication docs](https://docs.databricks.com/dev-tools/api/latest/authentication.html)
 #'
@@ -89,7 +91,7 @@ db_host <- function(id = NULL, prefix = NULL, profile = default_config_profile()
 db_token <- function(profile = default_config_profile()) {
 
   use_databricks_cfg <- getOption("use_databrickscfg", FALSE)
-  if (!is.null(profile)) {
+  if (profile == "workbench") {
     use_databricks_cfg <- TRUE
   }
 

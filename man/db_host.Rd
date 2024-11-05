@@ -18,9 +18,10 @@ db_host(id = NULL, prefix = NULL, profile = default_config_profile())
 workspace URL
 }
 \description{
-If both \code{id} and \code{prefix} are \code{NULL} then the function will search:
-\code{.databrickscfg} if \code{db_profile} or \code{use_databrickscfg} is set.
-The \code{DATABRICKS_HOST} environment variable will also be checked.
+If both \code{id} and \code{prefix} are \code{NULL} then the function will check for
+the \code{DATABRICKS_HOST} environment variable.
+\code{.databrickscfg} will be searched if \code{db_profile} and \code{use_databrickscfg} are set or if
+the \code{workbench} profile is detected.
 
 When defining \code{id} and \code{prefix} you do not need to specify the whole URL.
 E.g. \verb{https://<prefix>.<id>.cloud.databricks.com/} is the form to follow.

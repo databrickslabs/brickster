@@ -14,9 +14,10 @@ db_token(profile = default_config_profile())
 databricks token
 }
 \description{
-If \code{db_profile} is set then the \code{.databrickscfg} file will be searched for a token.
-Next the environment variable \code{DATABRICKS_TOKEN} will be checked.
-If neither are found then will default to using OAuth U2M flow.
+The function will check for a token in the \code{DATABRICKS_HOST} environment variable.
+\code{.databrickscfg} will be searched if \code{db_profile} and \code{use_databrickscfg} are set or if
+the \code{workbench} profile is detected.
+If none of the above are found then will default to using OAuth U2M flow.
 
 Refer to \href{https://docs.databricks.com/dev-tools/api/latest/authentication.html}{api authentication docs}
 }
