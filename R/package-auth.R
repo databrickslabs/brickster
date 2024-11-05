@@ -64,8 +64,8 @@ db_host <- function(id = NULL, prefix = NULL, profile = getOption("db_profile", 
 #' Fetch Databricks Token
 #'
 #' @description
-#' Token must be specified as an environment variable `DATABRICKS_TOKEN`.
-#' If `DATABRICKS_TOKEN` is missing then managed OAuth credentials in RStudio running on Posit Workbench will be used.
+#' If `db_profile` is set then the `.databrickscfg` file will be searched for a token.
+#' Next the environment variable `DATABRICKS_TOKEN` will be checked.
 #' If neither are found then will default to using OAuth U2M flow.
 #'
 #' Refer to [api authentication docs](https://docs.databricks.com/dev-tools/api/latest/authentication.html)
@@ -77,19 +77,18 @@ db_host <- function(id = NULL, prefix = NULL, profile = getOption("db_profile", 
 #' @return databricks token
 #' @import cli
 #' @export
-db_token <- function(profile = getOption("db_profile")) {
-  use_databrickscfg <- getOption("use_databrickscfg", FALSE)
+db_token <- function(profile = default_config_profile()) {
 
-  # Check if running within RStudio on Posit Workbench so managed OAuth credentials get used
-  if ((Sys.getenv("DATABRICKS_CONFIG_PROFILE") == "workbench") && (Sys.getenv("DATABRICKS_TOKEN") != "")) {
-    use_databrickscfg <- TRUE
-    profile <- "workbench"
+  use_databricks_cfg <- getOption("use_databrickscfg", FALSE)
+  if (!is.null(profile)) {
+    use_databricks_cfg <- TRUE
   }
 
-  # if option `use_databrickscfg` is `TRUE` then fetch the associated env.
+  # if option `use_databrickscfg` is `TRUE` or a `profile` is provided
+  # then fetch the associated env.
   # env is specified via `db_env` option, if missing use default.
   # this behaviour can only be changed via setting of config
-  if (use_databrickscfg) {
+  if (use_databricks_cfg) {
     token <- read_databrickscfg(key = "token", profile = profile)
     return(token)
   }
@@ -269,4 +268,19 @@ db_oauth_client <- function(host = db_host()) {
 
   client_and_auth
 
+}
+
+#' Returns the default config profile
+#' @details Returns the config profile first looking at `DATABRICKS_CONFIG_PROFILE`
+#' and then the `db_profile` option.
+#' 
+#' @return profile name
+#' @export
+default_config_profile <- function() {
+  profile <- Sys.getenv("DATABRICKS_CONFIG_PROFILE")
+  if (nchar(profile) != 0) {
+    profile
+  } else {
+    getOption("db_profile")
+  }
 }

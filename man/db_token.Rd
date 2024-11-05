@@ -4,7 +4,7 @@
 \alias{db_token}
 \title{Fetch Databricks Token}
 \usage{
-db_token(profile = getOption("db_profile"))
+db_token(profile = default_config_profile())
 }
 \arguments{
 \item{profile}{Profile to use when fetching from environment variable
@@ -14,8 +14,8 @@ db_token(profile = getOption("db_profile"))
 databricks token
 }
 \description{
-Token must be specified as an environment variable \code{DATABRICKS_TOKEN}.
-If \code{DATABRICKS_TOKEN} is missing then managed OAuth credentials in RStudio running on Posit Workbench will be used.
+If \code{db_profile} is set then the \code{.databrickscfg} file will be searched for a token.
+Next the environment variable \code{DATABRICKS_TOKEN} will be checked.
 If neither are found then will default to using OAuth U2M flow.
 
 Refer to \href{https://docs.databricks.com/dev-tools/api/latest/authentication.html}{api authentication docs}
