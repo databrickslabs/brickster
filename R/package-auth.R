@@ -22,8 +22,7 @@
 #' - `use_databrickscfg`: Boolean (default: `FALSE`), determines if credentials
 #' are fetched from profile of `.databrickscfg` or `.Renviron`
 #' - `db_profile`: String (default: `NULL`), determines profile used.
-#' When the profile `workbench` is set then `.databrickscfg` will
-#' automatically be searched to enable the use of Posit Workbench managed credentials.
+#' `.databrickscfg` will automatically be used when Posit Workbench managed OAuth credentials are detected.
 #'
 #' See vignette on authentication for more details.
 #'
@@ -35,7 +34,7 @@ db_host <- function(id = NULL, prefix = NULL, profile = default_config_profile()
   if (is.null(id) && is.null(prefix)) {
 
     use_databricks_cfg <- getOption("use_databrickscfg", FALSE)
-    if (profile == "workbench") {
+    if (grepl("posit-workbench", Sys.getenv("DATABRICKS_CONFIG_FILE"), fixed = TRUE)) {
       use_databricks_cfg <- TRUE
     }
 
@@ -76,8 +75,8 @@ db_host <- function(id = NULL, prefix = NULL, profile = default_config_profile()
 #'
 #' @description
 #' The function will check for a token in the `DATABRICKS_HOST` environment variable.
-#' `.databrickscfg` will be searched if `db_profile` and `use_databrickscfg` are set or if
-#' the `workbench` profile is detected.
+#' `.databrickscfg` will be searched if `db_profile` and `use_databrickscfg` are set or 
+#' Posit Workbench managed OAuth credentials are detected.
 #' If none of the above are found then will default to using OAuth U2M flow.
 #'
 #' Refer to [api authentication docs](https://docs.databricks.com/dev-tools/api/latest/authentication.html)
@@ -92,7 +91,7 @@ db_host <- function(id = NULL, prefix = NULL, profile = default_config_profile()
 db_token <- function(profile = default_config_profile()) {
 
   use_databricks_cfg <- getOption("use_databrickscfg", FALSE)
-  if (profile == "workbench") {
+  if (grepl("posit-workbench", Sys.getenv("DATABRICKS_CONFIG_FILE"), fixed = TRUE)) {
     use_databricks_cfg <- TRUE
   }
 
