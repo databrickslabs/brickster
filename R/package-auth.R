@@ -287,7 +287,7 @@ db_oauth_client <- function(host = db_host()) {
 #' and then the `db_profile` option.
 #' 
 #' @return profile name
-#' @export
+#' @keywords internal
 default_config_profile <- function() {
   profile <- Sys.getenv("DATABRICKS_CONFIG_PROFILE")
   if (nchar(profile) != 0) {

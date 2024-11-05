@@ -16,3 +16,4 @@ Returns the default config profile
 Returns the config profile first looking at \code{DATABRICKS_CONFIG_PROFILE}
 and then the \code{db_profile} option.
 }
+\keyword{internal}
