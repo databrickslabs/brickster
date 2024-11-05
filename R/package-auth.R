@@ -3,8 +3,9 @@
 #' Generate/Fetch Databricks Host
 #'
 #' @description
-#' If both `id` and `prefix` are `NULL` function will search for the
-#' `DATABRICKS_HOST` environment variable.
+#' If both `id` and `prefix` are `NULL` then the function will search:
+#' `.databrickscfg` if `db_profile` or `use_databrickscfg` is set.
+#' The `DATABRICKS_HOST` environment variable will also be checked.
 #'
 #' When defining `id` and `prefix` you do not need to specify the whole URL.
 #' E.g. `https://<prefix>.<id>.cloud.databricks.com/` is the form to follow.
@@ -19,7 +20,8 @@
 #' `use_databrickscfg` options are set.
 #' - `use_databrickscfg`: Boolean (default: `FALSE`), determines if credentials
 #' are fetched from profile of `.databrickscfg` or `.Renviron`
-#' - `db_profile`: String (default: `NULL`), determines profile used.
+#' - `db_profile`: String (default: `NULL`), determines profile used. When set `.databrickscfg` will
+#' automatically be searched.
 #'
 #' See vignette on authentication for more details.
 #'
@@ -27,12 +29,19 @@
 #'
 #' @return workspace URL
 #' @export
-db_host <- function(id = NULL, prefix = NULL, profile = getOption("db_profile", NULL)) {
+db_host <- function(id = NULL, prefix = NULL, profile = default_config_profile()) {
   if (is.null(id) && is.null(prefix)) {
-    # if option `use_databrickscfg` is `TRUE` then fetch the associated env.
+
+    use_databricks_cfg <- getOption("use_databrickscfg", FALSE)
+    if (!is.null(profile)) {
+      use_databricks_cfg <- TRUE
+    }
+
+   # if option `use_databrickscfg` is `TRUE` or a `profile` is provided
+    # then fetch the associated env.
     # env is specified via `db_env` option, if missing use default.
     # this behaviour can only be changed via setting of config
-    if (getOption("use_databrickscfg", FALSE)) {
+    if (use_databricks_cfg) {
       host <- read_databrickscfg(key = "host", profile = profile)
     } else {
       host <- read_env_var(key = "host", profile = profile)

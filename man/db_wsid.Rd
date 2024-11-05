@@ -25,7 +25,8 @@ The behaviour is subject to change depending if \code{db_profile} and
 \itemize{
 \item \code{use_databrickscfg}: Boolean (default: \code{FALSE}), determines if credentials
 are fetched from profile of \code{.databrickscfg} or \code{.Renviron}
-\item \code{db_profile}: String (default: \code{NULL}), determines profile used.
+\item \code{db_profile}: String (default: \code{NULL}), determines profile used. When set \code{.databrickscfg} will
+automatically be searched.
 }
 
 See vignette on authentication for more details.
