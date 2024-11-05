@@ -32,8 +32,9 @@ The behaviour is subject to change depending if \code{db_profile} and
 \itemize{
 \item \code{use_databrickscfg}: Boolean (default: \code{FALSE}), determines if credentials
 are fetched from profile of \code{.databrickscfg} or \code{.Renviron}
-\item \code{db_profile}: String (default: \code{NULL}), determines profile used. When set \code{.databrickscfg} will
-automatically be searched.
+\item \code{db_profile}: String (default: \code{NULL}), determines profile used.
+When the profile \code{workbench} is set then \code{.databrickscfg} will
+automatically be searched to enable the use of Posit Workbench managed credentials.
 }
 
 See vignette on authentication for more details.

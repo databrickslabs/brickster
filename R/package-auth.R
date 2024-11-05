@@ -21,8 +21,9 @@
 #' `use_databrickscfg` options are set.
 #' - `use_databrickscfg`: Boolean (default: `FALSE`), determines if credentials
 #' are fetched from profile of `.databrickscfg` or `.Renviron`
-#' - `db_profile`: String (default: `NULL`), determines profile used. When set `.databrickscfg` will
-#' automatically be searched.
+#' - `db_profile`: String (default: `NULL`), determines profile used.
+#' When the profile `workbench` is set then `.databrickscfg` will
+#' automatically be searched to enable the use of Posit Workbench managed credentials.
 #'
 #' See vignette on authentication for more details.
 #'
