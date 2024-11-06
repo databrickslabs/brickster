@@ -24,12 +24,11 @@ The `{brickster}` package connects to a Databricks workspace is two ways:
 
 It's recommended to use option (1) when using `{brickster}` interactively, if you need to run code via an automated process the only option currently is (2).
 
+`{brickster}` will automatically detect when a session has [Posit Workbench managed Databricks OAuth credentials](https://docs.posit.co/ide/server-pro/integration/databricks.html) enabled. For more information about this authentication flow see the section [Posit Workbench Managed Databricks OAuth Credentials](#posit-workbench-managed-databricks-oauth-credentials).
+
 Personal Access Tokens can be generated in a few steps, for a step-by-step breakdown [refer to the documentation](https://docs.databricks.com/dev-tools/api/latest/authentication.html).
 
 Once you have a token you'll be able to store it alongside the workspace URL in an `.Renviron` file. The `.Renviron` is used for storing the variables, such as those which may be sensitive (e.g. credentials) and de-couple them from the code (additional reading: [1](https://support.posit.co/hc/en-us/articles/360047157094-Managing-R-with-Rprofile-Renviron-Rprofile-site-Renviron-site-rsession-conf-and-repos-conf), [2](https://CRAN.R-project.org/package=startup/vignettes/startup-intro.html)).
-
-
-
 
 To get started add the following to your `.Renviron`:
 
@@ -149,3 +148,12 @@ For details on configuring please refer to [documentation from Databricks CLI](h
 There is only one `{brickster}` specific feature and it is the inclusion of `wsid` alongside `host`/`token`.
 
 `wsid` is used by the connections pane integration in RStudio as the underlying API's require it.
+
+### Posit Workbench Managed Databricks OAuth Credentials
+
+Posit Workbench has a [managed Databricks OAuth credentials](https://docs.posit.co/ide/server-pro/integration/databricks.html) feature, which allows users to sign into a Databricks workspace from the home page of Workbench when launching a session and then access Databricks resources as their own identity. When in an RStudio Pro session running on Posit Workbench with managed Databricks OAuth credentials selected, `{brickster}` functions using `db_host()`/`db_token()` respectively should just work without needing to specify any credentials in your R code.
+
+`{brickster}` will automatically detect when a session has Workbench managed OAuth credentials and then use the `workbench` profile defined in a `.databrickscfg` file at the `DATABRICKS_CONFIG_FILE` specified location. Workbench generates this `.databrickscfg` file in a temporary directory and should not be modified directly.
+
+To use an alternative `.databrickscfg` file, a different `profile`, an alternative env variable `DATABRICKS_HOST` or set an env variable `DATABRICKS_TOKEN`, launch an RStudio Pro session without the Databricks managed credentials box checked.
+
