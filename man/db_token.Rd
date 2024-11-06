@@ -16,7 +16,7 @@ databricks token
 \description{
 The function will check for a token in the \code{DATABRICKS_HOST} environment variable.
 \code{.databrickscfg} will be searched if \code{db_profile} and \code{use_databrickscfg} are set or
-Posit Workbench managed OAuth credentials are detected.
+if Posit Workbench managed OAuth credentials are detected.
 If none of the above are found then will default to using OAuth U2M flow.
 
 Refer to \href{https://docs.databricks.com/dev-tools/api/latest/authentication.html}{api authentication docs}

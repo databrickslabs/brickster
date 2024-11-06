@@ -6,7 +6,7 @@
 #' If both `id` and `prefix` are `NULL` then the function will check for
 #' the `DATABRICKS_HOST` environment variable.
 #' `.databrickscfg` will be searched if `db_profile` and `use_databrickscfg` are set or if
-#' the `workbench` profile is detected.
+#' Posit Workbench managed OAuth credentials are detected.
 #'
 #' When defining `id` and `prefix` you do not need to specify the whole URL.
 #' E.g. `https://<prefix>.<id>.cloud.databricks.com/` is the form to follow.
@@ -32,17 +32,10 @@
 #' @export
 db_host <- function(id = NULL, prefix = NULL, profile = default_config_profile()) {
   if (is.null(id) && is.null(prefix)) {
-
-    use_databricks_cfg <- getOption("use_databrickscfg", FALSE)
-    if (grepl("posit-workbench", Sys.getenv("DATABRICKS_CONFIG_FILE"), fixed = TRUE)) {
-      use_databricks_cfg <- TRUE
-    }
-
-    # if option `use_databrickscfg` is `TRUE` or a `profile` is provided
-    # then fetch the associated env.
+    # if `use_databricks_cfg()` returns `TRUE` then fetch the associated env.
     # env is specified via `db_env` option, if missing use default.
     # this behaviour can only be changed via setting of config
-    if (use_databricks_cfg) {
+    if (use_databricks_cfg()) {
       host <- read_databrickscfg(key = "host", profile = profile)
     } else {
       host <- read_env_var(key = "host", profile = profile)
@@ -76,7 +69,7 @@ db_host <- function(id = NULL, prefix = NULL, profile = default_config_profile()
 #' @description
 #' The function will check for a token in the `DATABRICKS_HOST` environment variable.
 #' `.databrickscfg` will be searched if `db_profile` and `use_databrickscfg` are set or 
-#' Posit Workbench managed OAuth credentials are detected.
+#' if Posit Workbench managed OAuth credentials are detected.
 #' If none of the above are found then will default to using OAuth U2M flow.
 #'
 #' Refer to [api authentication docs](https://docs.databricks.com/dev-tools/api/latest/authentication.html)
@@ -89,17 +82,10 @@ db_host <- function(id = NULL, prefix = NULL, profile = default_config_profile()
 #' @import cli
 #' @export
 db_token <- function(profile = default_config_profile()) {
-
-  use_databricks_cfg <- getOption("use_databrickscfg", FALSE)
-  if (grepl("posit-workbench", Sys.getenv("DATABRICKS_CONFIG_FILE"), fixed = TRUE)) {
-    use_databricks_cfg <- TRUE
-  }
-
-  # if option `use_databrickscfg` is `TRUE` or a `profile` is provided
-  # then fetch the associated env.
+  # if `use_databricks_cfg()` returns `TRUE` then fetch the associated env.
   # env is specified via `db_env` option, if missing use default.
   # this behaviour can only be changed via setting of config
-  if (use_databricks_cfg) {
+  if (use_databricks_cfg()) {
     token <- read_databrickscfg(key = "token", profile = profile)
     return(token)
   }
@@ -110,8 +96,10 @@ db_token <- function(profile = default_config_profile()) {
 #' Fetch Databricks Workspace ID
 #'
 #' @description
-#' Workspace ID, optionally specificied to make connections pane more powerful.
+#' Workspace ID, optionally specified to make connections pane more powerful.
 #' Specified as an environment variable `DATABRICKS_WSID`.
+#' `.databrickscfg` will be searched if `db_profile` and `use_databrickscfg` are set or 
+#' if Posit Workbench managed OAuth credentials are detected.
 #'
 #' Refer to [api authentication docs](https://docs.databricks.com/dev-tools/api/latest/authentication.html)
 #'
@@ -122,8 +110,8 @@ db_token <- function(profile = default_config_profile()) {
 #' @return databricks workspace ID
 #' @import cli
 #' @export
-db_wsid <- function(profile = getOption("db_profile")) {
-  if (getOption("use_databrickscfg", FALSE)) {
+db_wsid <- function(profile = default_config_profile()) {
+  if (use_databricks_cfg()) {
     wsid <- read_databrickscfg(key = "wsid", profile = profile)
     return(wsid)
   }
@@ -156,9 +144,10 @@ NULL
 
 #' Reads Databricks CLI Config
 #' @details Reads `.databrickscfg` file and retrieves the values associated to
-#' a given profile. Brickster searches for the config file in the user's home directory.
+#' a given profile. Brickster searches for the config file in the user's home directory by default.
 #' To see where this is you can run Sys.getenv("HOME") on unix-like operating systems,
 #' or, Sys.getenv("USERPROFILE") on windows.
+#' An alternate location will be used if the environment variable `DATABRICKS_CONFIG_FILE` is set.
 #'
 #' @param key The value to fetch from profile. One of `token`, `host`, or `wsid`
 #' @param profile Character, the name of the profile to retrieve values
@@ -180,8 +169,7 @@ read_databrickscfg <- function(key = c("token", "host", "wsid"), profile = NULL)
   }
 
   # use the .databrickscfg location specified in DATABRICKS_CONFIG_FILE
-  databricks_config_file <- Sys.getenv("DATABRICKS_CONFIG_FILE")
-  if (databricks_config_file != "") {
+  if (nchar(Sys.getenv("DATABRICKS_CONFIG_FILE")) != 0) {
     config_path <- databricks_config_file
   } else {
     config_path <- file.path(home_dir, ".databrickscfg")
@@ -294,4 +282,18 @@ default_config_profile <- function() {
   } else {
     getOption("db_profile")
   }
+}
+
+#' Returns whether or not to use a `.databrickscfg` file
+#' @details Indicates `.databrickscfg` should be used instead of environment variables when
+#' either the `use_databrickscfg` option is set or Posit Workbench managed OAuth credentials are detected.
+#' 
+#' @return boolean
+#' @keywords internal
+use_databricks_cfg <- function() {
+  use_databricks_cfg <- getOption("use_databrickscfg", FALSE)
+  if (grepl("posit-workbench", Sys.getenv("DATABRICKS_CONFIG_FILE"), fixed = TRUE)) {
+    use_databricks_cfg <- TRUE
+  }
+  return(use_databricks_cfg)
 }

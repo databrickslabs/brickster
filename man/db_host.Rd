@@ -21,7 +21,7 @@ workspace URL
 If both \code{id} and \code{prefix} are \code{NULL} then the function will check for
 the \code{DATABRICKS_HOST} environment variable.
 \code{.databrickscfg} will be searched if \code{db_profile} and \code{use_databrickscfg} are set or if
-the \code{workbench} profile is detected.
+Posit Workbench managed OAuth credentials are detected.
 
 When defining \code{id} and \code{prefix} you do not need to specify the whole URL.
 E.g. \verb{https://<prefix>.<id>.cloud.databricks.com/} is the form to follow.
