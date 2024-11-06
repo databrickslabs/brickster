@@ -5,9 +5,9 @@
 * Changes to DESCRIPTION file in preperation for CRAN (#64)
 * Removal of `notebook_use_posit_repo()` and `notebook_enable_htmlwidgets()`
 as they are incompatible with CRAN (#64)
-* Adjusted brickster RMarkdown template to install folium for python (#62, #64)
 * Removing kntir engine due to many render edge cases not being solvable
 * Adding shortcuts for REPL under addins
+* Added `db_context_command_run_and_wait`
 
 # brickster 0.2.4
 
