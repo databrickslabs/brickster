@@ -169,7 +169,8 @@ read_databrickscfg <- function(key = c("token", "host", "wsid"), profile = NULL)
   }
 
   # use the .databrickscfg location specified in DATABRICKS_CONFIG_FILE
-  if (nchar(Sys.getenv("DATABRICKS_CONFIG_FILE")) != 0) {
+  databricks_config_file <- Sys.getenv("DATABRICKS_CONFIG_FILE")
+  if (nchar(databricks_config_file) != 0) {
     config_path <- databricks_config_file
   } else {
     config_path <- file.path(home_dir, ".databrickscfg")
