@@ -38,7 +38,7 @@ db_host <- function(id = NULL, prefix = NULL, profile = default_config_profile()
       use_databricks_cfg <- TRUE
     }
 
-   # if option `use_databrickscfg` is `TRUE` or a `profile` is provided
+    # if option `use_databrickscfg` is `TRUE` or a `profile` is provided
     # then fetch the associated env.
     # env is specified via `db_env` option, if missing use default.
     # this behaviour can only be changed via setting of config
