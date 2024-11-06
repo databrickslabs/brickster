@@ -46,9 +46,10 @@ Suggests:
     magick,
     rmarkdown,
     rstudioapi,
-    rvest
+    rvest,
+    withr
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 VignetteBuilder: knitr
 URL: https://github.com/databrickslabs/brickster
 Config/testthat/edition: 3
