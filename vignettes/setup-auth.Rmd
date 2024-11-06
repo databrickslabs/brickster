@@ -151,9 +151,14 @@ There is only one `{brickster}` specific feature and it is the inclusion of `wsi
 
 ### Posit Workbench Managed Databricks OAuth Credentials
 
-Posit Workbench has a [managed Databricks OAuth credentials](https://docs.posit.co/ide/server-pro/integration/databricks.html) feature, which allows users to sign into a Databricks workspace from the home page of Workbench when launching a session and then access Databricks resources as their own identity. When in an RStudio Pro session running on Posit Workbench with managed Databricks OAuth credentials selected, `{brickster}` functions using `db_host()`/`db_token()` respectively should just work without needing to specify any credentials in your R code.
+Posit Workbench has a [managed Databricks OAuth credentials](https://docs.posit.co/ide/server-pro/integration/databricks.html) feature, which allows users to sign into a Databricks workspace from the home page of Workbench when launching a session and then access Databricks resources as their own identity. When in an RStudio Pro session running on Posit Workbench with managed Databricks OAuth credentials selected, `{brickster}` functions using `db_host()`/`db_token()` respectively should just work without needing to specify any credentials in your R code. See the code below as an example.
+
+```{r}
+library(brickster)
+db_cluster_list()
+```
 
 `{brickster}` will automatically detect when a session has Workbench managed OAuth credentials and then use the `workbench` profile defined in a `.databrickscfg` file at the `DATABRICKS_CONFIG_FILE` specified location. Workbench generates this `.databrickscfg` file in a temporary directory and should not be modified directly.
 
-To use an alternative `.databrickscfg` file, a different `profile`, an alternative env variable `DATABRICKS_HOST` or set an env variable `DATABRICKS_TOKEN`, launch an RStudio Pro session without the Databricks managed credentials box checked.
+To use an alternative `.databrickscfg` file, a different `profile`, an alternative env variable `DATABRICKS_HOST` or set an env variable `DATABRICKS_TOKEN`, launch an RStudio Pro session without the Databricks managed credentials box selected.
 
