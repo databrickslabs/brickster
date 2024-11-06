@@ -31,7 +31,9 @@ Create an Execution Context
 \seealso{
 Other Execution Context API: 
 \code{\link{db_context_command_cancel}()},
+\code{\link{db_context_command_parse}()},
 \code{\link{db_context_command_run}()},
+\code{\link{db_context_command_run_and_wait}()},
 \code{\link{db_context_command_status}()},
 \code{\link{db_context_destroy}()},
 \code{\link{db_context_status}()}

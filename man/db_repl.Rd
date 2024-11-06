@@ -25,10 +25,6 @@ supported.}
 Remote REPL to Databricks Cluster
 }
 \details{
-This function doesn't accept \code{token} and \code{host} parameters,
-credentials must be established as per documentation best practice
-(e.g. \code{.Renviron}).
-
 \code{db_repl()} will take over the existing console and allow execution of
 commands against a Databricks cluster. For RStudio users there are Addins
 which can be bound to keyboard shortcuts to improve usability.

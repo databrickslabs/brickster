@@ -26,19 +26,19 @@ test_that("REPL - helpers", {
 
   # simple case
   cmd_res <- list(results = list(resultType = "text", data = "hello world"))
-  expect_equal(clean_cmd_results(cmd_res, "r"), "hello world")
-  expect_equal(clean_cmd_results(cmd_res, "sql"), "hello world")
-  expect_equal(clean_cmd_results(cmd_res, "scala"), "hello world")
-  expect_equal(clean_cmd_results(cmd_res, "py"), "hello world")
+  expect_equal(db_context_command_parse(cmd_res, "r"), "hello world")
+  expect_equal(db_context_command_parse(cmd_res, "sql"), "hello world")
+  expect_equal(db_context_command_parse(cmd_res, "scala"), "hello world")
+  expect_equal(db_context_command_parse(cmd_res, "py"), "hello world")
 
   # python special case
   cmd_res <- list(results = list(resultType = "text", data = "<html>hello world</html>"))
-  expect_equal(clean_cmd_results(cmd_res, "py"), NULL)
+  expect_equal(db_context_command_parse(cmd_res, "py"), NULL)
 
   # error case
   cmd_res <- list(results = list(resultType = "error", summary = "err", cause = "err"))
   suppressMessages({
-    expect_null(clean_cmd_results(cmd_res, "py"))
+    expect_null(db_context_command_parse(cmd_res, "py"))
   })
 
 
@@ -58,8 +58,8 @@ test_that("REPL - helpers", {
   ))
 
   capture_output({
-    expect_no_error(clean_cmd_results(cmd_res, "py"))
-    expect_null(clean_cmd_results(cmd_res, "py"))
+    expect_no_error(db_context_command_parse(cmd_res, "py"))
+    expect_null(db_context_command_parse(cmd_res, "py"))
   })
 
 
