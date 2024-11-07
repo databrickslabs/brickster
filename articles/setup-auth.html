@@ -86,6 +86,11 @@ Access Tokens (PAT)</a></li>
 <p>It’s recommended to use option (1) when using
 <a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> interactively, if you need to run code via an
 automated process the only option currently is (2).</p>
+<p><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> will automatically detect when a session has
+<a href="https://docs.posit.co/ide/server-pro/integration/databricks.html" class="external-link">Posit
+Workbench managed Databricks OAuth credentials</a> enabled. For more
+information about this authentication flow see the section <a href="#posit-workbench-managed-databricks-oauth-credentials">Posit
+Workbench Managed Databricks OAuth Credentials</a>.</p>
 <p>Personal Access Tokens can be generated in a few steps, for a
 step-by-step breakdown <a href="https://docs.databricks.com/dev-tools/api/latest/authentication.html" class="external-link">refer
 to the documentation</a>.</p>
@@ -221,6 +226,33 @@ the inclusion of <code>wsid</code> alongside
 <p><code>wsid</code> is used by the connections pane integration in
 RStudio as the underlying API’s require it.</p>
 </div>
+<div class="section level3">
+<h3 id="posit-workbench-managed-databricks-oauth-credentials">Posit Workbench Managed Databricks OAuth Credentials<a class="anchor" aria-label="anchor" href="#posit-workbench-managed-databricks-oauth-credentials"></a>
+</h3>
+<p>Posit Workbench has a <a href="https://docs.posit.co/ide/server-pro/integration/databricks.html" class="external-link">managed
+Databricks OAuth credentials</a> feature, which allows users to sign
+into a Databricks workspace from the home page of Workbench when
+launching a session and then access Databricks resources as their own
+identity. When in an RStudio Pro session running on Posit Workbench with
+managed Databricks OAuth credentials selected, <a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a>
+functions using <code><a href="../reference/db_host.html">db_host()</a></code>/<code><a href="../reference/db_token.html">db_token()</a></code>
+respectively should just work without needing to specify any credentials
+in your R code. See the code below as an example.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/db_cluster_list.html">db_cluster_list</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> will automatically detect when a session has
+Workbench managed OAuth credentials and then use the
+<code>workbench</code> profile defined in a <code>.databrickscfg</code>
+file at the <code>DATABRICKS_CONFIG_FILE</code> specified location.
+Workbench generates this <code>.databrickscfg</code> file in a temporary
+directory and should not be modified directly.</p>
+<p>To use an alternative <code>.databrickscfg</code> file, a different
+<code>profile</code>, an alternative env variable
+<code>DATABRICKS_HOST</code> or set an env variable
+<code>DATABRICKS_TOKEN</code>, launch an RStudio Pro session without the
+Databricks managed credentials box selected.</p>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -233,7 +265,7 @@ RStudio as the underlying API’s require it.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>

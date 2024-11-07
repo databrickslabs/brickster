@@ -151,6 +151,7 @@
 <url><loc>https://zacdav-db.github.io/brickster/reference/db_workspace_mkdirs.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/db_wsid.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/dbfs_storage_info.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/default_config_profile.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/delta_sync_index_spec.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/determine_brickster_venv.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/direct_access_index_spec.html</loc></url>
@@ -229,6 +230,7 @@
 <url><loc>https://zacdav-db.github.io/brickster/reference/spark_jar_task.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/spark_python_task.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/spark_submit_task.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/use_databricks_cfg.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/wait_for_lib_installs.html</loc></url>
 </urlset>
 
