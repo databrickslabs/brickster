@@ -1,4 +1,14 @@
-Name: Databricks Compute
-Description: Check info regarding clusters & endpoints
-Binding: clusters_and_warehouses_widget
-Interactive: true
+Name: [brickster] Send selection to console
+Description: Send selected code to console, is compatible with remote REPL
+Binding: send_selection
+Interactive: false
+
+Name: [brickster] Send current document to console
+Description: Send selected document to console, is compatible with remote REPL
+Binding: send_document
+Interactive: false
+
+Name: [brickster] Send R script to console
+Description: Send selected script to console, is compatible with remote REPL
+Binding: send_file
+Interactive: false

@@ -8,7 +8,8 @@ get_and_start_cluster(
   cluster_id,
   polling_interval = 5,
   host = db_host(),
-  token = db_token()
+  token = db_token(),
+  silent = FALSE
 )
 }
 \arguments{
@@ -19,6 +20,9 @@ get_and_start_cluster(
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
 \item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}
+
+\item{silent}{Boolean (default: \code{FALSE}), will emit cluster state progress
+if \code{TRUE}.}
 }
 \value{
 \code{db_cluster_get()}

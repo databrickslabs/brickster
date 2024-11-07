@@ -14,9 +14,7 @@
 
 -   Exposes the [`databricks-sql-connector`](https://github.com/databricks/databricks-sql-python) via `{reticulate}` ([docs](https://databrickslabs.github.io/brickster/reference/index.html#sql-connector))
 
--   [Utility functions to streamline workloads in Databricks notebooks](https://databrickslabs.github.io/brickster/reference/index.html#databricks-notebook-helpers)
-
--   [Use `{rmarkdown}` notebooks as a Databricks notebook](https://databrickslabs.github.io/brickster/articles/rmarkdown-databricks-notebook.html)
+-   Interactive Databricks REPL
 
 ## Installation
 
@@ -27,7 +25,7 @@
 ``` r
 library(brickster)
 
-# requires `DATABRICKS_HOST` only if using OAuth U2M
+# only requires `DATABRICKS_HOST` if using OAuth U2M
 # first request will open browser window to login
 Sys.setenv(DATABRICKS_HOST = "<workspace-prefix>.cloud.databricks.com")
 
@@ -49,7 +47,7 @@ Refer to the ["Connect to a Databricks Workspace"](https://databrickslabs.github
 `{brickster}` is very deliberate with choosing what API's are wrapped. `{brickster}` isn't intended to replace IaC tooling (e.g. [Terraform](#0)) or to be used for account/workspace administration.
 
 | API                                                                                                   | Available | Version |
-|-------------------------------------------------------------------------------------------------------|-----------|---------|
+|---------------------------------------------------|-----------|-----------|
 | [DBFS](https://docs.databricks.com/dev-tools/api/latest/dbfs.html)                                    | Yes       | 2.0     |
 | [Secrets](https://docs.databricks.com/dev-tools/api/latest/secrets.html)                              | Yes       | 2.0     |
 | [Repos](https://docs.databricks.com/dev-tools/api/latest/repos.html)                                  | Yes       | 2.0     |

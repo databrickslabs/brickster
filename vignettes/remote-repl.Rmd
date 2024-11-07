@@ -1,0 +1,103 @@
+---
+title: "Databricks REPL"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Databricks REPL}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+library(brickster)
+```
+
+# Running Code Remotely
+
+`{brickster}` provides mechanisms to run code against Databricks, below is an overview of the available of those in the package:
+
++--------------------------------------------------------------------------------------------------------------------+-----------------------+-------------------------------------------------------------------------------+
+| Method                                                                                                             | Compatible Compute    | Notes                                                                         |
++====================================================================================================================+=======================+===============================================================================+
+| [SQL execution API](https://docs.databricks.com/api/workspace/statementexecution)\                                 | SQL Warehouse         | Lower level functions that align 1:1 with API endpoints                       |
+| ([`db_sql_exec_*`](https://databrickslabs.github.io/brickster/reference/index.html#sql-statement-execution))       |                       |                                                                               |
++--------------------------------------------------------------------------------------------------------------------+-----------------------+-------------------------------------------------------------------------------+
+| Command execution context manager\                                                                                 | Clusters\             | Higher level `R6` class for command execution contexts.                       |
+| (`db_context_manager`)                                                                                             | (Shared, Single User) |                                                                               |
++--------------------------------------------------------------------------------------------------------------------+-----------------------+-------------------------------------------------------------------------------+
+| [Command execution API](https://docs.databricks.com/api/workspace/commandexecution)\                               | Clusters\             | Lower level functions that align 1:1 with API endpoints                       |
+| ([`db_context_*`](https://databrickslabs.github.io/brickster/reference/index.html#execution-contexts))             | (Shared, Single User) |                                                                               |
++--------------------------------------------------------------------------------------------------------------------+-----------------------+-------------------------------------------------------------------------------+
+| [Databricks SQL Connector](https://docs.databricks.com/en/dev-tools/python-sql-connector.html) via `{reticulate}`\ | SQL Warehouse         | Exposes `databricks.sql` connector to R.                                      |
+| ([`db_sql_client`](https://databrickslabs.github.io/brickster/reference/index.html#sql-connector))                 |                       |                                                                               |
++--------------------------------------------------------------------------------------------------------------------+-----------------------+-------------------------------------------------------------------------------+
+| Databricks REPL\                                                                                                   | Clusters\             | Supports all notebook languages, R is only supported on single user clusters. |
+| (`db_repl`)                                                                                                        | (Shared, Single User) |                                                                               |
++--------------------------------------------------------------------------------------------------------------------+-----------------------+-------------------------------------------------------------------------------+
+
+Databricks [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop'=) (`db_repl()`) will be the focus of this article.
+
+# What is the Databricks REPL?
+
+The REPL temporarily connects the existing R console to a Databricks cluster (via [command execution APIs](https://docs.databricks.com/api/workspace/commandexecution)) and allows code in all supported languages to be sent interactively - as if it were running locally.
+
+## Getting Started
+
+Using the REPL is simple, to start just provide `cluster_id`:
+
+```{r}
+# start REPL
+db_repl(cluster_id = "<insert cluster id>")
+```
+
+The REPL will check the clusters state and start the cluster if inactive. The default language is `R`.
+
+After successfully connecting to the cluster you can run commands against the remote compute from the local session.
+
+## Switching Languages
+
+The REPL has a shortcut you can enter `:<language>` to change the active language. You can change between the following languages:
+
++----------------------------------+-----------------------------------+
+| Language                         | Shortcut                          |
++==================================+===================================+
+| R                                | `:r`                              |
++----------------------------------+-----------------------------------+
+| Python                           | `:py`                             |
++----------------------------------+-----------------------------------+
+| SQL                              | `:sql`                            |
++----------------------------------+-----------------------------------+
+| Scala                            | `:scala`                          |
++----------------------------------+-----------------------------------+
+| Shell                            | `:sh`                             |
++----------------------------------+-----------------------------------+
+
+When you change between languages all variables should persist unless REPL is exited.
+
+## RStudio Addins
+
+There are three addins included with `{brickster}` for use with the REPL:
+
+1.  Send selection to console
+
+2.  Send current document to console
+
+3.  Send R script to console
+
+It's recommended that (1) and (2) be bound to a keyboard shortcut if using the REPL frequently ('Tools' \> 'Modify Keyboard Shortcuts...' \> 'Search for `brickster`').
+
+These addins behave slightly different to the standard shortcuts as they ensure that commands that span multiple lines are handled correctly via the REPL.
+
+## Limitations
+
+-   Development environments (e.g. RStudio, Positron) won't display variables from the remote contexts in the environment pane
+
+-   HTML content will only render for Python, `{htmlwidgets}` rendering is restricted due to [notebook limitations that require a workaround](https://docs.databricks.com/en/visualizations/htmlwidgets.html) currently
+
+-   Not designed to work with interactive serverless compute
+
+-   Cannot persist or recover sessions
