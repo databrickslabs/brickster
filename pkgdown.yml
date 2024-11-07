@@ -4,9 +4,9 @@ pkgdown_sha: ~
 articles:
   cluster-management: cluster-management.html
   managing-jobs: managing-jobs.html
-  rmarkdown-databricks-notebook: rmarkdown-databricks-notebook.html
+  remote-repl: remote-repl.html
   setup-auth: setup-auth.html
-last_built: 2024-11-07T00:33Z
+last_built: 2024-11-07T14:56Z
 urls:
   reference: https://zacdav-db.github.io/brickster/reference
   article: https://zacdav-db.github.io/brickster/articles
