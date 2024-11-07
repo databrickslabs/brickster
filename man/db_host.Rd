@@ -4,7 +4,7 @@
 \alias{db_host}
 \title{Generate/Fetch Databricks Host}
 \usage{
-db_host(id = NULL, prefix = NULL, profile = getOption("db_profile", NULL))
+db_host(id = NULL, prefix = NULL, profile = default_config_profile())
 }
 \arguments{
 \item{id}{The workspace string}
@@ -18,8 +18,10 @@ db_host(id = NULL, prefix = NULL, profile = getOption("db_profile", NULL))
 workspace URL
 }
 \description{
-If both \code{id} and \code{prefix} are \code{NULL} function will search for the
-\code{DATABRICKS_HOST} environment variable.
+If both \code{id} and \code{prefix} are \code{NULL} then the function will check for
+the \code{DATABRICKS_HOST} environment variable.
+\code{.databrickscfg} will be searched if \code{db_profile} and \code{use_databrickscfg} are set or if
+Posit Workbench managed OAuth credentials are detected.
 
 When defining \code{id} and \code{prefix} you do not need to specify the whole URL.
 E.g. \verb{https://<prefix>.<id>.cloud.databricks.com/} is the form to follow.
@@ -31,6 +33,7 @@ The behaviour is subject to change depending if \code{db_profile} and
 \item \code{use_databrickscfg}: Boolean (default: \code{FALSE}), determines if credentials
 are fetched from profile of \code{.databrickscfg} or \code{.Renviron}
 \item \code{db_profile}: String (default: \code{NULL}), determines profile used.
+\code{.databrickscfg} will automatically be used when Posit Workbench managed OAuth credentials are detected.
 }
 
 See vignette on authentication for more details.

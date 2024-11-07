@@ -4,7 +4,7 @@
 \alias{db_token}
 \title{Fetch Databricks Token}
 \usage{
-db_token(profile = getOption("db_profile"))
+db_token(profile = default_config_profile())
 }
 \arguments{
 \item{profile}{Profile to use when fetching from environment variable
@@ -14,8 +14,10 @@ db_token(profile = getOption("db_profile"))
 databricks token
 }
 \description{
-Token must be specified as an environment variable \code{DATABRICKS_TOKEN}.
-If \code{DATABRICKS_TOKEN} is missing will default to using OAuth U2M flow.
+The function will check for a token in the \code{DATABRICKS_HOST} environment variable.
+\code{.databrickscfg} will be searched if \code{db_profile} and \code{use_databrickscfg} are set or
+if Posit Workbench managed OAuth credentials are detected.
+If none of the above are found then will default to using OAuth U2M flow.
 
 Refer to \href{https://docs.databricks.com/dev-tools/api/latest/authentication.html}{api authentication docs}
 }
@@ -26,6 +28,7 @@ The behaviour is subject to change depending if \code{db_profile} and
 \item \code{use_databrickscfg}: Boolean (default: \code{FALSE}), determines if credentials
 are fetched from profile of \code{.databrickscfg} or \code{.Renviron}
 \item \code{db_profile}: String (default: \code{NULL}), determines profile used.
+\code{.databrickscfg} will automatically be used when Posit Workbench managed OAuth credentials are detected.
 }
 
 See vignette on authentication for more details.

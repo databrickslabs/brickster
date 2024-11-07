@@ -4,7 +4,7 @@
 \alias{db_wsid}
 \title{Fetch Databricks Workspace ID}
 \usage{
-db_wsid(profile = getOption("db_profile"))
+db_wsid(profile = default_config_profile())
 }
 \arguments{
 \item{profile}{Profile to use when fetching from environment variable
@@ -14,8 +14,10 @@ db_wsid(profile = getOption("db_profile"))
 databricks workspace ID
 }
 \description{
-Workspace ID, optionally specificied to make connections pane more powerful.
+Workspace ID, optionally specified to make connections pane more powerful.
 Specified as an environment variable \code{DATABRICKS_WSID}.
+\code{.databrickscfg} will be searched if \code{db_profile} and \code{use_databrickscfg} are set or
+if Posit Workbench managed OAuth credentials are detected.
 
 Refer to \href{https://docs.databricks.com/dev-tools/api/latest/authentication.html}{api authentication docs}
 }
@@ -26,6 +28,7 @@ The behaviour is subject to change depending if \code{db_profile} and
 \item \code{use_databrickscfg}: Boolean (default: \code{FALSE}), determines if credentials
 are fetched from profile of \code{.databrickscfg} or \code{.Renviron}
 \item \code{db_profile}: String (default: \code{NULL}), determines profile used.
+\code{.databrickscfg} will automatically be used when Posit Workbench managed OAuth credentials are detected.
 }
 
 See vignette on authentication for more details.
