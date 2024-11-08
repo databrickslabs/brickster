@@ -8,6 +8,7 @@ as they are incompatible with CRAN (#64)
 * Removing kntir engine due to many render edge cases not being solvable
 * Adding shortcuts for REPL under addins
 * Added `db_context_command_run_and_wait`
+* Adjusted tests to use `withr` (#68)
 
 # brickster 0.2.4
 

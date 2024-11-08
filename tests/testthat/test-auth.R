@@ -1,17 +1,15 @@
-existing_host <- Sys.getenv("DATABRICKS_HOST")
-existing_token <- Sys.getenv("DATABRICKS_TOKEN")
-existing_wsid <- Sys.getenv("DATABRICKS_WSID")
-
 test_that("auth functions - baseline behaviour", {
 
   host <- "some_url"
   token <- "dapi123"
   wsid <- "123"
 
-  # set values
-  Sys.setenv("DATABRICKS_HOST" = host)
-  Sys.setenv("DATABRICKS_TOKEN" = token)
-  Sys.setenv("DATABRICKS_WSID" = wsid)
+  # set values temporarily
+  withr::local_envvar(
+    DATABRICKS_WSID = wsid,
+    DATABRICKS_HOST = host,
+    DATABRICKS_TOKEN = token
+  )
 
   # read env var function should behave
   expect_identical(read_env_var("host"), host)
@@ -25,8 +23,10 @@ test_that("auth functions - baseline behaviour", {
   expect_identical(db_wsid(), wsid)
 
   # when not specified should error
-  Sys.setenv("DATABRICKS_HOST" = "")
-  expect_error(db_host())
+  withr::with_envvar(
+    new = c(DATABRICKS_HOST = ""),
+    expect_error(db_host())
+  )
 
   expect_identical(
     db_host(id = "mock", prefix = "dev-"),
@@ -65,14 +65,15 @@ test_that("auth functions - switching profile", {
   token_prod <- "dapi321"
   wsid_prod <- "321"
 
-  # set values
-  Sys.setenv("DATABRICKS_HOST" = host)
-  Sys.setenv("DATABRICKS_TOKEN" = token)
-  Sys.setenv("DATABRICKS_WSID" = wsid)
-
-  Sys.setenv("DATABRICKS_HOST_PROD" = host_prod)
-  Sys.setenv("DATABRICKS_TOKEN_PROD" = token_prod)
-  Sys.setenv("DATABRICKS_WSID_PROD" = wsid_prod)
+  # set values temporarily
+  withr::local_envvar(
+    DATABRICKS_WSID = wsid,
+    DATABRICKS_HOST = host,
+    DATABRICKS_TOKEN = token,
+    DATABRICKS_HOST_PROD = host_prod,
+    DATABRICKS_TOKEN_PROD = token_prod,
+    DATABRICKS_WSID_PROD = wsid_prod
+  )
 
   # read env var function should behave
   expect_identical(read_env_var("host", NULL), host)
@@ -113,50 +114,51 @@ test_that("auth functions - switching profile", {
 
 test_that("auth functions - reading .databrickscfg", {
 
-  options(use_databrickscfg = TRUE)
+  withr::local_options(use_databrickscfg = TRUE)
+  withr::local_envvar(DATABRICKS_CONFIG_FILE = "databricks.cfg")
+  withr::local_file("databricks.cfg", {
+    writeLines(
+      c(
+        '[DEFAULT]',
+        'host = some-host',
+        'token = some-token',
+        'wsid = 123456'
+      ),
+      "databricks.cfg"
+    )
+  })
 
-  # where .databrickscfg should be:
-  if (.Platform$OS.type == "windows") {
-    home_dir <- Sys.getenv("USERPROFILE")
-  } else {
-    home_dir <- Sys.getenv("HOME")
-  }
-  dbcfg_path <- file.path(home_dir, ".databrickscfg")
+  # using read_databrickscfg directly
+  token <- expect_no_condition(read_databrickscfg("token", profile = NULL))
+  host <- expect_no_condition(read_databrickscfg("host", profile = NULL))
+  wsid <- expect_no_condition(read_databrickscfg("wsid", profile = NULL))
+  expect_true(is.character(token))
+  expect_true(is.character(host))
+  expect_true(is.character(wsid))
 
-  if (file.exists(dbcfg_path)) {
-    # using read_databrickscfg directly
-    token <- expect_no_condition(read_databrickscfg("token", profile = NULL))
-    host <- expect_no_condition(read_databrickscfg("host", profile = NULL))
-    wsid <- expect_no_condition(read_databrickscfg("wsid", profile = NULL))
-    expect_true(is.character(token))
-    expect_true(is.character(host))
-    expect_true(is.character(wsid))
-    # using read_databrickscfg directly
-    token <- expect_no_condition(read_databrickscfg("token", profile = "DEFAULT"))
-    host <- expect_no_condition(read_databrickscfg("host", profile = "DEFAULT"))
-    wsid <- expect_no_condition(read_databrickscfg("wsid", profile = "DEFAULT"))
-    expect_true(is.character(token))
-    expect_true(is.character(host))
-    expect_true(is.character(wsid))
-    # via wrappers
-    token_w <- db_token(profile = "DEFAULT")
-    host_w <- db_host(profile = "DEFAULT")
-    wsid_w <- db_wsid(profile = "DEFAULT")
-    expect_identical(token, token_w)
-    expect_identical(host, host_w)
-    expect_identical(wsid, wsid_w)
-    # via wrappers
-    token_w <- db_token(profile = NULL)
-    host_w <- db_host(profile = NULL)
-    wsid_w <- db_wsid(profile = NULL)
-    expect_identical(token, token_w)
-    expect_identical(host, host_w)
-    expect_identical(wsid, wsid_w)
-  } else {
-    expect_error(read_databrickscfg())
-  }
+  # using read_databrickscfg directly
+  token <- expect_no_condition(read_databrickscfg("token", profile = "DEFAULT"))
+  host <- expect_no_condition(read_databrickscfg("host", profile = "DEFAULT"))
+  wsid <- expect_no_condition(read_databrickscfg("wsid", profile = "DEFAULT"))
+  expect_true(is.character(token))
+  expect_true(is.character(host))
+  expect_true(is.character(wsid))
 
-  options(use_databrickscfg = FALSE)
+  # via wrappers
+  token_w <- db_token(profile = "DEFAULT")
+  host_w <- db_host(profile = "DEFAULT")
+  wsid_w <- db_wsid(profile = "DEFAULT")
+  expect_identical(token, token_w)
+  expect_identical(host, host_w)
+  expect_identical(wsid, wsid_w)
+
+  # via wrappers
+  token_w <- db_token(profile = NULL)
+  host_w <- db_host(profile = NULL)
+  wsid_w <- db_wsid(profile = NULL)
+  expect_identical(token, token_w)
+  expect_identical(host, host_w)
+  expect_identical(wsid, wsid_w)
 
 })
 
@@ -192,9 +194,13 @@ test_that("auth functions - host handling", {
   )
 
   purrr::iwalk(hostname_mapping, function(output, input) {
-    Sys.setenv("DATABRICKS_HOST" = input)
-    expect_no_error(db_host())
-    expect_identical(db_host(), output)
+    withr::with_envvar(
+      new = c(DATABRICKS_HOST = input),
+      {
+        expect_no_error(db_host())
+        expect_identical(db_host(), output)
+      }
+    )
   })
 
 })
@@ -219,7 +225,7 @@ test_that("auth functions - workbench managed credentials detection", {
     DATABRICKS_CONFIG_FILE = file.path(db_home, "databricks.cfg"),
     DATABRICKS_CONFIG_PROFILE = "workbench"
   )
-  
+
   token_w <- db_token()
   host_w <- db_host()
 
@@ -246,24 +252,30 @@ test_that("auth functions - workbench managed credentials detection", {
 
 
 test_that("auth functions - workbench managed credentials override env var", {
-  # Emulate the databricks.cfg file written by Workbench.
-  db_home <- tempfile("posit-workbench")
-  dir.create(db_home)
-  writeLines(
-    c(
-      '[workbench]',
-      'host = some-host',
-      'token = some-token'
-    ),
-    file.path(db_home, "databricks.cfg")
-  )
+
+  withr::local_file("posit-workbench.cfg", {
+    writeLines(
+      c(
+        '[workbench]',
+        'host = some-host',
+        'token = some-token'
+      ),
+      "posit-workbench.cfg"
+    )
+  })
+
+
+  # # Emulate the databricks.cfg file written by Workbench.
+  # db_home <- tempfile("posit-workbench")
+  # dir.create(db_home)
+  #
   # Two env variables need to be set on Workbench for detection to succeed
   # DATABRICKS_CONFIG_FILE with the path to the databricks.cfg file
   # DATABRICKS_CONFIG_PROFILE = "workbench" to set the profile correctly
   # Add different `DATABRICKS_HOST` and `DATABRICKS_TOKEN` env variables to ensure
   # the credentials from Workbench still get used
   withr::local_envvar(
-    DATABRICKS_CONFIG_FILE = file.path(db_home, "databricks.cfg"),
+    DATABRICKS_CONFIG_FILE = "posit-workbench.cfg",
     DATABRICKS_CONFIG_PROFILE = "workbench",
     DATABRICKS_HOST = "env-based-host",
     DATABRICKS_TOKEN = "env-based-token"
@@ -280,7 +292,3 @@ test_that("auth functions - workbench managed credentials override env var", {
 
 })
 
-
-Sys.setenv("DATABRICKS_HOST" = existing_host)
-Sys.setenv("DATABRICKS_TOKEN" = existing_token)
-Sys.setenv("DATABRICKS_WSID" = existing_wsid)
