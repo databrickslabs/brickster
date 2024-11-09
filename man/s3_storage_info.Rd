@@ -40,7 +40,7 @@ set to \code{sse-kms}.}
 \code{bucket-owner-full-control}. If \code{canned_acl} is set, the cluster instance
 profile must have \code{s3:PutObjectAcl} permission on the destination bucket and
 prefix. The full list of possible canned ACLs can be found in
-\href{https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl}{docs}.
+\href{https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl}{docs}.
 By default only the object owner gets full control. If you are using cross
 account role for writing data, you may want to set
 \code{bucket-owner-full-control} to make bucket owner able to read the logs.}
