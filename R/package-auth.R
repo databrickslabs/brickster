@@ -223,7 +223,6 @@ read_env_var <- function(key = c("token", "host", "wsid"),
 
   value <- Sys.getenv(key_name)
 
-
   if (value == "") {
     if (error) {
       stop(cli::format_error(c(

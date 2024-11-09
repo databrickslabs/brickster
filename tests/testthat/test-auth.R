@@ -207,75 +207,73 @@ test_that("auth functions - host handling", {
 
 
 test_that("auth functions - workbench managed credentials detection", {
-  # Emulate the databricks.cfg file written by Workbench.
-  db_home <- tempfile("posit-workbench")
-  dir.create(db_home)
-  writeLines(
-    c(
-      '[workbench]',
-      'host = some-host',
-      'token = some-token'
-    ),
-    file.path(db_home, "databricks.cfg")
+
+  db_home <- withr::local_tempdir("posit-workbench")
+
+  withr::local_file(
+    .file = "databricks.cfg",
+    code = {
+     writeLines(
+       c(
+         '[workbench]',
+         'host = some-host',
+         'token = some-token'
+       ),
+       file.path(db_home, "databricks.cfg")
+     )
+    }
   )
+
+
   # Two env variables need to be set on Workbench for detection to succeed
   # DATABRICKS_CONFIG_FILE with the path to the databricks.cfg file
   # DATABRICKS_CONFIG_PROFILE = "workbench" to set the profile correctly
-  withr::local_envvar(
-    DATABRICKS_CONFIG_FILE = file.path(db_home, "databricks.cfg"),
-    DATABRICKS_CONFIG_PROFILE = "workbench"
+  withr::with_envvar(
+    new = c(
+      DATABRICKS_CONFIG_FILE = file.path(db_home, "databricks.cfg"),
+      DATABRICKS_CONFIG_PROFILE = "workbench"
+    ),
+    code = {
+      token_w <- db_token()
+      host_w <- db_host()
+      expect_true(is.character(token_w))
+      expect_true(is.character(host_w))
+      expect_identical("some-host", host_w)
+      expect_identical("some-token", token_w)
+    }
   )
 
-  token_w <- db_token()
-  host_w <- db_host()
-
-  expect_true(is.character(token_w))
-  expect_true(is.character(host_w))
-
-  expect_identical("some-host", host_w)
-  expect_identical("some-token", token_w)
-
-  Sys.unsetenv("DATABRICKS_CONFIG_PROFILE")
-  expect_error(db_host()())
-  expect_error(db_token()())
-
-  withr::local_envvar(
-    DATABRICKS_CONFIG_FILE = file.path(db_home, "databricks.cfg"),
-    DATABRICKS_CONFIG_PROFILE = "workbench"
-  )
-
-  Sys.unsetenv("DATABRICKS_CONFIG_FILE")
-  expect_error(db_host()())
-  expect_error(db_token()())
+  expect_error(db_host())
+  expect_null(db_token())
 
 })
 
 
 test_that("auth functions - workbench managed credentials override env var", {
 
-  withr::local_file("posit-workbench.cfg", {
-    writeLines(
-      c(
-        '[workbench]',
-        'host = some-host',
-        'token = some-token'
-      ),
-      "posit-workbench.cfg"
-    )
-  })
+  db_home <- withr::local_tempdir("posit-workbench")
 
+  withr::local_file(
+    .file = "databricks.cfg",
+    code = {
+      writeLines(
+        c(
+          '[workbench]',
+          'host = some-host',
+          'token = some-token'
+        ),
+        file.path(db_home, "databricks.cfg")
+      )
+    }
+  )
 
-  # # Emulate the databricks.cfg file written by Workbench.
-  # db_home <- tempfile("posit-workbench")
-  # dir.create(db_home)
-  #
   # Two env variables need to be set on Workbench for detection to succeed
   # DATABRICKS_CONFIG_FILE with the path to the databricks.cfg file
   # DATABRICKS_CONFIG_PROFILE = "workbench" to set the profile correctly
   # Add different `DATABRICKS_HOST` and `DATABRICKS_TOKEN` env variables to ensure
   # the credentials from Workbench still get used
   withr::local_envvar(
-    DATABRICKS_CONFIG_FILE = "posit-workbench.cfg",
+    DATABRICKS_CONFIG_FILE = file.path(db_home, "databricks.cfg"),
     DATABRICKS_CONFIG_PROFILE = "workbench",
     DATABRICKS_HOST = "env-based-host",
     DATABRICKS_TOKEN = "env-based-token"
