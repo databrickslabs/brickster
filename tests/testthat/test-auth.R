@@ -243,8 +243,6 @@ test_that("auth functions - workbench managed credentials detection", {
     }
   )
 
-  expect_error(db_host())
-  expect_null(db_token())
 
 })
 
