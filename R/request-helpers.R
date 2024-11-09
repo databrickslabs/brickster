@@ -54,6 +54,8 @@ db_request <- function(endpoint, method, version = NULL, body = NULL, host, toke
       redirect_uri = "http://localhost:8020"
     )
 
+  } else {
+    cli::cli_abort("cannot find token or initiate OAuth U2M flow")
   }
 
   if (!is.null(body)) {
