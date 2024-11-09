@@ -37,7 +37,7 @@ db_request <- function(endpoint, method, version = NULL, body = NULL, host, toke
   # otherwise initiate OAuth 2.0 U2M Workspace flow
   if (!is.null(token)) {
     req <- httr2::req_auth_bearer_token(req = req, token = token)
-  } else {
+  } else if (!is_hosted_session() && rlang::is_interactive()) {
 
     # fetch client
     oauth_client <- getOption(

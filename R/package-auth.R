@@ -68,7 +68,7 @@ db_host <- function(id = NULL, prefix = NULL, profile = default_config_profile()
 #'
 #' @description
 #' The function will check for a token in the `DATABRICKS_HOST` environment variable.
-#' `.databrickscfg` will be searched if `db_profile` and `use_databrickscfg` are set or 
+#' `.databrickscfg` will be searched if `db_profile` and `use_databrickscfg` are set or
 #' if Posit Workbench managed OAuth credentials are detected.
 #' If none of the above are found then will default to using OAuth U2M flow.
 #'
@@ -98,7 +98,7 @@ db_token <- function(profile = default_config_profile()) {
 #' @description
 #' Workspace ID, optionally specified to make connections pane more powerful.
 #' Specified as an environment variable `DATABRICKS_WSID`.
-#' `.databrickscfg` will be searched if `db_profile` and `use_databrickscfg` are set or 
+#' `.databrickscfg` will be searched if `db_profile` and `use_databrickscfg` are set or
 #' if Posit Workbench managed OAuth credentials are detected.
 #'
 #' Refer to [api authentication docs](https://docs.databricks.com/dev-tools/api/latest/authentication.html)
@@ -273,7 +273,7 @@ db_oauth_client <- function(host = db_host()) {
 #' Returns the default config profile
 #' @details Returns the config profile first looking at `DATABRICKS_CONFIG_PROFILE`
 #' and then the `db_profile` option.
-#' 
+#'
 #' @return profile name
 #' @keywords internal
 default_config_profile <- function() {
@@ -288,7 +288,7 @@ default_config_profile <- function() {
 #' Returns whether or not to use a `.databrickscfg` file
 #' @details Indicates `.databrickscfg` should be used instead of environment variables when
 #' either the `use_databrickscfg` option is set or Posit Workbench managed OAuth credentials are detected.
-#' 
+#'
 #' @return boolean
 #' @keywords internal
 use_databricks_cfg <- function() {
@@ -297,4 +297,27 @@ use_databricks_cfg <- function() {
     use_databricks_cfg <- TRUE
   }
   return(use_databricks_cfg)
+}
+
+
+# Extended from {odbc}
+#
+# Try to determine whether we can redirect the user's browser to a server on
+# localhost, which isn't possible if we are running on a hosted platform.
+#
+# This is based on the strategy pioneered by the {gargle} package and {httr2}.
+is_hosted_session <- function() {
+
+  if (on_databricks()) {
+    return(TRUE)
+  }
+
+  if (nzchar(Sys.getenv("COLAB_RELEASE_TAG"))) {
+    return(TRUE)
+  }
+
+  # If RStudio Server or Posit Workbench is running locally (which is possible,
+  # though unusual), it's not acting as a hosted environment.
+  Sys.getenv("RSTUDIO_PROGRAM_MODE") == "server" &&
+    !grepl("localhost", Sys.getenv("RSTUDIO_HTTP_REFERER"), fixed = TRUE)
 }
