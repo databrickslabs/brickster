@@ -1,5 +1,10 @@
 test_that("DBFS API - don't perform", {
 
+  withr::local_envvar(c(
+    "DATABRICKS_HOST" = "mock_host",
+    "DATABRICKS_TOKEN" = "mock_token"
+  ))
+
   dirname <- tempdir()
   filepath <- withr::local_tempfile(lines = "", fileext = ".txt")
   filename <- file.path("", basename(filepath))
@@ -53,7 +58,6 @@ test_that("DBFS API - don't perform", {
 
 })
 
-skip_unless_credentials_set()
 skip_on_cran()
 skip_unless_authenticated()
 skip_unless_aws_workspace()
@@ -64,10 +68,6 @@ test_that("DBFS API", {
   filepath <- withr::local_tempfile(lines = "", fileext = ".txt")
   filename <- file.path("", basename(filepath))
   dirname_base <- file.path("", basename(dirname))
-
-
-  # filename <- file.path("", basename(tempfile(fileext = ".txt")))
-  # dirname <- file.path("", basename(tempdir()))
 
   con <- db_dbfs_create(path = filename, overwrite = TRUE)
   expect_type(con, "character")

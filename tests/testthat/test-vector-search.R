@@ -1,5 +1,9 @@
-skip_unless_credentials_set()
 test_that("Vector Search APIs - don't perform", {
+
+  withr::local_envvar(c(
+    "DATABRICKS_HOST" = "mock_host",
+    "DATABRICKS_TOKEN" = "mock_token"
+  ))
 
   expect_no_error({
     req_vse_create <- db_vs_endpoints_create(

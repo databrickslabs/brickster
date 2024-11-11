@@ -1,6 +1,9 @@
-skip_unless_credentials_set()
-
 test_that("Workspace API - don't perform", {
+
+  withr::local_envvar(c(
+    "DATABRICKS_HOST" = "mock_host",
+    "DATABRICKS_TOKEN" = "mock_token"
+  ))
 
   resp_list <- db_workspace_list(
     path = "some_path",

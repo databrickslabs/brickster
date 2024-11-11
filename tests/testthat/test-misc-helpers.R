@@ -1,6 +1,9 @@
-skip_unless_credentials_set()
-
 test_that("Misc Helpers - don't perform", {
+
+  withr::local_envvar(c(
+    "DATABRICKS_HOST" = "mock_host",
+    "DATABRICKS_TOKEN" = "mock_token"
+  ))
 
   resp_wsid <- db_current_workspace_id(perform_request = F)
   expect_s3_class(resp_wsid, "httr2_request")

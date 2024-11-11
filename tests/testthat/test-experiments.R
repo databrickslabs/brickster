@@ -1,6 +1,9 @@
-skip_unless_credentials_set()
-
 test_that("experiments API - don't perform", {
+
+  withr::local_envvar(c(
+    "DATABRICKS_HOST" = "mock_host",
+    "DATABRICKS_TOKEN" = "mock_token"
+  ))
 
   resp_list <- db_experiments_list(max_results = 1, perform_request = FALSE)
   expect_s3_class(resp_list, "httr2_request")
