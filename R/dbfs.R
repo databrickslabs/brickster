@@ -455,11 +455,7 @@ db_dbfs_put <- function(path, file = NULL, contents = NULL, overwrite = FALSE,
 
   if (perform_request) {
     req |>
-      httr2::req_body_multipart(
-        path = body$path,
-        contents = body$contents,
-        overwrite = body$overwrite
-      ) |>
+      httr2::req_body_multipart(!!!body) |>
       httr2::req_error(body = db_req_error_body) |>
       httr2::req_perform() |>
       httr2::resp_body_json()
