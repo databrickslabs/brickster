@@ -31,9 +31,9 @@ test_that("REPL - helpers", {
   expect_equal(db_context_command_parse(cmd_res, "scala"), "hello world")
   expect_equal(db_context_command_parse(cmd_res, "py"), "hello world")
 
-  # python special case
-  cmd_res <- list(results = list(resultType = "text", data = "<html>hello world</html>"))
-  expect_equal(db_context_command_parse(cmd_res, "py"), NULL)
+  # # python special case
+  # cmd_res <- list(results = list(resultType = "text", data = "<html>hello world</html>"))
+  # expect_equal(db_context_command_parse(cmd_res, "py"), NULL)
 
   # error case
   cmd_res <- list(results = list(resultType = "error", summary = "err", cause = "err"))

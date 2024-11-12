@@ -332,7 +332,7 @@ db_context_command_parse <- function(x, language = c("r", "py", "scala", "sql"))
     tbl <- purrr::list_transpose(x$results$data) |>
       as.data.frame()
 
-    names(tbl) <- schema$name
+    names(tbl) <- schema$names
 
     output_tbl <- huxtable::hux(tbl) |>
       huxtable::set_all_borders(TRUE) |>
