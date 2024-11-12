@@ -20,12 +20,13 @@ Description: Collection of utilities that improve using 'Databricks' from R.
 License: Apache License (>= 2)
 Encoding: UTF-8
 LazyData: true
+Depends:
+  R (>= 4.1.0)
 Imports:
     arrow,
     base64enc,
     cli,
     curl,
-    data.table,
     dplyr,
     glue,
     httr2,

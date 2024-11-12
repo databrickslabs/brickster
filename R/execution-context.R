@@ -327,8 +327,11 @@ db_context_command_parse <- function(x, language = c("r", "py", "scala", "sql"))
   }
 
   if (x$results$resultType == "table") {
-    schema <- data.table::rbindlist(x$results$schema)
-    tbl <- data.table::rbindlist(x$results$data)
+    schema <- dplyr::bind_rows(x$results$schema)
+
+    tbl <- purrr::list_transpose(x$results$data) |>
+      as.data.frame()
+
     names(tbl) <- schema$name
 
     output_tbl <- huxtable::hux(tbl) |>
