@@ -98,7 +98,7 @@ db_context_status <- function(cluster_id,
     token = token
   )
 
-  req <- req %>%
+  req <- req |>
     httr2::req_url_query(
       clusterId = cluster_id,
       contextId = context_id
@@ -254,7 +254,7 @@ db_context_command_status <- function(cluster_id,
     token = token
   )
 
-  req <- req %>%
+  req <- req |>
     httr2::req_url_query(
       clusterId = cluster_id,
       contextId = context_id,
@@ -292,7 +292,7 @@ db_context_command_cancel <- function(cluster_id,
     token = token
   )
 
-  req <- req %>%
+  req <- req |>
     httr2::req_url_query(
       clusterId = cluster_id,
       contextId = context_id,
@@ -331,9 +331,9 @@ db_context_command_parse <- function(x, language = c("r", "py", "scala", "sql"))
     tbl <- data.table::rbindlist(x$results$data)
     names(tbl) <- schema$name
 
-    output_tbl <- huxtable::hux(tbl) %>%
-      huxtable::set_all_borders(TRUE) %>%
-      huxtable::set_font_size(10) %>%
+    output_tbl <- huxtable::hux(tbl) |>
+      huxtable::set_all_borders(TRUE) |>
+      huxtable::set_font_size(10) |>
       huxtable::set_position("left")
 
     huxtable::print_screen(output_tbl)

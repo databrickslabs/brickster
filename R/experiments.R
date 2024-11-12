@@ -54,7 +54,7 @@ db_experiments_get <- function(name = NULL, id = NULL,
     body = body,
     host = host,
     token = token
-  ) %>%
+  ) |>
     httr2::req_url_path_append(endpoint_suffix)
 
   if (perform_request) {

@@ -325,7 +325,7 @@ db_cluster_action <- function(cluster_id,
     token = token
   )
 
-  req <- req %>%
+  req <- req |>
     httr2::req_body_json(body)
 
   if (perform_request) {
@@ -558,12 +558,12 @@ db_cluster_get <- function(cluster_id,
     token = token
   )
 
-  req <- req %>%
+  req <- req |>
     httr2::req_body_json(body)
 
   if (perform_request) {
-    req %>%
-      httr2::req_perform() %>%
+    req |>
+      httr2::req_perform() |>
       httr2::resp_body_json()
   } else {
     req
@@ -872,26 +872,26 @@ get_latest_dbr <- function(lts, ml, gpu, photon,
 
   runtimes <- db_cluster_runtime_versions(host = host, token = token)
 
-  runtimes_adj <- runtimes[[1]] %>%
+  runtimes_adj <- runtimes[[1]] |>
     purrr::map_dfr(function(x) {
       list(key = x[["key"]], name = x[["name"]])
-    }) %>%
+    }) |>
     dplyr::mutate(
       version = as.numeric(gsub("^(\\d+\\.\\d)\\..*", "\\1", .data$key)),
       lts = grepl("LTS", .data$name),
       ml = grepl("ml", .data$key),
       gpu = grepl("gpu", .data$key),
       photon = grepl("photon", .data$key),
-    ) %>%
+    ) |>
     dplyr::arrange(dplyr::desc(version))
 
-  runtime_matches <- runtimes_adj %>%
+  runtime_matches <- runtimes_adj |>
     dplyr::filter(
       .data$lts == {{lts}},
       .data$ml == {{ml}},
       .data$gpu == {{gpu}},
       .data$photon == {{photon}}
-    ) %>%
+    ) |>
     dplyr::slice_head(n = 1)
 
   list(

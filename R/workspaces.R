@@ -213,7 +213,7 @@ db_workspace_import <- function(path,
     token = token
   )
 
-  req <- req %>%
+  req <- req |>
     httr2::req_body_multipart(
       path = body$path,
       format = body$format,

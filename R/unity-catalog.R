@@ -50,7 +50,7 @@ db_uc_storage_creds_get <- function(name,
     body = body,
     host = host,
     token = token
-  ) %>%
+  ) |>
     httr2::req_url_path_append(name)
 
   if (perform_request) {
@@ -90,7 +90,7 @@ db_uc_external_loc_get <- function(name,
     version = "2.1",
     host = host,
     token = token
-  ) %>%
+  ) |>
     httr2::req_url_path_append(name)
 
   if (perform_request) {
@@ -129,7 +129,7 @@ db_uc_catalogs_get <- function(catalog,
     version = "2.1",
     host = host,
     token = token
-  ) %>%
+  ) |>
     httr2::req_url_path_append(catalog)
 
   if (perform_request) {
@@ -149,7 +149,7 @@ db_uc_schemas_list <- function(catalog,
     version = "2.1",
     host = host,
     token = token
-  ) %>%
+  ) |>
     httr2::req_url_query(catalog_name = catalog)
 
   if (perform_request) {
@@ -170,7 +170,7 @@ db_uc_schemas_get <- function(catalog, schema,
     version = "2.1",
     host = host,
     token = token
-  ) %>%
+  ) |>
     httr2::req_url_path_append(paste(catalog, schema, sep = "."))
 
   if (perform_request) {
@@ -191,7 +191,7 @@ db_uc_tables_list <- function(catalog, schema,
     version = "2.1",
     host = host,
     token = token
-  ) %>%
+  ) |>
     httr2::req_url_query(
       catalog_name = catalog,
       schema_name = schema
@@ -215,7 +215,7 @@ db_uc_tables_get <- function(catalog, schema, table,
     version = "2.1",
     host = host,
     token = token
-  ) %>%
+  ) |>
     httr2::req_url_path_append(paste(catalog, schema, table, sep = "."))
 
   if (perform_request) {
@@ -235,7 +235,7 @@ db_uc_models_list <- function(catalog, schema,
     version = "2.1",
     host = host,
     token = token
-  ) %>%
+  ) |>
     httr2::req_url_query(
       catalog_name = catalog,
       schema_name = schema,
@@ -260,8 +260,8 @@ db_uc_models_get <- function(catalog, schema, model,
     version = "2.1",
     host = host,
     token = token
-  ) %>%
-    httr2::req_url_path_append(paste(catalog, schema, model, sep = ".")) %>%
+  ) |>
+    httr2::req_url_path_append(paste(catalog, schema, model, sep = ".")) |>
     httr2::req_url_query(include_aliases = 'true')
 
   if (perform_request) {
@@ -282,9 +282,9 @@ db_uc_model_versions_get <- function(catalog, schema, model,
     version = "2.1",
     host = host,
     token = token
-  ) %>%
-    httr2::req_url_path_append(paste(catalog, schema, model, sep = ".")) %>%
-    httr2::req_url_path_append("versions") %>%
+  ) |>
+    httr2::req_url_path_append(paste(catalog, schema, model, sep = ".")) |>
+    httr2::req_url_path_append("versions") |>
     httr2::req_url_query(max_results = 1000)
 
   if (perform_request) {
@@ -304,7 +304,7 @@ db_uc_funcs_list <- function(catalog, schema,
     version = "2.1",
     host = host,
     token = token
-  ) %>%
+  ) |>
     httr2::req_url_query(
       catalog_name = catalog,
       schema_name = schema
@@ -328,7 +328,7 @@ db_uc_funcs_get <- function(catalog, schema, func,
     version = "2.1",
     host = host,
     token = token
-  ) %>%
+  ) |>
     httr2::req_url_path_append(paste(catalog, schema, func, sep = "."))
 
   if (perform_request) {
@@ -348,7 +348,7 @@ db_uc_volumes_list <- function(catalog, schema,
     version = "2.1",
     host = host,
     token = token
-  ) %>%
+  ) |>
     httr2::req_url_query(
       catalog_name = catalog,
       schema_name = schema

@@ -31,7 +31,6 @@ Imports:
     httr2,
     ini,
     jsonlite,
-    magrittr,
     purrr,
     reticulate,
     R6 (>= 2.4.0),
@@ -42,12 +41,10 @@ Suggests:
     testthat (>= 3.0.0),
     huxtable,
     htmltools,
-    htmlwidgets,
     knitr,
     magick,
     rmarkdown,
     rstudioapi,
-    rvest,
     withr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
