@@ -1,9 +1,14 @@
-skip_unless_credentials_set()
-
 test_that("DBFS API - don't perform", {
 
-  filename <- file.path("", basename(tempfile(fileext = ".txt")))
-  dirname <- file.path("", basename(tempdir()))
+  withr::local_envvar(c(
+    "DATABRICKS_HOST" = "mock_host",
+    "DATABRICKS_TOKEN" = "mock_token"
+  ))
+
+  dirname <- tempdir()
+  filepath <- withr::local_tempfile(lines = "", fileext = ".txt")
+  filename <- file.path("", basename(filepath))
+  dirname_base <- file.path("", basename(dirname))
 
   con <- db_dbfs_create(path = filename, perform_request = FALSE)
   expect_s3_class(con, "httr2_request")
@@ -28,26 +33,28 @@ test_that("DBFS API - don't perform", {
   list <- db_dbfs_list("/", perform_request = FALSE)
   expect_s3_class(list, "httr2_request")
 
-  mkdirs <- db_dbfs_mkdirs(dirname, perform_request = FALSE)
+  mkdirs <- db_dbfs_mkdirs(dirname_base, perform_request = FALSE)
   expect_s3_class(mkdirs, "httr2_request")
 
   move <- db_dbfs_move(
     source_path = filename,
-    destination_path = file.path(dirname, filename),
+    destination_path = file.path(dirname_base, filename),
     perform_request = FALSE
   )
   expect_s3_class(move, "httr2_request")
 
   put <- db_dbfs_put(
-    path = file.path(dirname, "put.txt"),
+    path = file.path(dirname_base, "put.txt"),
     contents = "hello world 2",
     overwrite = TRUE,
     perform_request = FALSE
   )
   expect_s3_class(put, "httr2_request")
 
-  delete <- db_dbfs_delete(dirname, recursive = TRUE, perform_request = FALSE)
+  delete <- db_dbfs_delete(dirname_base, recursive = TRUE, perform_request = FALSE)
   expect_s3_class(delete, "httr2_request")
+
+  unlink(dirname, recursive = TRUE)
 
 })
 
@@ -57,8 +64,10 @@ skip_unless_aws_workspace()
 
 test_that("DBFS API", {
 
-  filename <- file.path("", basename(tempfile(fileext = ".txt")))
-  dirname <- file.path("", basename(tempdir()))
+  dirname <- tempdir()
+  filepath <- withr::local_tempfile(lines = "", fileext = ".txt")
+  filename <- file.path("", basename(filepath))
+  dirname_base <- file.path("", basename(dirname))
 
   con <- db_dbfs_create(path = filename, overwrite = TRUE)
   expect_type(con, "character")
@@ -81,25 +90,26 @@ test_that("DBFS API", {
   resp_list <- db_dbfs_list("/")
   expect_type(resp_list, "list")
 
-  resp_mkdirs <- db_dbfs_mkdirs(dirname)
+  resp_mkdirs <- db_dbfs_mkdirs(dirname_base)
   expect_identical(unname(resp_mkdirs), list())
 
   resp_move <- db_dbfs_move(
     source_path = filename,
-    destination_path = file.path(dirname, filename)
+    destination_path = file.path(dirname_base, filename)
   )
   expect_identical(unname(resp_move), list())
 
   resp_put <- db_dbfs_put(
-    path = file.path(dirname, "put.txt"),
+    path = file.path(dirname_base, "put.txt"),
     contents = "hello world 2",
     overwrite = TRUE
   )
   expect_identical(unname(resp_put), list())
 
-  resp_delete <- db_dbfs_delete(dirname, recursive = TRUE)
+  resp_delete <- db_dbfs_delete(dirname_base, recursive = TRUE)
   expect_identical(unname(resp_delete), list())
 
+  unlink(dirname, recursive = TRUE)
 
 })
 

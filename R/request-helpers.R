@@ -14,7 +14,6 @@
 #'
 #' @return request
 #' @import httr2
-#' @importFrom magrittr `%>%`
 db_request <- function(endpoint, method, version = NULL, body = NULL, host, token, ...) {
 
   url <- list(
@@ -26,18 +25,18 @@ db_request <- function(endpoint, method, version = NULL, body = NULL, host, toke
   url <- httr2::url_build(url)
   user_agent_str <- paste0("brickster/", utils::packageVersion("brickster"))
 
-  req <- httr2::request(base_url = url) %>%
-    httr2::req_headers("User-Agent" = user_agent_str) %>%
-    httr2::req_user_agent(string = user_agent_str) %>%
-    httr2::req_url_path_append(endpoint) %>%
-    httr2::req_method(method) %>%
+  req <- httr2::request(base_url = url) |>
+    httr2::req_headers("User-Agent" = user_agent_str) |>
+    httr2::req_user_agent(string = user_agent_str) |>
+    httr2::req_url_path_append(endpoint) |>
+    httr2::req_method(method) |>
     httr2::req_retry(max_tries = 3, backoff = ~ 2)
 
   # if token is present use directly
   # otherwise initiate OAuth 2.0 U2M Workspace flow
   if (!is.null(token)) {
     req <- httr2::req_auth_bearer_token(req = req, token = token)
-  } else {
+  } else if (!is_hosted_session() && rlang::is_interactive()) {
 
     # fetch client
     oauth_client <- getOption(
@@ -54,11 +53,13 @@ db_request <- function(endpoint, method, version = NULL, body = NULL, host, toke
       redirect_uri = "http://localhost:8020"
     )
 
+  } else {
+    cli::cli_abort("cannot find token or initiate OAuth U2M flow")
   }
 
   if (!is.null(body)) {
     body <- base::Filter(length, body)
-    req <- req %>%
+    req <- req |>
       httr2::req_body_json(body, ...)
   }
 
@@ -73,7 +74,7 @@ db_request <- function(endpoint, method, version = NULL, body = NULL, host, toke
 #'
 #' @family Request Helpers
 db_req_error_body <- function(resp) {
-  json <- resp %>% httr2::resp_body_json()
+  json <- resp |> httr2::resp_body_json()
   # if there is "message":
   if ("message" %in% names(json)) {
     paste(json$error_code, json$message, sep = ": ")
@@ -91,9 +92,9 @@ db_req_error_body <- function(resp) {
 #'
 #' @family Request Helpers
 db_perform_request <- function(req, ...) {
-  req %>%
-    httr2::req_error(body = db_req_error_body) %>%
-    httr2::req_perform() %>%
+  req |>
+    httr2::req_error(body = db_req_error_body) |>
+    httr2::req_perform() |>
     httr2::resp_body_json(...)
 }
 

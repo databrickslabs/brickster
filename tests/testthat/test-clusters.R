@@ -1,5 +1,9 @@
-skip_unless_credentials_set()
 test_that("Clusters API - don't perform", {
+
+  withr::local_envvar(c(
+    "DATABRICKS_HOST" = "mock_host",
+    "DATABRICKS_TOKEN" = "mock_token"
+  ))
 
   # basic metadata functions
   resp_list <- db_cluster_list(perform_request = F)

@@ -20,18 +20,18 @@ Description: Collection of utilities that improve using 'Databricks' from R.
 License: Apache License (>= 2)
 Encoding: UTF-8
 LazyData: true
+Depends:
+  R (>= 4.1.0)
 Imports:
     arrow,
     base64enc,
     cli,
     curl,
-    data.table,
     dplyr,
     glue,
     httr2,
     ini,
     jsonlite,
-    magrittr,
     purrr,
     reticulate,
     R6 (>= 2.4.0),
@@ -42,12 +42,10 @@ Suggests:
     testthat (>= 3.0.0),
     huxtable,
     htmltools,
-    htmlwidgets,
     knitr,
     magick,
     rmarkdown,
     rstudioapi,
-    rvest,
     withr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2

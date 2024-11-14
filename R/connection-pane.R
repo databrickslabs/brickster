@@ -140,7 +140,7 @@ get_uc_model_versions <- function(catalog, schema, model, host, token,
   aliases <- purrr::map(
     model_info$aliases, ~{
       setNames(.x$version_num, .x$alias_name)
-    }) %>%
+    }) |>
     unlist()
 
   version_names <- purrr::map_chr(versions, function(x) {
@@ -281,8 +281,8 @@ get_schema_objects <- function(catalog, schema, host, token) {
 
   # how many objects of each type exist
   # only show when objects exist within
-  sizes <- purrr::map_int(objects, nrow) %>%
-    purrr::keep(~.x > 0) %>%
+  sizes <- purrr::map_int(objects, nrow) |>
+    purrr::keep(~.x > 0) |>
     purrr::imap_chr(~ glue::glue("{.y} ({.x})"))
 
   data.frame(

@@ -19,7 +19,7 @@ db_vs_endpoints_list <- function(page_token = NULL,
     token = token
   )
 
-  req <- req %>%
+  req <- req |>
     httr2::req_url_query(
       page_token = page_token
     )
@@ -152,7 +152,7 @@ db_vs_indexes_list <- function(endpoint, page_token = NULL,
     token = token
   )
 
-  req <- req %>%
+  req <- req |>
     httr2::req_url_query(
       endpoint_name = endpoint,
       page_token = page_token

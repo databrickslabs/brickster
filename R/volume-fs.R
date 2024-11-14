@@ -248,7 +248,7 @@ db_volume_action <- function(path,
   )
 
   if (!is.null(overwrite)) {
-    req <- req %>%
+    req <- req |>
       httr2::req_url_query(overwrite = ifelse(overwrite, "true", "false"))
   }
 
@@ -258,15 +258,15 @@ db_volume_action <- function(path,
     }
 
     # show progress when uploading and downloading files
-    req <- req %>%
+    req <- req |>
       httr2::req_progress(type = ifelse(action == "GET", "down", "up"))
   }
 
 
   if (perform_request) {
-    resp <- req %>%
-      httr2::req_error(is_error = function(resp) httr2::resp_status(resp) == 500) %>%
-      httr2::req_perform(path = destination) %>%
+    resp <- req |>
+      httr2::req_error(is_error = function(resp) httr2::resp_status(resp) == 500) |>
+      httr2::req_perform(path = destination) |>
       httr2::resp_check_status()
 
     if (action == "HEAD") {

@@ -41,9 +41,9 @@ db_current_workspace_id <- function(host = db_host(), token = db_token(),
   )
 
   if (perform_request) {
-    resp <- req %>%
-      httr2::req_error(body = db_req_error_body) %>%
-      httr2::req_perform() %>%
+    resp <- req |>
+      httr2::req_error(body = db_req_error_body) |>
+      httr2::req_perform() |>
       httr2::resp_headers()
 
     # workspace id can be extracted from response headers

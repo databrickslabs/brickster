@@ -1,6 +1,9 @@
-skip_unless_credentials_set()
-
 test_that("Libraries API - don't perform", {
+
+  withr::local_envvar(c(
+    "DATABRICKS_HOST" = "mock_host",
+    "DATABRICKS_TOKEN" = "mock_token"
+  ))
 
   resp_all_statuses <- db_libs_all_cluster_statuses(
     perform_request = F

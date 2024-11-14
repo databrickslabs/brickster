@@ -28,7 +28,7 @@ It's recommended to use option (1) when using `{brickster}` interactively, if yo
 
 Personal Access Tokens can be generated in a few steps, for a step-by-step breakdown [refer to the documentation](https://docs.databricks.com/dev-tools/api/latest/authentication.html).
 
-Once you have a token you'll be able to store it alongside the workspace URL in an `.Renviron` file. The `.Renviron` is used for storing the variables, such as those which may be sensitive (e.g. credentials) and de-couple them from the code (additional reading: [1](https://support.posit.co/hc/en-us/articles/360047157094-Managing-R-with-Rprofile-Renviron-Rprofile-site-Renviron-site-rsession-conf-and-repos-conf), [2](https://CRAN.R-project.org/package=startup/vignettes/startup-intro.html)).
+Once you have a token you'll be able to store it alongside the workspace URL in an `.Renviron` file. The `.Renviron` is used for storing the variables, such as those which may be sensitive (e.g. credentials) and de-couple them from the code [additional reading](https://CRAN.R-project.org/package=startup/vignettes/startup-intro.html).
 
 To get started add the following to your `.Renviron`:
 

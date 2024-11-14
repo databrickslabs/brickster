@@ -1,6 +1,9 @@
-skip_unless_credentials_set()
-
 test_that("Unity Catalog API - don't perform", {
+
+  withr::local_envvar(c(
+    "DATABRICKS_HOST" = "mock_host",
+    "DATABRICKS_TOKEN" = "mock_token"
+  ))
 
   resp_summary <- db_uc_metastore_summary(perform_request = F)
   expect_s3_class(resp_summary, "httr2_request")

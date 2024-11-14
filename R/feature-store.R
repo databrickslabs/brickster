@@ -42,7 +42,7 @@ db_feature_tables_get <- function(feature_table,
     version = "2.0",
     host = host,
     token = token
-  ) %>%
+  ) |>
     httr2::req_url_query(name = feature_table)
 
   if (perform_request) {
@@ -63,7 +63,7 @@ db_feature_table_features <- function(feature_table,
     version = "2.0",
     host = host,
     token = token
-  ) %>%
+  ) |>
     httr2::req_url_query(feature_table = feature_table)
 
   if (perform_request) {

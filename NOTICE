@@ -22,9 +22,6 @@ Copyright 2021 httr2 authors
 jeroen/jsonlite - https://github.com/jeroen/jsonlite
 Copyright 2020 Jeroen Ooms
 
-tidyverse/magrittr - https://github.com/tidyverse/magrittr
-Copyright 2023 magrittr authors
-
 tidyverse/purrr - https://github.com/tidyverse/purrr
 Copyright 2023 purrr authors
 
@@ -41,13 +38,6 @@ rstudio/rstudionapi - https://github.com/rstudio/rstudioapi
 Copyright 2015 RStudio
 tidyverse/rvest - https://github.com/tidyverse/rvest
 Copyright 2023 rvest authors
-
-__________
-This Software contains code from the following open source projects, licensed under the MPL-2 license:
-
-Rdatatable/data.table - https://github.com/Rdatatable/data.table
-Copyright data.table authors
-
 __________
 This Software contains code from the following open source projects, licensed under the GPL-2/GPL-3 licenses:
 

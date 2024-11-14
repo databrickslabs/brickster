@@ -1,6 +1,9 @@
-skip_unless_credentials_set()
-
 test_that("Execution Contexts API - don't perform", {
+
+  withr::local_envvar(c(
+    "DATABRICKS_HOST" = "mock_host",
+    "DATABRICKS_TOKEN" = "mock_token"
+  ))
 
   resp_ctx_create <- db_context_create(
     cluster_id = "some_cluster_id",

@@ -1,6 +1,9 @@
-skip_unless_credentials_set()
-
 test_that("Unity Catalog API - don't perform", {
+
+  withr::local_envvar(c(
+    "DATABRICKS_HOST" = "mock_host",
+    "DATABRICKS_TOKEN" = "mock_token"
+  ))
 
   resp_list <- db_mlflow_registered_models_list(
     perform_request = F

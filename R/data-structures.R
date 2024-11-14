@@ -315,7 +315,7 @@ is.file_storage_info <- function(x) {
 #' `bucket-owner-full-control`. If `canned_acl` is set, the cluster instance
 #' profile must have `s3:PutObjectAcl` permission on the destination bucket and
 #' prefix. The full list of possible canned ACLs can be found in
-#' [docs](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl).
+#' [docs](https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl).
 #' By default only the object owner gets full control. If you are using cross
 #' account role for writing data, you may want to set
 #' `bucket-owner-full-control` to make bucket owner able to read the logs.

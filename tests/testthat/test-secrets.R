@@ -1,6 +1,9 @@
-skip_unless_credentials_set()
-
 test_that("Secrets API - don't perform", {
+
+  withr::local_envvar(c(
+    "DATABRICKS_HOST" = "mock_host",
+    "DATABRICKS_TOKEN" = "mock_token"
+  ))
 
   resp_list <- db_secrets_list(
     scope = "some_scope",

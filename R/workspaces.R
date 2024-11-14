@@ -213,14 +213,7 @@ db_workspace_import <- function(path,
     token = token
   )
 
-  req <- req %>%
-    httr2::req_body_multipart(
-      path = body$path,
-      format = body$format,
-      overwrite = body$overwrite,
-      language = body$language,
-      content = body$content
-    )
+  req <- httr2::req_body_multipart(req, !!!body)
 
   if (perform_request) {
     db_perform_request(req)

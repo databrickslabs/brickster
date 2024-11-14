@@ -1,6 +1,9 @@
-skip_unless_credentials_set()
-
 test_that("Volumes API - don't perform", {
+
+  withr::local_envvar(c(
+    "DATABRICKS_HOST" = "mock_host",
+    "DATABRICKS_TOKEN" = "mock_token"
+  ))
 
   valid_volume_path <- "/Volumes/catalog/schema/volume/"
 

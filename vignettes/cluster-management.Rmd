@@ -68,7 +68,7 @@ cluster_info$state
 
 You can edit Databricks clusters to change various parameters using `db_cluster_edit()`. For example, we may decide we want our cluster to autoscale between 2-8 nodes and add some tags.
 
-```{r, results='hide', eval=FALSE}
+```{r, results='hide'}
 
 # we are required to input all parameters
 db_cluster_edit(

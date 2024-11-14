@@ -1,6 +1,9 @@
-skip_unless_credentials_set()
-
 test_that("SQL Connector Helpers", {
+
+  withr::local_envvar(c(
+    "DATABRICKS_HOST" = "mock_host",
+    "DATABRICKS_TOKEN" = "mock_token"
+  ))
 
   expect_no_error({
     warehouse_path <- generate_http_path(
