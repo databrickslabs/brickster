@@ -1,3 +1,6 @@
+# brickster 0.2.6
+* Fixing `db_volume_delete()` function (#73)
+
 # brickster 0.2.5
 
 * Adding `db_repl()` a remote REPL to a Databricks cluster (#53)

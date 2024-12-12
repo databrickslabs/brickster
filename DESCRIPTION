@@ -1,6 +1,6 @@
 Package: brickster
 Title: R Toolkit for 'Databricks'
-Version: 0.2.5
+Version: 0.2.6
 Authors@R: 
   c(
     person(given = "Zac",
