@@ -43,7 +43,7 @@ db_volume_delete <- function(path,
   db_volume_action(
     path = path,
     action = "DELETE",
-    type = "directories",
+    type = "files",
     host = host,
     token = token,
     perform_request = perform_request
