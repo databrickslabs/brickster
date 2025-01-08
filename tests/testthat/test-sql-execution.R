@@ -1,7 +1,7 @@
 test_that("SQL Execution API - don't perform", {
 
   withr::local_envvar(c(
-    "DATABRICKS_HOST" = "mock_host",
+    "DATABRICKS_HOST" = "http://mock_host",
     "DATABRICKS_TOKEN" = "mock_token"
   ))
 

@@ -1,7 +1,7 @@
 test_that("Jobs API - don't perform", {
 
   withr::local_envvar(c(
-    "DATABRICKS_HOST" = "mock_host",
+    "DATABRICKS_HOST" = "http://mock_host",
     "DATABRICKS_TOKEN" = "mock_token"
   ))
 
@@ -20,7 +20,7 @@ test_that("Jobs API - don't perform", {
       driver_node_type_id = "m5a.large",
       node_type_id = "m5a.large",
       num_workers = 2,
-      cloud_attr = aws_attributes(ebs_volume_size = 32)
+      cloud_attrs = aws_attributes(ebs_volume_size = 32)
     ),
     # this task will be a notebook
     task = notebook_task(notebook_path = "/brickster/simple-notebook")
@@ -235,4 +235,3 @@ test_that("Jobs API", {
 
 
 })
-

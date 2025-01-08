@@ -1,7 +1,7 @@
 test_that("Unity Catalog API - don't perform", {
 
   withr::local_envvar(c(
-    "DATABRICKS_HOST" = "mock_host",
+    "DATABRICKS_HOST" = "http://mock_host",
     "DATABRICKS_TOKEN" = "mock_token"
   ))
 
@@ -144,5 +144,3 @@ test_that("Unity Catalog API", {
   expect_type(resp_tran_open_req, "list")
 
 })
-
-

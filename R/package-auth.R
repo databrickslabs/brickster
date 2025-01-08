@@ -48,7 +48,7 @@ db_host <- function(id = NULL, prefix = NULL, profile = default_config_profile()
     }
 
     # if hostname is missing change path to host
-    if (is.null(parsed_url$host)) {
+    if (is.null(parsed_url$hostname)) {
       parsed_url$hostname <- parsed_url$path
       parsed_url$path <- NULL
     }
