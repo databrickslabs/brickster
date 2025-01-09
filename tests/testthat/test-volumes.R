@@ -1,7 +1,7 @@
 test_that("Volumes API - don't perform", {
 
   withr::local_envvar(c(
-    "DATABRICKS_HOST" = "mock_host",
+    "DATABRICKS_HOST" = "http://mock_host",
     "DATABRICKS_TOKEN" = "mock_token"
   ))
 
@@ -81,6 +81,3 @@ test_that("Volumes API - don't perform", {
   expect_s3_class(resp_delte, "httr2_request")
 
 })
-
-
-

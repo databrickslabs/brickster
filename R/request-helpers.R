@@ -16,10 +16,13 @@
 #' @import httr2
 db_request <- function(endpoint, method, version = NULL, body = NULL, host, token, ...) {
 
-  url <- list(
-    scheme = "https",
-    hostname = host,
-    path = paste0("/api/", version)
+  url <- structure(
+    list(
+      scheme = "https",
+      hostname = host,
+      path = paste0("/api/", version)
+    ),
+    class = "httr2_url"
   )
 
   url <- httr2::url_build(url)
@@ -120,4 +123,3 @@ db_request_json <- function(req) {
     NULL
   }
 }
-
