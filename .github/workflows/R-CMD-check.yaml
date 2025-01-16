@@ -11,7 +11,7 @@ name: R-CMD-check
 jobs:
   R-CMD-check:
     runs-on:
-      group: databricks-protected-runner-group
+      group: databrickslabs-protected-runner-group
       labels: ${{ matrix.config.os }}
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})

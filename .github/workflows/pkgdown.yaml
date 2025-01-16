@@ -12,7 +12,7 @@ name: pkgdown
 jobs:
   pkgdown:
     runs-on:
-      group: databricks-protected-runner-group
+      group: databrickslabs-protected-runner-group
       labels: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
