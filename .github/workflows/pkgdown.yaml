@@ -13,7 +13,7 @@ jobs:
   pkgdown:
     runs-on:
       group: databrickslabs-protected-runner-group
-      labels: ubuntu-latest
+      labels: linux-ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
