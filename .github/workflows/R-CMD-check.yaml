@@ -10,7 +10,9 @@ name: R-CMD-check
 
 jobs:
   R-CMD-check:
-    runs-on: ${{ matrix.config.os }}
+    runs-on:
+      group: databrickslabs-protected-runner-group
+      labels: ${{ matrix.config.os }}
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
 
@@ -20,9 +22,9 @@ jobs:
         config:
           - {os: macOS-latest,   r: 'release'}
           - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
-          - {os: ubuntu-latest,   r: 'release'}
-          - {os: ubuntu-latest,   r: 'oldrel-1'}
+          - {os: linux-ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
+          - {os: linux-ubuntu-latest,   r: 'release'}
+          - {os: linux-ubuntu-latest,   r: 'oldrel-1'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
