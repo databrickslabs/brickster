@@ -1,5 +1,6 @@
 # brickster 0.2.6
-* Fixing `db_volume_delete()` function (#73)
+* Fixing `db_volume_delete()` function (#73, @vladimirobucina)
+* Adjustments to ensure {httr2} changes don't break things (#75, @hadley)
 
 # brickster 0.2.5
 
