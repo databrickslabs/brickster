@@ -27,7 +27,7 @@ library(brickster)
 
 # only requires `DATABRICKS_HOST` if using OAuth U2M
 # first request will open browser window to login
-Sys.setenv(DATABRICKS_HOST = "<workspace-prefix>.cloud.databricks.com")
+Sys.setenv(DATABRICKS_HOST = "https://<workspace-prefix>.cloud.databricks.com")
 
 # list all SQL warehouses
 warehouses <- db_sql_warehouse_list()
