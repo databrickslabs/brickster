@@ -49,6 +49,9 @@ db_workspace_delete <- function(path, recursive = FALSE,
 #'
 #' @param format One of `AUTO`, `SOURCE`, `HTML`, `JUPYTER`, `DBC`, `R_MARKDOWN`.
 #' Default is `SOURCE`.
+#' @param output_path Path to export file to, ensure to include correct suffix.
+#' @param direct_download Boolean (default: `FALSE`), if `TRUE` download file
+#' contents directly to file. Must also specify `output_path`.
 #' @inheritParams auth_params
 #' @inheritParams db_workspace_delete
 #' @inheritParams db_sql_warehouse_create
@@ -73,15 +76,16 @@ db_workspace_delete <- function(path, recursive = FALSE,
 db_workspace_export <- function(path,
                                 format = c("AUTO", "SOURCE", "HTML", "JUPYTER", "DBC", "R_MARKDOWN"),
                                 host = db_host(), token = db_token(),
+                                output_path = NULL,
+                                direct_download = FALSE,
                                 perform_request = TRUE) {
 
-  # TODO
-  # do not support direct_download being TRUE currently
-  # need to make a decision as to if we expect to support saving direct to file
-  # gut feel is yes but want to think about it a bit more
-  direct_download <- FALSE
-
   format <- match.arg(format, several.ok = FALSE)
+  stopifnot(is.logical(direct_download))
+
+  if (direct_download) {
+    stopifnot(!is.null(output_path))
+  }
 
   body <- list(
     path = path,
@@ -99,7 +103,14 @@ db_workspace_export <- function(path,
   )
 
   if (perform_request) {
-    db_perform_request(req)
+    if (direct_download) {
+      req |>
+        httr2::req_perform() |>
+        httr2::resp_body_raw() |>
+        base::writeBin(con = output_path)
+    } else {
+      db_perform_request(req)
+    }
   } else {
     req
   }

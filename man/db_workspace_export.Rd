@@ -9,6 +9,8 @@ db_workspace_export(
   format = c("AUTO", "SOURCE", "HTML", "JUPYTER", "DBC", "R_MARKDOWN"),
   host = db_host(),
   token = db_token(),
+  output_path = NULL,
+  direct_download = FALSE,
   perform_request = TRUE
 )
 }
@@ -21,6 +23,11 @@ Default is \code{SOURCE}.}
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
 \item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}
+
+\item{output_path}{Path to export file to, ensure to include correct suffix.}
+
+\item{direct_download}{Boolean (default: \code{FALSE}), if \code{TRUE} download file
+contents directly to file. Must also specify \code{output_path}.}
 
 \item{perform_request}{If \code{TRUE} (default) the request is performed, if
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
