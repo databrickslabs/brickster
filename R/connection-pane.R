@@ -298,6 +298,9 @@ get_table_data <- function(catalog, schema, table, host, token, metadata = TRUE)
     catalog = catalog,
     schema = schema,
     table = table,
+    omit_columns = FALSE,
+    omit_properties = FALSE,
+    omit_username = FALSE,
     host = host,
     token = token,
   )

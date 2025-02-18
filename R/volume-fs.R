@@ -1,6 +1,6 @@
 #' Volume FileSystem Read
 #'
-#' Return the contents of a file within a volume (up to 2GiB).
+#' Return the contents of a file within a volume (up to 5GiB).
 #'
 #' @param path Absolute path of the file in the Files API, omitting the initial
 #' slash.

@@ -27,6 +27,9 @@ reference:
   - db_current_user
   - db_current_workspace_id
   - db_current_cloud
+- title: Catalogs (Unity Catalog)
+  contents:
+  - starts_with("db_uc_catalog", internal = TRUE)
 - title: Clusters
   contents:
   - starts_with("db_cluster", internal = TRUE)
@@ -56,6 +59,8 @@ reference:
   contents: starts_with("db_dbfs", internal = TRUE)
 - title: Volume FileSystem
   contents: starts_with("db_volume", internal = TRUE)
+- title: Volumes (Unity Catalog)
+  contents: starts_with("db_uc_volume", internal = TRUE)
 - title: Execution Contexts
   contents: starts_with("db_context", internal = TRUE)
 - title: Jobs
@@ -83,6 +88,9 @@ reference:
   - remove_lib_path
 - title: Repos
   contents: starts_with("db_repo", internal = TRUE)
+- title: Schemas (Unity Catalog)
+  contents:
+  - starts_with("db_uc_schema", internal = TRUE)
 - title: Secrets
   contents: starts_with("db_secrets", internal = TRUE)
 - title: SQL Statement Execution
@@ -92,6 +100,9 @@ reference:
   - install_db_sql_connector
   - db_sql_client
   - DatabricksSqlClient
+- title: Tables (Unity Catalog)
+  contents:
+  - starts_with("db_uc_table", internal = TRUE)
 - title: Vector Search
   contents:
   - starts_with("db_vs", internal = TRUE)

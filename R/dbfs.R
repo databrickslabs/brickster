@@ -429,7 +429,7 @@ db_dbfs_put <- function(path, file = NULL, contents = NULL, overwrite = FALSE,
 
   body <- list(
     path = path,
-    overwrite = ifelse(overwrite, "true", "false") # doesn't like bool :(
+    overwrite = from_logical(overwrite)
   )
 
   # file takes priority, so don't bother if file is also specified
