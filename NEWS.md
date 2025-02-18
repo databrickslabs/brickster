@@ -1,6 +1,7 @@
 # brickster 0.2.7
-* Adding support for UC table functions (`db_uc_table*`) (#72)
+* Exporting UC table functions (`db_uc_table*`) (#72)
 * Adding support for `direct_download` option in `db_workspace_export()`
+* Exporting UC Catalog/Schema get/list functions (#72)
 
 # brickster 0.2.6
 * Fixing `db_volume_delete()` function (#73, @vladimirobucina)

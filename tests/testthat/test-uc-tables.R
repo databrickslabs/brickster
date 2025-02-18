@@ -5,7 +5,7 @@ test_that("Unity Catalog API - don't perform", {
     "DATABRICKS_TOKEN" = "mock_token"
   ))
 
-  resp_table_summaries <- db_uc_table_summaries(
+  resp_table_summaries <- db_uc_tables_summaries(
     catalog = "some_catalog",
     max_results = 10,
     perform_request = F
@@ -52,7 +52,7 @@ skip_unless_aws_workspace()
 test_that("Unity Catalog API", {
 
   expect_no_error({
-    resp_table_summaries <- db_uc_table_summaries(
+    resp_table_summaries <- db_uc_tables_summaries(
       catalog = "main",
       max_results = 10
     )

@@ -183,7 +183,7 @@ db_uc_tables_exists <- function(catalog, schema, table,
 #'
 #' @returns List
 #' @export
-db_uc_table_summaries <- function(catalog,
+db_uc_tables_summaries <- function(catalog,
                                   schema_name_pattern = NULL,
                                   table_name_pattern = NULL,
                                   max_results = 10000,

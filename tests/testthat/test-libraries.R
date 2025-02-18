@@ -71,7 +71,7 @@ test_that("Libraries API", {
     name = "brickster_test_libraries_cluster",
     spark_version = resp_list_dbrv[[1]][[1]]$key,
     num_workers = 2,
-    node_type_id = "m5a.xlarge",
+    node_type_id = "m7a.xlarge",
     cloud_attrs = aws_attributes(
       ebs_volume_size = 32
     ),

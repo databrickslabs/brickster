@@ -27,6 +27,9 @@ reference:
   - db_current_user
   - db_current_workspace_id
   - db_current_cloud
+- title: Catalogs (Unity Catalog)
+  contents:
+  - starts_with("db_uc_catalog", internal = TRUE)
 - title: Clusters
   contents:
   - starts_with("db_cluster", internal = TRUE)
@@ -83,6 +86,9 @@ reference:
   - remove_lib_path
 - title: Repos
   contents: starts_with("db_repo", internal = TRUE)
+- title: Schemas (Unity Catalog)
+  contents:
+  - starts_with("db_uc_schema", internal = TRUE)
 - title: Secrets
   contents: starts_with("db_secrets", internal = TRUE)
 - title: SQL Statement Execution
