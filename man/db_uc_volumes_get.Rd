@@ -15,14 +15,14 @@ db_uc_volumes_get(
 )
 }
 \arguments{
-\item{catalog}{Parent catalog of table.}
+\item{catalog}{Parent catalog of volume}
 
-\item{schema}{Parent schema of table.}
+\item{schema}{Parent schema of volume}
 
 \item{volume}{Volume name.}
 
-\item{include_browse}{Whether to include tables in the response for which the
-principal can only access selective metadata for.}
+\item{include_browse}{Whether to include volumes in the response for which
+the principal can only access selective metadata for.}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 

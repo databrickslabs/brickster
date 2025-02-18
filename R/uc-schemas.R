@@ -47,6 +47,7 @@ db_uc_schemas_list <- function(catalog,
 #' @param schema Schema of interest.
 #' @inheritParams auth_params
 #' @inheritParams db_sql_query_history
+#' @inheritParams db_uc_catalogs_list
 #'
 #' @family Unity Catalog Management
 #'

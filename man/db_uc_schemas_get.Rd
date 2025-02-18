@@ -18,6 +18,9 @@ db_uc_schemas_get(
 
 \item{schema}{Schema of interest.}
 
+\item{include_browse}{Whether to include catalogs in the response for which
+the principal can only access selective metadata for.}
+
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
 \item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}

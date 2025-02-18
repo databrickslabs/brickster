@@ -17,9 +17,9 @@ db_uc_volumes_create(
 )
 }
 \arguments{
-\item{catalog}{Parent catalog of table.}
+\item{catalog}{Parent catalog of volume}
 
-\item{schema}{Parent schema of table.}
+\item{schema}{Parent schema of volume}
 
 \item{volume}{Volume name.}
 

@@ -1,9 +1,13 @@
 #' List Volumes (Unity Catalog)
 #'
+#' @param catalog Parent catalog of volume
+#' @param schema Parent schema of volume
 #' @param max_results Maximum number of volumes to return (default: 10000).
-#' @inheritParams db_uc_tables_list
+#' @param include_browse Whether to include volumes in the response for which
+#' the principal can only access selective metadata for.
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create
+#' @inheritParams db_sql_query_history
 #'
 #' @family Unity Catalog Volume Management
 #'
@@ -39,10 +43,9 @@ db_uc_volumes_list <- function(catalog, schema,
 
 #' Get Volume (Unity Catalog)
 #'
-#' @param catalog Parent catalog of table.
-#' @param schema Parent schema of table.
+
 #' @param volume Volume name.
-#' @inheritParams db_uc_tables_list
+#' @inheritParams db_uc_volumes_list
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create
 #'
@@ -79,7 +82,8 @@ db_uc_volumes_get <- function(catalog, schema, volume,
 
 #' Delete Volume (Unity Catalog)
 #'
-#' @inheritParams db_uc_tables_get
+#' @inheritParams db_uc_volumes_list
+#' @inheritParams db_uc_volumes_get
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create
 #'
@@ -111,13 +115,11 @@ db_uc_volumes_delete <- function(catalog, schema, volume,
 
 #' Update Volume (Unity Catalog)
 #'
-#' @param catalog Parent catalog of table.
-#' @param schema Parent schema of table.
-#' @param volume Volume name.
 #' @param owner The identifier of the user who owns the volume (Optional).
 #' @param comment The comment attached to the volume (Optional).
 #' @param new_name New name for the volume (Optional).
-#' @inheritParams db_uc_tables_list
+#' @inheritParams db_uc_volumes_list
+#' @inheritParams db_uc_volumes_get
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create
 #'
@@ -158,14 +160,12 @@ db_uc_volumes_update <- function(catalog, schema, volume,
 
 #' Update Volume (Unity Catalog)
 #'
-#' @param catalog Parent catalog of table.
-#' @param schema Parent schema of table.
-#' @param volume Volume name.
 #' @param volume_type Either `'MANAGED'` or `'EXTERNAL'`.
 #' @param storage_location The storage location on the cloud, only specified
 #' when `volume_type` is `'EXTERNAL'`.
 #' @param comment The comment attached to the volume.
-#' @inheritParams db_uc_tables_list
+#' @inheritParams db_uc_volumes_list
+#' @inheritParams db_uc_volumes_get
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create
 #'

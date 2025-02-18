@@ -16,14 +16,14 @@ db_uc_volumes_list(
 )
 }
 \arguments{
-\item{catalog}{Name of parent catalog for tables of interest.}
+\item{catalog}{Parent catalog of volume}
 
-\item{schema}{Parent schema of tables.}
+\item{schema}{Parent schema of volume}
 
 \item{max_results}{Maximum number of volumes to return (default: 10000).}
 
-\item{include_browse}{Whether to include tables in the response for which the
-principal can only access selective metadata for.}
+\item{include_browse}{Whether to include volumes in the response for which
+the principal can only access selective metadata for.}
 
 \item{page_token}{Opaque token used to get the next page of results. Optional.}
 

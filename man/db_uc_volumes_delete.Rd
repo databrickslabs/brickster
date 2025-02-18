@@ -14,9 +14,11 @@ db_uc_volumes_delete(
 )
 }
 \arguments{
-\item{catalog}{Parent catalog of table.}
+\item{catalog}{Parent catalog of volume}
 
-\item{schema}{Parent schema of table.}
+\item{schema}{Parent schema of volume}
+
+\item{volume}{Volume name.}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
