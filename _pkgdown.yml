@@ -92,6 +92,9 @@ reference:
   - install_db_sql_connector
   - db_sql_client
   - DatabricksSqlClient
+- title: Tables (Unity Catalog)
+  contents:
+  - starts_with("db_uc_table", internal = TRUE)
 - title: Vector Search
   contents:
   - starts_with("db_vs", internal = TRUE)

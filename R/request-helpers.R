@@ -123,3 +123,9 @@ db_request_json <- function(req) {
     NULL
   }
 }
+
+# some endpoints don't play nice and except strings 'true' and 'false'
+from_logical <- function(x) {
+  stopifnot(is.logical(x))
+  ifelse(x, "true", "false")
+}
