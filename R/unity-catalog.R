@@ -215,28 +215,3 @@ db_uc_funcs_get <- function(catalog, schema, func,
     req
   }
 }
-
-db_uc_volumes_list <- function(catalog, schema,
-                             host = db_host(), token = db_token(),
-                             perform_request = TRUE) {
-
-  req <- db_request(
-    endpoint = "unity-catalog/volumes",
-    method = "GET",
-    version = "2.1",
-    host = host,
-    token = token
-  ) |>
-    httr2::req_url_query(
-      catalog_name = catalog,
-      schema_name = schema
-    )
-
-  if (perform_request) {
-    db_perform_request(req)$volumes
-  } else {
-    req
-  }
-}
-
-

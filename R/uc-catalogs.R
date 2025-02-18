@@ -7,6 +7,8 @@
 #' @inheritParams db_sql_query_history
 #' @inheritParams db_sql_warehouse_create
 #'
+#' @family Unity Catalog Management
+#'
 #' @returns List
 #' @export
 db_uc_catalogs_list <- function(max_results = 1000,
@@ -46,6 +48,8 @@ db_uc_catalogs_list <- function(max_results = 1000,
 #' @inheritParams auth_params
 #' @inheritParams db_sql_query_history
 #' @inheritParams db_sql_warehouse_create
+#'
+#' @family Unity Catalog Management
 #'
 #' @returns List
 #' @export

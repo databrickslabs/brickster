@@ -47,3 +47,11 @@ List
 \description{
 List Table Summaries (Unity Catalog)
 }
+\seealso{
+Other Unity Catalog Table Management: 
+\code{\link{db_uc_tables_delete}()},
+\code{\link{db_uc_tables_exists}()},
+\code{\link{db_uc_tables_get}()},
+\code{\link{db_uc_tables_list}()}
+}
+\concept{Unity Catalog Table Management}

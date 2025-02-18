@@ -1,4 +1,4 @@
-test_that("Unity Catalog API - don't perform", {
+test_that("Unity Catalog: Tables API - don't perform", {
 
   withr::local_envvar(c(
     "DATABRICKS_HOST" = "http://mock_host",
@@ -49,7 +49,7 @@ skip_on_cran()
 skip_unless_authenticated()
 skip_unless_aws_workspace()
 
-test_that("Unity Catalog API", {
+test_that("Unity Catalog: Tables API", {
 
   expect_no_error({
     resp_table_summaries <- db_uc_tables_summaries(

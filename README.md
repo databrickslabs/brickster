@@ -47,7 +47,7 @@ Refer to the ["Connect to a Databricks Workspace"](https://databrickslabs.github
 `{brickster}` is very deliberate with choosing what API's are wrapped. `{brickster}` isn't intended to replace IaC tooling (e.g. [Terraform](#0)) or to be used for account/workspace administration.
 
 | API | Available | Version |
-|--------------------------------------------|--------------|--------------|
+|----------------------------------------|----------------|----------------|
 | [DBFS](https://docs.databricks.com/dev-tools/api/latest/dbfs.html) | Yes | 2.0 |
 | [Secrets](https://docs.databricks.com/dev-tools/api/latest/secrets.html) | Yes | 2.0 |
 | [Repos](https://docs.databricks.com/dev-tools/api/latest/repos.html) | Yes | 2.0 |
@@ -62,4 +62,5 @@ Refer to the ["Connect to a Databricks Workspace"](https://databrickslabs.github
 | [SQL Statement Execution](https://docs.databricks.com/api/workspace/statementexecution) | Yes | 2.0 |
 | [REST 1.2 Commands](https://docs.databricks.com/dev-tools/api/1.2/index.html) | Partially | 1.2 |
 | [Unity Catalog - Tables](https://docs.databricks.com/api/workspace/tables) | Yes | 2.1 |
+| [Unity Catalog - Volumes](https://docs.databricks.com/api/workspace/volumes) | Yes | 2.1 |
 | [Unity Catalog](https://api-docs.databricks.com/rest/latest/unity-catalog-api-specification-2-1.html) | Partially | 2.1 |

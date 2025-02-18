@@ -31,3 +31,10 @@ List
 \description{
 Get Schema (Unity Catalog)
 }
+\seealso{
+Other Unity Catalog Management: 
+\code{\link{db_uc_catalogs_get}()},
+\code{\link{db_uc_catalogs_list}()},
+\code{\link{db_uc_schemas_list}()}
+}
+\concept{Unity Catalog Management}

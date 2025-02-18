@@ -6,6 +6,8 @@
 #' @inheritParams db_sql_query_history
 #' @inheritParams db_sql_warehouse_create
 #'
+#' @family Unity Catalog Management
+#'
 #' @returns List
 #' @export
 db_uc_schemas_list <- function(catalog,
@@ -45,6 +47,8 @@ db_uc_schemas_list <- function(catalog,
 #' @param schema Schema of interest.
 #' @inheritParams auth_params
 #' @inheritParams db_sql_query_history
+#'
+#' @family Unity Catalog Management
 #'
 #' @returns List
 #' @export

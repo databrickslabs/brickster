@@ -59,6 +59,8 @@ reference:
   contents: starts_with("db_dbfs", internal = TRUE)
 - title: Volume FileSystem
   contents: starts_with("db_volume", internal = TRUE)
+- title: Volumes (Unity Catalog)
+  contents: starts_with("db_uc_volume", internal = TRUE)
 - title: Execution Contexts
   contents: starts_with("db_context", internal = TRUE)
 - title: Jobs

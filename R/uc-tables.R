@@ -19,6 +19,8 @@
 #' @inheritParams db_sql_query_history
 #' @inheritParams db_sql_warehouse_create
 #'
+#' @family Unity Catalog Table Management
+#'
 #' @returns List
 #' @export
 db_uc_tables_list <- function(catalog, schema, max_results = 50,
@@ -69,6 +71,8 @@ db_uc_tables_list <- function(catalog, schema, max_results = 50,
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create
 #'
+#' @family Unity Catalog Table Management
+#'
 #' @returns List
 #' @export
 db_uc_tables_get <- function(catalog, schema, table,
@@ -113,6 +117,8 @@ db_uc_tables_get <- function(catalog, schema, table,
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create
 #'
+#' @family Unity Catalog Table Management
+#'
 #' @returns Boolean
 #' @export
 db_uc_tables_delete <- function(catalog, schema, table,
@@ -141,6 +147,8 @@ db_uc_tables_delete <- function(catalog, schema, table,
 #' @inheritParams db_uc_tables_get
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create
+#'
+#' @family Unity Catalog Table Management
 #'
 #' @returns List with fields `table_exists` and `supports_foreign_metadata_update`
 #' @export
@@ -180,6 +188,8 @@ db_uc_tables_exists <- function(catalog, schema, table,
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create
 #' @inheritParams db_uc_tables_list
+#'
+#' @family Unity Catalog Table Management
 #'
 #' @returns List
 #' @export

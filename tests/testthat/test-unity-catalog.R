@@ -80,13 +80,6 @@ test_that("Unity Catalog API - don't perform", {
   )
   expect_s3_class(resp_funcs_list, "httr2_request")
 
-  resp_volumes_list <- db_uc_volumes_list(
-    catalog = "some_catalog",
-    schema = "some_schema",
-    perform_request = F
-  )
-  expect_s3_class(resp_volumes_list, "httr2_request")
-
 })
 
 skip_on_cran()

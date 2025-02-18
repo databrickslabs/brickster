@@ -34,3 +34,10 @@ List
 \description{
 List Catalogs (Unity Catalog)
 }
+\seealso{
+Other Unity Catalog Management: 
+\code{\link{db_uc_catalogs_get}()},
+\code{\link{db_uc_schemas_get}()},
+\code{\link{db_uc_schemas_list}()}
+}
+\concept{Unity Catalog Management}

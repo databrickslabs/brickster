@@ -26,7 +26,7 @@ slash.}
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \description{
-Return the contents of a file within a volume (up to 2GiB).
+Return the contents of a file within a volume (up to 5GiB).
 }
 \seealso{
 Other Volumes FileSystem API: 
