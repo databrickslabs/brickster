@@ -18,6 +18,7 @@ jobs:
       DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
       DATABRICKS_WSID: ${{ secrets.DATABRICKS_WSID }}
+      NOT_CRAN: TRUE
 
     steps:
       - uses: actions/checkout@v2
