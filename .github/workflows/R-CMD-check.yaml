@@ -20,8 +20,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macOS-latest,   r: 'release'}
-          - {os: windows-latest, r: 'release'}
+          # - {os: macOS-latest,   r: 'release'}
+          - {os: windows-server-2022-latest, r: 'release'}
           - {os: linux-ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
           - {os: linux-ubuntu-latest,   r: 'release'}
           - {os: linux-ubuntu-latest,   r: 'oldrel-1'}
