@@ -11,11 +11,13 @@
 #' @family Execution Context API
 #'
 #' @export
-db_context_create <- function(cluster_id,
-                              language = c("python", "sql", "scala", "r"),
-                              host = db_host(), token = db_token(),
-                              perform_request = TRUE) {
-
+db_context_create <- function(
+  cluster_id,
+  language = c("python", "sql", "scala", "r"),
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   language <- match.arg(language, several.ok = FALSE)
 
   body <- list(
@@ -37,7 +39,6 @@ db_context_create <- function(cluster_id,
   } else {
     req
   }
-
 }
 
 #' Delete an Execution Context
@@ -50,11 +51,13 @@ db_context_create <- function(cluster_id,
 #' @family Execution Context API
 #'
 #' @export
-db_context_destroy <- function(cluster_id,
-                               context_id,
-                               host = db_host(), token = db_token(),
-                               perform_request = TRUE) {
-
+db_context_destroy <- function(
+  cluster_id,
+  context_id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     clusterId = cluster_id,
     contextId = context_id
@@ -74,7 +77,6 @@ db_context_destroy <- function(cluster_id,
   } else {
     req
   }
-
 }
 
 #' Get Information About an Execution Context
@@ -86,10 +88,13 @@ db_context_destroy <- function(cluster_id,
 #' @family Execution Context API
 #'
 #' @export
-db_context_status <- function(cluster_id,
-                              context_id,
-                              host = db_host(), token = db_token(),
-                              perform_request = TRUE) {
+db_context_status <- function(
+  cluster_id,
+  context_id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   req <- db_request(
     endpoint = "contexts/status",
     method = "GET",
@@ -109,7 +114,6 @@ db_context_status <- function(cluster_id,
   } else {
     req
   }
-
 }
 
 #' Run a Command
@@ -126,15 +130,17 @@ db_context_status <- function(cluster_id,
 #' @family Execution Context API
 #'
 #' @export
-db_context_command_run <- function(cluster_id,
-                                   context_id,
-                                   language = c("python", "sql", "scala", "r"),
-                                   command = NULL,
-                                   command_file = NULL,
-                                   options = list(),
-                                   host = db_host(), token = db_token(),
-                                   perform_request = TRUE) {
-
+db_context_command_run <- function(
+  cluster_id,
+  context_id,
+  language = c("python", "sql", "scala", "r"),
+  command = NULL,
+  command_file = NULL,
+  options = list(),
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   language <- match.arg(language, several.ok = FALSE)
 
   # only can have one of `command` or `command_file`
@@ -164,13 +170,12 @@ db_context_command_run <- function(cluster_id,
     options = options
   )
 
-    if (perform_request) {
+  if (perform_request) {
     res <- db_perform_request(req)
     list(id = res$id, language = language)
   } else {
     req
   }
-
 }
 
 #' Run a Command and Wait For Results
@@ -181,15 +186,17 @@ db_context_command_run <- function(cluster_id,
 #' @family Execution Context API
 #'
 #' @export
-db_context_command_run_and_wait <- function(cluster_id,
-                                            context_id,
-                                            language = c("python", "sql", "scala", "r"),
-                                            command = NULL,
-                                            command_file = NULL,
-                                            options = list(),
-                                            parse_result = TRUE,
-                                            host = db_host(), token = db_token()) {
-
+db_context_command_run_and_wait <- function(
+  cluster_id,
+  context_id,
+  language = c("python", "sql", "scala", "r"),
+  command = NULL,
+  command_file = NULL,
+  options = list(),
+  parse_result = TRUE,
+  host = db_host(),
+  token = db_token()
+) {
   stopifnot(is.logical(parse_result))
 
   command <- db_context_command_run(
@@ -227,7 +234,6 @@ db_context_command_run_and_wait <- function(cluster_id,
   } else {
     command_status
   }
-
 }
 
 #' Get Information About a Command
@@ -240,12 +246,14 @@ db_context_command_run_and_wait <- function(cluster_id,
 #' @family Execution Context API
 #'
 #' @export
-db_context_command_status <- function(cluster_id,
-                                      context_id,
-                                      command_id,
-                                      host = db_host(), token = db_token(),
-                                      perform_request = TRUE) {
-
+db_context_command_status <- function(
+  cluster_id,
+  context_id,
+  command_id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   req <- db_request(
     endpoint = "commands/status",
     method = "GET",
@@ -266,7 +274,6 @@ db_context_command_status <- function(cluster_id,
   } else {
     req
   }
-
 }
 
 #' Cancel a Command
@@ -278,33 +285,34 @@ db_context_command_status <- function(cluster_id,
 #' @family Execution Context API
 #'
 #' @export
-db_context_command_cancel <- function(cluster_id,
-                                      context_id,
-                                      command_id,
-                                      host = db_host(), token = db_token(),
-                                      perform_request = TRUE) {
+db_context_command_cancel <- function(
+  cluster_id,
+  context_id,
+  command_id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
+  body <- list(
+    clusterId = cluster_id,
+    contextId = context_id,
+    commandId = command_id
+  )
 
   req <- db_request(
     endpoint = "commands/cancel",
     method = "POST",
     version = "1.2",
+    body = body,
     host = host,
     token = token
   )
-
-  req <- req |>
-    httr2::req_url_query(
-      clusterId = cluster_id,
-      contextId = context_id,
-      commandId = command_id
-    )
 
   if (perform_request) {
     db_perform_request(req)
   } else {
     req
   }
-
 }
 
 #' Parse Command Results
@@ -317,8 +325,10 @@ db_context_command_cancel <- function(cluster_id,
 #'
 #' @return command results
 #' @keywords internal
-db_context_command_parse <- function(x, language = c("r", "py", "scala", "sql")) {
-
+db_context_command_parse <- function(
+  x,
+  language = c("r", "py", "scala", "sql")
+) {
   language <- match.arg(language)
 
   if (x$results$resultType == "error") {
@@ -338,7 +348,6 @@ db_context_command_parse <- function(x, language = c("r", "py", "scala", "sql"))
       huxtable::set_all_borders(TRUE) |>
       huxtable::set_font_size(10) |>
       huxtable::set_position("left")
-
     huxtable::print_screen(output_tbl)
     return(NULL)
   }
@@ -364,7 +373,6 @@ db_context_command_parse <- function(x, language = c("r", "py", "scala", "sql"))
   }
 
   out
-
 }
 
 handle_cmd_error <- function(x, language) {
