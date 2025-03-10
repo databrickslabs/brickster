@@ -29,7 +29,7 @@ Imports:
     curl,
     dplyr,
     glue,
-    httr2,
+    httr2 (>= 1.0.4),
     ini,
     jsonlite,
     purrr,

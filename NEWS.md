@@ -5,6 +5,7 @@
 * Exporting UC Catalog/Schema get/list functions (#72)
 * Adding support for UC Volume management (#72)
 * Fixing command execution context cancel (#86, #87)
+* Adding stricter version requirements for {httr2} (#81, #63)
 
 # brickster 0.2.6
 
