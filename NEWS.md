@@ -4,6 +4,7 @@
 * Adding support for `direct_download` option in `db_workspace_export()`
 * Exporting UC Catalog/Schema get/list functions (#72)
 * Adding support for UC Volume management (#72)
+* Fixing command execution context cancel (#86, #87)
 
 # brickster 0.2.6
 
