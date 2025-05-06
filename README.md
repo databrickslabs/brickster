@@ -50,7 +50,7 @@ Refer to the ["Connect to a Databricks Workspace"](https://databrickslabs.github
 |--------------------------------------|-----------------|-----------------|
 | [DBFS](https://docs.databricks.com/api/workspace/dbfs) | Yes | 2.0 |
 | [Secrets](https://docs.databricks.com/api/workspace/secrets) | Yes | 2.0 |
-| [Repos](https://docs.databricks.com/dev-tools/api/latest/repos.html) | Yes | 2.0 |
+| [Repos](https://docs.databricks.com/api/workspace/repos) | Yes | 2.0 |
 | [mlflow Model Registry](https://docs.databricks.com/api/workspace/modelregistry) | Yes | 2.0 |
 | [Clusters](https://docs.databricks.com/api/workspace/clusters) | Yes | 2.0 |
 | [Libraries](https://docs.databricks.com/api/workspace/libraries) | Yes | 2.0 |
