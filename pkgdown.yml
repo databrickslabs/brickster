@@ -1,12 +1,12 @@
 pandoc: 3.1.11
-pkgdown: 2.1.1
+pkgdown: 2.1.2
 pkgdown_sha: ~
 articles:
   cluster-management: cluster-management.html
   managing-jobs: managing-jobs.html
   remote-repl: remote-repl.html
   setup-auth: setup-auth.html
-last_built: 2025-03-10T12:01Z
+last_built: 2025-05-06T01:19Z
 urls:
   reference: https://zacdav-db.github.io/brickster/reference
   article: https://zacdav-db.github.io/brickster/articles
