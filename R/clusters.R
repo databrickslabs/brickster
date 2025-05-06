@@ -1,5 +1,3 @@
-# https://docs.databricks.com/dev-tools/api/latest/clusters.html
-
 #' Create a Cluster
 #'
 #' @param name Cluster name requested by the user. This doesn’t have to be
@@ -88,36 +86,38 @@
 #'
 #' Cannot specify both `autoscale` and `num_workers`, must choose one.
 #'
-#' [More Documentation](https://docs.databricks.com/dev-tools/api/latest/clusters.html#create).
+#' [More Documentation](https://docs.databricks.com/api/workspace/clusters/create).
 #'
 #' @family Clusters API
 #'
 #' @export
-db_cluster_create <- function(name,
-                              spark_version,
-                              node_type_id,
-                              num_workers = NULL,
-                              autoscale = NULL,
-                              spark_conf = list(),
-                              cloud_attrs = aws_attributes(),
-                              driver_node_type_id = NULL,
-                              custom_tags = list(),
-                              init_scripts = list(),
-                              spark_env_vars = list(),
-                              autotermination_minutes = 120,
-                              log_conf = NULL,
-                              ssh_public_keys = NULL,
-                              driver_instance_pool_id = NULL,
-                              instance_pool_id = NULL,
-                              idempotency_token = NULL,
-                              enable_elastic_disk = TRUE,
-                              apply_policy_default_values = TRUE,
-                              enable_local_disk_encryption = TRUE,
-                              docker_image = NULL,
-                              policy_id = NULL,
-                              host = db_host(), token = db_token(),
-                              perform_request = TRUE) {
-
+db_cluster_create <- function(
+  name,
+  spark_version,
+  node_type_id,
+  num_workers = NULL,
+  autoscale = NULL,
+  spark_conf = list(),
+  cloud_attrs = aws_attributes(),
+  driver_node_type_id = NULL,
+  custom_tags = list(),
+  init_scripts = list(),
+  spark_env_vars = list(),
+  autotermination_minutes = 120,
+  log_conf = NULL,
+  ssh_public_keys = NULL,
+  driver_instance_pool_id = NULL,
+  instance_pool_id = NULL,
+  idempotency_token = NULL,
+  enable_elastic_disk = TRUE,
+  apply_policy_default_values = TRUE,
+  enable_local_disk_encryption = TRUE,
+  docker_image = NULL,
+  policy_id = NULL,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   # input checks
   # - cloud_attrs must be of class AwsAttributes/AzureAttributes/GcpAttributes
   # - if specified, log_conf must be of class ClusterLogConf
@@ -160,7 +160,9 @@ db_cluster_create <- function(name,
   } else if (is.gcp_attributes(cloud_attrs)) {
     body[["gcp_attributes"]] <- unclass(cloud_attrs)
   } else {
-    stop("Please use `aws_attributes()`, `azure_attributes()`, or `gcp_attributes()` to specify `cloud_attr`")
+    stop(
+      "Please use `aws_attributes()`, `azure_attributes()`, or `gcp_attributes()` to specify `cloud_attr`"
+    )
   }
 
   req <- db_request(
@@ -177,7 +179,6 @@ db_cluster_create <- function(name,
   } else {
     req
   }
-
 }
 
 #' Edit a Cluster
@@ -204,32 +205,34 @@ db_cluster_create <- function(name,
 #' @family Clusters API
 #'
 #' @export
-db_cluster_edit <- function(cluster_id,
-                            spark_version,
-                            node_type_id,
-                            num_workers = NULL,
-                            autoscale = NULL,
-                            name = NULL,
-                            spark_conf = NULL,
-                            cloud_attrs = NULL,
-                            driver_node_type_id = NULL,
-                            custom_tags = NULL,
-                            init_scripts = NULL,
-                            spark_env_vars = NULL,
-                            autotermination_minutes = NULL,
-                            log_conf = NULL,
-                            ssh_public_keys = NULL,
-                            driver_instance_pool_id = NULL,
-                            instance_pool_id = NULL,
-                            idempotency_token = NULL,
-                            enable_elastic_disk = NULL,
-                            apply_policy_default_values = NULL,
-                            enable_local_disk_encryption = NULL,
-                            docker_image = NULL,
-                            policy_id = NULL,
-                            host = db_host(), token = db_token(),
-                            perform_request = TRUE) {
-
+db_cluster_edit <- function(
+  cluster_id,
+  spark_version,
+  node_type_id,
+  num_workers = NULL,
+  autoscale = NULL,
+  name = NULL,
+  spark_conf = NULL,
+  cloud_attrs = NULL,
+  driver_node_type_id = NULL,
+  custom_tags = NULL,
+  init_scripts = NULL,
+  spark_env_vars = NULL,
+  autotermination_minutes = NULL,
+  log_conf = NULL,
+  ssh_public_keys = NULL,
+  driver_instance_pool_id = NULL,
+  instance_pool_id = NULL,
+  idempotency_token = NULL,
+  enable_elastic_disk = NULL,
+  apply_policy_default_values = NULL,
+  enable_local_disk_encryption = NULL,
+  docker_image = NULL,
+  policy_id = NULL,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   # NOTES:
   # edit is annoying and requires node size/spark version for edit even if
   # they aren't being changed from existing config
@@ -278,7 +281,9 @@ db_cluster_edit <- function(cluster_id,
     } else if (is.azure_attributes(cloud_attrs)) {
       body[["azure_attributes"]] <- unclass(cloud_attrs)
     } else {
-      stop("Please use `aws_attributes()` or `azure_attributes()` to specify `cloud_attr`")
+      stop(
+        "Please use `aws_attributes()` or `azure_attributes()` to specify `cloud_attr`"
+      )
     }
   }
 
@@ -298,7 +303,6 @@ db_cluster_edit <- function(cluster_id,
   } else {
     req
   }
-
 }
 
 #' Cluster Action Helper Function
@@ -308,10 +312,13 @@ db_cluster_edit <- function(cluster_id,
 #' @inheritParams auth_params
 #' @inheritParams db_cluster_edit
 #' @inheritParams db_sql_warehouse_create
-db_cluster_action <- function(cluster_id,
-                              action = c("start", "restart", "delete", "permanent-delete", "pin", "unpin"),
-                              host = db_host(), token = db_token(),
-                              perform_request = TRUE) {
+db_cluster_action <- function(
+  cluster_id,
+  action = c("start", "restart", "delete", "permanent-delete", "pin", "unpin"),
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     cluster_id = cluster_id
   )
@@ -334,7 +341,6 @@ db_cluster_action <- function(cluster_id,
   } else {
     req
   }
-
 }
 
 #' Start a Cluster
@@ -357,9 +363,12 @@ db_cluster_action <- function(cluster_id,
 #' @family Clusters API
 #'
 #' @export
-db_cluster_start <- function(cluster_id,
-                             host = db_host(), token = db_token(),
-                             perform_request = TRUE) {
+db_cluster_start <- function(
+  cluster_id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   db_cluster_action(cluster_id, "start", host, token, perform_request)
 }
 
@@ -375,9 +384,12 @@ db_cluster_start <- function(cluster_id,
 #' @family Clusters API
 #'
 #' @export
-db_cluster_restart <- function(cluster_id,
-                               host = db_host(), token = db_token(),
-                               perform_request = TRUE) {
+db_cluster_restart <- function(
+  cluster_id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   db_cluster_action(cluster_id, "restart", host, token, perform_request)
 }
 
@@ -390,9 +402,12 @@ db_cluster_restart <- function(cluster_id,
 #' @inherit db_cluster_restart details
 #'
 #' @export
-db_cluster_delete <- function(cluster_id,
-                              host = db_host(), token = db_token(),
-                              perform_request = TRUE) {
+db_cluster_delete <- function(
+  cluster_id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   db_cluster_action(cluster_id, "delete", host, token, perform_request)
 }
 
@@ -413,9 +428,12 @@ db_cluster_delete <- function(cluster_id,
 #' @family Clusters API
 #'
 #' @export
-db_cluster_terminate <- function(cluster_id,
-                                  host = db_host(), token = db_token(),
-                                  perform_request = TRUE) {
+db_cluster_terminate <- function(
+  cluster_id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   db_cluster_action(cluster_id, "delete", host, token, perform_request)
 }
 
@@ -437,10 +455,19 @@ db_cluster_terminate <- function(cluster_id,
 #' @family Clusters API
 #'
 #' @export
-db_cluster_perm_delete <- function(cluster_id,
-                                   host = db_host(), token = db_token(),
-                                   perform_request = TRUE) {
-  db_cluster_action(cluster_id, "permanent-delete", host, token, perform_request)
+db_cluster_perm_delete <- function(
+  cluster_id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
+  db_cluster_action(
+    cluster_id,
+    "permanent-delete",
+    host,
+    token,
+    perform_request
+  )
 }
 
 #' Pin a Cluster
@@ -458,9 +485,12 @@ db_cluster_perm_delete <- function(cluster_id,
 #' @family Clusters API
 #'
 #' @export
-db_cluster_pin <- function(cluster_id,
-                           host = db_host(), token = db_token(),
-                           perform_request = TRUE) {
+db_cluster_pin <- function(
+  cluster_id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   db_cluster_action(cluster_id, "pin", host, token, perform_request)
 }
 
@@ -477,9 +507,12 @@ db_cluster_pin <- function(cluster_id,
 #' @family Clusters API
 #'
 #' @export
-db_cluster_unpin <- function(cluster_id,
-                             host = db_host(), token = db_token(),
-                             perform_request = TRUE) {
+db_cluster_unpin <- function(
+  cluster_id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   db_cluster_action(cluster_id, "unpin", host, token, perform_request)
 }
 
@@ -494,9 +527,14 @@ db_cluster_unpin <- function(cluster_id,
 #' @family Clusters API
 #'
 #' @export
-db_cluster_resize <- function(cluster_id, num_workers = NULL, autoscale = NULL,
-                              host = db_host(), token = db_token(),
-                              perform_request = TRUE) {
+db_cluster_resize <- function(
+  cluster_id,
+  num_workers = NULL,
+  autoscale = NULL,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   if (is.null(num_workers) && is.null(autoscale)) {
     stop("Must specify one of `num_workers` or `autoscale`.")
   }
@@ -526,7 +564,6 @@ db_cluster_resize <- function(cluster_id, num_workers = NULL, autoscale = NULL,
   } else {
     req
   }
-
 }
 
 #' Get Details of a Cluster
@@ -542,9 +579,12 @@ db_cluster_resize <- function(cluster_id, num_workers = NULL, autoscale = NULL,
 #' @family Clusters API
 #'
 #' @export
-db_cluster_get <- function(cluster_id,
-                           host = db_host(), token = db_token(),
-                           perform_request = TRUE) {
+db_cluster_get <- function(
+  cluster_id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     cluster_id = cluster_id
   )
@@ -568,7 +608,6 @@ db_cluster_get <- function(cluster_id,
   } else {
     req
   }
-
 }
 
 #' List Clusters
@@ -592,8 +631,11 @@ db_cluster_get <- function(cluster_id,
 #' @family Clusters API
 #'
 #' @export
-db_cluster_list <- function(host = db_host(), token = db_token(),
-                            perform_request = TRUE) {
+db_cluster_list <- function(
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   req <- db_request(
     endpoint = "clusters/list",
     method = "GET",
@@ -621,8 +663,11 @@ db_cluster_list <- function(host = db_host(), token = db_token(),
 #' @family Clusters API
 #'
 #' @export
-db_cluster_list_node_types <- function(host = db_host(), token = db_token(),
-                                       perform_request = TRUE) {
+db_cluster_list_node_types <- function(
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   req <- db_request(
     endpoint = "clusters/list-node-types",
     method = "GET",
@@ -636,7 +681,6 @@ db_cluster_list_node_types <- function(host = db_host(), token = db_token(),
   } else {
     req
   }
-
 }
 
 #' List Available Databricks Runtime Versions
@@ -651,8 +695,11 @@ db_cluster_list_node_types <- function(host = db_host(), token = db_token(),
 #' @family Clusters API
 #'
 #' @export
-db_cluster_runtime_versions <- function(host = db_host(), token = db_token(),
-                                        perform_request = TRUE) {
+db_cluster_runtime_versions <- function(
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   req <- db_request(
     endpoint = "clusters/spark-versions",
     method = "GET",
@@ -666,7 +713,6 @@ db_cluster_runtime_versions <- function(host = db_host(), token = db_token(),
   } else {
     req
   }
-
 }
 
 #' List Availability Zones (AWS Only)
@@ -682,8 +728,11 @@ db_cluster_runtime_versions <- function(host = db_host(), token = db_token(),
 #' (ex: us-west-2a). These zones can be used to launch a cluster.
 #'
 #' @export
-db_cluster_list_zones <- function(host = db_host(), token = db_token(),
-                                  perform_request = TRUE) {
+db_cluster_list_zones <- function(
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   req <- db_request(
     endpoint = "clusters/list-zones",
     method = "GET",
@@ -697,7 +746,6 @@ db_cluster_list_zones <- function(host = db_host(), token = db_token(),
   } else {
     req
   }
-
 }
 
 #' List Cluster Activity Events
@@ -708,7 +756,7 @@ db_cluster_list_zones <- function(host = db_host(), token = db_token(),
 #' @param end_time The end time in epoch milliseconds. If empty, returns events
 #' up to the current time.
 #' @param event_types List. Optional set of event types to filter by. Default
-#' is to return all events. [Event Types](https://docs.databricks.com/dev-tools/api/latest/clusters.html#clustereventtype).
+#' is to return all events. [Event Types](https://docs.databricks.com/api/workspace/clusters/events#events).
 #' @param order Either `DESC` (default) or `ASC`.
 #' @param offset The offset in the result set. Defaults to 0 (no offset). When
 #' an offset is specified and the results are requested in descending order, the
@@ -728,13 +776,18 @@ db_cluster_list_zones <- function(host = db_host(), token = db_token(),
 #' @family Clusters API
 #'
 #' @export
-db_cluster_events <- function(cluster_id,
-                              start_time = NULL, end_time = NULL,
-                              event_types = NULL,
-                              order = c("DESC", "ASC"), offset = 0, limit = 50,
-                              host = db_host(), token = db_token(),
-                              perform_request = TRUE) {
-
+db_cluster_events <- function(
+  cluster_id,
+  start_time = NULL,
+  end_time = NULL,
+  event_types = NULL,
+  order = c("DESC", "ASC"),
+  offset = 0,
+  limit = 50,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   order <- match.arg(order, several.ok = FALSE)
   stopifnot(
     offset >= 0,
@@ -764,7 +817,6 @@ db_cluster_events <- function(cluster_id,
   } else {
     req
   }
-
 }
 
 ### Higher Functions ###########################################################
@@ -787,15 +839,19 @@ db_cluster_events <- function(cluster_id,
 #'
 #' @return `db_cluster_get()`
 #' @export
-get_and_start_cluster <- function(cluster_id, polling_interval = 5,
-                                  host = db_host(), token = db_token(),
-                                  silent = FALSE) {
-
-
-
-
+get_and_start_cluster <- function(
+  cluster_id,
+  polling_interval = 5,
+  host = db_host(),
+  token = db_token(),
+  silent = FALSE
+) {
   # get cluster status
-  cluster_status <- db_cluster_get(cluster_id = cluster_id, host = host, token = token)
+  cluster_status <- db_cluster_get(
+    cluster_id = cluster_id,
+    host = host,
+    token = token
+  )
 
   if (!silent) {
     msg <- "{.header Checking cluster:} {.emph '{cluster_id}'}"
@@ -804,7 +860,10 @@ get_and_start_cluster <- function(cluster_id, polling_interval = 5,
   }
 
   # if the cluster isn't running, start it
-  if (!cluster_status$state %in% c("RUNNING", "PENDING", "RESIZING", "STARTING", "RESTARTING")) {
+  if (
+    !cluster_status$state %in%
+      c("RUNNING", "PENDING", "RESIZING", "STARTING", "RESTARTING")
+  ) {
     db_cluster_start(cluster_id = cluster_id, host = host, token = token)
   }
 
@@ -818,7 +877,11 @@ get_and_start_cluster <- function(cluster_id, polling_interval = 5,
 
   while (cluster_status$state != "RUNNING") {
     Sys.sleep(polling_interval)
-    cluster_status <- db_cluster_get(cluster_id = cluster_id, host = host, token = token)
+    cluster_status <- db_cluster_get(
+      cluster_id = cluster_id,
+      host = host,
+      token = token
+    )
     if (!silent) cli::cli_progress_update()
     if (cluster_status$state %in% c("TERMINATED", "TERMINATING")) {
       if (!silent) cli::cli_progress_done(result = "failed")
@@ -856,9 +919,14 @@ get_and_start_cluster <- function(cluster_id, polling_interval = 5,
 #' @export
 #'
 #' @importFrom rlang .data
-get_latest_dbr <- function(lts, ml, gpu, photon,
-                           host = db_host(), token = db_token()) {
-
+get_latest_dbr <- function(
+  lts,
+  ml,
+  gpu,
+  photon,
+  host = db_host(),
+  token = db_token()
+) {
   # don't allow impossible combinations
   if (gpu) {
     if (!ml) {
@@ -887,10 +955,10 @@ get_latest_dbr <- function(lts, ml, gpu, photon,
 
   runtime_matches <- runtimes_adj |>
     dplyr::filter(
-      .data$lts == {{lts}},
-      .data$ml == {{ml}},
-      .data$gpu == {{gpu}},
-      .data$photon == {{photon}}
+      .data$lts == {{ lts }},
+      .data$ml == {{ ml }},
+      .data$gpu == {{ gpu }},
+      .data$photon == {{ photon }}
     ) |>
     dplyr::slice_head(n = 1)
 
@@ -898,5 +966,4 @@ get_latest_dbr <- function(lts, ml, gpu, photon,
     key = runtime_matches[["key"]],
     name = runtime_matches[["name"]]
   )
-
 }

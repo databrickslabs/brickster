@@ -47,20 +47,20 @@ Refer to the ["Connect to a Databricks Workspace"](https://databrickslabs.github
 `{brickster}` is very deliberate with choosing what API's are wrapped. `{brickster}` isn't intended to replace IaC tooling (e.g. [Terraform](#0)) or to be used for account/workspace administration.
 
 | API | Available | Version |
-|----------------------------------------|----------------|----------------|
-| [DBFS](https://docs.databricks.com/dev-tools/api/latest/dbfs.html) | Yes | 2.0 |
-| [Secrets](https://docs.databricks.com/dev-tools/api/latest/secrets.html) | Yes | 2.0 |
+|--------------------------------------|-----------------|-----------------|
+| [DBFS](https://docs.databricks.com/api/workspace/dbfs) | Yes | 2.0 |
+| [Secrets](https://docs.databricks.com/api/workspace/secrets) | Yes | 2.0 |
 | [Repos](https://docs.databricks.com/dev-tools/api/latest/repos.html) | Yes | 2.0 |
-| [mlflow Model Registry](https://docs.databricks.com/dev-tools/api/latest/mlflow.html) | Yes | 2.0 |
-| [Clusters](https://docs.databricks.com/dev-tools/api/latest/clusters.html) | Yes | 2.0 |
-| [Libraries](https://docs.databricks.com/dev-tools/api/latest/libraries.html) | Yes | 2.0 |
-| [Workspace](https://docs.databricks.com/dev-tools/api/latest/workspace.html) | Yes | 2.0 |
-| [Endpoints](https://docs.databricks.com/sql/api/sql-endpoints.html) | Yes | 2.0 |
-| [Query History](https://docs.databricks.com/sql/api/query-history.html) | Yes | 2.0 |
-| [Jobs](https://docs.databricks.com/dev-tools/api/latest/jobs.html) | Yes | 2.1 |
+| [mlflow Model Registry](https://docs.databricks.com/api/workspace/modelregistry) | Yes | 2.0 |
+| [Clusters](https://docs.databricks.com/api/workspace/clusters) | Yes | 2.0 |
+| [Libraries](https://docs.databricks.com/api/workspace/libraries) | Yes | 2.0 |
+| [Workspace](https://docs.databricks.com/api/workspace/workspace) | Yes | 2.0 |
+| [Endpoints](https://docs.databricks.com/api/workspace/warehouses) | Yes | 2.0 |
+| [Query History](https://docs.databricks.com/api/workspace/queryhistory) | Yes | 2.0 |
+| [Jobs](https://docs.databricks.com/api/workspace/jobs) | Yes | 2.1 |
 | [Volumes (Files)](https://docs.databricks.com/api/workspace/files) | Yes | 2.0 |
 | [SQL Statement Execution](https://docs.databricks.com/api/workspace/statementexecution) | Yes | 2.0 |
-| [REST 1.2 Commands](https://docs.databricks.com/dev-tools/api/1.2/index.html) | Partially | 1.2 |
+| [REST 1.2 Commands](https://docs.databricks.com/api/workspace/commandexecution) | Partially | 1.2 |
 | [Unity Catalog - Tables](https://docs.databricks.com/api/workspace/tables) | Yes | 2.1 |
 | [Unity Catalog - Volumes](https://docs.databricks.com/api/workspace/volumes) | Yes | 2.1 |
-| [Unity Catalog](https://api-docs.databricks.com/rest/latest/unity-catalog-api-specification-2-1.html) | Partially | 2.1 |
+| [Unity Catalog](https://docs.databricks.com/api/workspace/catalogs) | Partially | 2.1 |

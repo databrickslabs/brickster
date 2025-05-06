@@ -1,5 +1,3 @@
-# https://docs.databricks.com/dev-tools/api/latest/jobs.html
-
 #' Create Job
 #'
 #' @param name Name for the job.
@@ -25,7 +23,7 @@
 #' @inheritParams db_sql_warehouse_create
 #'
 #' @details
-#' [Full Documentation](https://docs.databricks.com/dev-tools/api/latest/jobs.html#operation/JobsCreate)
+#' [Full Documentation](https://docs.databricks.com/api/workspace/jobs/create)
 #'
 #' @seealso [job_tasks()], [job_task()], [email_notifications()],
 #' [cron_schedule()], [access_control_request()], [access_control_req_user()],
@@ -33,28 +31,33 @@
 #' @family Jobs API
 #'
 #' @export
-db_jobs_create <- function(name,
-                           tasks,
-                           schedule = NULL,
-                           job_clusters = NULL,
-                           email_notifications = NULL,
-                           timeout_seconds = NULL,
-                           max_concurrent_runs = 1,
-                           access_control_list = NULL,
-                           git_source = NULL,
-                           host = db_host(), token = db_token(),
-                           perform_request = TRUE) {
-
+db_jobs_create <- function(
+  name,
+  tasks,
+  schedule = NULL,
+  job_clusters = NULL,
+  email_notifications = NULL,
+  timeout_seconds = NULL,
+  max_concurrent_runs = 1,
+  access_control_list = NULL,
+  git_source = NULL,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   format <- "MULTI_TASK"
 
   # jobs clusters is transformed to meet API structure required
-  job_clusters <- purrr::imap(job_clusters, ~{
-    stopifnot(is.new_cluster(.x))
-    list(
-      "job_cluster_key" = .y,
-      "new_cluster" = .x
-    )
-  })
+  job_clusters <- purrr::imap(
+    job_clusters,
+    ~ {
+      stopifnot(is.new_cluster(.x))
+      list(
+        "job_cluster_key" = .y,
+        "new_cluster" = .x
+      )
+    }
+  )
   job_clusters <- unname(job_clusters)
 
   body <- list(
@@ -86,7 +89,6 @@ db_jobs_create <- function(name,
   } else {
     req
   }
-
 }
 
 #' List Jobs
@@ -104,10 +106,14 @@ db_jobs_create <- function(name,
 #' @family Jobs API
 #'
 #' @export
-db_jobs_list <- function(limit = 25, offset = 0, expand_tasks = FALSE,
-                         host = db_host(), token = db_token(),
-                         perform_request = TRUE) {
-
+db_jobs_list <- function(
+  limit = 25,
+  offset = 0,
+  expand_tasks = FALSE,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     limit = as.numeric(limit),
     offset = as.numeric(offset),
@@ -123,14 +129,12 @@ db_jobs_list <- function(limit = 25, offset = 0, expand_tasks = FALSE,
     token = token
   )
 
-
   if (perform_request) {
     res <- db_perform_request(req)
     res$jobs
   } else {
     req
   }
-
 }
 
 #' Delete a Job
@@ -142,10 +146,12 @@ db_jobs_list <- function(limit = 25, offset = 0, expand_tasks = FALSE,
 #' @family Jobs API
 #'
 #' @export
-db_jobs_delete <- function(job_id,
-                           host = db_host(), token = db_token(),
-                           perform_request = TRUE) {
-
+db_jobs_delete <- function(
+  job_id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     job_id = as.character(job_id)
   )
@@ -164,7 +170,6 @@ db_jobs_delete <- function(job_id,
   } else {
     req
   }
-
 }
 
 #' Get Job Details
@@ -176,10 +181,12 @@ db_jobs_delete <- function(job_id,
 #' @family Jobs API
 #'
 #' @export
-db_jobs_get <- function(job_id,
-                        host = db_host(), token = db_token(),
-                        perform_request = TRUE) {
-
+db_jobs_get <- function(
+  job_id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     job_id = as.character(job_id)
   )
@@ -198,7 +205,6 @@ db_jobs_get <- function(job_id,
   } else {
     req
   }
-
 }
 
 #' Overwrite All Settings For A Job
@@ -211,19 +217,21 @@ db_jobs_get <- function(job_id,
 #' @family Jobs API
 #'
 #' @export
-db_jobs_reset <- function(job_id,
-                          name,
-                          schedule,
-                          tasks,
-                          job_clusters = NULL,
-                          email_notifications = NULL,
-                          timeout_seconds = NULL,
-                          max_concurrent_runs = 1,
-                          access_control_list = NULL,
-                          git_source = NULL,
-                          host = db_host(), token = db_token(),
-                          perform_request = TRUE) {
-
+db_jobs_reset <- function(
+  job_id,
+  name,
+  schedule,
+  tasks,
+  job_clusters = NULL,
+  email_notifications = NULL,
+  timeout_seconds = NULL,
+  max_concurrent_runs = 1,
+  access_control_list = NULL,
+  git_source = NULL,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   format <- "MULTI_TASK"
 
   body <- list(
@@ -256,7 +264,6 @@ db_jobs_reset <- function(job_id,
   } else {
     req
   }
-
 }
 
 #' Partially Update A Job
@@ -274,30 +281,35 @@ db_jobs_reset <- function(job_id,
 #' @family Jobs API
 #'
 #' @export
-db_jobs_update <- function(job_id,
-                           fields_to_remove = list(),
-                           name = NULL,
-                           schedule = NULL,
-                           tasks = NULL,
-                           job_clusters = NULL,
-                           email_notifications = NULL,
-                           timeout_seconds = NULL,
-                           max_concurrent_runs = NULL,
-                           access_control_list = NULL,
-                           git_source = NULL,
-                           host = db_host(), token = db_token(),
-                           perform_request = TRUE) {
-
+db_jobs_update <- function(
+  job_id,
+  fields_to_remove = list(),
+  name = NULL,
+  schedule = NULL,
+  tasks = NULL,
+  job_clusters = NULL,
+  email_notifications = NULL,
+  timeout_seconds = NULL,
+  max_concurrent_runs = NULL,
+  access_control_list = NULL,
+  git_source = NULL,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   format <- "MULTI_TASK"
 
   # jobs clusters is transformed to meet API structure required
-  job_clusters <- purrr::imap(job_clusters, ~{
-    stopifnot(is.new_cluster(.x))
-    list(
-      "job_cluster_key" = .y,
-      "new_cluster" = .x
-    )
-  })
+  job_clusters <- purrr::imap(
+    job_clusters,
+    ~ {
+      stopifnot(is.new_cluster(.x))
+      list(
+        "job_cluster_key" = .y,
+        "new_cluster" = .x
+      )
+    }
+  )
   job_clusters <- unname(job_clusters)
 
   body <- list(
@@ -314,7 +326,11 @@ db_jobs_update <- function(job_id,
   )
 
   body <- purrr::discard(body, is.null)
-  body <- list(job_id = job_id, new_settings = body, fields_to_remove = fields_to_remove)
+  body <- list(
+    job_id = job_id,
+    new_settings = body,
+    fields_to_remove = fields_to_remove
+  )
 
   req <- db_request(
     endpoint = "jobs/update",
@@ -330,7 +346,6 @@ db_jobs_update <- function(job_id,
   } else {
     req
   }
-
 }
 
 #' Trigger A New Job Run
@@ -359,14 +374,16 @@ db_jobs_update <- function(job_id,
 #' @family Jobs API
 #'
 #' @export
-db_jobs_run_now <- function(job_id,
-                            jar_params = list(),
-                            notebook_params = list(),
-                            python_params = list(),
-                            spark_submit_params = list(),
-                            host = db_host(), token = db_token(),
-                            perform_request = TRUE) {
-
+db_jobs_run_now <- function(
+  job_id,
+  jar_params = list(),
+  notebook_params = list(),
+  python_params = list(),
+  spark_submit_params = list(),
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     job_id = job_id,
     jar_params = jar_params,
@@ -389,7 +406,6 @@ db_jobs_run_now <- function(job_id,
   } else {
     req
   }
-
 }
 
 #' Create And Trigger A One-Time Run
@@ -409,24 +425,29 @@ db_jobs_run_now <- function(job_id,
 #' @family Jobs API
 #'
 #' @export
-db_jobs_runs_submit <- function(tasks,
-                                run_name,
-                                timeout_seconds = NULL,
-                                idempotency_token = NULL,
-                                access_control_list = NULL,
-                                git_source = NULL,
-                                job_clusters = NULL,
-                                host = db_host(), token = db_token(),
-                                perform_request = TRUE) {
-
+db_jobs_runs_submit <- function(
+  tasks,
+  run_name,
+  timeout_seconds = NULL,
+  idempotency_token = NULL,
+  access_control_list = NULL,
+  git_source = NULL,
+  job_clusters = NULL,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   # jobs clusters is transformed to meet API structure required
-  job_clusters <- purrr::imap(job_clusters, ~{
-    stopifnot(is.new_cluster(.x))
-    list(
-      "job_cluster_key" = .y,
-      "new_cluster" = .x
-    )
-  })
+  job_clusters <- purrr::imap(
+    job_clusters,
+    ~ {
+      stopifnot(is.new_cluster(.x))
+      list(
+        "job_cluster_key" = .y,
+        "new_cluster" = .x
+      )
+    }
+  )
   job_clusters <- unname(job_clusters)
 
   body <- list(
@@ -455,7 +476,6 @@ db_jobs_runs_submit <- function(tasks,
   } else {
     req
   }
-
 }
 
 #' List Job Runs
@@ -479,13 +499,18 @@ db_jobs_runs_submit <- function(tasks,
 #' @family Jobs API
 #'
 #' @export
-db_jobs_runs_list <- function(job_id, active_only = FALSE,
-                              completed_only = FALSE, offset = 0, limit = 25,
-                              run_type = c("JOB_RUN", "WORKFLOW_RUN", "SUBMIT_RUN"),
-                              expand_tasks = FALSE,
-                              host = db_host(), token = db_token(),
-                              perform_request = TRUE) {
-
+db_jobs_runs_list <- function(
+  job_id,
+  active_only = FALSE,
+  completed_only = FALSE,
+  offset = 0,
+  limit = 25,
+  run_type = c("JOB_RUN", "WORKFLOW_RUN", "SUBMIT_RUN"),
+  expand_tasks = FALSE,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   run_type <- match.arg(run_type, several.ok = FALSE)
 
   if (active_only && completed_only) {
@@ -511,14 +536,12 @@ db_jobs_runs_list <- function(job_id, active_only = FALSE,
     token = token
   )
 
-
   if (perform_request) {
     res <- db_perform_request(req)
     res$runs
   } else {
     req
   }
-
 }
 
 #' Get Job Run Details
@@ -532,10 +555,12 @@ db_jobs_runs_list <- function(job_id, active_only = FALSE,
 #' @family Jobs API
 #'
 #' @export
-db_jobs_runs_get <- function(run_id,
-                             host = db_host(), token = db_token(),
-                             perform_request = TRUE) {
-
+db_jobs_runs_get <- function(
+  run_id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     run_id = as.character(run_id)
   )
@@ -554,7 +579,6 @@ db_jobs_runs_get <- function(run_id,
   } else {
     req
   }
-
 }
 
 #' Export Job Run Output
@@ -570,10 +594,13 @@ db_jobs_runs_get <- function(run_id,
 #' @family Jobs API
 #'
 #' @export
-db_jobs_runs_export <- function(run_id, views_to_export = c("CODE", "DASHBOARDS", "ALL"),
-                                host = db_host(), token = db_token(),
-                                perform_request = TRUE) {
-
+db_jobs_runs_export <- function(
+  run_id,
+  views_to_export = c("CODE", "DASHBOARDS", "ALL"),
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   # TODO: could add the ability to directly parse the outputs to files?
   views_to_export <- match.arg(views_to_export, several.ok = FALSE)
 
@@ -596,7 +623,6 @@ db_jobs_runs_export <- function(run_id, views_to_export = c("CODE", "DASHBOARDS"
   } else {
     req
   }
-
 }
 
 #' Cancel Job Run
@@ -615,10 +641,12 @@ db_jobs_runs_export <- function(run_id, views_to_export = c("CODE", "DASHBOARDS"
 #' @family Jobs API
 #'
 #' @export
-db_jobs_runs_cancel <- function(run_id,
-                                host = db_host(), token = db_token(),
-                                perform_request = TRUE) {
-
+db_jobs_runs_cancel <- function(
+  run_id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     run_id = as.character(run_id)
   )
@@ -637,7 +665,6 @@ db_jobs_runs_cancel <- function(run_id,
   } else {
     req
   }
-
 }
 
 #' Get Job Run Output
@@ -649,9 +676,12 @@ db_jobs_runs_cancel <- function(run_id,
 #' @family Jobs API
 #'
 #' @export
-db_jobs_runs_get_output <- function(run_id,
-                                    host = db_host(), token = db_token(),
-                                    perform_request = TRUE) {
+db_jobs_runs_get_output <- function(
+  run_id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     run_id = as.character(run_id)
   )
@@ -670,7 +700,6 @@ db_jobs_runs_get_output <- function(run_id,
   } else {
     req
   }
-
 }
 
 #' Delete Job Run
@@ -682,10 +711,12 @@ db_jobs_runs_get_output <- function(run_id,
 #' @family Jobs API
 #'
 #' @export
-db_jobs_runs_delete <- function(run_id,
-                                host = db_host(), token = db_token(),
-                                perform_request = TRUE) {
-
+db_jobs_runs_delete <- function(
+  run_id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     run_id = as.character(run_id)
   )
@@ -704,5 +735,4 @@ db_jobs_runs_delete <- function(run_id,
   } else {
     req
   }
-
 }

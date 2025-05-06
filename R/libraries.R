@@ -1,5 +1,3 @@
-# https://docs.databricks.com/dev-tools/api/latest/libraries.html
-
 #' Get Status of All Libraries on All Clusters
 #'
 #' @details
@@ -17,8 +15,11 @@
 #' @family Libraries API
 #'
 #' @export
-db_libs_all_cluster_statuses <- function(host = db_host(), token = db_token(),
-                                         perform_request = TRUE) {
+db_libs_all_cluster_statuses <- function(
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   req <- db_request(
     endpoint = "libraries/all-cluster-statuses",
     method = "GET",
@@ -32,7 +33,6 @@ db_libs_all_cluster_statuses <- function(host = db_host(), token = db_token(),
   } else {
     req
   }
-
 }
 
 #' Get Status of Libraries on Cluster
@@ -47,9 +47,12 @@ db_libs_all_cluster_statuses <- function(host = db_host(), token = db_token(),
 #' @seealso [wait_for_lib_installs()]
 #'
 #' @export
-db_libs_cluster_status <- function(cluster_id,
-                                   host = db_host(), token = db_token(),
-                                   perform_request = TRUE) {
+db_libs_cluster_status <- function(
+  cluster_id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     cluster_id = cluster_id
   )
@@ -68,7 +71,6 @@ db_libs_cluster_status <- function(cluster_id,
   } else {
     req
   }
-
 }
 
 #' Install Library on Cluster
@@ -102,10 +104,13 @@ db_libs_cluster_status <- function(cluster_id,
 #' @family Libraries API
 #'
 #' @export
-db_libs_install <- function(cluster_id, libraries,
-                            host = db_host(), token = db_token(),
-                            perform_request = TRUE) {
-
+db_libs_install <- function(
+  cluster_id,
+  libraries,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   stopifnot(is.libraries(libraries))
 
   body <- list(
@@ -127,7 +132,6 @@ db_libs_install <- function(cluster_id, libraries,
   } else {
     req
   }
-
 }
 
 #' Uninstall Library on Cluster
@@ -145,9 +149,13 @@ db_libs_install <- function(cluster_id, libraries,
 #' @family Libraries API
 #'
 #' @export
-db_libs_uninstall <- function(cluster_id, libraries,
-                              host = db_host(), token = db_token(),
-                              perform_request = TRUE) {
+db_libs_uninstall <- function(
+  cluster_id,
+  libraries,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   stopifnot(is.libraries(libraries))
 
   body <- list(
@@ -169,7 +177,6 @@ db_libs_uninstall <- function(cluster_id, libraries,
   } else {
     req
   }
-
 }
 
 #' Wait for Libraries to Install on Databricks Cluster
@@ -190,18 +197,24 @@ db_libs_uninstall <- function(cluster_id, libraries,
 #' @seealso [db_libs_cluster_status()]
 #'
 #' @export
-wait_for_lib_installs <- function(cluster_id, polling_interval = 5,
-                                  allow_failures = FALSE,
-                                  host = db_host(), token = db_token()) {
-
+wait_for_lib_installs <- function(
+  cluster_id,
+  polling_interval = 5,
+  allow_failures = FALSE,
+  host = db_host(),
+  token = db_token()
+) {
   # will enter into while loop, saves code outside while
   lib_statuses <- "INSTALLING"
 
   # get library statuses until all installed
   while (any(lib_statuses == "INSTALLING")) {
-
     # query for status of libs
-    lib_query <- db_libs_cluster_status(cluster_id = cluster_id, host = host, token = token)
+    lib_query <- db_libs_cluster_status(
+      cluster_id = cluster_id,
+      host = host,
+      token = token
+    )
     lib_statuses <- purrr::map_chr(lib_query$library_statuses, "status")
 
     # if failures are not allowed and failur occurs then raise an error
@@ -212,7 +225,6 @@ wait_for_lib_installs <- function(cluster_id, polling_interval = 5,
     if (!any(lib_statuses == "INSTALLING")) break
 
     Sys.sleep(polling_interval)
-
   }
 
   if (allow_failures && "FAILED" %in% lib_statuses) {
@@ -221,9 +233,4 @@ wait_for_lib_installs <- function(cluster_id, polling_interval = 5,
   }
 
   NULL
-
 }
-
-
-
-

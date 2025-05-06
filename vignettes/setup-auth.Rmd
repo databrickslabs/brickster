@@ -26,7 +26,7 @@ It's recommended to use option (1) when using `{brickster}` interactively, if yo
 
 `{brickster}` will automatically detect when a session has [Posit Workbench managed Databricks OAuth credentials](https://docs.posit.co/ide/server-pro/integration/databricks.html) enabled. For more information about this authentication flow see the section [Posit Workbench Managed Databricks OAuth Credentials](#posit-workbench-managed-databricks-oauth-credentials).
 
-Personal Access Tokens can be generated in a few steps, for a step-by-step breakdown [refer to the documentation](https://docs.databricks.com/dev-tools/api/latest/authentication.html).
+Personal Access Tokens can be generated in a few steps, for a step-by-step breakdown [refer to the documentation](https://docs.databricks.com/aws/en/dev-tools/auth).
 
 Once you have a token you'll be able to store it alongside the workspace URL in an `.Renviron` file. The `.Renviron` is used for storing the variables, such as those which may be sensitive (e.g. credentials) and de-couple them from the code [additional reading](https://CRAN.R-project.org/package=startup/vignettes/startup-intro.html).
 

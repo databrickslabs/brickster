@@ -49,7 +49,7 @@ API does not support exporting a library.
 At this time we do not support the \code{direct_download} parameter and returns a
 base64 encoded string.
 
-\href{https://docs.databricks.com/dev-tools/api/latest/workspace.html#export}{See More}.
+\href{https://docs.databricks.com/api/workspace/workspace/export}{See More}.
 }
 \seealso{
 Other Workspace API: 
