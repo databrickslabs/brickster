@@ -1,5 +1,3 @@
-# https://docs.databricks.com/dev-tools/api/latest/mlflow.html
-
 #' Get Registered Model Details
 #'
 #' @param name Name of the model.
@@ -9,9 +7,12 @@
 #' @family Model Registry API
 #'
 #' @export
-db_mlflow_registered_model_details <- function(name,
-                                               host = db_host(), token = db_token(),
-                                               perform_request = TRUE) {
+db_mlflow_registered_model_details <- function(
+  name,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     name = name
   )
@@ -30,7 +31,6 @@ db_mlflow_registered_model_details <- function(name,
   } else {
     req
   }
-
 }
 
 #' Transition a Model Version's Stage
@@ -52,12 +52,16 @@ db_mlflow_registered_model_details <- function(name,
 #' @family Model Registry API
 #'
 #' @export
-db_mlflow_model_transition_stage <- function(name, version,
-                                             stage = c("None", "Staging", "Production", "Archived"),
-                                             archive_existing_versions = TRUE,
-                                             comment = NULL,
-                                             host = db_host(), token = db_token(),
-                                             perform_request = TRUE) {
+db_mlflow_model_transition_stage <- function(
+  name,
+  version,
+  stage = c("None", "Staging", "Production", "Archived"),
+  archive_existing_versions = TRUE,
+  comment = NULL,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   stage <- match.arg(stage, several.ok = FALSE)
 
   body <- list(
@@ -82,7 +86,6 @@ db_mlflow_model_transition_stage <- function(name, version,
   } else {
     req
   }
-
 }
 
 #' Make a Model Version Stage Transition Request
@@ -94,11 +97,15 @@ db_mlflow_model_transition_stage <- function(name, version,
 #' @family Model Registry API
 #'
 #' @export
-db_mlflow_model_transition_req <- function(name, version,
-                                           stage = c("None", "Staging", "Production", "Archived"),
-                                           comment = NULL,
-                                           host = db_host(), token = db_token(),
-                                           perform_request = TRUE) {
+db_mlflow_model_transition_req <- function(
+  name,
+  version,
+  stage = c("None", "Staging", "Production", "Archived"),
+  comment = NULL,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   stage <- match.arg(stage, several.ok = FALSE)
 
   body <- list(
@@ -122,7 +129,6 @@ db_mlflow_model_transition_req <- function(name, version,
   } else {
     req
   }
-
 }
 
 #' Get All Open Stage Transition Requests for the Model Version
@@ -134,9 +140,13 @@ db_mlflow_model_transition_req <- function(name, version,
 #' @family Model Registry API
 #'
 #' @export
-db_mlflow_model_open_transition_reqs <- function(name, version,
-                                                 host = db_host(), token = db_token(),
-                                                 perform_request = TRUE) {
+db_mlflow_model_open_transition_reqs <- function(
+  name,
+  version,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     name = name,
     version = as.character(version)
@@ -156,7 +166,6 @@ db_mlflow_model_open_transition_reqs <- function(name, version,
   } else {
     req
   }
-
 }
 
 #' Approve Model Version Stage Transition Request
@@ -168,12 +177,16 @@ db_mlflow_model_open_transition_reqs <- function(name, version,
 #' @family Model Registry API
 #'
 #' @export
-db_mlflow_model_approve_transition_req <- function(name, version,
-                                                   stage = c("None", "Staging", "Production", "Archived"),
-                                                   archive_existing_versions = TRUE,
-                                                   comment = NULL,
-                                                   host = db_host(), token = db_token(),
-                                                   perform_request = TRUE) {
+db_mlflow_model_approve_transition_req <- function(
+  name,
+  version,
+  stage = c("None", "Staging", "Production", "Archived"),
+  archive_existing_versions = TRUE,
+  comment = NULL,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   stage <- match.arg(stage, several.ok = FALSE)
 
   body <- list(
@@ -198,7 +211,6 @@ db_mlflow_model_approve_transition_req <- function(name, version,
   } else {
     req
   }
-
 }
 
 #' Reject Model Version Stage Transition Request
@@ -210,11 +222,15 @@ db_mlflow_model_approve_transition_req <- function(name, version,
 #' @family Model Registry API
 #'
 #' @export
-db_mlflow_model_reject_transition_req <- function(name, version,
-                                                  stage = c("None", "Staging", "Production", "Archived"),
-                                                  comment = NULL,
-                                                  host = db_host(), token = db_token(),
-                                                  perform_request = TRUE) {
+db_mlflow_model_reject_transition_req <- function(
+  name,
+  version,
+  stage = c("None", "Staging", "Production", "Archived"),
+  comment = NULL,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   stage <- match.arg(stage, several.ok = FALSE)
 
   body <- list(
@@ -238,7 +254,6 @@ db_mlflow_model_reject_transition_req <- function(name, version,
   } else {
     req
   }
-
 }
 
 #' Delete a Model Version Stage Transition Request
@@ -253,11 +268,16 @@ db_mlflow_model_reject_transition_req <- function(name, version,
 #' @family Model Registry API
 #'
 #' @export
-db_mlflow_model_delete_transition_req <- function(name, version,
-                                                  stage = c("None", "Staging", "Production", "Archived"),
-                                                  creator, comment = NULL,
-                                                  host = db_host(), token = db_token(),
-                                                  perform_request = TRUE) {
+db_mlflow_model_delete_transition_req <- function(
+  name,
+  version,
+  stage = c("None", "Staging", "Production", "Archived"),
+  creator,
+  comment = NULL,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   stage <- match.arg(stage, several.ok = FALSE)
 
   body <- list(
@@ -282,7 +302,6 @@ db_mlflow_model_delete_transition_req <- function(name, version,
   } else {
     req
   }
-
 }
 
 #' Make a Comment on a Model Version
@@ -294,9 +313,14 @@ db_mlflow_model_delete_transition_req <- function(name, version,
 #' @family Model Registry API
 #'
 #' @export
-db_mlflow_model_version_comment <- function(name, version, comment,
-                                            host = db_host(), token = db_token(),
-                                            perform_request = TRUE) {
+db_mlflow_model_version_comment <- function(
+  name,
+  version,
+  comment,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     name = name,
     version = as.character(version),
@@ -317,7 +341,6 @@ db_mlflow_model_version_comment <- function(name, version, comment,
   } else {
     req
   }
-
 }
 
 #' Edit a Comment on a Model Version
@@ -330,9 +353,13 @@ db_mlflow_model_version_comment <- function(name, version, comment,
 #' @family Model Registry API
 #'
 #' @export
-db_mlflow_model_version_comment_edit <- function(id, comment,
-                                                 host = db_host(), token = db_token(),
-                                                 perform_request = TRUE) {
+db_mlflow_model_version_comment_edit <- function(
+  id,
+  comment,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     id = id,
     comment = comment
@@ -352,7 +379,6 @@ db_mlflow_model_version_comment_edit <- function(id, comment,
   } else {
     req
   }
-
 }
 
 #' Delete a Comment on a Model Version
@@ -364,9 +390,12 @@ db_mlflow_model_version_comment_edit <- function(id, comment,
 #' @family Model Registry API
 #'
 #' @export
-db_mlflow_model_version_comment_delete <- function(id,
-                                                   host = db_host(), token = db_token(),
-                                                   perform_request = TRUE) {
+db_mlflow_model_version_comment_delete <- function(
+  id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     id = id
   )
@@ -385,15 +414,16 @@ db_mlflow_model_version_comment_delete <- function(id,
   } else {
     req
   }
-
 }
 
 # undocumented endpoints
-db_mlflow_registered_models_list <- function(max_results = 100,
-                                             page_token = NULL,
-                                             host = db_host(), token = db_token(),
-                                             perform_request = TRUE) {
-
+db_mlflow_registered_models_list <- function(
+  max_results = 100,
+  page_token = NULL,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     max_results = max_results,
     page_token = page_token
@@ -415,13 +445,15 @@ db_mlflow_registered_models_list <- function(max_results = 100,
   }
 }
 
-db_mlflow_registered_models_search <- function(filter = NULL,
-                                               max_results = 100,
-                                               order_by = list(),
-                                               page_token = NULL,
-                                               host = db_host(), token = db_token(),
-                                               perform_request = TRUE) {
-
+db_mlflow_registered_models_search <- function(
+  filter = NULL,
+  max_results = 100,
+  order_by = list(),
+  page_token = NULL,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     filter = filter,
     max_results = max_results,
@@ -445,13 +477,15 @@ db_mlflow_registered_models_search <- function(filter = NULL,
   }
 }
 
-db_mlflow_registered_models_search_versions <- function(name,
-                                                        max_results = 10000,
-                                                        order_by = list(),
-                                                        page_token = NULL,
-                                                        host = db_host(), token = db_token(),
-                                                        perform_request = TRUE) {
-
+db_mlflow_registered_models_search_versions <- function(
+  name,
+  max_results = 10000,
+  order_by = list(),
+  page_token = NULL,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     filter = paste0("name='", name, "'"),
     max_results = max_results,

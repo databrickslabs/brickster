@@ -177,7 +177,7 @@ db_libs_cluster_status(cluster_id = new_cluster$cluster_id)
 
 ## Events
 
-A list of events regarding the clusters activity can be fetched via `db_cluster_events()`. There are many [event types](https://docs.databricks.com/dev-tools/api/latest/clusters.html#clustereventtype) that can occur, and by default the 50 most recent events are returned.
+A list of events regarding the clusters activity can be fetched via `db_cluster_events()`. There are many [event types](https://docs.databricks.com/api/workspace/clusters/events#events) that can occur, and by default the 50 most recent events are returned.
 
 ```{r}
 events <- db_cluster_events(cluster_id = new_cluster$cluster_id)

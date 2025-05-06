@@ -1,5 +1,4 @@
 # Databricks DBFS API
-# https://docs.databricks.com/dev-tools/api/latest/dbfs.html
 
 #' DBFS Create
 #'
@@ -27,9 +26,13 @@
 #' @return Handle which should subsequently be passed into [db_dbfs_add_block()]
 #' and [db_dbfs_close()] when writing to a file through a stream.
 #' @export
-db_dbfs_create <- function(path, overwrite = FALSE,
-                           host = db_host(), token = db_token(),
-                           perform_request = TRUE) {
+db_dbfs_create <- function(
+  path,
+  overwrite = FALSE,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     path = path,
     overwrite = overwrite
@@ -51,7 +54,6 @@ db_dbfs_create <- function(path, overwrite = FALSE,
   } else {
     req
   }
-
 }
 
 
@@ -80,10 +82,14 @@ db_dbfs_create <- function(path, overwrite = FALSE,
 #' @export
 #' @importFrom stats setNames
 #' @importFrom utils object.size
-db_dbfs_add_block <- function(handle, data, convert_to_raw = FALSE,
-                              host = db_host(), token = db_token(),
-                              perform_request = TRUE) {
-
+db_dbfs_add_block <- function(
+  handle,
+  data,
+  convert_to_raw = FALSE,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   # `base64enc::base64encode()` can't accept strings
   # if `convert_to_raw` is TRUE then convert so that the string is encoded
   # otherwise it will assume it's a file path on the local system
@@ -127,7 +133,6 @@ db_dbfs_add_block <- function(handle, data, convert_to_raw = FALSE,
   } else {
     req
   }
-
 }
 
 
@@ -149,10 +154,12 @@ db_dbfs_add_block <- function(handle, data, convert_to_raw = FALSE,
 #'
 #' @return HTTP Response
 #' @export
-db_dbfs_close <- function(handle,
-                          host = db_host(), token = db_token(),
-                          perform_request = TRUE) {
-
+db_dbfs_close <- function(
+  handle,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(handle = handle)
 
   req <- db_request(
@@ -169,7 +176,6 @@ db_dbfs_close <- function(handle,
   } else {
     req
   }
-
 }
 
 
@@ -188,10 +194,12 @@ db_dbfs_close <- function(handle,
 #' @family DBFS API
 #'
 #' @export
-db_dbfs_get_status <- function(path,
-                               host = db_host(), token = db_token(),
-                               perform_request = TRUE) {
-
+db_dbfs_get_status <- function(
+  path,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(path = path)
 
   req <- db_request(
@@ -208,7 +216,6 @@ db_dbfs_get_status <- function(path,
   } else {
     req
   }
-
 }
 
 #' DBFS List
@@ -237,10 +244,12 @@ db_dbfs_get_status <- function(path,
 #'
 #' @return data.frame
 #' @export
-db_dbfs_list <- function(path,
-                         host = db_host(), token = db_token(),
-                         perform_request = TRUE) {
-
+db_dbfs_list <- function(
+  path,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(path = path)
 
   req <- db_request(
@@ -257,7 +266,6 @@ db_dbfs_list <- function(path,
   } else {
     req
   }
-
 }
 
 #' DBFS mkdirs
@@ -278,10 +286,12 @@ db_dbfs_list <- function(path,
 #' @family DBFS API
 #'
 #' @export
-db_dbfs_mkdirs <- function(path,
-                           host = db_host(), token = db_token(),
-                           perform_request = TRUE) {
-
+db_dbfs_mkdirs <- function(
+  path,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     path = path
   )
@@ -300,7 +310,6 @@ db_dbfs_mkdirs <- function(path,
   } else {
     req
   }
-
 }
 
 #' DBFS Move
@@ -335,10 +344,13 @@ db_dbfs_mkdirs <- function(path,
 #' @family DBFS API
 #'
 #' @export
-db_dbfs_move <- function(source_path, destination_path,
-                         host = db_host(), token = db_token(),
-                         perform_request = TRUE) {
-
+db_dbfs_move <- function(
+  source_path,
+  destination_path,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     source_path = source_path,
     destination_path = destination_path
@@ -358,7 +370,6 @@ db_dbfs_move <- function(source_path, destination_path,
   } else {
     req
   }
-
 }
 
 #' DBFS Delete
@@ -372,10 +383,13 @@ db_dbfs_move <- function(source_path, destination_path,
 #' @family DBFS API
 #'
 #' @export
-db_dbfs_delete <- function(path, recursive = FALSE,
-                           host = db_host(), token = db_token(),
-                           perform_request = TRUE) {
-
+db_dbfs_delete <- function(
+  path,
+  recursive = FALSE,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     path = path,
     recursive = recursive
@@ -395,7 +409,6 @@ db_dbfs_delete <- function(path, recursive = FALSE,
   } else {
     req
   }
-
 }
 
 #' DBFS Put
@@ -423,10 +436,15 @@ db_dbfs_delete <- function(path, recursive = FALSE,
 #' @family DBFS API
 #'
 #' @export
-db_dbfs_put <- function(path, file = NULL, contents = NULL, overwrite = FALSE,
-                        host = db_host(), token = db_token(),
-                        perform_request = TRUE) {
-
+db_dbfs_put <- function(
+  path,
+  file = NULL,
+  contents = NULL,
+  overwrite = FALSE,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     path = path,
     overwrite = from_logical(overwrite)
@@ -462,7 +480,6 @@ db_dbfs_put <- function(path, file = NULL, contents = NULL, overwrite = FALSE,
   } else {
     req
   }
-
 }
 
 
@@ -491,9 +508,14 @@ db_dbfs_put <- function(path, file = NULL, contents = NULL, overwrite = FALSE,
 #' @family DBFS API
 #'
 #' @export
-db_dbfs_read <- function(path, offset = 0, length = NULL,
-                         host = db_host(), token = db_token(),
-                         perform_request = TRUE) {
+db_dbfs_read <- function(
+  path,
+  offset = 0,
+  length = NULL,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     path = path,
     offset = offset,
@@ -514,5 +536,4 @@ db_dbfs_read <- function(path, offset = 0, length = NULL,
   } else {
     req
   }
-
 }

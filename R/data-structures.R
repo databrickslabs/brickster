@@ -1,6 +1,3 @@
-# https://docs.databricks.com/dev-tools/api/latest/jobs.html
-# https://docs.databricks.com/dev-tools/api/latest/clusters.html#events
-
 #' AWS Attributes
 #'
 #' @param first_on_demand Number of nodes of the cluster that will be placed on
@@ -79,17 +76,18 @@
 #' @family Cloud Attributes
 #'
 #' @export
-aws_attributes <- function(first_on_demand = 1,
-                           availability = c("SPOT_WITH_FALLBACK", "SPOT", "ON_DEMAND"),
-                           zone_id = NULL,
-                           instance_profile_arn = NULL,
-                           spot_bid_price_percent = 100,
-                           ebs_volume_type = c("GENERAL_PURPOSE_SSD", "THROUGHPUT_OPTIMIZED_HDD"),
-                           ebs_volume_count = 1,
-                           ebs_volume_size = NULL,
-                           ebs_volume_iops = NULL,
-                           ebs_volume_throughput = NULL) {
-
+aws_attributes <- function(
+  first_on_demand = 1,
+  availability = c("SPOT_WITH_FALLBACK", "SPOT", "ON_DEMAND"),
+  zone_id = NULL,
+  instance_profile_arn = NULL,
+  spot_bid_price_percent = 100,
+  ebs_volume_type = c("GENERAL_PURPOSE_SSD", "THROUGHPUT_OPTIMIZED_HDD"),
+  ebs_volume_count = 1,
+  ebs_volume_size = NULL,
+  ebs_volume_iops = NULL,
+  ebs_volume_throughput = NULL
+) {
   # TODO: check inputs
   availability <- match.arg(availability, several.ok = FALSE)
   ebs_volume_type <- match.arg(ebs_volume_type, several.ok = FALSE)
@@ -138,7 +136,10 @@ is.aws_attributes <- function(x) {
 #' @family Cloud Attributes
 #'
 #' @export
-gcp_attributes <- function(use_preemptible_executors = TRUE, google_service_account = NULL) {
+gcp_attributes <- function(
+  use_preemptible_executors = TRUE,
+  google_service_account = NULL
+) {
   obj <- list(
     use_preemptible_executors = use_preemptible_executors,
     google_service_account = google_service_account
@@ -173,10 +174,11 @@ is.gcp_attributes <- function(x) {
 #' @family Cloud Attributes
 #'
 #' @export
-azure_attributes <- function(first_on_demand = 1,
-                             availability = c("SPOT_WITH_FALLBACK", "SPOT", "ON_DEMAND"),
-                             spot_bid_max_price = -1) {
-
+azure_attributes <- function(
+  first_on_demand = 1,
+  availability = c("SPOT_WITH_FALLBACK", "SPOT", "ON_DEMAND"),
+  spot_bid_max_price = -1
+) {
   # TODO: check inputs
   stopifnot(first_on_demand > 0)
   availability <- paste0(match.arg(availability, several.ok = FALSE), "_AZURE")
@@ -325,13 +327,15 @@ is.file_storage_info <- function(x) {
 #' @family Init Script Info Objects
 #'
 #' @export
-s3_storage_info <- function(destination,
-                            region = NULL,
-                            endpoint = NULL,
-                            enable_encryption = FALSE,
-                            encryption_type = c("sse-s3", "sse-kms"),
-                            kms_key = NULL,
-                            canned_acl = NULL) {
+s3_storage_info <- function(
+  destination,
+  region = NULL,
+  endpoint = NULL,
+  enable_encryption = FALSE,
+  encryption_type = c("sse-s3", "sse-kms"),
+  kms_key = NULL,
+  canned_acl = NULL
+) {
   encryption_type <- match.arg(encryption_type, several.ok = FALSE)
 
   obj <- list(
@@ -372,7 +376,6 @@ is.s3_storage_info <- function(x) {
 #'
 #' @export
 cluster_log_conf <- function(dbfs = NULL, s3 = NULL) {
-
   # dbfs or s3 must be specified - but not both
   stopifnot(xor(is.null(dbfs), is.null(s3)))
 
@@ -460,9 +463,13 @@ init_script_info <- function(...) {
   obj <- list(...)
 
   # all must be one of `s3_storage_info`, `file_storage_info`, `dbfs_storage_info`
-  valid_storage <- vapply(obj, function(x) {
-    is.s3_storage_info(x) | is.file_storage_info(x) | is.dbfs_storage_info(x)
-  }, logical(1))
+  valid_storage <- vapply(
+    obj,
+    function(x) {
+      is.s3_storage_info(x) | is.file_storage_info(x) | is.dbfs_storage_info(x)
+    },
+    logical(1)
+  )
 
   stopifnot(all(valid_storage))
 
@@ -487,22 +494,23 @@ is.init_script_info <- function(x) {
 #' @family Task Objects
 #'
 #' @export
-new_cluster <- function(num_workers,
-                        spark_version,
-                        node_type_id,
-                        driver_node_type_id = NULL,
-                        autoscale = NULL,
-                        cloud_attrs = NULL,
-                        spark_conf = NULL,
-                        spark_env_vars = NULL,
-                        custom_tags = NULL,
-                        ssh_public_keys = NULL,
-                        log_conf = NULL,
-                        init_scripts = NULL,
-                        enable_elastic_disk = TRUE,
-                        driver_instance_pool_id = NULL,
-                        instance_pool_id = NULL) {
-
+new_cluster <- function(
+  num_workers,
+  spark_version,
+  node_type_id,
+  driver_node_type_id = NULL,
+  autoscale = NULL,
+  cloud_attrs = NULL,
+  spark_conf = NULL,
+  spark_env_vars = NULL,
+  custom_tags = NULL,
+  ssh_public_keys = NULL,
+  log_conf = NULL,
+  init_scripts = NULL,
+  enable_elastic_disk = TRUE,
+  driver_instance_pool_id = NULL,
+  instance_pool_id = NULL
+) {
   # job_cluster_key is reserved for future use
   # TODO: detect if aws/azure/gcp by node_type_ids and see if there is a mismatch
 
@@ -530,7 +538,9 @@ new_cluster <- function(num_workers,
   } else if (is.gcp_attributes(cloud_attrs)) {
     obj[["gcp_attributes"]] <- unclass(cloud_attrs)
   } else {
-    stop("Please use `aws_attributes()`, `azure_attributes()`, or `gcp_attributes()` to specify `cloud_attr`")
+    stop(
+      "Please use `aws_attributes()`, `azure_attributes()`, or `gcp_attributes()` to specify `cloud_attr`"
+    )
   }
 
   obj <- purrr::discard(obj, is.null)
@@ -570,16 +580,21 @@ libraries <- function(...) {
   valid_lib_type <- vapply(obj, is.library, logical(1))
   stopifnot(all(valid_lib_type))
 
-  lib_type <- vapply(obj, function(x) {
-    switch(class(x)[1],
-      "JarLibrary"   = "jar",
-      "EggLibrary"   = "egg",
-      "WhlLibrary"   = "whl",
-      "PyPiLibrary"  = "pypi",
-      "MavenLibrary" = "maven",
-      "CranLibrary"  = "cran"
-    )
-  }, character(1))
+  lib_type <- vapply(
+    obj,
+    function(x) {
+      switch(
+        class(x)[1],
+        "JarLibrary" = "jar",
+        "EggLibrary" = "egg",
+        "WhlLibrary" = "whl",
+        "PyPiLibrary" = "pypi",
+        "MavenLibrary" = "maven",
+        "CranLibrary" = "cran"
+      )
+    },
+    character(1)
+  )
 
   lib_objs <- list()
   for (i in seq_along(obj)) {
@@ -805,11 +820,12 @@ is.library <- function(x) {
 #' @family Task Objects
 #'
 #' @export
-email_notifications <- function(on_start = NULL,
-                                on_success = NULL,
-                                on_failure = NULL,
-                                no_alert_for_skipped_runs = TRUE) {
-
+email_notifications <- function(
+  on_start = NULL,
+  on_success = NULL,
+  on_failure = NULL,
+  no_alert_for_skipped_runs = TRUE
+) {
   stopifnot(is.character(on_start))
   stopifnot(is.character(on_success))
   stopifnot(is.character(on_failure))
@@ -852,9 +868,11 @@ is.email_notifications <- function(x) {
 #' @seealso [db_jobs_create()], [db_jobs_reset()], [db_jobs_update()]
 #'
 #' @export
-cron_schedule <- function(quartz_cron_expression,
-                          timezone_id = "Etc/UTC",
-                          pause_status = c("UNPAUSED", "PAUSED")) {
+cron_schedule <- function(
+  quartz_cron_expression,
+  timezone_id = "Etc/UTC",
+  pause_status = c("UNPAUSED", "PAUSED")
+) {
   pause_status <- match.arg(pause_status, several.ok = FALSE)
 
   obj <- list(
@@ -889,9 +907,13 @@ access_control_request <- function(...) {
   obj <- list(...)
 
   # all must be `access_control_req_user` or `access_control_req_group`
-  valid_control <- vapply(obj, function(x) {
-    is.access_control_req_user(x) | is.access_control_req_group(x)
-  }, logical(1))
+  valid_control <- vapply(
+    obj,
+    function(x) {
+      is.access_control_req_user(x) | is.access_control_req_group(x)
+    },
+    logical(1)
+  )
 
   stopifnot(all(valid_control))
 
@@ -919,8 +941,10 @@ is.access_control_request <- function(x) {
 #' @family Access Control Request Objects
 #'
 #' @export
-access_control_req_user <- function(user_name,
-                                    permission_level = c("CAN_MANAGE", "CAN_MANAGE_RUN", "CAN_VIEW", "IS_OWNER")) {
+access_control_req_user <- function(
+  user_name,
+  permission_level = c("CAN_MANAGE", "CAN_MANAGE_RUN", "CAN_VIEW", "IS_OWNER")
+) {
   permission_level <- match.arg(permission_level, several.ok = FALSE)
 
   obj <- list(
@@ -930,7 +954,6 @@ access_control_req_user <- function(user_name,
 
   class(obj) <- c("AccessControlRequestForUser", "list")
   obj
-
 }
 
 #' Test if object is of class AccessControlRequestForUser
@@ -955,8 +978,10 @@ is.access_control_req_user <- function(x) {
 #' @family Access Control Request Objects
 #'
 #' @export
-access_control_req_group <- function(group,
-                                     permission_level = c("CAN_MANAGE", "CAN_MANAGE_RUN", "CAN_VIEW")) {
+access_control_req_group <- function(
+  group,
+  permission_level = c("CAN_MANAGE", "CAN_MANAGE_RUN", "CAN_VIEW")
+) {
   permission_level <- match.arg(permission_level, several.ok = FALSE)
 
   obj <- list(
@@ -966,7 +991,6 @@ access_control_req_group <- function(group,
 
   class(obj) <- c("AccessControlRequestForGroup", "list")
   obj
-
 }
 
 #' Test if object is of class AccessControlRequestForGroup
@@ -991,9 +1015,12 @@ is.access_control_req_group <- function(x) {
 #' @param type Type of reference being used, one of: `branch`, `tag`, `commit`.
 #'
 #' @export
-git_source <- function(git_url, git_provider, reference,
-                       type = c("branch", "tag", "commit")) {
-
+git_source <- function(
+  git_url,
+  git_provider,
+  reference,
+  type = c("branch", "tag", "commit")
+) {
   providers <- c(
     "github",
     "bitbucketcloud",
@@ -1017,7 +1044,6 @@ git_source <- function(git_url, git_provider, reference,
 
   class(obj) <- c("GitSource", "list")
   obj
-
 }
 
 #' Test if object is of class GitSource
@@ -1201,7 +1227,11 @@ is.pipeline_task <- function(x) {
 #' @family Task Objects
 #'
 #' @export
-python_wheel_task <- function(package_name, entry_point = NULL, parameters = list()) {
+python_wheel_task <- function(
+  package_name,
+  entry_point = NULL,
+  parameters = list()
+) {
   obj <- list(
     package_name = package_name,
     entry_point = entry_point,
@@ -1291,19 +1321,21 @@ job_tasks <- function(...) {
 #' when it times out. The default behavior is to not retry on timeout.
 #'
 #' @export
-job_task <- function(task_key,
-                     description = NULL,
-                     depends_on = c(),
-                     existing_cluster_id = NULL,
-                     new_cluster = NULL,
-                     job_cluster_key = NULL,
-                     task,
-                     libraries = NULL,
-                     email_notifications = NULL,
-                     timeout_seconds = NULL,
-                     max_retries = 0,
-                     min_retry_interval_millis = 0,
-                     retry_on_timeout = FALSE) {
+job_task <- function(
+  task_key,
+  description = NULL,
+  depends_on = c(),
+  existing_cluster_id = NULL,
+  new_cluster = NULL,
+  job_cluster_key = NULL,
+  task,
+  libraries = NULL,
+  email_notifications = NULL,
+  timeout_seconds = NULL,
+  max_retries = 0,
+  min_retry_interval_millis = 0,
+  retry_on_timeout = FALSE
+) {
   depends_on <- lapply(depends_on, function(x) {
     list(task_key = x)
   })
@@ -1325,12 +1357,13 @@ job_task <- function(task_key,
 
   # add task to `obj`, it needs to be named depending on type
   # NOTE: avoiding parsing the class to derive name for now
-  task_type <- switch(class(task)[1],
-    "NotebookTask"    = "notebook_task",
-    "SparkJarTask"    = "spark_jar_task",
+  task_type <- switch(
+    class(task)[1],
+    "NotebookTask" = "notebook_task",
+    "SparkJarTask" = "spark_jar_task",
     "SparkPythonTask" = "spark_python_task",
     "SparkSubmitTask" = "spark_submit_task",
-    "PipelineTask"    = "pipeline_task",
+    "PipelineTask" = "pipeline_task",
     "PythonWheelTask" = "python_wheel_task",
   )
 
@@ -1360,7 +1393,6 @@ is.job_task <- function(x) {
 #'
 #' @export
 embedding_source_column <- function(name, model_endpoint_name) {
-
   obj <- list(
     name = name,
     embedding_model_endpoint_name = model_endpoint_name
@@ -1388,7 +1420,6 @@ is.embedding_source_column <- function(x) {
 #'
 #' @export
 embedding_vector_column <- function(name, dimension) {
-
   stopifnot(is.numeric(dimension))
 
   obj <- list(
@@ -1408,7 +1439,6 @@ embedding_vector_column <- function(name, dimension) {
 is.embedding_vector_column <- function(x) {
   inherits(x, "EmbeddingVectorColumn")
 }
-
 
 
 #' Delta Sync Vector Search Index Specification
@@ -1439,22 +1469,32 @@ is.embedding_vector_column <- function(x) {
 #' @family Vector Search API
 #'
 #' @export
-delta_sync_index_spec <- function(source_table,
-                                  embedding_writeback_table = NULL,
-                                  embedding_source_columns = NULL,
-                                  embedding_vector_columns = NULL,
-                                  pipeline_type = c("TRIGGERED", "CONTINUOUS")) {
-
+delta_sync_index_spec <- function(
+  source_table,
+  embedding_writeback_table = NULL,
+  embedding_source_columns = NULL,
+  embedding_vector_columns = NULL,
+  pipeline_type = c("TRIGGERED", "CONTINUOUS")
+) {
   pipeline_type <- match.arg(pipeline_type)
 
   # check embedding objects comply
   if (!is.null(embedding_source_columns)) {
-    if (is.list(embedding_source_columns) && !is.embedding_source_column(embedding_source_columns)) {
-      valid_columns <- vapply(embedding_source_columns, function(x) {
-        is.embedding_source_column(x)
-      }, logical(1))
+    if (
+      is.list(embedding_source_columns) &&
+        !is.embedding_source_column(embedding_source_columns)
+    ) {
+      valid_columns <- vapply(
+        embedding_source_columns,
+        function(x) {
+          is.embedding_source_column(x)
+        },
+        logical(1)
+      )
       if (!all(valid_columns)) {
-        stop("`embedding_source_columns` must all be defined by `embedding_source_column` function")
+        stop(
+          "`embedding_source_columns` must all be defined by `embedding_source_column` function"
+        )
       }
     } else {
       stopifnot(is.embedding_source_column(embedding_source_columns))
@@ -1462,12 +1502,21 @@ delta_sync_index_spec <- function(source_table,
   }
 
   if (!is.null(embedding_vector_columns)) {
-    if (is.list(embedding_vector_columns) && !is.embedding_vector_column(embedding_vector_columns)) {
-      valid_columns <- vapply(embedding_vector_columns, function(x) {
-        is.embedding_vector_column(x)
-      }, logical(1))
+    if (
+      is.list(embedding_vector_columns) &&
+        !is.embedding_vector_column(embedding_vector_columns)
+    ) {
+      valid_columns <- vapply(
+        embedding_vector_columns,
+        function(x) {
+          is.embedding_vector_column(x)
+        },
+        logical(1)
+      )
       if (!all(valid_columns)) {
-        stop("`embedding_vector_columns` must all be defined by `embedding_vector_column` function")
+        stop(
+          "`embedding_vector_columns` must all be defined by `embedding_vector_column` function"
+        )
       }
     } else {
       stopifnot(is.embedding_vector_column(embedding_vector_columns))
@@ -1518,18 +1567,28 @@ delta_sync_index_spec <- function(source_table,
 #' @family Vector Search API
 #'
 #' @export
-direct_access_index_spec <- function(embedding_source_columns = NULL,
-                                     embedding_vector_columns = NULL,
-                                     schema) {
-
+direct_access_index_spec <- function(
+  embedding_source_columns = NULL,
+  embedding_vector_columns = NULL,
+  schema
+) {
   # check embedding objects comply
   if (!is.null(embedding_source_columns)) {
-    if (is.list(embedding_source_columns) && !is.embedding_source_column(embedding_source_columns)) {
-      valid_columns <- vapply(embedding_source_columns, function(x) {
-        is.embedding_source_column(x)
-      }, logical(1))
+    if (
+      is.list(embedding_source_columns) &&
+        !is.embedding_source_column(embedding_source_columns)
+    ) {
+      valid_columns <- vapply(
+        embedding_source_columns,
+        function(x) {
+          is.embedding_source_column(x)
+        },
+        logical(1)
+      )
       if (!all(valid_columns)) {
-        stop("`embedding_source_columns` must all be defined by `embedding_source_column` function")
+        stop(
+          "`embedding_source_columns` must all be defined by `embedding_source_column` function"
+        )
       }
     } else {
       stopifnot(is.embedding_source_column(embedding_source_columns))
@@ -1537,12 +1596,21 @@ direct_access_index_spec <- function(embedding_source_columns = NULL,
   }
 
   if (!is.null(embedding_vector_columns)) {
-    if (is.list(embedding_vector_columns) && !is.embedding_vector_column(embedding_vector_columns)) {
-      valid_columns <- vapply(embedding_vector_columns, function(x) {
-        is.embedding_vector_column(x)
-      }, logical(1))
+    if (
+      is.list(embedding_vector_columns) &&
+        !is.embedding_vector_column(embedding_vector_columns)
+    ) {
+      valid_columns <- vapply(
+        embedding_vector_columns,
+        function(x) {
+          is.embedding_vector_column(x)
+        },
+        logical(1)
+      )
       if (!all(valid_columns)) {
-        stop("`embedding_vector_columns` must all be defined by `embedding_vector_column` function")
+        stop(
+          "`embedding_vector_columns` must all be defined by `embedding_vector_column` function"
+        )
       }
     } else {
       stopifnot(is.embedding_vector_column(embedding_vector_columns))
@@ -1600,4 +1668,3 @@ is.direct_access_index <- function(x) {
 is.delta_sync_index <- function(x) {
   inherits(x, "DeltaSyncIndex")
 }
-

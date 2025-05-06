@@ -19,7 +19,7 @@ Specified as an environment variable \code{DATABRICKS_WSID}.
 \code{.databrickscfg} will be searched if \code{db_profile} and \code{use_databrickscfg} are set or
 if Posit Workbench managed OAuth credentials are detected.
 
-Refer to \href{https://docs.databricks.com/dev-tools/api/latest/authentication.html}{api authentication docs}
+Refer to \href{https://docs.databricks.com/aws/en/dev-tools/auth}{api authentication docs}
 }
 \details{
 The behaviour is subject to change depending if \code{db_profile} and

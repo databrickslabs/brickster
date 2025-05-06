@@ -59,7 +59,7 @@ the notebooks used by this job's notebook tasks. Instance of \code{\link[=git_so
 Create Job
 }
 \details{
-\href{https://docs.databricks.com/dev-tools/api/latest/jobs.html#operation/JobsCreate}{Full Documentation}
+\href{https://docs.databricks.com/api/workspace/jobs/create}{Full Documentation}
 }
 \seealso{
 \code{\link[=job_tasks]{job_tasks()}}, \code{\link[=job_task]{job_task()}}, \code{\link[=email_notifications]{email_notifications()}},

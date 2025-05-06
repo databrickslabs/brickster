@@ -1,5 +1,3 @@
-# https://docs.databricks.com/dev-tools/api/latest/repos.html
-
 #' Get All Repos
 #'
 #' @details Returns repos that the calling user has Manage permissions on.
@@ -16,9 +14,13 @@
 #' @family Repos API
 #'
 #' @export
-db_repo_get_all <- function(path_prefix, next_page_token = NULL,
-                            host = db_host(), token = db_token(),
-                            perform_request = TRUE) {
+db_repo_get_all <- function(
+  path_prefix,
+  next_page_token = NULL,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     path_prefix = path_prefix,
     next_page_token = next_page_token
@@ -38,7 +40,6 @@ db_repo_get_all <- function(path_prefix, next_page_token = NULL,
   } else {
     req
   }
-
 }
 
 #' Create Repo
@@ -57,9 +58,14 @@ db_repo_get_all <- function(path_prefix, next_page_token = NULL,
 #' @family Repos API
 #'
 #' @export
-db_repo_create <- function(url, provider, path,
-                           host = db_host(), token = db_token(),
-                           perform_request = TRUE) {
+db_repo_create <- function(
+  url,
+  provider,
+  path,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     url = url,
     provider = provider,
@@ -80,7 +86,6 @@ db_repo_create <- function(url, provider, path,
   } else {
     req
   }
-
 }
 
 #' Get Repo
@@ -94,9 +99,12 @@ db_repo_create <- function(url, provider, path,
 #' @family Repos API
 #'
 #' @export
-db_repo_get <- function(repo_id,
-                        host = db_host(), token = db_token(),
-                        perform_request = TRUE) {
+db_repo_get <- function(
+  repo_id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   req <- db_request(
     endpoint = paste0("repos/", repo_id),
     method = "GET",
@@ -110,7 +118,6 @@ db_repo_get <- function(repo_id,
   } else {
     req
   }
-
 }
 
 #' Update Repo
@@ -134,9 +141,14 @@ db_repo_get <- function(repo_id,
 #' @family Repos API
 #'
 #' @export
-db_repo_update <- function(repo_id, branch = NULL, tag = NULL,
-                           host = db_host(), token = db_token(),
-                           perform_request = TRUE) {
+db_repo_update <- function(
+  repo_id,
+  branch = NULL,
+  tag = NULL,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     endpoint = paste0("repos/", repo_id),
     branch = branch,
@@ -157,7 +169,6 @@ db_repo_update <- function(repo_id, branch = NULL, tag = NULL,
   } else {
     req
   }
-
 }
 
 #' Delete Repo
@@ -171,9 +182,12 @@ db_repo_update <- function(repo_id, branch = NULL, tag = NULL,
 #' @family Repos API
 #'
 #' @export
-db_repo_delete <- function(repo_id,
-                           host = db_host(), token = db_token(),
-                           perform_request = TRUE) {
+db_repo_delete <- function(
+  repo_id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   req <- db_request(
     endpoint = paste0("repos/", repo_id),
     method = "DELETE",
@@ -187,5 +201,4 @@ db_repo_delete <- function(repo_id,
   } else {
     req
   }
-
 }

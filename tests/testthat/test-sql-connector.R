@@ -1,5 +1,4 @@
 test_that("SQL Connector Helpers", {
-
   withr::local_envvar(c(
     "DATABRICKS_HOST" = "http://mock_host",
     "DATABRICKS_TOKEN" = "mock_token"
@@ -20,8 +19,6 @@ test_that("SQL Connector Helpers", {
       workspace_id = "456"
     )
   })
-
-
 })
 
 skip_on_cran()
@@ -30,7 +27,6 @@ skip_unless_aws_workspace()
 skip_without_venv(env = "r-brickster")
 
 test_that("SQL Connector", {
-
   # create a small serverless sql warehouse to issue queries against
   expect_no_error({
     random_id <- sample.int(100000, 1)
@@ -89,6 +85,4 @@ test_that("SQL Connector", {
       id = test_warehouse$id
     )
   })
-
-
 })

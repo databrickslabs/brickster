@@ -19,7 +19,7 @@ The function will check for a token in the \code{DATABRICKS_HOST} environment va
 if Posit Workbench managed OAuth credentials are detected.
 If none of the above are found then will default to using OAuth U2M flow.
 
-Refer to \href{https://docs.databricks.com/dev-tools/api/latest/authentication.html}{api authentication docs}
+Refer to \href{https://docs.databricks.com/aws/en/dev-tools/auth}{api authentication docs}
 }
 \details{
 The behaviour is subject to change depending if \code{db_profile} and

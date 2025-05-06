@@ -1,5 +1,3 @@
-# https://docs.databricks.com/sql/api/sql-endpoints.html
-
 #' Create Warehouse
 #'
 #' @param name Name of the SQL warehouse. Must be unique.
@@ -40,29 +38,37 @@
 #' @family Warehouse API
 #'
 #' @export
-db_sql_warehouse_create <- function(name,
-                                   cluster_size,
-                                   min_num_clusters = 1,
-                                   max_num_clusters = 1,
-                                   auto_stop_mins = 30,
-                                   tags = list(),
-                                   spot_instance_policy = c("COST_OPTIMIZED", "RELIABILITY_OPTIMIZED"),
-                                   enable_photon = TRUE,
-                                   warehouse_type = c("CLASSIC", "PRO"),
-                                   enable_serverless_compute = NULL,
-                                   disable_uc = FALSE,
-                                   channel = c("CHANNEL_NAME_CURRENT", "CHANNEL_NAME_PREVIEW"),
-                                   host = db_host(), token = db_token(),
-                                   perform_request = TRUE) {
-
+db_sql_warehouse_create <- function(
+  name,
+  cluster_size,
+  min_num_clusters = 1,
+  max_num_clusters = 1,
+  auto_stop_mins = 30,
+  tags = list(),
+  spot_instance_policy = c("COST_OPTIMIZED", "RELIABILITY_OPTIMIZED"),
+  enable_photon = TRUE,
+  warehouse_type = c("CLASSIC", "PRO"),
+  enable_serverless_compute = NULL,
+  disable_uc = FALSE,
+  channel = c("CHANNEL_NAME_CURRENT", "CHANNEL_NAME_PREVIEW"),
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   # checks
   spot_instance_policy <- match.arg(spot_instance_policy, several.ok = FALSE)
   channel <- match.arg(channel, several.ok = FALSE)
   warehouse_type <- match.arg(warehouse_type, several.ok = FALSE)
   sizes <- c(
-    "2X-Small", "X-Small", "Small",
-    "Medium", "Large", "X-Large",
-    "2X-Large", "3X-Large", "4X-Large"
+    "2X-Small",
+    "X-Small",
+    "Small",
+    "Medium",
+    "Large",
+    "X-Large",
+    "2X-Large",
+    "3X-Large",
+    "4X-Large"
   )
   stopifnot(cluster_size %in% sizes)
 
@@ -94,7 +100,6 @@ db_sql_warehouse_create <- function(name,
   } else {
     req
   }
-
 }
 
 #' Delete Warehouse
@@ -106,10 +111,12 @@ db_sql_warehouse_create <- function(name,
 #' @family Warehouse API
 #'
 #' @export
-db_sql_warehouse_delete <- function(id,
-                                   host = db_host(), token = db_token(),
-                                   perform_request = TRUE) {
-
+db_sql_warehouse_delete <- function(
+  id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   req <- db_request(
     endpoint = paste0("sql/warehouses/", id),
     method = "DELETE",
@@ -123,7 +130,6 @@ db_sql_warehouse_delete <- function(id,
   } else {
     req
   }
-
 }
 
 #' Edit Warehouse
@@ -138,26 +144,34 @@ db_sql_warehouse_delete <- function(id,
 #' @family Warehouse API
 #'
 #' @export
-db_sql_warehouse_edit <- function(id,
-                                 name = NULL,
-                                 cluster_size = NULL,
-                                 min_num_clusters = NULL,
-                                 max_num_clusters = NULL,
-                                 auto_stop_mins = NULL,
-                                 tags = NULL,
-                                 spot_instance_policy = NULL,
-                                 enable_photon = NULL,
-                                 warehouse_type = NULL,
-                                 enable_serverless_compute = NULL,
-                                 channel = NULL,
-                                 host = db_host(), token = db_token(),
-                                 perform_request = TRUE) {
-
+db_sql_warehouse_edit <- function(
+  id,
+  name = NULL,
+  cluster_size = NULL,
+  min_num_clusters = NULL,
+  max_num_clusters = NULL,
+  auto_stop_mins = NULL,
+  tags = NULL,
+  spot_instance_policy = NULL,
+  enable_photon = NULL,
+  warehouse_type = NULL,
+  enable_serverless_compute = NULL,
+  channel = NULL,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   # checks
   sizes <- c(
-    "2X-Small", "X-Small", "Small",
-    "Medium", "Large", "X-Large",
-    "2X-Large", "3X-Large", "4X-Large"
+    "2X-Small",
+    "X-Small",
+    "Small",
+    "Medium",
+    "Large",
+    "X-Large",
+    "2X-Large",
+    "3X-Large",
+    "4X-Large"
   )
   types <- c("CLASSIC", "PRO")
 
@@ -199,7 +213,6 @@ db_sql_warehouse_edit <- function(id,
   } else {
     req
   }
-
 }
 
 #' Get Warehouse
@@ -211,8 +224,12 @@ db_sql_warehouse_edit <- function(id,
 #' @family Warehouse API
 #'
 #' @export
-db_sql_warehouse_get <- function(id, host = db_host(), token = db_token(),
-                                perform_request = TRUE) {
+db_sql_warehouse_get <- function(
+  id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   req <- db_request(
     endpoint = paste0("sql/warehouses/", id),
     method = "GET",
@@ -226,7 +243,6 @@ db_sql_warehouse_get <- function(id, host = db_host(), token = db_token(),
   } else {
     req
   }
-
 }
 
 #' List Warehouses
@@ -237,8 +253,11 @@ db_sql_warehouse_get <- function(id, host = db_host(), token = db_token(),
 #' @family Warehouse API
 #'
 #' @export
-db_sql_warehouse_list <- function(host = db_host(), token = db_token(),
-                                 perform_request = TRUE) {
+db_sql_warehouse_list <- function(
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   req <- db_request(
     endpoint = "sql/warehouses",
     method = "GET",
@@ -253,7 +272,6 @@ db_sql_warehouse_list <- function(host = db_host(), token = db_token(),
   } else {
     req
   }
-
 }
 
 #' Start Warehouse
@@ -265,8 +283,12 @@ db_sql_warehouse_list <- function(host = db_host(), token = db_token(),
 #' @family Warehouse API
 #'
 #' @export
-db_sql_warehouse_start <- function(id, host = db_host(), token = db_token(),
-                                  perform_request = TRUE) {
+db_sql_warehouse_start <- function(
+  id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   req <- db_request(
     endpoint = paste("sql/warehouses", id, "start", sep = "/"),
     method = "POST",
@@ -280,7 +302,6 @@ db_sql_warehouse_start <- function(id, host = db_host(), token = db_token(),
   } else {
     req
   }
-
 }
 
 #' Stop Warehouse
@@ -292,8 +313,12 @@ db_sql_warehouse_start <- function(id, host = db_host(), token = db_token(),
 #' @family Warehouse API
 #'
 #' @export
-db_sql_warehouse_stop <- function(id, host = db_host(), token = db_token(),
-                                 perform_request = TRUE) {
+db_sql_warehouse_stop <- function(
+  id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   req <- db_request(
     endpoint = paste("sql/warehouses", id, "stop", sep = "/"),
     method = "POST",
@@ -307,7 +332,6 @@ db_sql_warehouse_stop <- function(id, host = db_host(), token = db_token(),
   } else {
     req
   }
-
 }
 
 #' Get Global Warehouse Config
@@ -318,8 +342,11 @@ db_sql_warehouse_stop <- function(id, host = db_host(), token = db_token(),
 #' @family Warehouse API
 #'
 #' @export
-db_sql_global_warehouse_get <- function(host = db_host(), token = db_token(),
-                                       perform_request = TRUE) {
+db_sql_global_warehouse_get <- function(
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   req <- db_request(
     endpoint = "sql/config/warehouses",
     method = "GET",
@@ -333,7 +360,6 @@ db_sql_global_warehouse_get <- function(host = db_host(), token = db_token(),
   } else {
     req
   }
-
 }
 
 ### Higher Functions ###########################################################
@@ -354,9 +380,12 @@ db_sql_global_warehouse_get <- function(host = db_host(), token = db_token(),
 #'
 #' @return `db_sql_warehouse_get()`
 #' @export
-get_and_start_warehouse <- function(id, polling_interval = 5,
-                                   host = db_host(), token = db_token()) {
-
+get_and_start_warehouse <- function(
+  id,
+  polling_interval = 5,
+  host = db_host(),
+  token = db_token()
+) {
   # get cluster status
   warehouse_status <- db_sql_warehouse_get(
     id = id,

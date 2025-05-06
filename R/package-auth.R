@@ -30,7 +30,11 @@
 #'
 #' @return workspace URL
 #' @export
-db_host <- function(id = NULL, prefix = NULL, profile = default_config_profile()) {
+db_host <- function(
+  id = NULL,
+  prefix = NULL,
+  profile = default_config_profile()
+) {
   if (is.null(id) && is.null(prefix)) {
     # if `use_databricks_cfg()` returns `TRUE` then fetch the associated env.
     # env is specified via `db_env` option, if missing use default.
@@ -55,7 +59,6 @@ db_host <- function(id = NULL, prefix = NULL, profile = default_config_profile()
 
     host <- httr2::url_build(parsed_url)
     host <- httr2::url_parse(host)$hostname
-
   } else {
     # otherwise construct host string
     host <- paste0(prefix, id, ".cloud.databricks.com")
@@ -72,7 +75,7 @@ db_host <- function(id = NULL, prefix = NULL, profile = default_config_profile()
 #' if Posit Workbench managed OAuth credentials are detected.
 #' If none of the above are found then will default to using OAuth U2M flow.
 #'
-#' Refer to [api authentication docs](https://docs.databricks.com/dev-tools/api/latest/authentication.html)
+#' Refer to [api authentication docs](https://docs.databricks.com/aws/en/dev-tools/auth)
 #'
 #' @family Databricks Authentication Helpers
 #'
@@ -101,7 +104,7 @@ db_token <- function(profile = default_config_profile()) {
 #' `.databrickscfg` will be searched if `db_profile` and `use_databrickscfg` are set or
 #' if Posit Workbench managed OAuth credentials are detected.
 #'
-#' Refer to [api authentication docs](https://docs.databricks.com/dev-tools/api/latest/authentication.html)
+#' Refer to [api authentication docs](https://docs.databricks.com/aws/en/dev-tools/auth)
 #'
 #' @family Databricks Authentication Helpers
 #'
@@ -155,7 +158,10 @@ NULL
 #' @return named list of values associated with profile
 #' @import cli
 #' @keywords internal
-read_databrickscfg <- function(key = c("token", "host", "wsid"), profile = NULL) {
+read_databrickscfg <- function(
+  key = c("token", "host", "wsid"),
+  profile = NULL
+) {
   key <- match.arg(key)
 
   if (is.null(profile)) {
@@ -209,9 +215,11 @@ read_databrickscfg <- function(key = c("token", "host", "wsid"), profile = NULL)
 #'
 #' @return named list of values associated with profile
 #' @keywords internal
-read_env_var <- function(key = c("token", "host", "wsid"),
-                         profile = NULL, error = TRUE) {
-
+read_env_var <- function(
+  key = c("token", "host", "wsid"),
+  profile = NULL,
+  error = TRUE
+) {
   key <- match.arg(key)
 
   # fetch value based on profile
@@ -247,7 +255,6 @@ read_env_var <- function(key = c("token", "host", "wsid"),
 #' @return List that contains httr2_oauth_client and relevant auth url
 #' @keywords internal
 db_oauth_client <- function(host = db_host()) {
-
   ws_token_url = glue::glue("https://{host}/oidc/v1/token", host = host)
   ws_auth_url = glue::glue("https://{host}/oidc/v1/authorize", host = host)
 
@@ -266,7 +273,6 @@ db_oauth_client <- function(host = db_host()) {
   options(brickster_oauth_client = client_and_auth)
 
   client_and_auth
-
 }
 
 #' Returns the default config profile
@@ -292,7 +298,9 @@ default_config_profile <- function() {
 #' @keywords internal
 use_databricks_cfg <- function() {
   use_databricks_cfg <- getOption("use_databrickscfg", FALSE)
-  if (grepl("posit-workbench", Sys.getenv("DATABRICKS_CONFIG_FILE"), fixed = TRUE)) {
+  if (
+    grepl("posit-workbench", Sys.getenv("DATABRICKS_CONFIG_FILE"), fixed = TRUE)
+  ) {
     use_databricks_cfg <- TRUE
   }
   return(use_databricks_cfg)
@@ -306,7 +314,6 @@ use_databricks_cfg <- function() {
 #
 # This is based on the strategy pioneered by the {gargle} package and {httr2}.
 is_hosted_session <- function() {
-
   if (on_databricks()) {
     return(TRUE)
   }

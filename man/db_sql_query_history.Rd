@@ -44,7 +44,7 @@ db_sql_query_history(
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \description{
-For more details refer to the \href{https://docs.databricks.com/sql/api/query-history.html#list}{query history documentation}.
+For more details refer to the \href{https://docs.databricks.com/api/workspace/queryhistory/list}{query history documentation}.
 This function elevates the sub-components of \code{filter_by} parameter to the R
 function directly.
 }

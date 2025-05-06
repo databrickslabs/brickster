@@ -1,8 +1,6 @@
-# https://docs.databricks.com/sql/api/query-history.html
-
 #' List Warehouse Query History
 #'
-#' For more details refer to the [query history documentation](https://docs.databricks.com/sql/api/query-history.html#list).
+#' For more details refer to the [query history documentation](https://docs.databricks.com/api/workspace/queryhistory/list).
 #' This function elevates the sub-components of `filter_by` parameter to the R
 #' function directly.
 #'
@@ -24,16 +22,19 @@
 #' @family SQL Query History API
 #'
 #' @export
-db_sql_query_history <- function(statuses = NULL,
-                                 user_ids = NULL,
-                                 endpoint_ids = NULL,
-                                 start_time_ms = NULL,
-                                 end_time_ms = NULL,
-                                 max_results = 100,
-                                 page_token = NULL,
-                                 include_metrics = FALSE,
-                                 host = db_host(), token = db_token(),
-                                 perform_request = TRUE) {
+db_sql_query_history <- function(
+  statuses = NULL,
+  user_ids = NULL,
+  endpoint_ids = NULL,
+  start_time_ms = NULL,
+  end_time_ms = NULL,
+  max_results = 100,
+  page_token = NULL,
+  include_metrics = FALSE,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   status_options <- c("QUEUED", "RUNNING", "CANCELED", "FAILED", "FINISHED")
   if (!is.null(statuses)) {
     statuses <- match.arg(statuses, choices = status_options, several.ok = TRUE)
@@ -83,5 +84,4 @@ db_sql_query_history <- function(statuses = NULL,
   } else {
     req
   }
-
 }

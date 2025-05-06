@@ -1,5 +1,3 @@
-# https://docs.databricks.com/dev-tools/api/latest/secrets.html
-
 #' Create Secret Scope
 #'
 #' @param scope Scope name requested by the user. Scope names are unique.
@@ -37,9 +35,13 @@
 #' @family Secrets API
 #'
 #' @export
-db_secrets_scope_create <- function(scope, initial_manage_principal = NULL,
-                                    host = db_host(), token = db_token(),
-                                    perform_request = TRUE) {
+db_secrets_scope_create <- function(
+  scope,
+  initial_manage_principal = NULL,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     scope = scope,
     initial_manage_principal = initial_manage_principal
@@ -59,7 +61,6 @@ db_secrets_scope_create <- function(scope, initial_manage_principal = NULL,
   } else {
     req
   }
-
 }
 
 #' Delete Secret Scope
@@ -76,9 +77,12 @@ db_secrets_scope_create <- function(scope, initial_manage_principal = NULL,
 #' @family Secrets API
 #'
 #' @export
-db_secrets_scope_delete <- function(scope,
-                                    host = db_host(), token = db_token(),
-                                    perform_request = TRUE) {
+db_secrets_scope_delete <- function(
+  scope,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     scope = scope
   )
@@ -97,7 +101,6 @@ db_secrets_scope_delete <- function(scope,
   } else {
     req
   }
-
 }
 
 #' List Secret Scopes
@@ -112,8 +115,11 @@ db_secrets_scope_delete <- function(scope,
 #' @family Secrets API
 #'
 #' @export
-db_secrets_scope_list_all <- function(host = db_host(), token = db_token(),
-                                      perform_request = TRUE) {
+db_secrets_scope_list_all <- function(
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   req <- db_request(
     endpoint = "secrets/scopes/list",
     method = "GET",
@@ -127,7 +133,6 @@ db_secrets_scope_list_all <- function(host = db_host(), token = db_token(),
   } else {
     req
   }
-
 }
 
 #' Put Secret in Secret Scope
@@ -175,9 +180,15 @@ db_secrets_scope_list_all <- function(host = db_host(), token = db_token(),
 #' @family Secrets API
 #'
 #' @export
-db_secrets_put <- function(scope, key, value, as_bytes = FALSE,
-                           host = db_host(), token = db_token(),
-                           perform_request = TRUE) {
+db_secrets_put <- function(
+  scope,
+  key,
+  value,
+  as_bytes = FALSE,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     scope = scope,
     key = key
@@ -203,7 +214,6 @@ db_secrets_put <- function(scope, key, value, as_bytes = FALSE,
   } else {
     req
   }
-
 }
 
 #' Delete Secret in Secret Scope
@@ -223,9 +233,13 @@ db_secrets_put <- function(scope, key, value, as_bytes = FALSE,
 #' @family Secrets API
 #'
 #' @export
-db_secrets_delete <- function(scope, key,
-                              host = db_host(), token = db_token(),
-                              perform_request = TRUE) {
+db_secrets_delete <- function(
+  scope,
+  key,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     scope = scope,
     key = key
@@ -245,7 +259,6 @@ db_secrets_delete <- function(scope, key,
   } else {
     req
   }
-
 }
 
 #' List Secrets in Secret Scope
@@ -267,9 +280,12 @@ db_secrets_delete <- function(scope, key,
 #' @family Secrets API
 #'
 #' @export
-db_secrets_list <- function(scope,
-                            host = db_host(), token = db_token(),
-                            perform_request = TRUE) {
+db_secrets_list <- function(
+  scope,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     scope = scope
   )
@@ -288,7 +304,6 @@ db_secrets_list <- function(scope,
   } else {
     req
   }
-
 }
 
 #' Put ACL on Secret Scope
@@ -326,11 +341,14 @@ db_secrets_list <- function(scope,
 #' @family Secrets API
 #'
 #' @export
-db_secrets_scope_acl_put <- function(scope, principal,
-                                     permission = c("READ", "WRITE", "MANAGE"),
-                                     host = db_host(),
-                                     token = db_token(),
-                                     perform_request = TRUE) {
+db_secrets_scope_acl_put <- function(
+  scope,
+  principal,
+  permission = c("READ", "WRITE", "MANAGE"),
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   permission <- match.arg(permission, several.ok = FALSE)
 
   body <- list(
@@ -353,7 +371,6 @@ db_secrets_scope_acl_put <- function(scope, principal,
   } else {
     req
   }
-
 }
 
 #' Delete Secret Scope ACL
@@ -376,9 +393,13 @@ db_secrets_scope_acl_put <- function(scope, principal,
 #' @family Secrets API
 #'
 #' @export
-db_secrets_scope_acl_delete <- function(scope, principal,
-                                        host = db_host(), token = db_token(),
-                                        perform_request = TRUE) {
+db_secrets_scope_acl_delete <- function(
+  scope,
+  principal,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     scope = scope,
     principal = principal
@@ -398,7 +419,6 @@ db_secrets_scope_acl_delete <- function(scope, principal,
   } else {
     req
   }
-
 }
 
 #' Get Secret Scope ACL
@@ -418,9 +438,13 @@ db_secrets_scope_acl_delete <- function(scope, principal,
 #' @family Secrets API
 #'
 #' @export
-db_secrets_scope_acl_get <- function(scope, principal,
-                                     host = db_host(), token = db_token(),
-                                     perform_request = TRUE) {
+db_secrets_scope_acl_get <- function(
+  scope,
+  principal,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     scope = scope,
     principal = principal
@@ -440,7 +464,6 @@ db_secrets_scope_acl_get <- function(scope, principal,
   } else {
     req
   }
-
 }
 
 
@@ -460,9 +483,12 @@ db_secrets_scope_acl_get <- function(scope, principal,
 #' @family Secrets API
 #'
 #' @export
-db_secrets_scope_acl_list <- function(scope,
-                                      host = db_host(), token = db_token(),
-                                      perform_request = TRUE) {
+db_secrets_scope_acl_list <- function(
+  scope,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   body <- list(
     scope = scope
   )
@@ -481,5 +507,4 @@ db_secrets_scope_acl_list <- function(scope,
   } else {
     req
   }
-
 }

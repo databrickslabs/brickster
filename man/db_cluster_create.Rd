@@ -146,7 +146,7 @@ message.
 
 Cannot specify both \code{autoscale} and \code{num_workers}, must choose one.
 
-\href{https://docs.databricks.com/dev-tools/api/latest/clusters.html#create}{More Documentation}.
+\href{https://docs.databricks.com/api/workspace/clusters/create}{More Documentation}.
 }
 \seealso{
 Other Clusters API: 

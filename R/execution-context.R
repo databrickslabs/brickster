@@ -1,5 +1,3 @@
-# https://docs.databricks.com/dev-tools/api/1.2/index.html#id36
-
 #' Create an Execution Context
 #'
 #' @param cluster_id The ID of the cluster to create the context for.
