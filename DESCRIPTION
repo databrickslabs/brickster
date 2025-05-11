@@ -1,6 +1,6 @@
 Package: brickster
 Title: R Toolkit for 'Databricks'
-Version: 0.2.7
+Version: 0.2.8
 Authors@R: 
   c(
     person(given = "Zac",
@@ -23,7 +23,6 @@ LazyData: true
 Depends:
   R (>= 4.1.0)
 Imports:
-    arrow,
     base64enc,
     cli,
     curl,
@@ -39,6 +38,7 @@ Imports:
     tibble,
     utils
 Suggests: 
+    arrow,
     testthat (>= 3.0.0),
     huxtable,
     htmltools,

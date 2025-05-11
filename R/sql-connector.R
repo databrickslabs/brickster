@@ -11,8 +11,11 @@
 #'
 #' @examples
 #' \dontrun{install_db_sql_connector()}
-install_db_sql_connector <- function(envname = determine_brickster_venv(),
-                                     method = "auto", ...) {
+install_db_sql_connector <- function(
+  envname = determine_brickster_venv(),
+  method = "auto",
+  ...
+) {
   reticulate::py_install(
     "databricks-sql-connector",
     envname = envname,
@@ -50,22 +53,24 @@ install_db_sql_connector <- function(envname = determine_brickster_venv(),
 #' @inheritParams db_sql_exec_query
 #' @inheritParams auth_params
 #'
-#' @import arrow
 #' @returns [DatabricksSqlClient()]
 #' @examples
 #' \dontrun{
 #'   client <- db_sql_client(id = "<warehouse_id>", use_cloud_fetch = TRUE)
 #' }
 #' @export
-db_sql_client <- function(id,
-                          catalog = NULL, schema = NULL,
-                          compute_type = c("warehouse", "cluster"),
-                          use_cloud_fetch = FALSE,
-                          session_configuration = list(),
-                          host = db_host(), token = db_token(),
-                          workspace_id = db_current_workspace_id(),
-                          ...) {
-
+db_sql_client <- function(
+  id,
+  catalog = NULL,
+  schema = NULL,
+  compute_type = c("warehouse", "cluster"),
+  use_cloud_fetch = FALSE,
+  session_configuration = list(),
+  host = db_host(),
+  token = db_token(),
+  workspace_id = db_current_workspace_id(),
+  ...
+) {
   compute_type <- match.arg(compute_type)
   http_path <- generate_http_path(
     id = id,
@@ -83,7 +88,6 @@ db_sql_client <- function(id,
     session_configuration = session_configuration,
     ...
   )
-
 }
 
 #' @title Databricks SQL Connector
@@ -99,7 +103,6 @@ db_sql_client <- function(id,
 DatabricksSqlClient <- R6::R6Class(
   classname = "db_sql_client",
   public = list(
-
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
     #'
@@ -121,11 +124,16 @@ DatabricksSqlClient <- R6::R6Class(
     #'   See [db_sql_client()].
     #' @param ... Parameters passed to [connection method](https://docs.databricks.com/en/dev-tools/python-sql-connector.html#methods)
     #' @return [DatabricksSqlClient].
-    initialize = function(host, token, http_path,
-                          catalog, schema,
-                          use_cloud_fetch, session_configuration,
-                          ...) {
-
+    initialize = function(
+      host,
+      token,
+      http_path,
+      catalog,
+      schema,
+      use_cloud_fetch,
+      session_configuration,
+      ...
+    ) {
       private$connection <- py_db_sql_connector$connect(
         server_hostname = host,
         access_token = token,
@@ -160,9 +168,13 @@ DatabricksSqlClient <- R6::R6Class(
     #'   client$columns(catalog_name = "default", table_name = "gold_%")
     #' }
     #' @return [tibble::tibble] or [arrow::Table].
-    columns = function(catalog_name = NULL, schema_name = NULL,
-                       table_name = NULL, column_name = NULL,
-                       as_tibble = TRUE) {
+    columns = function(
+      catalog_name = NULL,
+      schema_name = NULL,
+      table_name = NULL,
+      column_name = NULL,
+      as_tibble = TRUE
+    ) {
       cursor <- private$connection$cursor()
       on.exit(cursor$close())
       cursor$columns(
@@ -209,8 +221,11 @@ DatabricksSqlClient <- R6::R6Class(
     #'   client$schemas(catalog_name = "main")
     #' }
     #' @return [tibble::tibble] or [arrow::Table].
-    schemas = function(catalog_name = NULL, schema_name = NULL,
-                       as_tibble = TRUE) {
+    schemas = function(
+      catalog_name = NULL,
+      schema_name = NULL,
+      as_tibble = TRUE
+    ) {
       cursor <- private$connection$cursor()
       on.exit(cursor$close())
       cursor$schemas(
@@ -238,9 +253,13 @@ DatabricksSqlClient <- R6::R6Class(
     #'   If `TRUE` (default) will return [tibble::tibble], otherwise returns
     #'   [arrow::Table].
     #' @return [tibble::tibble] or [arrow::Table].
-    tables = function(catalog_name = NULL, schema_name = NULL,
-                      table_name = NULL, table_types = NULL,
-                      as_tibble = TRUE) {
+    tables = function(
+      catalog_name = NULL,
+      schema_name = NULL,
+      table_name = NULL,
+      table_types = NULL,
+      as_tibble = TRUE
+    ) {
       cursor <- private$connection$cursor()
       on.exit(cursor$close())
       cursor$tables(
@@ -307,8 +326,11 @@ DatabricksSqlClient <- R6::R6Class(
     #'  )
     #'}
     #' @return [tibble::tibble] or [arrow::Table].
-    execute_many = function(operation, seq_of_parameters = NULL,
-                            as_tibble = TRUE) {
+    execute_many = function(
+      operation,
+      seq_of_parameters = NULL,
+      as_tibble = TRUE
+    ) {
       cursor <- private$connection$cursor()
       on.exit(cursor$close())
       cursor$executemany(
@@ -317,7 +339,6 @@ DatabricksSqlClient <- R6::R6Class(
       )
       handle_results(cursor$fetchall_arrow(), as_tibble)
     }
-
   ),
   private = list(
     connection = NULL,
@@ -328,8 +349,11 @@ DatabricksSqlClient <- R6::R6Class(
   )
 )
 
-generate_http_path <- function(id, is_warehouse = TRUE,
-                               workspace_id = db_current_workspace_id()) {
+generate_http_path <- function(
+  id,
+  is_warehouse = TRUE,
+  workspace_id = db_current_workspace_id()
+) {
   if (is_warehouse) {
     paste0("/sql/1.0/warehouses/", id)
   } else {
@@ -338,8 +362,18 @@ generate_http_path <- function(id, is_warehouse = TRUE,
 }
 
 handle_results <- function(x, as_tibble) {
+  # if
   if (as_tibble) {
-    x <- dplyr::collect(x)
+    if (rlang::is_installed("arrow")) {
+      x <- dplyr::collect(x)
+    } else {
+      x <- tibble::as_tibble(x$to_pandas())
+    }
+  } else {
+    rlang::check_installed(
+      pkg = "arrow",
+      reason = "to return results as an arrow Table"
+    )
   }
   x
 }
