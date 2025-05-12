@@ -28,15 +28,18 @@ db_context_manager <- R6::R6Class(
   ),
 
   public = list(
-
     #' @description Create a new context manager object.
     #' @param cluster_id The ID of the cluster to execute command on.
     #' @param language One of `r`, `py`, `scala`, `sql`, or `sh`.
     #' @param host Databricks workspace URL, defaults to calling [db_host()].
     #' @param token Databricks workspace token, defaults to calling [db_token()].
     #' @return A new `databricks_context_manager` object.
-    initialize = function(cluster_id, language = c("r", "py", "scala", "sql", "sh"),
-                          host = db_host(), token = db_token()) {
+    initialize = function(
+      cluster_id,
+      language = c("r", "py", "scala", "sql", "sh"),
+      host = db_host(),
+      token = db_token()
+    ) {
       language <- match.arg(language)
       private$cluster_id <- cluster_id
       private$host <- host
@@ -52,7 +55,7 @@ db_context_manager <- R6::R6Class(
       )
       ctx <- db_context_create(
         cluster_id = private$cluster_id,
-        language   = language,
+        language = language,
         host = host,
         token = token
       )
@@ -75,7 +78,7 @@ db_context_manager <- R6::R6Class(
     #' @param cmd code to execute against Databricks cluster
     #' @param language One of `r`, `py`, `scala`, `sql`, or `sh`.
     #' @return Command results
-    cmd_run =  function(cmd, language = c("r", "py", "scala", "sql", "sh")) {
+    cmd_run = function(cmd, language = c("r", "py", "scala", "sql", "sh")) {
       language <- match.arg(language)
       code = paste(cmd, collapse = "\n")
 
@@ -95,15 +98,10 @@ db_context_manager <- R6::R6Class(
       )
 
       cmd
-
     }
   )
 )
 # nocov end
-
-
-
-
 
 repl_prompt <- function(language) {
   glue::glue("[Databricks][{lang(language)}]> ")
@@ -123,10 +121,13 @@ repl_prompt <- function(language) {
 #' @inheritParams auth_params
 #'
 #' @export
-db_repl <- function(cluster_id, language = c("r", "py", "scala", "sql", "sh"),
-                    host = db_host(), token = db_token()) {
-
-  if(!interactive()) {
+db_repl <- function(
+  cluster_id,
+  language = c("r", "py", "scala", "sql", "sh"),
+  host = db_host(),
+  token = db_token()
+) {
+  if (!interactive()) {
     cli::cli_abort("{.fn db_repl} can only be called in an interactive context")
   }
 
@@ -140,18 +141,64 @@ db_repl <- function(cluster_id, language = c("r", "py", "scala", "sql", "sh"),
   on.exit(manager$close())
   prompt <- repl_prompt(language)
 
-  while (TRUE) {
-    cmd <- readline(prompt)
-    # change language when command is `:{language}` (e.g. :py)
-    if (cmd %in% c(":r", ":py", ":scala", ":sql", ":sh")) {
-      new_lang <- substr(cmd, 2, 99)
-      language <- new_lang
-      prompt <- repl_prompt(language)
-    } else if (cmd != "") {
-      result <- manager$cmd_run(cmd, language)
-      clean_result <- trimws(result)
-      if (length(clean_result) > 0 && clean_result != "") {
-        cat(clean_result, "\n")
+  manager <- db_context_manager$new(
+    cluster_id,
+    if (language == "sh") "py" else language,
+    host = host,
+    token = token
+  )
+  on.exit(manager$close())
+
+  # prompts for current language
+  prompt_main <- repl_prompt(language)
+  prompt_cont <- sub("([> ]+)$", "+ ", prompt_main)
+  buffer <- character()
+
+  repeat {
+    # choose prompt based on R-buffer state
+    prompt <- if (language == "r" && length(buffer) > 0) prompt_cont else
+      prompt_main
+    line <- readline(prompt)
+
+    # language-switch command always applies at top-level (empty R buffer)
+    if (
+      length(buffer) == 0 && line %in% c(":r", ":py", ":scala", ":sql", ":sh")
+    ) {
+      language <- sub("^:", "", line)
+      prompt_main <- repl_prompt(language)
+      prompt_cont <- sub("([> ]+)$", "+ ", prompt_main)
+      buffer <- character() # drop any partial R buffer
+      next
+    }
+
+    if (language == "r") {
+      # buffer every R line
+      buffer <- c(buffer, line)
+      parsed <- try(parse(text = paste(buffer, collapse = "\n")), silent = TRUE)
+
+      if (inherits(parsed, "try-error")) {
+        # incomplete R block? keep reading
+        if (grepl("unexpected end of input", parsed[1])) {
+          next
+        }
+        # real syntax error: show it, reset buffer
+        cat("Syntax error:", parsed[1], "\n")
+        buffer <- character()
+        next
+      }
+
+      # complete R expression(s) - send them as one chunk
+      code <- paste(buffer, collapse = "\n")
+      res <- manager$cmd_run(code, "r")
+      out <- trimws(res)
+      if (length(out) > 0 && nzchar(out)) cat(out, "\n")
+      buffer <- character()
+    } else {
+      # non-R: single-line send
+      if (nzchar(line)) {
+        res <- manager$cmd_run(line, language)
+        out <- trimws(res)
+        if (length(out) > 0 && nzchar(out)) cat(out, "\n")
       }
     }
   }
