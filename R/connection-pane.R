@@ -561,6 +561,7 @@ get_warehouse <- function(id, host, token) {
   )
 }
 
+# nocov start
 list_objects <- function(host, token,
                          type = NULL,
                          workspace = NULL,
@@ -897,6 +898,7 @@ preview_object <- function(host, token, rowLimit,
   }
 
 }
+# nocov end
 
 #' Connect to Databricks Workspace
 #'

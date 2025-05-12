@@ -1,9 +1,10 @@
-skip_on_cran()
-skip_unless_credentials_set()
-skip_unless_authenticated()
-skip_unless_aws_workspace()
+test_that("Connection Pane Helpers - don't perform", {
 
-test_that("Connection Pane Helpers", {
+  withr::local_envvar(c(
+    "DATABRICKS_HOST" = "http://mock_host",
+    "DATABRICKS_TOKEN" = "mock_token"
+  ))
+
 
   # current behaviour is if not match return original string
   extract_id1 <- get_id_from_panel_name("meow (1234)")
@@ -18,6 +19,17 @@ test_that("Connection Pane Helpers", {
 
   expect_identical(readable_time(1713146793000), "2024-04-15 02:06:33")
   expect_error(readable_time("1713146793000"))
+
+  expect_identical(get_model_version_from_string("1111.aaaaaa"), 1111L)
+
+})
+
+skip_on_cran()
+skip_unless_credentials_set()
+skip_unless_authenticated()
+skip_unless_aws_workspace()
+
+test_that("Connection Pane Helpers", {
 
   expect_no_error({
     catalog_items <- get_catalogs(host = db_host(), token = db_token())
@@ -238,6 +250,5 @@ test_that("Connection Pane Helpers", {
     )
   })
   expect_type(lo_notebooks, "list")
-
 
 })
