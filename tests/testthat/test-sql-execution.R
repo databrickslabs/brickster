@@ -1,5 +1,4 @@
 test_that("SQL Execution API - don't perform", {
-
   withr::local_envvar(c(
     "DATABRICKS_HOST" = "http://mock_host",
     "DATABRICKS_TOKEN" = "mock_token"
@@ -30,7 +29,6 @@ test_that("SQL Execution API - don't perform", {
     perform_request = FALSE
   )
   expect_s3_class(resp_status, "httr2_request")
-
 })
 
 skip_on_cran()
@@ -38,7 +36,6 @@ skip_unless_authenticated()
 skip_unless_aws_workspace()
 
 test_that("SQL Execution API", {
-
   # create a small serverless sql warehouse to issue queries against
   expect_no_error({
     random_id <- sample.int(100000, 1)
@@ -49,7 +46,6 @@ test_that("SQL Execution API", {
       enable_serverless_compute = TRUE
     )
   })
-
 
   expect_no_error({
     resp_query <- db_sql_exec_query(
@@ -95,12 +91,27 @@ test_that("SQL Execution API", {
   })
   expect_type(resp_cancel, "list")
 
+  expect_no_error({
+    resp_query <- db_sql_query(
+      warehouse_id = test_warehouse$id,
+      statement = "select 1"
+    )
+  })
+  expect_s3_class(resp_query, "tbl_df")
+
+  expect_no_error({
+    resp_query <- db_sql_query(
+      warehouse_id = test_warehouse$id,
+      statement = "select 1",
+      return_arrow = TRUE
+    )
+  })
+  expect_s3_class(resp_query, c("Table", "ArrowTabular"))
+
   # cleanup/delete the warehouse used for testing
   expect_no_error({
     db_sql_warehouse_delete(
       id = test_warehouse$id
     )
   })
-
-
 })
