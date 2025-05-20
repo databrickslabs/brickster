@@ -161,11 +161,7 @@ against the remote compute from the local session.</p>
 <p>The REPL has a shortcut you can enter <code>:&lt;language&gt;</code>
 to change the active language. You can change between the following
 languages:</p>
-<table style="width:97%;" class="table">
-<colgroup>
-<col width="47%">
-<col width="50%">
-</colgroup>
+<table class="table">
 <thead><tr class="header">
 <th>Language</th>
 <th>Shortcut</th>
@@ -197,23 +193,6 @@ languages:</p>
 REPL is exited.</p>
 </div>
 <div class="section level3">
-<h3 id="rstudio-addins">RStudio Addins<a class="anchor" aria-label="anchor" href="#rstudio-addins"></a>
-</h3>
-<p>There are three addins included with <a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> for use
-with the REPL:</p>
-<ol style="list-style-type: decimal">
-<li><p>Send selection to console</p></li>
-<li><p>Send current document to console</p></li>
-<li><p>Send R script to console</p></li>
-</ol>
-<p>It’s recommended that (1) and (2) be bound to a keyboard shortcut if
-using the REPL frequently (‘Tools’ &gt; ‘Modify Keyboard Shortcuts…’
-&gt; ‘Search for <code>brickster</code>’).</p>
-<p>These addins behave slightly different to the standard shortcuts as
-they ensure that commands that span multiple lines are handled correctly
-via the REPL.</p>
-</div>
-<div class="section level3">
 <h3 id="limitations">Limitations<a class="anchor" aria-label="anchor" href="#limitations"></a>
 </h3>
 <ul>
@@ -224,6 +203,8 @@ variables from the remote contexts in the environment pane</p></li>
 limitations that require a workaround</a> currently</p></li>
 <li><p>Not designed to work with interactive serverless compute</p></li>
 <li><p>Cannot persist or recover sessions</p></li>
+<li><p>Multi-line expressions are only supported for R. Python, Scala,
+and SQL are limited to single line expressions.</p></li>
 </ul>
 </div>
 </div>
