@@ -335,7 +335,7 @@ db_sql_query <- function(
     .x = seq.int(total_chunks, from = 0),
     .f = db_sql_exec_result,
     statement_id = resp$statement_id,
-    perform = FALSE
+    perform_request = FALSE
   )
 
   # do not respect `max_active_connections` at this stage
