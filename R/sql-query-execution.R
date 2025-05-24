@@ -369,7 +369,7 @@ db_sql_query <- function(
       )
     arrow_tbl <- do.call(arrow::concat_tables, arrow_tbls)
   } else {
-    purrr::map(~ tibble::as_tibble(nanoarrow::read_nanoarrow(x))) |>
+    purrr::map(~ tibble::as_tibble(nanoarrow::read_nanoarrow(.x))) |>
       purrr::list_rbind()
   }
 }
