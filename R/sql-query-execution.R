@@ -325,6 +325,10 @@ db_sql_query <- function(
     resp <- db_sql_exec_poll_for_success(resp$statement_id)
   }
 
+  if (resp$status$state == "FAILED") {
+    cli::cli_abort(resp$status$error$message)
+  }
+
   # fetch all external links
   total_chunks <- resp$manifest$total_chunk_count - 1
   total_rows <- resp$manifest$total_row_count
