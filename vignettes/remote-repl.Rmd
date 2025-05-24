@@ -20,24 +20,23 @@ library(brickster)
 
 `{brickster}` provides mechanisms to run code against Databricks, below is an overview of the available of those in the package:
 
-+--------------------------------------------------------------------------------------------------------------------+-----------------------+-------------------------------------------------------------------------------+
-| Method                                                                                                             | Compatible Compute    | Notes                                                                         |
-+====================================================================================================================+=======================+===============================================================================+
-| [SQL execution API](https://docs.databricks.com/api/workspace/statementexecution)\                                 | SQL Warehouse         | Lower level functions that align 1:1 with API endpoints                       |
-| ([`db_sql_exec_*`](https://databrickslabs.github.io/brickster/reference/index.html#sql-statement-execution))       |                       |                                                                               |
-+--------------------------------------------------------------------------------------------------------------------+-----------------------+-------------------------------------------------------------------------------+
-| Command execution context manager\                                                                                 | Clusters\             | Higher level `R6` class for command execution contexts.                       |
-| (`db_context_manager`)                                                                                             | (Shared, Single User) |                                                                               |
-+--------------------------------------------------------------------------------------------------------------------+-----------------------+-------------------------------------------------------------------------------+
-| [Command execution API](https://docs.databricks.com/api/workspace/commandexecution)\                               | Clusters\             | Lower level functions that align 1:1 with API endpoints                       |
-| ([`db_context_*`](https://databrickslabs.github.io/brickster/reference/index.html#execution-contexts))             | (Shared, Single User) |                                                                               |
-+--------------------------------------------------------------------------------------------------------------------+-----------------------+-------------------------------------------------------------------------------+
-| [Databricks SQL Connector](https://docs.databricks.com/en/dev-tools/python-sql-connector.html) via `{reticulate}`\ | SQL Warehouse         | Exposes `databricks.sql` connector to R.                                      |
-| ([`db_sql_client`](https://databrickslabs.github.io/brickster/reference/index.html#sql-connector))                 |                       |                                                                               |
-+--------------------------------------------------------------------------------------------------------------------+-----------------------+-------------------------------------------------------------------------------+
-| Databricks REPL\                                                                                                   | Clusters\             | Supports all notebook languages, R is only supported on single user clusters. |
-| (`db_repl`)                                                                                                        | (Shared, Single User) |                                                                               |
-+--------------------------------------------------------------------------------------------------------------------+-----------------------+-------------------------------------------------------------------------------+
++--------------------------------------------------------------------------------------------------------------+-----------------------+-------------------------------------------------------------------------------+
+| Method                                                                                                       | Compatible Compute    | Notes                                                                         |
++==============================================================================================================+=======================+===============================================================================+
+| `db_sql_query`                                                                                               | SQL Warehouse         | Simple and efficient function to run SQL                                      |
++--------------------------------------------------------------------------------------------------------------+-----------------------+-------------------------------------------------------------------------------+
+| [SQL execution API](https://docs.databricks.com/api/workspace/statementexecution)\                           | SQL Warehouse         | Lower level functions that align 1:1 with API endpoints                       |
+| ([`db_sql_exec_*`](https://databrickslabs.github.io/brickster/reference/index.html#sql-statement-execution)) |                       |                                                                               |
++--------------------------------------------------------------------------------------------------------------+-----------------------+-------------------------------------------------------------------------------+
+| Command execution context manager\                                                                           | Clusters\             | Higher level `R6` class for command execution contexts.                       |
+| (`db_context_manager`)                                                                                       | (Shared, Single User) |                                                                               |
++--------------------------------------------------------------------------------------------------------------+-----------------------+-------------------------------------------------------------------------------+
+| [Command execution API](https://docs.databricks.com/api/workspace/commandexecution)\                         | Clusters\             | Lower level functions that align 1:1 with API endpoints                       |
+| ([`db_context_*`](https://databrickslabs.github.io/brickster/reference/index.html#execution-contexts))       | (Shared, Single User) |                                                                               |
++--------------------------------------------------------------------------------------------------------------+-----------------------+-------------------------------------------------------------------------------+
+| Databricks REPL\                                                                                             | Clusters\             | Supports all notebook languages, R is only supported on single user clusters. |
+| (`db_repl`)                                                                                                  | (Shared, Single User) |                                                                               |
++--------------------------------------------------------------------------------------------------------------+-----------------------+-------------------------------------------------------------------------------+
 
 Databricks [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop) (`db_repl()`) will be the focus of this article.
 

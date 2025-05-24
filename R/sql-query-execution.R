@@ -373,10 +373,3 @@ db_sql_query <- function(
       purrr::list_rbind()
   }
 }
-
-
-if (return_arrow) {
-  arrow_tbl
-} else {
-  tibble::as_tibble(arrow_tbl)
-}

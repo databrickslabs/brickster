@@ -33,8 +33,6 @@ Imports:
     jsonlite,
     nanoarrow,
     purrr,
-    reticulate,
-    R6 (>= 2.4.0),
     rlang,
     tibble,
     utils
