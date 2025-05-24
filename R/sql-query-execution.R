@@ -371,9 +371,14 @@ db_sql_query <- function(
           as_data_frame = FALSE
         )
       )
-    arrow_tbl <- do.call(arrow::concat_tables, arrow_tbls)
+    results <- do.call(arrow::concat_tables, arrow_tbls)
+
+    if (!return_arrow) {
+      results <- tibble::as_tibble(results)
+    }
   } else {
-    purrr::map(~ tibble::as_tibble(nanoarrow::read_nanoarrow(.x))) |>
+    results <- purrr::map(~ tibble::as_tibble(nanoarrow::read_nanoarrow(.x))) |>
       purrr::list_rbind()
   }
+  results
 }
