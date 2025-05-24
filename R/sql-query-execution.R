@@ -357,17 +357,26 @@ db_sql_query <- function(
     progress = FALSE
   )
 
-  # read ipc data as arrow table
-  arrow_tbls <- ipc_data |>
-    purrr::map(
-      ~ arrow::read_ipc_stream(httr2::resp_body_raw(.x), as_data_frame = FALSE)
-    )
-
-  arrow_tbl <- do.call(arrow::concat_tables, arrow_tbls)
-
-  if (return_arrow) {
-    arrow_tbl
+  # if arrow isn't available fallback to nanoarrow (much slower!)
+  if (rlang::is_installed("arrow")) {
+    # read ipc data as arrow table
+    arrow_tbls <- ipc_data |>
+      purrr::map(
+        ~ arrow::read_ipc_stream(
+          httr2::resp_body_raw(.x),
+          as_data_frame = FALSE
+        )
+      )
+    arrow_tbl <- do.call(arrow::concat_tables, arrow_tbls)
   } else {
-    tibble::as_tibble(arrow_tbl)
+    purrr::map(~ tibble::as_tibble(nanoarrow::read_nanoarrow(x))) |>
+      purrr::list_rbind()
   }
+}
+
+
+if (return_arrow) {
+  arrow_tbl
+} else {
+  tibble::as_tibble(arrow_tbl)
 }
