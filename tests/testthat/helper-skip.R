@@ -6,7 +6,6 @@ skip_unless_aws_workspace <- function() {
 
 
 skip_unless_authenticated <- function() {
-
   authenticated <- tryCatch(
     {
       current_user <- db_current_user()
@@ -20,7 +19,6 @@ skip_unless_authenticated <- function() {
   if (!authenticated) {
     skip("Test only runs when connection to a workspace is established")
   }
-
 }
 
 skip_unless_credentials_set <- function() {
@@ -37,13 +35,5 @@ skip_unless_credentials_set <- function() {
 
   if (!creds_avialable) {
     skip("Test only runs when credentials are available")
-  }
-}
-
-skip_without_venv <- function(env) {
-  env_available <- reticulate::virtualenv_exists(env)
-
-  if (!env_available) {
-    skip("Test only runs when venv available")
   }
 }

@@ -73,16 +73,22 @@
 #' @family SQL Execution APIs
 #'
 #' @export
-db_sql_exec_query <- function(statement, warehouse_id,
-                              catalog = NULL, schema = NULL, parameters = NULL,
-                              row_limit = NULL, byte_limit = NULL,
-                              disposition = c("INLINE", "EXTERNAL_LINKS"),
-                              format = c("JSON_ARRAY", "ARROW_STREAM", "CSV"),
-                              wait_timeout = "10s",
-                              on_wait_timeout = c("CONTINUE", "CANCEL"),
-                              host = db_host(), token = db_token(),
-                              perform_request = TRUE) {
-
+db_sql_exec_query <- function(
+  statement,
+  warehouse_id,
+  catalog = NULL,
+  schema = NULL,
+  parameters = NULL,
+  row_limit = NULL,
+  byte_limit = NULL,
+  disposition = c("INLINE", "EXTERNAL_LINKS"),
+  format = c("JSON_ARRAY", "ARROW_STREAM", "CSV"),
+  wait_timeout = "10s",
+  on_wait_timeout = c("CONTINUE", "CANCEL"),
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   disposition <- match.arg(disposition)
   format <- match.arg(format)
   on_wait_timeout <- match.arg(on_wait_timeout)
@@ -115,7 +121,6 @@ db_sql_exec_query <- function(statement, warehouse_id,
   } else {
     req
   }
-
 }
 
 #' Cancel SQL Query
@@ -133,10 +138,12 @@ db_sql_exec_query <- function(statement, warehouse_id,
 #' @family SQL Execution APIs
 #'
 #' @export
-db_sql_exec_cancel <- function(statement_id,
-                               host = db_host(), token = db_token(),
-                               perform_request = TRUE) {
-
+db_sql_exec_cancel <- function(
+  statement_id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   req <- db_request(
     endpoint = paste0("sql/statements/", statement_id, "/cancel"),
     method = "POST",
@@ -150,7 +157,6 @@ db_sql_exec_cancel <- function(statement_id,
   } else {
     req
   }
-
 }
 
 
@@ -176,10 +182,12 @@ db_sql_exec_cancel <- function(statement_id,
 #' @family SQL Execution APIs
 #'
 #' @export
-db_sql_exec_status <- function(statement_id,
-                               host = db_host(), token = db_token(),
-                               perform_request = TRUE) {
-
+db_sql_exec_status <- function(
+  statement_id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   req <- db_request(
     endpoint = paste0("sql/statements/", statement_id),
     method = "GET",
@@ -193,7 +201,6 @@ db_sql_exec_status <- function(statement_id,
   } else {
     req
   }
-
 }
 
 
@@ -222,12 +229,20 @@ db_sql_exec_status <- function(statement_id,
 #' @family SQL Execution APIs
 #'
 #' @export
-db_sql_exec_result <- function(statement_id, chunk_index,
-                               host = db_host(), token = db_token(),
-                               perform_request = TRUE) {
-
+db_sql_exec_result <- function(
+  statement_id,
+  chunk_index,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   req <- db_request(
-    endpoint = paste0("sql/statements/", statement_id, "/result/chunks/", chunk_index),
+    endpoint = paste0(
+      "sql/statements/",
+      statement_id,
+      "/result/chunks/",
+      chunk_index
+    ),
     method = "GET",
     version = "2.0",
     host = host,
@@ -239,5 +254,122 @@ db_sql_exec_result <- function(statement_id, chunk_index,
   } else {
     req
   }
+}
 
+#' Poll a Query Until Successful
+#'
+#' @inheritParams db_sql_exec_cancel
+#' @param interval Number of seconds between status checks.
+db_sql_exec_poll_for_success <- function(statement_id, interval = 1) {
+  is_query_running <- TRUE
+
+  while (is_query_running) {
+    Sys.sleep(interval)
+    status <- db_sql_exec_status(statement_id = statement_id)
+    if (status$status$state == "SUCCEEDED") {
+      is_query_running <- FALSE
+    } else if (
+      status$status$status$state %in% c("FAILED", "CLOSED", "CANCELED")
+    ) {
+      stop(paste0("queries status: ", status$status$state))
+    }
+  }
+
+  status
+}
+
+
+# TODO:
+# - add mode for when no arrow present (use nanoarrow?)
+# - add verbose mode?
+
+#' Execute query with SQL Warehouse
+#'
+#' @inheritParams db_sql_exec_query
+#' @param return_arrow Boolean, determine if result is [tibble::tibble] or
+#' [arrow::Table].
+#' @param max_active_connections Integer to decide on concurrent downloads.
+#' @returns [tibble::tibble] or [arrow::Table].
+#' @export
+db_sql_query <- function(
+  warehouse_id,
+  statement,
+  schema = NULL,
+  catalog = NULL,
+  parameters = NULL,
+  row_limit = NULL,
+  byte_limit = NULL,
+  return_arrow = FALSE,
+  max_active_connections = 30,
+  host = db_host(),
+  token = db_token()
+) {
+  resp <- db_sql_exec_query(
+    warehouse_id = warehouse_id,
+    statement = statement,
+    disposition = "EXTERNAL_LINKS",
+    format = "ARROW_STREAM",
+    wait_timeout = "30s",
+    on_wait_timeout = "CONTINUE",
+    schema = schema,
+    catalog = catalog,
+    parameters = parameters,
+    row_limit = row_limit,
+    byte_limit = byte_limit,
+    host = host,
+    token = token
+  )
+
+  # if query doesn't finish within 30s, continue to poll for completion
+  if (resp$status$state %in% c("RUNNING", "PENDING")) {
+    resp <- db_sql_exec_poll_for_success(resp$statement_id)
+  }
+
+  # fetch all external links
+  total_chunks <- resp$manifest$total_chunk_count - 1
+  total_rows <- resp$manifest$total_row_count
+
+  # NOTE: theoretically can skip getting the first since its part of resp object
+  # not doing that to make code slightly easier
+  reqs <- purrr::map(
+    .x = seq.int(total_chunks, from = 0),
+    .f = db_sql_exec_result,
+    statement_id = resp$statement_id,
+    perform_request = FALSE
+  )
+
+  # do not respect `max_active_connections` at this stage
+  # use low parallelism to get links
+  resps <- httr2::req_perform_parallel(reqs, max_active = 3, progress = FALSE)
+
+  links <- resps |>
+    purrr::map(httr2::resp_body_json) |>
+    purrr::map_chr(~ .x$external_links[[1]]$external_link) |>
+    purrr::map(
+      ~ httr2::request(.x) |>
+        httr2::req_retry(max_tries = 3, backoff = ~1)
+    )
+
+  # download arrow stream data
+  ipc_data <- httr2::req_perform_parallel(
+    links,
+    max_active = max_active_connections,
+    progress = FALSE
+  )
+
+  # if arrow isn't available fallback to nanoarrow (much slower!)
+  if (rlang::is_installed("arrow")) {
+    # read ipc data as arrow table
+    arrow_tbls <- ipc_data |>
+      purrr::map(
+        ~ arrow::read_ipc_stream(
+          httr2::resp_body_raw(.x),
+          as_data_frame = FALSE
+        )
+      )
+    arrow_tbl <- do.call(arrow::concat_tables, arrow_tbls)
+  } else {
+    purrr::map(~ tibble::as_tibble(nanoarrow::read_nanoarrow(.x))) |>
+      purrr::list_rbind()
+  }
 }

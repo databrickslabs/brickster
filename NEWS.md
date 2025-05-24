@@ -1,5 +1,7 @@
 # brickster 0.2.8
 
+* Removing the Python SQL connector as `db_sql_query` supersedes it.
+* Added `db_sql_query` to simplify execution of SQL
 * Adjusted `db_repl` to handle mulit-line expressions (R only)
 * Removed RStudio Addins to send lines/selection/files to console
 * Moved arrow to Suggests

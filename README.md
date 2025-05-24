@@ -12,8 +12,6 @@
 
 -   Browser workspace assets via RStudio Connections Pane ([`open_workspace()`](https://databrickslabs.github.io/brickster/reference/open_workspace.html))
 
--   Exposes the [`databricks-sql-connector`](https://github.com/databricks/databricks-sql-python) via `{reticulate}` ([docs](https://databrickslabs.github.io/brickster/reference/index.html#sql-connector))
-
 -   Interactive Databricks REPL
 
 ## Installation
