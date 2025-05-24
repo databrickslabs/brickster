@@ -325,6 +325,10 @@ db_sql_query <- function(
     resp <- db_sql_exec_poll_for_success(resp$statement_id)
   }
 
+  if (resp$status$state == "FAILED") {
+    cli::cli_abort(resp$status$error$message)
+  }
+
   # fetch all external links
   total_chunks <- resp$manifest$total_chunk_count - 1
   total_rows <- resp$manifest$total_row_count
@@ -367,9 +371,14 @@ db_sql_query <- function(
           as_data_frame = FALSE
         )
       )
-    arrow_tbl <- do.call(arrow::concat_tables, arrow_tbls)
+    results <- do.call(arrow::concat_tables, arrow_tbls)
+
+    if (!return_arrow) {
+      results <- tibble::as_tibble(results)
+    }
   } else {
-    purrr::map(~ tibble::as_tibble(nanoarrow::read_nanoarrow(.x))) |>
+    results <- purrr::map(~ tibble::as_tibble(nanoarrow::read_nanoarrow(.x))) |>
       purrr::list_rbind()
   }
+  results
 }
