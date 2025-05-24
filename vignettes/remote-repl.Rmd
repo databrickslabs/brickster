@@ -62,35 +62,15 @@ After successfully connecting to the cluster you can run commands against the re
 
 The REPL has a shortcut you can enter `:<language>` to change the active language. You can change between the following languages:
 
-+---------------------------------+-----------------------------------+
-| Language                        | Shortcut                          |
-+=================================+===================================+
-| R                               | `:r`                              |
-+---------------------------------+-----------------------------------+
-| Python                          | `:py`                             |
-+---------------------------------+-----------------------------------+
-| SQL                             | `:sql`                            |
-+---------------------------------+-----------------------------------+
-| Scala                           | `:scala`                          |
-+---------------------------------+-----------------------------------+
-| Shell                           | `:sh`                             |
-+---------------------------------+-----------------------------------+
+| Language | Shortcut |
+|----------|----------|
+| R        | `:r`     |
+| Python   | `:py`    |
+| SQL      | `:sql`   |
+| Scala    | `:scala` |
+| Shell    | `:sh`    |
 
 When you change between languages all variables should persist unless REPL is exited.
-
-## RStudio Addins
-
-There are three addins included with `{brickster}` for use with the REPL:
-
-1.  Send selection to console
-
-2.  Send current document to console
-
-3.  Send R script to console
-
-It's recommended that (1) and (2) be bound to a keyboard shortcut if using the REPL frequently ('Tools' \> 'Modify Keyboard Shortcuts...' \> 'Search for `brickster`').
-
-These addins behave slightly different to the standard shortcuts as they ensure that commands that span multiple lines are handled correctly via the REPL.
 
 ## Limitations
 
@@ -101,3 +81,5 @@ These addins behave slightly different to the standard shortcuts as they ensure 
 -   Not designed to work with interactive serverless compute
 
 -   Cannot persist or recover sessions
+
+-   Multi-line expressions are only supported for R. Python, Scala, and SQL are limited to single line expressions.
