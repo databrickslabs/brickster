@@ -79,9 +79,9 @@ Databricks, below is an overview of the available of those in the
 package:</p>
 <table style="width:100%;" class="table">
 <colgroup>
-<col width="52%">
-<col width="10%">
-<col width="36%">
+<col width="51%">
+<col width="11%">
+<col width="37%">
 </colgroup>
 <thead><tr class="header">
 <th>Method</th>
@@ -90,6 +90,11 @@ package:</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
+<td><code>db_sql_query</code></td>
+<td>SQL Warehouse</td>
+<td>Simple and efficient function to run SQL</td>
+</tr>
+<tr class="even">
 <td>
 <a href="https://docs.databricks.com/api/workspace/statementexecution" class="external-link">SQL
 execution API</a><br>
@@ -97,7 +102,7 @@ execution API</a><br>
 <td>SQL Warehouse</td>
 <td>Lower level functions that align 1:1 with API endpoints</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Command execution context manager<br>
 (<code>db_context_manager</code>)</td>
 <td>Clusters<br>
@@ -105,7 +110,7 @@ execution API</a><br>
 <td>Higher level <code>R6</code> class for command execution
 contexts.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>
 <a href="https://docs.databricks.com/api/workspace/commandexecution" class="external-link">Command
 execution API</a><br>
@@ -113,14 +118,6 @@ execution API</a><br>
 <td>Clusters<br>
 (Shared, Single User)</td>
 <td>Lower level functions that align 1:1 with API endpoints</td>
-</tr>
-<tr class="even">
-<td>
-<a href="https://docs.databricks.com/en/dev-tools/python-sql-connector.html" class="external-link">Databricks
-SQL Connector</a> via <a href="https://rstudio.github.io/reticulate/" class="external-link">reticulate</a><br>
-(<a href="https://databrickslabs.github.io/brickster/reference/index.html#sql-connector" class="external-link"><code>db_sql_client</code></a>)</td>
-<td>SQL Warehouse</td>
-<td>Exposes <code>databricks.sql</code> connector to R.</td>
 </tr>
 <tr class="odd">
 <td>Databricks REPL<br>
@@ -219,7 +216,7 @@ and SQL are limited to single line expressions.</p></li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>
