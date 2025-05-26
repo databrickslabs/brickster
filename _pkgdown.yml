@@ -94,12 +94,9 @@ reference:
 - title: Secrets
   contents: starts_with("db_secrets", internal = TRUE)
 - title: SQL Statement Execution
-  contents: starts_with("db_sql_exec", internal = TRUE)
-- title: SQL Connector
   contents:
-  - install_db_sql_connector
-  - db_sql_client
-  - DatabricksSqlClient
+  - db_sql_query
+  - starts_with("db_sql_exec", internal = TRUE)
 - title: Tables (Unity Catalog)
   contents:
   - starts_with("db_uc_table", internal = TRUE)
