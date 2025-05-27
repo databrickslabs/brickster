@@ -16,6 +16,7 @@ db_jobs_update(
   max_concurrent_runs = NULL,
   access_control_list = NULL,
   git_source = NULL,
+  queue = NULL,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE

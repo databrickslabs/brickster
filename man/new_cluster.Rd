@@ -88,13 +88,18 @@ New Cluster
 \code{\link[=job_task]{job_task()}}
 
 Other Task Objects: 
+\code{\link{condition_task}()},
 \code{\link{email_notifications}()},
+\code{\link{for_each_task}()},
 \code{\link{libraries}()},
 \code{\link{notebook_task}()},
 \code{\link{pipeline_task}()},
 \code{\link{python_wheel_task}()},
+\code{\link{run_job_task}()},
 \code{\link{spark_jar_task}()},
 \code{\link{spark_python_task}()},
-\code{\link{spark_submit_task}()}
+\code{\link{spark_submit_task}()},
+\code{\link{sql_file_task}()},
+\code{\link{sql_query_task}()}
 }
 \concept{Task Objects}

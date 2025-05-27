@@ -1255,13 +1255,14 @@ is.python_wheel_task <- function(x) {
 #'
 #' @param inputs Array for task to iterate on. This can be a JSON string or a
 #' reference to an array parameter.
-#' @param task Task that will be run for each element in the array
+#' @param task Must be a [job_task()].
 #' @param concurrency Maximum allowed number of concurrent runs of the task.
 #'
 #' @family Task Objects
 #'
 #' @export
 for_each_task <- function(inputs, task, concurrency = 1) {
+  stopifnot(is.job_task(task))
   obj <- list(
     inputs = inputs,
     task = task,
@@ -1344,7 +1345,7 @@ sql_query_task <- function(query_id, warehouse_id, parameters) {
   obj <- list(
     query = list(query_id = query_id),
     warehouse_id = warehouse_id,
-    paramters = paramaters
+    parameters = parameters
   )
 
   class(obj) <- c("SqlQueryTask", "JobTask", "list")
@@ -1381,7 +1382,7 @@ sql_file_task <- function(path, source = NULL, warehouse_id, parameters) {
   obj <- list(
     file = list(path = path, source = source),
     warehouse_id = warehouse_id,
-    paramters = paramaters
+    parameters = parameters
   )
 
   class(obj) <- c("SqlFileTask", "JobTask", "list")

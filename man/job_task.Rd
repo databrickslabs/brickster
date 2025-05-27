@@ -17,7 +17,9 @@ job_task(
   timeout_seconds = NULL,
   max_retries = 0,
   min_retry_interval_millis = 0,
-  retry_on_timeout = FALSE
+  retry_on_timeout = FALSE,
+  run_if = c("ALL_SUCCESS", "ALL_DONE", "NONE_FAILED", "AT_LEAST_ONE_SUCCESS",
+    "ALL_FAILED", "AT_LEAST_ONE_FAILED")
 )
 }
 \arguments{

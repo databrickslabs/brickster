@@ -15,6 +15,7 @@ db_jobs_reset(
   max_concurrent_runs = 1,
   access_control_list = NULL,
   git_source = NULL,
+  queue = NULL,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
