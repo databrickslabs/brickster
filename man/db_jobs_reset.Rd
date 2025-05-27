@@ -52,6 +52,8 @@ The default behavior is to allow only 1 concurrent run.}
 \item{git_source}{Optional specification for a remote repository containing
 the notebooks used by this job's notebook tasks. Instance of \code{\link[=git_source]{git_source()}}.}
 
+\item{queue}{If true, enable queueing for the job.}
+
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
 \item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}

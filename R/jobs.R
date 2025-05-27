@@ -19,6 +19,7 @@
 #' @param access_control_list Instance of [access_control_request()].
 #' @param git_source Optional specification for a remote repository containing
 #' the notebooks used by this job's notebook tasks. Instance of [git_source()].
+#' @param queue If true, enable queueing for the job.
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create
 #'
@@ -72,7 +73,7 @@ db_jobs_create <- function(
     format = format,
     access_control_list = access_control_list,
     git_source = git_source,
-    queue = queue
+    queue = list(enabled = queue)
   )
 
   body <- purrr::discard(body, is.null)
@@ -237,6 +238,7 @@ db_jobs_reset <- function(
 ) {
   format <- "MULTI_TASK"
 
+  job_clusters <- prepare_jobs_clusters(job_clusters)
   body <- list(
     name = name,
     tasks = tasks,
@@ -248,7 +250,7 @@ db_jobs_reset <- function(
     format = format,
     access_control_list = access_control_list,
     git_source = git_source,
-    queue = queue
+    queue = list(enabled = queue)
   )
 
   body <- purrr::discard(body, is.null)
@@ -305,17 +307,7 @@ db_jobs_update <- function(
   format <- "MULTI_TASK"
 
   # jobs clusters is transformed to meet API structure required
-  job_clusters <- purrr::imap(
-    job_clusters,
-    ~ {
-      stopifnot(is.new_cluster(.x))
-      list(
-        "job_cluster_key" = .y,
-        "new_cluster" = .x
-      )
-    }
-  )
-  job_clusters <- unname(job_clusters)
+  job_clusters <- prepare_jobs_clusters(job_clusters)
 
   body <- list(
     name = name,
@@ -328,7 +320,7 @@ db_jobs_update <- function(
     format = format,
     access_control_list = access_control_list,
     git_source = git_source,
-    queue = queue
+    queue = list(enabled = queue)
   )
 
   body <- purrr::discard(body, is.null)
@@ -444,17 +436,7 @@ db_jobs_runs_submit <- function(
   perform_request = TRUE
 ) {
   # jobs clusters is transformed to meet API structure required
-  job_clusters <- purrr::imap(
-    job_clusters,
-    ~ {
-      stopifnot(is.new_cluster(.x))
-      list(
-        "job_cluster_key" = .y,
-        "new_cluster" = .x
-      )
-    }
-  )
-  job_clusters <- unname(job_clusters)
+  job_clusters <- prepare_jobs_clusters(job_clusters)
 
   body <- list(
     run_name = run_name,
@@ -741,4 +723,20 @@ db_jobs_runs_delete <- function(
   } else {
     req
   }
+}
+
+
+prepare_jobs_clusters <- function(x) {
+  # jobs clusters is transformed to meet API structure required
+  job_clusters <- purrr::imap(
+    x,
+    ~ {
+      stopifnot(is.new_cluster(.x))
+      list(
+        "job_cluster_key" = .y,
+        "new_cluster" = .x
+      )
+    }
+  )
+  job_clusters <- unname(job_clusters)
 }

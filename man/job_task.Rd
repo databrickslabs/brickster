@@ -68,6 +68,9 @@ behavior is that unsuccessful runs are immediately retried.}
 
 \item{retry_on_timeout}{Optional policy to specify whether to retry a task
 when it times out. The default behavior is to not retry on timeout.}
+
+\item{run_if}{The condition determining whether the task is run once its
+dependencies have been completed.}
 }
 \description{
 Job Task

@@ -10,7 +10,7 @@ for_each_task(inputs, task, concurrency = 1)
 \item{inputs}{Array for task to iterate on. This can be a JSON string or a
 reference to an array parameter.}
 
-\item{task}{Task that will be run for each element in the array}
+\item{task}{Must be a \code{\link[=job_task]{job_task()}}.}
 
 \item{concurrency}{Maximum allowed number of concurrent runs of the task.}
 }

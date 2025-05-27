@@ -4,7 +4,7 @@
 \alias{notebook_task}
 \title{Notebook Task}
 \usage{
-notebook_task(notebook_path, base_parameters = list())
+notebook_task(notebook_path, base_parameters = NULL)
 }
 \arguments{
 \item{notebook_path}{The absolute path of the notebook to be run in the

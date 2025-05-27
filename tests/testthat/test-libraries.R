@@ -1,5 +1,4 @@
 test_that("Libraries API - don't perform", {
-
   withr::local_envvar(c(
     "DATABRICKS_HOST" = "http://mock_host",
     "DATABRICKS_TOKEN" = "mock_token"
@@ -26,13 +25,11 @@ test_that("Libraries API - don't perform", {
   )
   expect_s3_class(resp_lib_install, "httr2_request")
 
-
   resp_lib_status <- db_libs_cluster_status(
     cluster_id = "some_cluster_id",
     perform_request = F
   )
   expect_s3_class(resp_lib_status, "httr2_request")
-
 
   expect_error({
     db_libs_uninstall(
@@ -49,8 +46,6 @@ test_that("Libraries API - don't perform", {
     perform_request = F
   )
   expect_s3_class(resp_lib_status, "httr2_request")
-
-
 })
 
 skip_on_cran()
@@ -58,7 +53,6 @@ skip_unless_authenticated()
 skip_unless_aws_workspace()
 
 test_that("Libraries API", {
-
   expect_no_error({
     resp_all_statuses <- db_libs_all_cluster_statuses()
   })
@@ -67,15 +61,22 @@ test_that("Libraries API", {
   # create a cluster to install libraries on
   # (AWS specific)
   resp_list_dbrv <- db_cluster_runtime_versions()
+  # use a standard runtime
+  runtimes <- base::sort(
+    purrr::map_chr(resp_list_dbrv$versions, "key"),
+    decreasing = TRUE
+  )
+  std_runtimes <- purrr::keep(runtimes, ~ !grepl("photon|gpu", .x))
   resp_create_cluster <- db_cluster_create(
     name = "brickster_test_libraries_cluster",
-    spark_version = resp_list_dbrv[[1]][[1]]$key,
+    spark_version = std_runtimes[1],
     num_workers = 2,
     node_type_id = "m7a.xlarge",
     cloud_attrs = aws_attributes(
       ebs_volume_size = 32
     ),
-    autotermination_minutes = 15
+    autotermination_minutes = 15,
+    data_security_mode = "DATA_SECURITY_MODE_AUTO"
   )
 
   expect_no_error({
@@ -108,6 +109,4 @@ test_that("Libraries API", {
   })
 
   db_cluster_perm_delete(cluster_id = resp_create_cluster$cluster_id)
-
-
 })

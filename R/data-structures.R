@@ -509,10 +509,26 @@ new_cluster <- function(
   init_scripts = NULL,
   enable_elastic_disk = TRUE,
   driver_instance_pool_id = NULL,
-  instance_pool_id = NULL
+  instance_pool_id = NULL,
+  kind = c("CLASSIC_PREVIEW"),
+  data_security_mode = c(
+    "NONE",
+    "SINGLE_USER",
+    "USER_ISOLATION",
+    "LEGACY_TABLE_ACL",
+    "LEGACY_PASSTHROUGH",
+    "LEGACY_SINGLE_USER",
+    "LEGACY_SINGLE_USER_STANDARD",
+    "DATA_SECURITY_MODE_STANDARD",
+    "DATA_SECURITY_MODE_DEDICATED",
+    "DATA_SECURITY_MODE_AUTO"
+  )
 ) {
   # job_cluster_key is reserved for future use
   # TODO: detect if aws/azure/gcp by node_type_ids and see if there is a mismatch
+
+  kind <- match.arg(kind)
+  data_security_mode <- match.arg(data_security_mode)
 
   obj <- list(
     num_workers = num_workers,
@@ -1080,7 +1096,7 @@ is.git_source <- function(x) {
 #' @family Task Objects
 #'
 #' @export
-notebook_task <- function(notebook_path, base_parameters = list()) {
+notebook_task <- function(notebook_path, base_parameters = NULL) {
   obj <- list(
     notebook_path = notebook_path,
     base_parameters = base_parameters
@@ -1497,6 +1513,8 @@ job_tasks <- function(...) {
 #' behavior is that unsuccessful runs are immediately retried.
 #' @param retry_on_timeout Optional policy to specify whether to retry a task
 #' when it times out. The default behavior is to not retry on timeout.
+#' @param run_if The condition determining whether the task is run once its
+#' dependencies have been completed.
 #'
 #' @export
 job_task <- function(
