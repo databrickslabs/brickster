@@ -1357,7 +1357,7 @@ is.condition_task <- function(x) {
 #' @family Task Objects
 #'
 #' @export
-sql_query_task <- function(query_id, warehouse_id, parameters) {
+sql_query_task <- function(query_id, warehouse_id, parameters = NULL) {
   obj <- list(
     query = list(query_id = query_id),
     warehouse_id = warehouse_id,
@@ -1392,7 +1392,12 @@ is.sql_query_task <- function(x) {
 #' @family Task Objects
 #'
 #' @export
-sql_file_task <- function(path, source = NULL, warehouse_id, parameters) {
+sql_file_task <- function(
+  path,
+  warehouse_id,
+  source = NULL,
+  parameters = NULL
+) {
   source <- match.arg(source, choices = c(NULL, "GIT", "WORKSPACE"))
 
   obj <- list(
@@ -1574,8 +1579,8 @@ job_task <- function(
     "PythonWheelTask" = "python_wheel_task",
     "ForEachTask" = "for_each_task",
     "ConditionTask" = "condition_task",
-    "SqlQueryTask" = "sql_query_task",
-    "SqlFileTask" = "sql_file_task",
+    "SqlQueryTask" = "sql_task",
+    "SqlFileTask" = "sql_task",
     "RunJobTask" = "run_job_task"
   )
 

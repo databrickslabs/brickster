@@ -26,11 +26,11 @@ library(brickster)
 # if (!"/brickster/simple-notebook" %in% files) {
 #   # temp dir to create notebook locally
 #   temp_dir <- tempdir()
-#   
+# 
 #   # make notebook locally
 #   path <- file.path(temp_dir, "simple-notebook.r")
 #   writeLines(text = "print('hello world')", con = path)
-#   
+# 
 #   # import to workspace
 #   db_workspace_import(
 #     path = "/brickster/simple-notebook",
@@ -43,7 +43,7 @@ library(brickster)
 
 # Managing Databricks Jobs
 
-`{brickster}` provides full coverage of the Jobs REST API's (specifically version 2.1), allowing creation of multi-task jobs via R code.
+`{brickster}` provides coverage of the Jobs REST API's, allowing creation of multi-task jobs via R code.
 
 ## Job Basics
 
@@ -106,7 +106,7 @@ simple_task <- job_task(
   description = "a simple task that runs a notebook",
   # specify a cluster for the job
   new_cluster = new_cluster(
-    spark_version = "9.1.x-scala2.12",
+    spark_version = "16.4.x-scala2.12",
     driver_node_type_id = "m5a.large",
     node_type_id = "m5a.large",
     num_workers = 2,
@@ -139,7 +139,7 @@ Whilst this job runs the same notebook each time for the sake of example it demo
 ```{r}
 # one cluster definition, repeatedly use for each task
 multitask_cluster <- new_cluster(
-  spark_version = "9.1.x-scala2.12",
+  spark_version = "16.4.x-scala2.12",
   driver_node_type_id = "m5a.large",
   node_type_id = "m5a.large",
   num_workers = 2,
@@ -275,7 +275,7 @@ simple_task <- job_task(
   description = "a simple task that runs a notebook",
   # specify a cluster for the job
   new_cluster = new_cluster(
-    spark_version = "9.1.x-scala2.12",
+    spark_version = "16.4.x-scala2.12",
     driver_node_type_id = "m5a.large",
     node_type_id = "m5a.large",
     num_workers = 2,
@@ -307,8 +307,6 @@ simple_task_job <- db_jobs_create(
   )
 )
 ```
-
-When specifying `git_source()` all `notebook_task()` must be repo paths - it's not possible to have a mix of repo and workspace based notebooks. Additionally, this behaviour only works for `notebook_task()`, other tasks such as `spark_python_task()` are unsupported.
 
 ## Updating Jobs
 
