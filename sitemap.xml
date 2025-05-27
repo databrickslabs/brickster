@@ -18,6 +18,7 @@
 <url><loc>https://zacdav-db.github.io/brickster/reference/close_workspace.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/cluster_autoscale.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/cluster_log_conf.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/condition_task.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/cron_schedule.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/db_cluster_action.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/db_cluster_create.html</loc></url>
@@ -89,6 +90,11 @@
 <url><loc>https://zacdav-db.github.io/brickster/reference/db_mlflow_registered_model_details.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/db_oauth_client.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/db_perform_request.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_query_create.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_query_delete.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_query_get.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_query_list.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/db_query_update.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/db_read_netrc.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/db_repl.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/db_repo_create.html</loc></url>
@@ -178,6 +184,7 @@
 <url><loc>https://zacdav-db.github.io/brickster/reference/embedding_source_column.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/embedding_vector_column.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/file_storage_info.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/for_each_task.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/gcp_attributes.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/get_and_start_cluster.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/get_and_start_warehouse.html</loc></url>
@@ -193,6 +200,7 @@
 <url><loc>https://zacdav-db.github.io/brickster/reference/is.azure_attributes.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/is.cluster_autoscale.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/is.cluster_log_conf.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.condition_task.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/is.cron_schedule.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/is.dbfs_storage_info.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/is.delta_sync_index.html</loc></url>
@@ -202,6 +210,7 @@
 <url><loc>https://zacdav-db.github.io/brickster/reference/is.embedding_source_column.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/is.embedding_vector_column.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/is.file_storage_info.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.for_each_task.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/is.gcp_attributes.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/is.git_source.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/is.init_script_info.html</loc></url>
@@ -218,10 +227,13 @@
 <url><loc>https://zacdav-db.github.io/brickster/reference/is.notebook_task.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/is.pipeline_task.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/is.python_wheel_task.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.run_job_task.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/is.s3_storage_info.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/is.spark_jar_task.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/is.spark_python_task.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/is.spark_submit_task.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.sql_file_task.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/is.sql_query_task.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/is.valid_task_type.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/is.vector_search_index_spec.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/job_task.html</loc></url>
@@ -241,10 +253,13 @@
 <url><loc>https://zacdav-db.github.io/brickster/reference/read_databrickscfg.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/read_env_var.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/remove_lib_path.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/run_job_task.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/s3_storage_info.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/spark_jar_task.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/spark_python_task.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/spark_submit_task.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/sql_file_task.html</loc></url>
+<url><loc>https://zacdav-db.github.io/brickster/reference/sql_query_task.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/use_databricks_cfg.html</loc></url>
 <url><loc>https://zacdav-db.github.io/brickster/reference/wait_for_lib_installs.html</loc></url>
 </urlset>

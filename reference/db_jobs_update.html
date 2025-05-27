@@ -56,6 +56,7 @@
 <span>  max_concurrent_runs <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  access_control_list <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  git_source <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  queue <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  host <span class="op">=</span> <span class="fu"><a href="db_host.html">db_host</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  token <span class="op">=</span> <span class="fu"><a href="db_token.html">db_token</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  perform_request <span class="op">=</span> <span class="cn">TRUE</span></span>
@@ -119,6 +120,10 @@ The default behavior is to allow only 1 concurrent run.</p></dd>
 <dt id="arg-git-source">git_source<a class="anchor" aria-label="anchor" href="#arg-git-source"></a></dt>
 <dd><p>Optional specification for a remote repository containing
 the notebooks used by this job's notebook tasks. Instance of <code><a href="git_source.html">git_source()</a></code>.</p></dd>
+
+
+<dt id="arg-queue">queue<a class="anchor" aria-label="anchor" href="#arg-queue"></a></dt>
+<dd><p>If true, enable queueing for the job.</p></dd>
 
 
 <dt id="arg-host">host<a class="anchor" aria-label="anchor" href="#arg-host"></a></dt>

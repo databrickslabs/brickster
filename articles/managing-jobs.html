@@ -74,9 +74,8 @@
 <div class="section level2">
 <h2 id="managing-databricks-jobs">Managing Databricks Jobs<a class="anchor" aria-label="anchor" href="#managing-databricks-jobs"></a>
 </h2>
-<p><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> provides full coverage of the Jobs REST
-API’s (specifically version 2.1), allowing creation of multi-task jobs
-via R code.</p>
+<p><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> provides coverage of the Jobs REST API’s,
+allowing creation of multi-task jobs via R code.</p>
 <div class="section level3">
 <h3 id="job-basics">Job Basics<a class="anchor" aria-label="anchor" href="#job-basics"></a>
 </h3>
@@ -177,7 +176,7 @@ paused schedule:</p>
 <span>  description <span class="op">=</span> <span class="st">"a simple task that runs a notebook"</span>,</span>
 <span>  <span class="co"># specify a cluster for the job</span></span>
 <span>  new_cluster <span class="op">=</span> <span class="fu"><a href="../reference/new_cluster.html">new_cluster</a></span><span class="op">(</span></span>
-<span>    spark_version <span class="op">=</span> <span class="st">"9.1.x-scala2.12"</span>,</span>
+<span>    spark_version <span class="op">=</span> <span class="st">"16.4.x-scala2.12"</span>,</span>
 <span>    driver_node_type_id <span class="op">=</span> <span class="st">"m5a.large"</span>,</span>
 <span>    node_type_id <span class="op">=</span> <span class="st">"m5a.large"</span>,</span>
 <span>    num_workers <span class="op">=</span> <span class="fl">2</span>,</span>
@@ -210,7 +209,7 @@ example it demonstrates how to build dependencies.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># one cluster definition, repeatedly use for each task</span></span>
 <span><span class="va">multitask_cluster</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/new_cluster.html">new_cluster</a></span><span class="op">(</span></span>
-<span>  spark_version <span class="op">=</span> <span class="st">"9.1.x-scala2.12"</span>,</span>
+<span>  spark_version <span class="op">=</span> <span class="st">"16.4.x-scala2.12"</span>,</span>
 <span>  driver_node_type_id <span class="op">=</span> <span class="st">"m5a.large"</span>,</span>
 <span>  node_type_id <span class="op">=</span> <span class="st">"m5a.large"</span>,</span>
 <span>  num_workers <span class="op">=</span> <span class="fl">2</span>,</span>
@@ -352,7 +351,7 @@ contains <code>simple-notebook.py</code>.</p>
 <span>  description <span class="op">=</span> <span class="st">"a simple task that runs a notebook"</span>,</span>
 <span>  <span class="co"># specify a cluster for the job</span></span>
 <span>  new_cluster <span class="op">=</span> <span class="fu"><a href="../reference/new_cluster.html">new_cluster</a></span><span class="op">(</span></span>
-<span>    spark_version <span class="op">=</span> <span class="st">"9.1.x-scala2.12"</span>,</span>
+<span>    spark_version <span class="op">=</span> <span class="st">"16.4.x-scala2.12"</span>,</span>
 <span>    driver_node_type_id <span class="op">=</span> <span class="st">"m5a.large"</span>,</span>
 <span>    node_type_id <span class="op">=</span> <span class="st">"m5a.large"</span>,</span>
 <span>    num_workers <span class="op">=</span> <span class="fl">2</span>,</span>
@@ -382,11 +381,6 @@ notebook.</p>
 <span>    pause_status <span class="op">=</span> <span class="st">"PAUSED"</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>When specifying <code><a href="../reference/git_source.html">git_source()</a></code> all
-<code><a href="../reference/notebook_task.html">notebook_task()</a></code> must be repo paths - it’s not possible to
-have a mix of repo and workspace based notebooks. Additionally, this
-behaviour only works for <code><a href="../reference/notebook_task.html">notebook_task()</a></code>, other tasks such
-as <code><a href="../reference/spark_python_task.html">spark_python_task()</a></code> are unsupported.</p>
 </div>
 </div>
 <div class="section level3">
