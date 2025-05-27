@@ -509,10 +509,26 @@ new_cluster <- function(
   init_scripts = NULL,
   enable_elastic_disk = TRUE,
   driver_instance_pool_id = NULL,
-  instance_pool_id = NULL
+  instance_pool_id = NULL,
+  kind = c("CLASSIC_PREVIEW"),
+  data_security_mode = c(
+    "NONE",
+    "SINGLE_USER",
+    "USER_ISOLATION",
+    "LEGACY_TABLE_ACL",
+    "LEGACY_PASSTHROUGH",
+    "LEGACY_SINGLE_USER",
+    "LEGACY_SINGLE_USER_STANDARD",
+    "DATA_SECURITY_MODE_STANDARD",
+    "DATA_SECURITY_MODE_DEDICATED",
+    "DATA_SECURITY_MODE_AUTO"
+  )
 ) {
   # job_cluster_key is reserved for future use
   # TODO: detect if aws/azure/gcp by node_type_ids and see if there is a mismatch
+
+  kind <- match.arg(kind)
+  data_security_mode <- match.arg(data_security_mode)
 
   obj <- list(
     num_workers = num_workers,
@@ -1080,7 +1096,7 @@ is.git_source <- function(x) {
 #' @family Task Objects
 #'
 #' @export
-notebook_task <- function(notebook_path, base_parameters = list()) {
+notebook_task <- function(notebook_path, base_parameters = NULL) {
   obj <- list(
     notebook_path = notebook_path,
     base_parameters = base_parameters
@@ -1251,6 +1267,189 @@ is.python_wheel_task <- function(x) {
   inherits(x, "PythonWheelTask")
 }
 
+#' For Each Task
+#'
+#' @param inputs Array for task to iterate on. This can be a JSON string or a
+#' reference to an array parameter.
+#' @param task Must be a [job_task()].
+#' @param concurrency Maximum allowed number of concurrent runs of the task.
+#'
+#' @family Task Objects
+#'
+#' @export
+for_each_task <- function(inputs, task, concurrency = 1) {
+  stopifnot(is.job_task(task))
+  obj <- list(
+    inputs = inputs,
+    task = task,
+    concurrency = concurrency
+  )
+
+  class(obj) <- c("ForEachTask", "JobTask", "list")
+  obj
+}
+
+#' Test if object is of class ForEachTask
+#'
+#' @param x An object
+#' @return `TRUE` if the object inherits from the `ForEachTask` class.
+#' @export
+is.for_each_task <- function(x) {
+  inherits(x, "ForEachTask")
+}
+
+#' Condition Task
+#'
+#' @details
+#' The task evaluates a condition that can be used to control the execution of
+#' other tasks when the condition_task field is present. The condition task does
+#' not require a cluster to execute and does not support retries or notifications.
+#'
+#' @param left Left operand of the condition task. Either a string value or a
+#' job state or parameter reference.
+#' @param right Right operand of the condition task. Either a string value or a
+#' job state or parameter reference.
+#' @param op Operator, one of `"EQUAL_TO"`, `"GREATER_THAN"`,
+#' `"GREATER_THAN_OR_EQUAL"`, `"LESS_THAN"`, `"LESS_THAN_OR_EQUAL"`, `"NOT_EQUAL"`
+#'
+#' @family Task Objects
+#'
+#' @export
+condition_task <- function(
+  left,
+  right,
+  op = c(
+    "EQUAL_TO",
+    "GREATER_THAN",
+    "GREATER_THAN_OR_EQUAL",
+    "LESS_THAN",
+    "LESS_THAN_OR_EQUAL",
+    "NOT_EQUAL"
+  )
+) {
+  op <- match.arg(op)
+
+  obj <- list(
+    left = left,
+    right = right,
+    op = op
+  )
+
+  class(obj) <- c("ConditionTask", "JobTask", "list")
+  obj
+}
+
+#' Test if object is of class ConditionTask
+#'
+#' @param x An object
+#' @return `TRUE` if the object inherits from the `ConditionTask` class.
+#' @export
+is.condition_task <- function(x) {
+  inherits(x, "ConditionTask")
+}
+
+#' SQL Query Task
+#'
+#' @param query_id The canonical identifier of the SQL query.
+#' @param warehouse_id The canonical identifier of the SQL warehouse.
+#' @param parameters Named list of paramters to be used for each run of this job.
+#'
+#' @family Task Objects
+#'
+#' @export
+sql_query_task <- function(query_id, warehouse_id, parameters = NULL) {
+  obj <- list(
+    query = list(query_id = query_id),
+    warehouse_id = warehouse_id,
+    parameters = parameters
+  )
+
+  class(obj) <- c("SqlQueryTask", "JobTask", "list")
+  obj
+}
+
+#' Test if object is of class SqlQueryTask
+#'
+#' @param x An object
+#' @return `TRUE` if the object inherits from the `SqlQueryTask` class.
+#' @export
+is.sql_query_task <- function(x) {
+  inherits(x, "SqlQueryTask")
+}
+
+#' SQL File Task
+#'
+#' @param path Path of the SQL file. Must be relative if the source is a remote
+#' Git repository and absolute for workspace paths.
+#' @param source Optional location type of the SQL file. When set to `WORKSPACE`,
+#' the SQL file will be retrieved from the local Databricks workspace. When set
+#' to `GIT`, the SQL file will be retrieved from a Git repository defined in
+#' [`git_source()`] If the value is empty, the task will use `GIT` if
+#' [`git_source()`] is defined and `WORKSPACE` otherwise.
+#' @param warehouse_id The canonical identifier of the SQL warehouse.
+#' @param parameters Named list of paramters to be used for each run of this job.
+#'
+#' @family Task Objects
+#'
+#' @export
+sql_file_task <- function(
+  path,
+  warehouse_id,
+  source = NULL,
+  parameters = NULL
+) {
+  source <- match.arg(source, choices = c(NULL, "GIT", "WORKSPACE"))
+
+  obj <- list(
+    file = list(path = path, source = source),
+    warehouse_id = warehouse_id,
+    parameters = parameters
+  )
+
+  class(obj) <- c("SqlFileTask", "JobTask", "list")
+  obj
+}
+
+#' Test if object is of class SqlFileTask
+#'
+#' @param x An object
+#' @return `TRUE` if the object inherits from the `SqlFileTask` class.
+#' @export
+is.sql_file_task <- function(x) {
+  inherits(x, "SqlFileTask")
+}
+
+
+#' Run Job Task
+#'
+#' @param job_id ID of the job to trigger.
+#' @param job_parameters Named list, job-level parameters used to trigger job.
+#' @param full_refresh If the pipeline should perform a full refresh.
+#'
+#' @family Task Objects
+#'
+#' @export
+run_job_task <- function(job_id, job_parameters, full_refresh = FALSE) {
+  obj <- list(
+    job_id = job_id,
+    job_parameters = job_parameters,
+    pipeline_params = list(full_refresh = full_refresh)
+  )
+
+  class(obj) <- c("RunJobTask", "JobTask", "list")
+  obj
+}
+
+#' Test if object is of class RunJobTask
+#'
+#' @param x An object
+#' @return `TRUE` if the object inherits from the `RunJobTask` class.
+#' @export
+is.run_job_task <- function(x) {
+  inherits(x, "RunJobTask")
+}
+
+
 #' Test if object is of class JobTask
 #'
 #' @param x An object
@@ -1319,6 +1518,8 @@ job_tasks <- function(...) {
 #' behavior is that unsuccessful runs are immediately retried.
 #' @param retry_on_timeout Optional policy to specify whether to retry a task
 #' when it times out. The default behavior is to not retry on timeout.
+#' @param run_if The condition determining whether the task is run once its
+#' dependencies have been completed.
 #'
 #' @export
 job_task <- function(
@@ -1334,11 +1535,21 @@ job_task <- function(
   timeout_seconds = NULL,
   max_retries = 0,
   min_retry_interval_millis = 0,
-  retry_on_timeout = FALSE
+  retry_on_timeout = FALSE,
+  run_if = c(
+    "ALL_SUCCESS",
+    "ALL_DONE",
+    "NONE_FAILED",
+    "AT_LEAST_ONE_SUCCESS",
+    "ALL_FAILED",
+    "AT_LEAST_ONE_FAILED"
+  )
 ) {
   depends_on <- lapply(depends_on, function(x) {
     list(task_key = x)
   })
+
+  run_if <- match.arg(run_if)
 
   obj <- list(
     task_key = task_key,
@@ -1352,7 +1563,8 @@ job_task <- function(
     timeout_seconds = timeout_seconds,
     max_retries = max_retries,
     min_retry_interval_millis = min_retry_interval_millis,
-    retry_on_timeout = retry_on_timeout
+    retry_on_timeout = retry_on_timeout,
+    run_if = run_if
   )
 
   # add task to `obj`, it needs to be named depending on type
@@ -1365,6 +1577,11 @@ job_task <- function(
     "SparkSubmitTask" = "spark_submit_task",
     "PipelineTask" = "pipeline_task",
     "PythonWheelTask" = "python_wheel_task",
+    "ForEachTask" = "for_each_task",
+    "ConditionTask" = "condition_task",
+    "SqlQueryTask" = "sql_task",
+    "SqlFileTask" = "sql_task",
+    "RunJobTask" = "run_job_task"
   )
 
   obj[[task_type]] <- task

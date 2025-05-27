@@ -1,5 +1,4 @@
 test_that("Clusters API - don't perform", {
-
   withr::local_envvar(c(
     "DATABRICKS_HOST" = "http://mock_host",
     "DATABRICKS_TOKEN" = "mock_token"
@@ -118,7 +117,6 @@ test_that("Clusters API - don't perform", {
     perform_request = F
   )
   expect_s3_class(resp_delete, "httr2_request")
-
 })
 
 skip_on_cran()
@@ -126,7 +124,6 @@ skip_unless_authenticated()
 skip_unless_aws_workspace()
 
 test_that("Clusters API", {
-
   # basic metadata functions
   expect_no_error({
     resp_list <- db_cluster_list()
@@ -149,16 +146,24 @@ test_that("Clusters API", {
   expect_type(resp_list_dbrv, "list")
 
   # creating cluster (AWS specific)
+  # use a standard runtime
+  runtimes <- base::sort(
+    purrr::map_chr(resp_list_dbrv$versions, "key"),
+    decreasing = TRUE
+  )
+  std_runtimes <- purrr::keep(runtimes, ~ !grepl("photon|gpu", .x))
+
   expect_no_error({
     resp_create <- db_cluster_create(
       name = "brickster_test_cluster",
-      spark_version = resp_list_dbrv[[1]][[1]]$key,
+      spark_version = std_runtimes[1],
       num_workers = 2,
       node_type_id = "m7a.xlarge",
       cloud_attrs = aws_attributes(
         ebs_volume_size = 32
       ),
-      autotermination_minutes = 15
+      autotermination_minutes = 15,
+      data_security_mode = "DATA_SECURITY_MODE_AUTO"
     )
   })
 
@@ -192,7 +197,6 @@ test_that("Clusters API", {
   })
   expect_type(dbr1, "list")
   expect_length(dbr1, 2)
-
 
   expect_no_error({
     dbr2 <- get_latest_dbr(lts = FALSE, ml = FALSE, gpu = FALSE, photon = FALSE)
@@ -233,6 +237,4 @@ test_that("Clusters API", {
   expect_error({
     get_latest_dbr(lts = FALSE, ml = FALSE, gpu = TRUE, photon = TRUE)
   })
-
-
 })

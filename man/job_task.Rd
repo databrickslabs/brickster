@@ -17,7 +17,9 @@ job_task(
   timeout_seconds = NULL,
   max_retries = 0,
   min_retry_interval_millis = 0,
-  retry_on_timeout = FALSE
+  retry_on_timeout = FALSE,
+  run_if = c("ALL_SUCCESS", "ALL_DONE", "NONE_FAILED", "AT_LEAST_ONE_SUCCESS",
+    "ALL_FAILED", "AT_LEAST_ONE_FAILED")
 )
 }
 \arguments{
@@ -66,6 +68,9 @@ behavior is that unsuccessful runs are immediately retried.}
 
 \item{retry_on_timeout}{Optional policy to specify whether to retry a task
 when it times out. The default behavior is to not retry on timeout.}
+
+\item{run_if}{The condition determining whether the task is run once its
+dependencies have been completed.}
 }
 \description{
 Job Task

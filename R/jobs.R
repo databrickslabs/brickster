@@ -19,6 +19,7 @@
 #' @param access_control_list Instance of [access_control_request()].
 #' @param git_source Optional specification for a remote repository containing
 #' the notebooks used by this job's notebook tasks. Instance of [git_source()].
+#' @param queue If true, enable queueing for the job.
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create
 #'
@@ -41,6 +42,7 @@ db_jobs_create <- function(
   max_concurrent_runs = 1,
   access_control_list = NULL,
   git_source = NULL,
+  queue = TRUE,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
@@ -70,7 +72,8 @@ db_jobs_create <- function(
     max_concurrent_runs = max_concurrent_runs,
     format = format,
     access_control_list = access_control_list,
-    git_source = git_source
+    git_source = git_source,
+    queue = list(enabled = queue)
   )
 
   body <- purrr::discard(body, is.null)
@@ -78,7 +81,7 @@ db_jobs_create <- function(
   req <- db_request(
     endpoint = "jobs/create",
     method = "POST",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -123,7 +126,7 @@ db_jobs_list <- function(
   req <- db_request(
     endpoint = "jobs/list",
     method = "GET",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -159,7 +162,7 @@ db_jobs_delete <- function(
   req <- db_request(
     endpoint = "jobs/delete",
     method = "POST",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -194,7 +197,7 @@ db_jobs_get <- function(
   req <- db_request(
     endpoint = "jobs/get",
     method = "GET",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -228,12 +231,14 @@ db_jobs_reset <- function(
   max_concurrent_runs = 1,
   access_control_list = NULL,
   git_source = NULL,
+  queue = NULL,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
 ) {
   format <- "MULTI_TASK"
 
+  job_clusters <- prepare_jobs_clusters(job_clusters)
   body <- list(
     name = name,
     tasks = tasks,
@@ -244,7 +249,8 @@ db_jobs_reset <- function(
     max_concurrent_runs = max_concurrent_runs,
     format = format,
     access_control_list = access_control_list,
-    git_source = git_source
+    git_source = git_source,
+    queue = list(enabled = queue)
   )
 
   body <- purrr::discard(body, is.null)
@@ -253,7 +259,7 @@ db_jobs_reset <- function(
   req <- db_request(
     endpoint = "jobs/reset",
     method = "POST",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -293,6 +299,7 @@ db_jobs_update <- function(
   max_concurrent_runs = NULL,
   access_control_list = NULL,
   git_source = NULL,
+  queue = NULL,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
@@ -300,17 +307,7 @@ db_jobs_update <- function(
   format <- "MULTI_TASK"
 
   # jobs clusters is transformed to meet API structure required
-  job_clusters <- purrr::imap(
-    job_clusters,
-    ~ {
-      stopifnot(is.new_cluster(.x))
-      list(
-        "job_cluster_key" = .y,
-        "new_cluster" = .x
-      )
-    }
-  )
-  job_clusters <- unname(job_clusters)
+  job_clusters <- prepare_jobs_clusters(job_clusters)
 
   body <- list(
     name = name,
@@ -322,7 +319,8 @@ db_jobs_update <- function(
     max_concurrent_runs = max_concurrent_runs,
     format = format,
     access_control_list = access_control_list,
-    git_source = git_source
+    git_source = git_source,
+    queue = list(enabled = queue)
   )
 
   body <- purrr::discard(body, is.null)
@@ -335,7 +333,7 @@ db_jobs_update <- function(
   req <- db_request(
     endpoint = "jobs/update",
     method = "POST",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -395,7 +393,7 @@ db_jobs_run_now <- function(
   req <- db_request(
     endpoint = "jobs/run-now",
     method = "POST",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -438,17 +436,7 @@ db_jobs_runs_submit <- function(
   perform_request = TRUE
 ) {
   # jobs clusters is transformed to meet API structure required
-  job_clusters <- purrr::imap(
-    job_clusters,
-    ~ {
-      stopifnot(is.new_cluster(.x))
-      list(
-        "job_cluster_key" = .y,
-        "new_cluster" = .x
-      )
-    }
-  )
-  job_clusters <- unname(job_clusters)
+  job_clusters <- prepare_jobs_clusters(job_clusters)
 
   body <- list(
     run_name = run_name,
@@ -465,7 +453,7 @@ db_jobs_runs_submit <- function(
   req <- db_request(
     endpoint = "jobs/runs/submit",
     method = "POST",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -530,7 +518,7 @@ db_jobs_runs_list <- function(
   req <- db_request(
     endpoint = "jobs/runs/list",
     method = "GET",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -568,7 +556,7 @@ db_jobs_runs_get <- function(
   req <- db_request(
     endpoint = "jobs/runs/get",
     method = "GET",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -612,7 +600,7 @@ db_jobs_runs_export <- function(
   req <- db_request(
     endpoint = "jobs/runs/export",
     method = "GET",
-    version = "2.0",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -654,7 +642,7 @@ db_jobs_runs_cancel <- function(
   req <- db_request(
     endpoint = "jobs/runs/cancel",
     method = "POST",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -689,7 +677,7 @@ db_jobs_runs_get_output <- function(
   req <- db_request(
     endpoint = "jobs/runs/get-output",
     method = "GET",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -724,7 +712,7 @@ db_jobs_runs_delete <- function(
   req <- db_request(
     endpoint = "jobs/runs/delete",
     method = "POST",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -735,4 +723,20 @@ db_jobs_runs_delete <- function(
   } else {
     req
   }
+}
+
+
+prepare_jobs_clusters <- function(x) {
+  # jobs clusters is transformed to meet API structure required
+  job_clusters <- purrr::imap(
+    x,
+    ~ {
+      stopifnot(is.new_cluster(.x))
+      list(
+        "job_cluster_key" = .y,
+        "new_cluster" = .x
+      )
+    }
+  )
+  job_clusters <- unname(job_clusters)
 }

@@ -1,5 +1,4 @@
 test_that("job tasks object behaviour", {
-
   # we don't currently test if inputs to `job_task()` are of the correct type
   # therefore these tests for basic behaviour
   mock_task_a <- job_task(
@@ -35,11 +34,9 @@ test_that("job tasks object behaviour", {
   )
   expect_error(job_tasks(mock_task_a, list()))
   expect_error(job_tasks())
-
 })
 
 test_that("task object behaviour", {
-
   # notebook task
   nb_task <- notebook_task(notebook_path = "MockNotebook")
   expect_s3_class(nb_task, c("NotebookTask", "JobTask"))
@@ -76,10 +73,57 @@ test_that("task object behaviour", {
   expect_true(is.python_wheel_task(pw_task))
   expect_true(is.valid_task_type(pw_task))
 
+  # sql query task
+  sq_task <- sql_query_task(
+    query_id = "mock_query_id",
+    warehouse_id = "mock_warehouse_id",
+    parameters = list(a = 1)
+  )
+  expect_s3_class(sq_task, c("SqlQueryTask", "JobTask"))
+  expect_true(is.sql_query_task(sq_task))
+  expect_true(is.valid_task_type(sq_task))
+
+  # sql file task
+  sf_task <- sql_file_task(
+    path = "mock_path",
+    warehouse_id = "mock_warehouse_id",
+    parameters = list(a = 1)
+  )
+  expect_s3_class(sf_task, c("SqlFileTask", "JobTask"))
+  expect_true(is.sql_file_task(sf_task))
+  expect_true(is.valid_task_type(sf_task))
+
+  # for each task
+  fe_nb_task <- job_task(
+    task_key = "mock_task_a",
+    existing_cluster_id = "mock_cluster",
+    task = notebook_task(notebook_path = "MockNotebook")
+  )
+
+  fe_task <- for_each_task(1:3, task = fe_nb_task, concurrency = 1)
+  expect_s3_class(fe_task, c("ForEachTask", "JobTask"))
+  expect_true(is.for_each_task(fe_task))
+  expect_true(is.valid_task_type(fe_task))
+
+  # run job task
+  rj_task <- run_job_task(job_id = "mock_job_id", job_parameters = list(a = 1))
+  expect_s3_class(rj_task, c("RunJobTask", "JobTask"))
+  expect_true(is.run_job_task(rj_task))
+  expect_true(is.valid_task_type(rj_task))
+
+  # condition task
+  cnd_task1 <- condition_task(left = "A", right = "B", op = "NOT_EQUAL")
+  expect_s3_class(cnd_task1, c("ConditionTask", "JobTask"))
+  expect_true(is.condition_task(cnd_task1))
+  expect_true(is.valid_task_type(cnd_task1))
+  cnd_task2 <- expect_error(condition_task(
+    left = "A",
+    right = "B",
+    op = "SOME_CONDITION"
+  ))
 })
 
 test_that("library object behaviour", {
-
   # jar
   jar <- lib_jar(jar = "MockJar.jar")
   expect_s3_class(jar, c("JarLibrary", "Library"))
@@ -123,11 +167,9 @@ test_that("library object behaviour", {
   expect_error(libraries(123))
   expect_error(libraries("MockLibrary"))
   expect_error(libraries("MockLibrary", jar, cran))
-
 })
 
 test_that("access control object behaviour", {
-
   ## user
   # test all permissions are okay
   valid_permissions <- c("CAN_MANAGE", "CAN_MANAGE_RUN", "CAN_VIEW", "IS_OWNER")
@@ -144,9 +186,12 @@ test_that("access control object behaviour", {
 
   # test invalid permissions raise errors
   invalid_permissions <- list(
-    "can_manage", "mock_permission",
-    123, 123L,
-    list(), character(0)
+    "can_manage",
+    "mock_permission",
+    123,
+    123L,
+    list(),
+    character(0)
   )
   for (perm in invalid_permissions) {
     expect_error(
@@ -173,9 +218,12 @@ test_that("access control object behaviour", {
 
   # test invalid permissions raise errors
   invalid_permissions <- list(
-    "can_manage", "mock_permission",
-    123, 123L,
-    list(), character(0)
+    "can_manage",
+    "mock_permission",
+    123,
+    123L,
+    list(),
+    character(0)
   )
   for (perm in invalid_permissions) {
     expect_error(
@@ -216,12 +264,10 @@ test_that("access control object behaviour", {
       access_control_request(group_perm, user_perm)
     )
   )
-
 })
 
 
 test_that("cron object behaviour", {
-
   # we do not check validity of CRON expression or timezone
   # these checks are made via API which provides appropriate response and error
   valid_status <- c("UNPAUSED", "PAUSED")
@@ -247,11 +293,9 @@ test_that("cron object behaviour", {
       )
     )
   }
-
 })
 
 test_that("email notification object behaviour", {
-
   # test that inputs are invalid types
   allowed <- "user@mock.com"
   not_allowed_on <- list(list(), 123L, 123)
@@ -299,12 +343,10 @@ test_that("email notification object behaviour", {
     c("JobEmailNotifications", "list")
   )
   expect_true(is.email_notifications(email_notif2))
-
 })
 
 
 test_that("cluster objects behaviour", {
-
   # cluster autoscale
   expect_s3_class(
     autoscale <- cluster_autoscale(min_workers = 2, max_workers = 4),
@@ -444,11 +486,9 @@ test_that("cluster objects behaviour", {
       cloud_attrs = list()
     )
   )
-
 })
 
 test_that("git_source behaviour", {
-
   gs_git_tag <- git_source(
     git_url = "mockUrl",
     git_provider = "github",
@@ -504,11 +544,9 @@ test_that("git_source behaviour", {
   )
 
   expect_error(git_source())
-
 })
 
 test_that("vector search behaviour", {
-
   esc <- embedding_source_column(
     name = "mockColumnName",
     model_endpoint_name = "mockEndpointName"
@@ -533,7 +571,10 @@ test_that("vector search behaviour", {
     embedding_vector_columns = evc,
     pipeline_type = "TRIGGERED"
   )
-  expect_s3_class(ds_index, c("VectorSearchIndexSpec", "DeltaSyncIndex", "list"))
+  expect_s3_class(
+    ds_index,
+    c("VectorSearchIndexSpec", "DeltaSyncIndex", "list")
+  )
   expect_true(is.vector_search_index_spec(ds_index))
   expect_true(is.delta_sync_index(ds_index))
   expect_error(delta_sync_index_spec())
@@ -565,7 +606,10 @@ test_that("vector search behaviour", {
     embedding_vector_columns = evc,
     schema = list("mock_col_a" = "integer")
   )
-  expect_s3_class(da_index, c("VectorSearchIndexSpec", "DirectAccessIndex", "list"))
+  expect_s3_class(
+    da_index,
+    c("VectorSearchIndexSpec", "DirectAccessIndex", "list")
+  )
   expect_true(is.vector_search_index_spec(da_index))
   expect_true(is.direct_access_index(da_index))
   expect_error(direct_access_index_spec())
@@ -595,12 +639,4 @@ test_that("vector search behaviour", {
       schema = list("mock_col_a" = "integer")
     )
   })
-
-
 })
-
-
-
-
-
-

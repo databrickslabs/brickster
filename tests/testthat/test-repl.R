@@ -1,5 +1,4 @@
 test_that("REPL - helpers", {
-
   # language function
   expect_equal(lang("r"), "R")
   for (i in c("py", "scala", "sql", "sh")) {
@@ -36,11 +35,12 @@ test_that("REPL - helpers", {
   # expect_equal(db_context_command_parse(cmd_res, "py"), NULL)
 
   # error case
-  cmd_res <- list(results = list(resultType = "error", summary = "err", cause = "err"))
+  cmd_res <- list(
+    results = list(resultType = "error", summary = "err", cause = "err")
+  )
   suppressMessages({
     expect_null(db_context_command_parse(cmd_res, "py"))
   })
-
 
   # table output case
   mock_tbl <- jsonlite::fromJSON(jsonlite::toJSON(iris), simplifyDataFrame = F)
@@ -51,17 +51,18 @@ test_that("REPL - helpers", {
     list(names = "d"),
     list(names = "e")
   )
-  cmd_res <- list(results = list(
-    resultType = "table",
-    data = mock_tbl,
-    schema = mock_schema
-  ))
+  cmd_res <- list(
+    results = list(
+      resultType = "table",
+      data = mock_tbl,
+      schema = mock_schema
+    )
+  )
 
   capture_output({
     expect_no_error(db_context_command_parse(cmd_res, "py"))
     expect_null(db_context_command_parse(cmd_res, "py"))
   })
-
 
   # command error handling
   # command errors are in form:
@@ -80,31 +81,22 @@ test_that("REPL - helpers", {
   cmd_err <- list(results = list(summary = " summary ", cause = " cause "))
 
   expect_equal(handle_cmd_error(cmd_err, "py"), trimws(cmd_err$results$cause))
-  expect_equal(handle_cmd_error(cmd_err, "sql"), trimws(cmd_err$results$summary))
-  expect_equal(handle_cmd_error(cmd_err, "scala"), trimws(cmd_err$results$summary))
+  expect_equal(
+    handle_cmd_error(cmd_err, "sql"),
+    trimws(cmd_err$results$summary)
+  )
+  expect_equal(
+    handle_cmd_error(cmd_err, "scala"),
+    trimws(cmd_err$results$summary)
+  )
   expect_equal(handle_cmd_error(cmd_err, "r"), trimws(cmd_err$results$cause))
 
   # special case where R output is prefixed with `DATABRICKS_CURRENT_TEMP_CMD__`
-  cmd_err_r <- list(results = list(
-    summary = "summary",
-    cause = "DATABRICKS_CURRENT_TEMP_CMD__some_other_content_here_cut_thiscause!!!"
-  ))
+  cmd_err_r <- list(
+    results = list(
+      summary = "summary",
+      cause = "DATABRICKS_CURRENT_TEMP_CMD__some_other_content_here_cut_thiscause!!!"
+    )
+  )
   expect_equal(handle_cmd_error(cmd_err_r, "r"), "cause!!!")
-
 })
-
-skip_unless_credentials_set()
-
-test_that("REPL - don't perform", {
-
-})
-
-skip_on_cran()
-skip_unless_authenticated()
-skip_unless_aws_workspace()
-
-test_that("REPL", {
-
-
-})
-

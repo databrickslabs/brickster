@@ -19,7 +19,12 @@ new_cluster(
   init_scripts = NULL,
   enable_elastic_disk = TRUE,
   driver_instance_pool_id = NULL,
-  instance_pool_id = NULL
+  instance_pool_id = NULL,
+  kind = c("CLASSIC_PREVIEW"),
+  data_security_mode = c("NONE", "SINGLE_USER", "USER_ISOLATION", "LEGACY_TABLE_ACL",
+    "LEGACY_PASSTHROUGH", "LEGACY_SINGLE_USER", "LEGACY_SINGLE_USER_STANDARD",
+    "DATA_SECURITY_MODE_STANDARD", "DATA_SECURITY_MODE_DEDICATED",
+    "DATA_SECURITY_MODE_AUTO")
 )
 }
 \arguments{
@@ -80,6 +85,11 @@ driver node. You must also specify \code{instance_pool_id}. Optional.}
 \code{driver_instance_pool_id} is present, \code{instance_pool_id} is used for worker
 nodes only. Otherwise, it is used for both the driver and worker nodes.
 Optional.}
+
+\item{kind}{The kind of compute described by this compute specification.}
+
+\item{data_security_mode}{Data security mode decides what data governance
+model to use when accessing data from a cluster.}
 }
 \description{
 New Cluster
@@ -88,13 +98,18 @@ New Cluster
 \code{\link[=job_task]{job_task()}}
 
 Other Task Objects: 
+\code{\link{condition_task}()},
 \code{\link{email_notifications}()},
+\code{\link{for_each_task}()},
 \code{\link{libraries}()},
 \code{\link{notebook_task}()},
 \code{\link{pipeline_task}()},
 \code{\link{python_wheel_task}()},
+\code{\link{run_job_task}()},
 \code{\link{spark_jar_task}()},
 \code{\link{spark_python_task}()},
-\code{\link{spark_submit_task}()}
+\code{\link{spark_submit_task}()},
+\code{\link{sql_file_task}()},
+\code{\link{sql_query_task}()}
 }
 \concept{Task Objects}

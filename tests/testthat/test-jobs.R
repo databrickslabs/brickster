@@ -1,5 +1,4 @@
 test_that("Jobs API - don't perform", {
-
   withr::local_envvar(c(
     "DATABRICKS_HOST" = "http://mock_host",
     "DATABRICKS_TOKEN" = "mock_token"
@@ -26,6 +25,17 @@ test_that("Jobs API - don't perform", {
     task = notebook_task(notebook_path = "/brickster/simple-notebook")
   )
 
+  job_clusters <- list(
+    "simple_cluster" = new_cluster(
+      spark_version = "mock_runtime",
+      driver_node_type_id = "m5a.large",
+      node_type_id = "m5a.large",
+      num_workers = 2,
+      cloud_attr = aws_attributes(ebs_volume_size = 32),
+      data_security_mode = "DATA_SECURITY_MODE_AUTO"
+    )
+  )
+
   # create job with simple task
   resp_create <- db_jobs_create(
     name = "brickster example: simple",
@@ -35,6 +45,7 @@ test_that("Jobs API - don't perform", {
       quartz_cron_expression = "0 0 9 * * ?",
       pause_status = "PAUSED"
     ),
+    job_clusters = job_clusters,
     perform_request = F
   )
   expect_s3_class(resp_create, "httr2_request")
@@ -66,6 +77,7 @@ test_that("Jobs API - don't perform", {
       quartz_cron_expression = "0 0 9 * * ?",
       pause_status = "PAUSED"
     ),
+    job_clusters = job_clusters,
     perform_request = F
   )
   expect_s3_class(resp_reset, "httr2_request")
@@ -127,8 +139,6 @@ test_that("Jobs API - don't perform", {
     perform_request = F
   )
   expect_s3_class(resp_run_submit, "httr2_request")
-
-
 })
 
 skip_on_cran()
@@ -136,21 +146,35 @@ skip_unless_authenticated()
 skip_unless_aws_workspace()
 
 test_that("Jobs API", {
-
   # define a job task
+  resp_list_dbrv <- db_cluster_runtime_versions()
+  # use a standard runtime
+  runtimes <- base::sort(
+    purrr::map_chr(resp_list_dbrv$versions, "key"),
+    decreasing = TRUE
+  )
+  std_runtimes <- purrr::keep(runtimes, ~ !grepl("photon|gpu", .x))
+  job_clusters <- list(
+    "simple_cluster" = new_cluster(
+      spark_version = std_runtimes[1],
+      driver_node_type_id = "m5a.large",
+      node_type_id = "m5a.large",
+      num_workers = 2,
+      cloud_attr = aws_attributes(ebs_volume_size = 32),
+      data_security_mode = "DATA_SECURITY_MODE_AUTO"
+    )
+  )
+
   simple_task <- job_task(
     task_key = "simple_task",
     description = "a simple task that runs a notebook",
     # specify a cluster for the job
-    new_cluster = new_cluster(
-      spark_version = "9.1.x-scala2.12",
-      driver_node_type_id = "m5a.large",
-      node_type_id = "m5a.large",
-      num_workers = 2,
-      cloud_attr = aws_attributes(ebs_volume_size = 32)
-    ),
+    job_cluster_key = "simple_cluster",
     # this task will be a notebook
-    task = notebook_task(notebook_path = "/brickster/simple-notebook")
+    task = notebook_task(
+      notebook_path = "/brickster/simple-notebook",
+      base_parameters = list(a = 1)
+    )
   )
 
   # create job with simple task
@@ -161,7 +185,9 @@ test_that("Jobs API", {
     schedule = cron_schedule(
       quartz_cron_expression = "0 0 9 * * ?",
       pause_status = "PAUSED"
-    )
+    ),
+    job_clusters = job_clusters,
+    perform_request = TRUE
   )
 
   expect_no_error({
@@ -177,7 +203,8 @@ test_that("Jobs API", {
       schedule = cron_schedule(
         quartz_cron_expression = "0 0 9 * * ?",
         pause_status = "PAUSED"
-      )
+      ),
+      job_clusters = job_clusters
     )
   })
   expect_type(resp_create, "list")
@@ -207,7 +234,8 @@ test_that("Jobs API", {
       schedule = cron_schedule(
         quartz_cron_expression = "0 0 9 * * ?",
         pause_status = "PAUSED"
-      )
+      ),
+      job_clusters = job_clusters
     )
   })
   expect_type(resp_reset, "list")
@@ -232,6 +260,4 @@ test_that("Jobs API", {
     )
   })
   expect_type(resp_get, "list")
-
-
 })

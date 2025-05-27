@@ -68,6 +68,9 @@
 #' encryption of disks locally attached to the cluster is enabled.
 #' @param docker_image Instance of [docker_image()].
 #' @param policy_id String, ID of a cluster policy.
+#' @param kind The kind of compute described by this compute specification.
+#' @param data_security_mode Data security mode decides what data governance
+#' model to use when accessing data from a cluster.
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create
 #'
@@ -114,6 +117,19 @@ db_cluster_create <- function(
   enable_local_disk_encryption = TRUE,
   docker_image = NULL,
   policy_id = NULL,
+  kind = c("CLASSIC_PREVIEW"),
+  data_security_mode = c(
+    "NONE",
+    "SINGLE_USER",
+    "USER_ISOLATION",
+    "LEGACY_TABLE_ACL",
+    "LEGACY_PASSTHROUGH",
+    "LEGACY_SINGLE_USER",
+    "LEGACY_SINGLE_USER_STANDARD",
+    "DATA_SECURITY_MODE_STANDARD",
+    "DATA_SECURITY_MODE_DEDICATED",
+    "DATA_SECURITY_MODE_AUTO"
+  ),
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
@@ -123,6 +139,9 @@ db_cluster_create <- function(
   # - if specified, log_conf must be of class ClusterLogConf
   # - all values in init_scripts must be from init_script_info() (class: InitScriptInfo)
   # - if specified, docker_image must be of class DockerImage
+
+  kind <- match.arg(kind)
+  data_security_mode <- match.arg(data_security_mode)
 
   body <- list(
     cluster_name = name,
@@ -143,7 +162,9 @@ db_cluster_create <- function(
     apply_policy_default_values = apply_policy_default_values,
     enable_local_disk_encryption = enable_local_disk_encryption,
     docker_image = docker_image,
-    policy_id = policy_id
+    policy_id = policy_id,
+    data_security_mode = data_security_mode,
+    kind = kind
   )
 
   if (is.null(num_workers)) {
@@ -229,6 +250,19 @@ db_cluster_edit <- function(
   enable_local_disk_encryption = NULL,
   docker_image = NULL,
   policy_id = NULL,
+  kind = c("CLASSIC_PREVIEW"),
+  data_security_mode = c(
+    "NONE",
+    "SINGLE_USER",
+    "USER_ISOLATION",
+    "LEGACY_TABLE_ACL",
+    "LEGACY_PASSTHROUGH",
+    "LEGACY_SINGLE_USER",
+    "LEGACY_SINGLE_USER_STANDARD",
+    "DATA_SECURITY_MODE_STANDARD",
+    "DATA_SECURITY_MODE_DEDICATED",
+    "DATA_SECURITY_MODE_AUTO"
+  ),
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
@@ -242,6 +276,8 @@ db_cluster_edit <- function(
   # - if specified, log_conf must be of class ClusterLogConf
   # - all values in init_scripts must be from init_script_info() (class: InitScriptInfo)
   # - if specified, docker_image must be of class DockerImage
+  kind <- match.arg(kind)
+  data_security_mode <- match.arg(data_security_mode)
 
   body <- list(
     cluster_id = cluster_id,
@@ -263,7 +299,9 @@ db_cluster_edit <- function(
     apply_policy_default_values = apply_policy_default_values,
     enable_local_disk_encryption = enable_local_disk_encryption,
     docker_image = docker_image,
-    policy_id = policy_id
+    policy_id = policy_id,
+    data_security_mode = data_security_mode,
+    kind = kind
   )
 
   if (!(is.null(num_workers) && is.null(autoscale))) {

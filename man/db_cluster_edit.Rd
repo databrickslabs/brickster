@@ -28,6 +28,11 @@ db_cluster_edit(
   enable_local_disk_encryption = NULL,
   docker_image = NULL,
   policy_id = NULL,
+  kind = c("CLASSIC_PREVIEW"),
+  data_security_mode = c("NONE", "SINGLE_USER", "USER_ISOLATION", "LEGACY_TABLE_ACL",
+    "LEGACY_PASSTHROUGH", "LEGACY_SINGLE_USER", "LEGACY_SINGLE_USER_STANDARD",
+    "DATA_SECURITY_MODE_STANDARD", "DATA_SECURITY_MODE_DEDICATED",
+    "DATA_SECURITY_MODE_AUTO"),
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
@@ -123,6 +128,11 @@ encryption of disks locally attached to the cluster is enabled.}
 \item{docker_image}{Instance of \code{\link[=docker_image]{docker_image()}}.}
 
 \item{policy_id}{String, ID of a cluster policy.}
+
+\item{kind}{The kind of compute described by this compute specification.}
+
+\item{data_security_mode}{Data security mode decides what data governance
+model to use when accessing data from a cluster.}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
