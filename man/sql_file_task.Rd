@@ -4,19 +4,19 @@
 \alias{sql_file_task}
 \title{SQL File Task}
 \usage{
-sql_file_task(path, source = NULL, warehouse_id, parameters)
+sql_file_task(path, warehouse_id, source = NULL, parameters = NULL)
 }
 \arguments{
 \item{path}{Path of the SQL file. Must be relative if the source is a remote
 Git repository and absolute for workspace paths.}
+
+\item{warehouse_id}{The canonical identifier of the SQL warehouse.}
 
 \item{source}{Optional location type of the SQL file. When set to \code{WORKSPACE},
 the SQL file will be retrieved from the local Databricks workspace. When set
 to \code{GIT}, the SQL file will be retrieved from a Git repository defined in
 \code{\link[=git_source]{git_source()}} If the value is empty, the task will use \code{GIT} if
 \code{\link[=git_source]{git_source()}} is defined and \code{WORKSPACE} otherwise.}
-
-\item{warehouse_id}{The canonical identifier of the SQL warehouse.}
 
 \item{parameters}{Named list of paramters to be used for each run of this job.}
 }

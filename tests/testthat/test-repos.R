@@ -1,5 +1,4 @@
-test_that("Feature Store API - don't perform", {
-
+test_that("Repos API - don't perform", {
   withr::local_envvar(c(
     "DATABRICKS_HOST" = "http://mock_host",
     "DATABRICKS_TOKEN" = "mock_token"
@@ -34,6 +33,4 @@ test_that("Feature Store API - don't perform", {
     perform_request = FALSE
   )
   expect_s3_class(resp_get, "httr2_request")
-
-
 })

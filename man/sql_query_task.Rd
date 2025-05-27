@@ -4,7 +4,7 @@
 \alias{sql_query_task}
 \title{SQL Query Task}
 \usage{
-sql_query_task(query_id, warehouse_id, parameters)
+sql_query_task(query_id, warehouse_id, parameters = NULL)
 }
 \arguments{
 \item{query_id}{The canonical identifier of the SQL query.}
