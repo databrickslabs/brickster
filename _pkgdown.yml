@@ -98,10 +98,9 @@ reference:
   - starts_with("db_uc_schema", internal = TRUE)
 - title: Secrets
   contents: starts_with("db_secrets", internal = TRUE)
-- title: SQL Statement Execution
+- title: SQL Queries
   contents:
-  - db_sql_query
-  - starts_with("db_sql_exec", internal = TRUE)
+  - starts_with("db_query", internal = TRUE)
 - title: Tables (Unity Catalog)
   contents:
   - starts_with("db_uc_table", internal = TRUE)
