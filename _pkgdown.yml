@@ -74,6 +74,11 @@ reference:
   - spark_submit_task
   - pipeline_task
   - python_wheel_task
+  - for_each_task
+  - condition_task
+  - sql_query_task
+  - sql_file_task
+  - run_job_task
   - new_cluster
   - libraries
   - starts_with("lib_", internal = TRUE)

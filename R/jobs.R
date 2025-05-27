@@ -41,6 +41,7 @@ db_jobs_create <- function(
   max_concurrent_runs = 1,
   access_control_list = NULL,
   git_source = NULL,
+  queue = TRUE,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
@@ -70,7 +71,8 @@ db_jobs_create <- function(
     max_concurrent_runs = max_concurrent_runs,
     format = format,
     access_control_list = access_control_list,
-    git_source = git_source
+    git_source = git_source,
+    queue = queue
   )
 
   body <- purrr::discard(body, is.null)
@@ -78,7 +80,7 @@ db_jobs_create <- function(
   req <- db_request(
     endpoint = "jobs/create",
     method = "POST",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -123,7 +125,7 @@ db_jobs_list <- function(
   req <- db_request(
     endpoint = "jobs/list",
     method = "GET",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -159,7 +161,7 @@ db_jobs_delete <- function(
   req <- db_request(
     endpoint = "jobs/delete",
     method = "POST",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -194,7 +196,7 @@ db_jobs_get <- function(
   req <- db_request(
     endpoint = "jobs/get",
     method = "GET",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -228,6 +230,7 @@ db_jobs_reset <- function(
   max_concurrent_runs = 1,
   access_control_list = NULL,
   git_source = NULL,
+  queue = NULL,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
@@ -244,7 +247,8 @@ db_jobs_reset <- function(
     max_concurrent_runs = max_concurrent_runs,
     format = format,
     access_control_list = access_control_list,
-    git_source = git_source
+    git_source = git_source,
+    queue = queue
   )
 
   body <- purrr::discard(body, is.null)
@@ -253,7 +257,7 @@ db_jobs_reset <- function(
   req <- db_request(
     endpoint = "jobs/reset",
     method = "POST",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -293,6 +297,7 @@ db_jobs_update <- function(
   max_concurrent_runs = NULL,
   access_control_list = NULL,
   git_source = NULL,
+  queue = NULL,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
@@ -322,7 +327,8 @@ db_jobs_update <- function(
     max_concurrent_runs = max_concurrent_runs,
     format = format,
     access_control_list = access_control_list,
-    git_source = git_source
+    git_source = git_source,
+    queue = queue
   )
 
   body <- purrr::discard(body, is.null)
@@ -335,7 +341,7 @@ db_jobs_update <- function(
   req <- db_request(
     endpoint = "jobs/update",
     method = "POST",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -395,7 +401,7 @@ db_jobs_run_now <- function(
   req <- db_request(
     endpoint = "jobs/run-now",
     method = "POST",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -465,7 +471,7 @@ db_jobs_runs_submit <- function(
   req <- db_request(
     endpoint = "jobs/runs/submit",
     method = "POST",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -530,7 +536,7 @@ db_jobs_runs_list <- function(
   req <- db_request(
     endpoint = "jobs/runs/list",
     method = "GET",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -568,7 +574,7 @@ db_jobs_runs_get <- function(
   req <- db_request(
     endpoint = "jobs/runs/get",
     method = "GET",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -612,7 +618,7 @@ db_jobs_runs_export <- function(
   req <- db_request(
     endpoint = "jobs/runs/export",
     method = "GET",
-    version = "2.0",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -654,7 +660,7 @@ db_jobs_runs_cancel <- function(
   req <- db_request(
     endpoint = "jobs/runs/cancel",
     method = "POST",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -689,7 +695,7 @@ db_jobs_runs_get_output <- function(
   req <- db_request(
     endpoint = "jobs/runs/get-output",
     method = "GET",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
@@ -724,7 +730,7 @@ db_jobs_runs_delete <- function(
   req <- db_request(
     endpoint = "jobs/runs/delete",
     method = "POST",
-    version = "2.1",
+    version = "2.2",
     body = body,
     host = host,
     token = token
