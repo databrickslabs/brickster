@@ -329,8 +329,16 @@ db_context_command_parse <- function(
 ) {
   language <- match.arg(language)
 
+  # Check for required suggested packages
+  required_pkgs <- c("huxtable", "magick", "grid", "htmltools")
+  missing_pkgs <- required_pkgs[!purrr::map_lgl(required_pkgs, rlang::is_installed)]
+  
+  if (length(missing_pkgs) > 0) {
+    cli::cli_abort("Required packages missing: {.pkg {missing_pkgs}}. Install with: install.packages({deparse(missing_pkgs)})")
+  }
+
   if (x$results$resultType == "error") {
-    cli_alert_danger(handle_cmd_error(x, language))
+    cli::cli_alert_danger(handle_cmd_error(x, language))
     return(NULL)
   }
 

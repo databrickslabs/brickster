@@ -17,6 +17,7 @@ lang <- function(x = c("r", "py", "scala", "sql", "sh")) {
 #' `db_context_manager()` provides a simple interface to send commands to
 #' Databricks cluster and return the results.
 #'
+#' @importFrom R6 R6Class
 #' @export
 db_context_manager <- R6::R6Class(
   classname = "databricks_context_manager",

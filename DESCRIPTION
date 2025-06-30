@@ -33,12 +33,14 @@ Imports:
     jsonlite,
     nanoarrow,
     purrr,
+    R6,
     rlang,
     tibble,
     utils
 Suggests: 
     arrow,
     testthat (>= 3.0.0),
+    grid,
     huxtable,
     htmltools,
     knitr,

@@ -6,3 +6,7 @@ inst/doc
 /doc/
 /Meta/
 docs
+
+# Claude Code artifacts
+.claude
+CLAUDE.md
