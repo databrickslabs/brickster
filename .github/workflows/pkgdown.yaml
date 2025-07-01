@@ -26,7 +26,7 @@ jobs:
           echo DATABRICKS_HOST="$DATABRICKS_HOST" >> ~/.Renviron
           echo DATABRICKS_TOKEN="$DATABRICKS_TOKEN" >> ~/.Renviron
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - uses: r-lib/actions/setup-pandoc@v2
 
