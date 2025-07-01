@@ -33,7 +33,7 @@ db_experiments_get <- function(name = NULL, id = NULL,
                                 perform_request = TRUE) {
 
   if (!is.null(name) && !is.null(id)) {
-    stop("Specify `name` or `id`, not both.")
+    cli::cli_abort("Specify {.arg name} or {.arg id}, not both.")
   }
 
   body <- list()

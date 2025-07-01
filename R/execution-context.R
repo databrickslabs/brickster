@@ -143,7 +143,7 @@ db_context_command_run <- function(
 
   # only can have one of `command` or `command_file`
   if (!is.null(command) && !is.null(command_file)) {
-    stop("Must `command` OR `command_file` not both.")
+    cli::cli_abort("Must specify {.arg command} OR {.arg command_file}, not both.")
   }
 
   if (!is.null(command_file)) {

@@ -219,7 +219,7 @@ wait_for_lib_installs <- function(
 
     # if failures are not allowed and failur occurs then raise an error
     if (!allow_failures && "FAILED" %in% lib_statuses) {
-      stop("Libraries failed to install")
+      cli::cli_abort("Libraries failed to install on cluster")
     }
 
     if (!any(lib_statuses == "INSTALLING")) break
@@ -229,7 +229,7 @@ wait_for_lib_installs <- function(
 
   if (allow_failures && "FAILED" %in% lib_statuses) {
     num_failures <- sum(lib_statuses == "FAILED")
-    warning("Failed installs: ", num_failures)
+    cli::cli_warn("Failed to install {.val {num_failures}} librar{?y/ies}")
   }
 
   NULL

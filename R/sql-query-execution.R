@@ -271,7 +271,7 @@ db_sql_exec_poll_for_success <- function(statement_id, interval = 1) {
     } else if (
       status$status$status$state %in% c("FAILED", "CLOSED", "CANCELED")
     ) {
-      stop(paste0("queries status: ", status$status$state))
+      cli::cli_abort("Query failed with status: {.val {status$status$state}}")
     }
   }
 

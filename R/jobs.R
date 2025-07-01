@@ -502,7 +502,7 @@ db_jobs_runs_list <- function(
   run_type <- match.arg(run_type, several.ok = FALSE)
 
   if (active_only && completed_only) {
-    stop("`active_only` and `completed_only` cannot both be `TRUE`.")
+    cli::cli_abort("{.arg active_only} and {.arg completed_only} cannot both be {.val TRUE}.")
   }
 
   body <- list(

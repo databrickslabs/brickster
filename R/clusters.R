@@ -181,9 +181,10 @@ db_cluster_create <- function(
   } else if (is.gcp_attributes(cloud_attrs)) {
     body[["gcp_attributes"]] <- unclass(cloud_attrs)
   } else {
-    stop(
-      "Please use `aws_attributes()`, `azure_attributes()`, or `gcp_attributes()` to specify `cloud_attr`"
-    )
+    cli::cli_abort(c(
+      "Invalid cloud attributes specification:",
+      "i" = "Use {.fn aws_attributes}, {.fn azure_attributes}, or {.fn gcp_attributes} for {.arg cloud_attr}"
+    ))
   }
 
   req <- db_request(
@@ -319,9 +320,10 @@ db_cluster_edit <- function(
     } else if (is.azure_attributes(cloud_attrs)) {
       body[["azure_attributes"]] <- unclass(cloud_attrs)
     } else {
-      stop(
-        "Please use `aws_attributes()` or `azure_attributes()` to specify `cloud_attr`"
-      )
+      cli::cli_abort(c(
+        "Invalid cloud attributes specification:",
+        "i" = "Use {.fn aws_attributes} or {.fn azure_attributes} for {.arg cloud_attr}"
+      ))
     }
   }
 
@@ -574,7 +576,7 @@ db_cluster_resize <- function(
   perform_request = TRUE
 ) {
   if (is.null(num_workers) && is.null(autoscale)) {
-    stop("Must specify one of `num_workers` or `autoscale`.")
+    cli::cli_abort("Must specify either {.arg num_workers} or {.arg autoscale}.")
   }
 
   body <- list(
@@ -968,12 +970,12 @@ get_latest_dbr <- function(
   # don't allow impossible combinations
   if (gpu) {
     if (!ml) {
-      stop("GPU runtime only available for ML versions")
+      cli::cli_abort("{.arg gpu} runtime only available for {.arg ml} versions")
     }
   }
 
   if ((gpu || ml) && photon) {
-    stop("Cannot use ML/GPU runtimes with Photon")
+    cli::cli_abort("Cannot use {.arg ml}/{.arg gpu} runtimes with {.arg photon}")
   }
 
   runtimes <- db_cluster_runtime_versions(host = host, token = token)
