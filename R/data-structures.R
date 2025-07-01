@@ -1471,7 +1471,7 @@ job_tasks <- function(...) {
   obj <- list(...)
 
   if (length(obj) == 0) {
-    stop("Must specify at least one task")
+    cli::cli_abort("Must specify at least one task")
   }
 
   # check that all inputs are job tasks
@@ -1741,7 +1741,7 @@ delta_sync_index_spec <- function(
   }
 
   if (is.null(embedding_vector_columns) & is.null(embedding_source_columns)) {
-    stop("Must specify at least one embedding vector or source column")
+    cli::cli_abort("Must specify at least one embedding vector or source column")
   }
 
   obj <- list(
@@ -1835,15 +1835,15 @@ direct_access_index_spec <- function(
   }
 
   if (is.null(embedding_vector_columns) & is.null(embedding_source_columns)) {
-    stop("Must specify at least one embedding vector or source column")
+    cli::cli_abort("Must specify at least one embedding vector or source column")
   }
 
   if (is.null(schema)) {
-    stop("`schema` must be present.")
+    cli::cli_abort("{.arg schema} must be present.")
   }
 
   if (!(is.list(schema) && rlang::is_named(schema))) {
-    stop("`schema` must be a named list.")
+    cli::cli_abort("{.arg schema} must be a named list.")
   }
 
   obj <- list(

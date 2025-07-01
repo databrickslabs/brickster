@@ -32,7 +32,7 @@ add_lib_path <- function(path, after, version = FALSE) {
 
   lib_path <- normalizePath(lib_path, "/")
 
-  message("primary package path is now ", lib_path)
+  cli::cli_alert_info("Primary package path is now {.path {lib_path}}")
   .libPaths(new = append(.libPaths(), lib_path, after = after))
   lib_path
 }

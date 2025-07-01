@@ -226,7 +226,7 @@ db_vs_indexes_create <- function(name, endpoint, primary_key, spec,
     index_type <- "DIRECT_ACCESS"
     direct_access_index_spec <- spec
   } else {
-    stop("`spec` is invalid type, must be defined by either `delta_sync_index_spec()` or `direct_access_index_spec()`")
+    cli::cli_abort("{.arg spec} is invalid type, must be defined by either {.fn delta_sync_index_spec} or {.fn direct_access_index_spec}")
   }
 
   body <- list(
