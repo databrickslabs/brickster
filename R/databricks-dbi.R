@@ -621,3 +621,52 @@ setMethod("dbDataType", "DatabricksConnection", function(dbObj, obj, ...) {
     }
   )
 })
+
+# Identifier Quoting Methods ----------------------------------------------------
+
+#' Quote identifiers for Databricks SQL
+#' @param conn A DatabricksConnection object
+#' @param x Character vector of identifiers to quote
+#' @param ... Additional arguments (ignored)
+#' @return SQL object with quoted identifiers
+#' @export
+setMethod(
+  "dbQuoteIdentifier",
+  signature("DatabricksConnection", "character"),
+  function(conn, x, ...) {
+    # Simple identifiers - wrap in backticks
+    quoted <- paste0("`", x, "`")
+    DBI::SQL(quoted)
+  }
+)
+
+#' Quote SQL objects (passthrough)
+#' @param conn A DatabricksConnection object
+#' @param x SQL object (already quoted)
+#' @param ... Additional arguments (ignored)
+#' @return The SQL object unchanged
+#' @export
+setMethod(
+  "dbQuoteIdentifier",
+  signature("DatabricksConnection", "SQL"),
+  function(conn, x, ...) {
+    # SQL objects are already quoted
+    x
+  }
+)
+
+#' Quote complex identifiers (schema.table)
+#' @param conn A DatabricksConnection object
+#' @param x Id object with catalog/schema/table components
+#' @param ... Additional arguments (ignored)
+#' @return SQL object with quoted identifier components
+#' @export
+setMethod(
+  "dbQuoteIdentifier",
+  signature("DatabricksConnection", "Id"),
+  function(conn, x, ...) {
+    # Handle schema.table identifiers
+    names <- purrr::map_chr(x@name, ~ paste0("`", .x, "`"))
+    DBI::SQL(paste(names, collapse = "."))
+  }
+)
