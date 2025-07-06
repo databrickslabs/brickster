@@ -1,3 +1,6 @@
+# brickster 0.2.9
+-   Added DBI + dbplyr backend support: `DatabricksSQL()` driver for standard DBI operations
+
 # brickster 0.2.8
 
 -   Added SQL Queries API coverage
@@ -8,7 +11,6 @@
 -   Adjusted `db_repl` to handle mulit-line expressions (R only)
 -   Removed RStudio Addins to send lines/selection/files to console
 -   Moved arrow to Suggests
--   Added DBI + dbplyr backend support: `DatabricksSQL()` driver for standard DBI operations
 
 # brickster 0.2.7
 
