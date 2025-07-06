@@ -1,3 +1,5 @@
+# Tests for SQL execution functionality including low-level API and high-level db_sql_query
+
 test_that("SQL Execution API - don't perform", {
   withr::local_envvar(c(
     "DATABRICKS_HOST" = "http://mock_host",
@@ -114,4 +116,61 @@ test_that("SQL Execution API", {
       id = test_warehouse$id
     )
   })
+})
+
+# Additional db_sql_query tests -----------------------------------------------
+
+test_that("db_sql_query works as expected", {
+  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
+  skip_if(nchar(warehouse_id) == 0, "No warehouse_id available")
+  
+  # Test basic query using the core function
+  result <- db_sql_query(warehouse_id, "SELECT 1 as test_col")
+  expect_s3_class(result, "data.frame")
+  expect_equal(nrow(result), 1)
+  expect_equal(result$test_col, 1)
+})
+
+test_that("db_sql_query handles complex queries", {
+  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
+  skip_if(nchar(warehouse_id) == 0, "No warehouse_id available")
+  
+  # Test more complex query
+  result <- db_sql_query(warehouse_id, "SELECT 1 as a, 'test' as b, 3.14 as c")
+  expect_s3_class(result, "data.frame")
+  expect_equal(nrow(result), 1)
+  expect_equal(ncol(result), 3)
+  expect_equal(result$a, 1)
+  expect_equal(result$b, "test")
+  expect_equal(result$c, 3.14)
+})
+
+test_that("db_sql_query handles errors correctly", {
+  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
+  skip_if(nchar(warehouse_id) == 0, "No warehouse_id available")
+  
+  # Test invalid SQL
+  expect_error(
+    db_sql_query(warehouse_id, "INVALID SQL STATEMENT"),
+    "Query failed|PARSE_SYNTAX_ERROR"
+  )
+})
+
+test_that("db_sql_query works with catalog and schema", {
+  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
+  catalog <- Sys.getenv("DATABRICKS_CATALOG")
+  schema <- Sys.getenv("DATABRICKS_SCHEMA")
+  
+  skip_if(nchar(warehouse_id) == 0, "No warehouse_id available")
+  skip_if(nchar(catalog) == 0 || nchar(schema) == 0, "No catalog/schema available")
+  
+  # Test query with catalog and schema context
+  result <- db_sql_query(
+    warehouse_id, 
+    "SELECT 1 as test",
+    catalog = catalog,
+    schema = schema
+  )
+  expect_s3_class(result, "data.frame")
+  expect_equal(result$test, 1)
 })
