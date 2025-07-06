@@ -40,12 +40,47 @@ volume_csv <- readr::read_csv(file)
 
 Refer to the ["Connect to a Databricks Workspace"](https://databrickslabs.github.io/brickster/articles/setup-auth.html) article for more details on getting authentication configured.
 
+## {DBI} Backend
+
+`{brickster}` provides a complete DBI backend for Databricks SQL warehouses, enabling standard database operations with R:
+
+``` r
+library(brickster)
+library(DBI)
+
+# Connect to Databricks using DBI (assumes you followed quickstart to authenticate)
+con <- dbConnect(
+  DatabricksSQL(),
+  warehouse_id = "<warehouse-id>"
+)
+
+# Standard {DBI} operations
+tables <- dbListTables(con)
+dbGetQuery(con, "SELECT * FROM samples.nyctaxi.trips LIMIT 5")
+
+# Use with {dbplyr} for {dplyr} syntax
+library(dplyr)
+library(dbplyr)
+
+nyc_taxi <- tbl(con, I("samples.nyctaxi.trips"))
+
+result <- nyc_taxi |>
+  filter(year(tpep_pickup_datetime) == 2016) |>
+  group_by(pickup_zip) |>
+  summarise(
+    trip_count = n(),
+    avg_fare = mean(fare_amount, na.rm = TRUE),
+    avg_distance = mean(trip_distance, na.rm = TRUE)
+  ) |>
+  collect()
+```
+
 ## API Coverage
 
 `{brickster}` is very deliberate with choosing what API's are wrapped. `{brickster}` isn't intended to replace IaC tooling (e.g. [Terraform](#0)) or to be used for account/workspace administration.
 
 | API | Available | Version |
-|-------------------------------------|------------------|------------------|
+|------------------------------------|------------------|------------------|
 | [DBFS](https://docs.databricks.com/api/workspace/dbfs) | Yes | 2.0 |
 | [Secrets](https://docs.databricks.com/api/workspace/secrets) | Yes | 2.0 |
 | [Repos](https://docs.databricks.com/api/workspace/repos) | Yes | 2.0 |
