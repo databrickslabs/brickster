@@ -475,14 +475,15 @@ db_sql_fetch_results <- function(
     purrr::map_chr(~ .x$external_links[[1]]$external_link) |>
     purrr::map(
       ~ httr2::request(.x) |>
-        httr2::req_retry(max_tries = 3, backoff = ~1)
+        httr2::req_retry(max_tries = 3, backoff = ~1) |>
+        httr2::req_timeout(300)
     )
 
   # Download arrow stream data with high parallelism
   ipc_data <- httr2::req_perform_parallel(
     links,
     max_active = max_active_connections,
-    progress = FALSE
+    progress = TRUE
   )
 
   # Process Arrow data
