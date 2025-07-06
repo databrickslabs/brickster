@@ -1,4 +1,4 @@
-# [brickster](https://databrickslabs.github.io/brickster/) <img src="man/figures/logo.png" align="right" height="139px"/>
+# [brickster](https://databrickslabs.github.io/brickster/) <img src="man/figures/logo.png" align="right" height="139px" style="max-width: 100%; height: 139px;"/>
 
 <!-- badges: start -->
 
