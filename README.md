@@ -1,4 +1,4 @@
-# [brickster](https://databrickslabs.github.io/brickster/) <a href='https://databrickslabs.github.io/brickster/'><img src="man/figures/logo.png" align="right" height="139"/></a>
+# [brickster](https://databrickslabs.github.io/brickster/) <a href='https://databrickslabs.github.io/brickster/'><img src="man/figures/logo.png" align="right" height="139px"/></a>
 
 <!-- badges: start -->
 
@@ -40,7 +40,7 @@ volume_csv <- readr::read_csv(file)
 
 Refer to the ["Connect to a Databricks Workspace"](https://databrickslabs.github.io/brickster/articles/setup-auth.html) article for more details on getting authentication configured.
 
-## {DBI} Backend
+## `{DBI}` Backend
 
 `{brickster}` provides a complete DBI backend for Databricks SQL warehouses, enabling standard database operations with R:
 
