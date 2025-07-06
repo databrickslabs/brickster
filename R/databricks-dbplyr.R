@@ -219,7 +219,7 @@ spark_sql_translation <- function(con) {
           do.call(dbplyr::build_sql, args)
         }
       },
-      
+
       # Lubridate date/time functions
       year = function(x) dbplyr::build_sql("YEAR(", x, ")"),
       month = function(x) dbplyr::build_sql("MONTH(", x, ")"),
@@ -247,20 +247,21 @@ spark_sql_translation <- function(con) {
       hour = function(x) dbplyr::build_sql("HOUR(", x, ")"),
       minute = function(x) dbplyr::build_sql("MINUTE(", x, ")"),
       second = function(x) dbplyr::build_sql("SECOND(", x, ")"),
-      
+
       # Date arithmetic
       today = function() dbplyr::sql("CURRENT_DATE()"),
       now = function() dbplyr::sql("CURRENT_TIMESTAMP()"),
-      
+
       # Date parsing and formatting
       ymd = function(x) dbplyr::build_sql("DATE(", x, ")"),
       ymd_hms = function(x) dbplyr::build_sql("TIMESTAMP(", x, ")"),
       dmy = function(x) dbplyr::build_sql("TO_DATE(", x, ", 'dd/MM/yyyy')"),
       mdy = function(x) dbplyr::build_sql("TO_DATE(", x, ", 'MM/dd/yyyy')"),
-      
+
       # Date/time manipulation
       floor_date = function(x, unit = "day") {
-        switch(unit,
+        switch(
+          unit,
           "second" = dbplyr::build_sql("DATE_TRUNC('second', ", x, ")"),
           "minute" = dbplyr::build_sql("DATE_TRUNC('minute', ", x, ")"),
           "hour" = dbplyr::build_sql("DATE_TRUNC('hour', ", x, ")"),

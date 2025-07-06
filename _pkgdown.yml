@@ -4,7 +4,7 @@ template:
   title: brickster
 navbar:
   structure:
-    left:  [intro, reference, articles]
+    left: [intro, reference, articles]
     right: [search, github]
 authors:
   Zac Davies:
@@ -13,128 +13,131 @@ authors:
     href: https://www.linkedin.com/in/raphaelkurlansik/
   Databricks:
     href: https://www.databricks.com
-    html: <img src='https://databricks.com/wp-content/uploads/2019/12/cropped-databricks-icon-192x192.png'
+    html:
+      <img src='https://databricks.com/wp-content/uploads/2019/12/cropped-databricks-icon-192x192.png'
       width='25' alt='Databricks'/>
 development:
   mode: auto
 reference:
-- title: Authentication
-  contents:
-  - db_host
-  - db_token
-  - db_wsid
-  - db_read_netrc
-  - db_current_user
-  - db_current_workspace_id
-  - db_current_cloud
-- title: Catalogs (Unity Catalog)
-  contents:
-  - starts_with("db_uc_catalog", internal = TRUE)
-- title: Clusters
-  contents:
-  - starts_with("db_cluster", internal = TRUE)
-  - get_and_start_cluster
-  - get_latest_dbr
-  - aws_attributes
-  - gcp_attributes
-  - azure_attributes
-  - cluster_autoscale
-  - dbfs_storage_info
-  - file_storage_info
-  - s3_storage_info
-  - cluster_log_conf
-  - docker_image
-  - init_script_info
-  - access_control_request
-  - access_control_req_user
-  - access_control_req_group
-- title: Cluster Libraries
-  contents:
-  - starts_with("db_libs", internal = TRUE)
-  - wait_for_lib_installs
-- title: Databricks Notebook Helpers
-  contents:
-   - in_databricks_nb
-- title: DBFS
-  contents: starts_with("db_dbfs", internal = TRUE)
-- title: Volume FileSystem
-  contents: starts_with("db_volume", internal = TRUE)
-- title: Volumes (Unity Catalog)
-  contents: starts_with("db_uc_volume", internal = TRUE)
-- title: Execution Contexts
-  contents: starts_with("db_context", internal = TRUE)
-- title: Jobs
-  contents:
-  - starts_with("db_jobs", internal = TRUE)
-  - job_tasks
-  - job_task
-  - notebook_task
-  - spark_jar_task
-  - spark_python_task
-  - spark_submit_task
-  - pipeline_task
-  - python_wheel_task
-  - for_each_task
-  - condition_task
-  - sql_query_task
-  - sql_file_task
-  - run_job_task
-  - new_cluster
-  - libraries
-  - starts_with("lib_", internal = TRUE)
-  - email_notifications
-  - cron_schedule
-  - git_source
-- title: Mlflow Model Registry
-  contents: starts_with("db_mlflow", internal = TRUE)
-- title: R Library Management
-  contents:
-  - add_lib_path
-  - remove_lib_path
-- title: Repos
-  contents: starts_with("db_repo", internal = TRUE)
-- title: Schemas (Unity Catalog)
-  contents:
-  - starts_with("db_uc_schema", internal = TRUE)
-- title: Secrets
-  contents: starts_with("db_secrets", internal = TRUE)
-- title: SQL Queries
-  contents:
-  - starts_with("db_query", internal = TRUE)
-- title: Tables (Unity Catalog)
-  contents:
-  - starts_with("db_uc_table", internal = TRUE)
-- title: Vector Search
-  contents:
-  - starts_with("db_vs", internal = TRUE)
-  - embedding_source_column
-  - is.embedding_source_column
-  - embedding_vector_column
-  - is.embedding_vector_column
-  - delta_sync_index_spec
-  - direct_access_index_spec
-  - is.vector_search_index_spec
-  - is.direct_access_index
-  - is.delta_sync_index
-- title: Warehouses
-  contents:
-  - starts_with("db_sql", internal = TRUE)
-  - get_and_start_warehouse
-- title: Workspaces
-  contents: starts_with("db_workspace", internal = TRUE)
-- title: Request Helpers
-  contents:
-  - db_request
-  - db_perform_request
-  - db_req_error_body
-  - db_request_json
-- title: Low Level Helpers
-  contents: starts_with("is.", internal = TRUE)
-- title: Workspace Connection
-  contents:
-  - open_workspace
-  - close_workspace
-- title: REPL
-  contents:
-  - db_repl
-
+  - title: Authentication
+    contents:
+      - db_host
+      - db_token
+      - db_wsid
+      - db_read_netrc
+      - db_current_user
+      - db_current_workspace_id
+      - db_current_cloud
+  - title: Catalogs (Unity Catalog)
+    contents:
+      - starts_with("db_uc_catalog", internal = TRUE)
+  - title: Clusters
+    contents:
+      - starts_with("db_cluster", internal = TRUE)
+      - get_and_start_cluster
+      - get_latest_dbr
+      - aws_attributes
+      - gcp_attributes
+      - azure_attributes
+      - cluster_autoscale
+      - dbfs_storage_info
+      - file_storage_info
+      - s3_storage_info
+      - cluster_log_conf
+      - docker_image
+      - init_script_info
+      - access_control_request
+      - access_control_req_user
+      - access_control_req_group
+  - title: Cluster Libraries
+    contents:
+      - starts_with("db_libs", internal = TRUE)
+      - wait_for_lib_installs
+  - title: Databricks Notebook Helpers
+    contents:
+      - in_databricks_nb
+  - title: DBFS
+    contents: starts_with("db_dbfs", internal = TRUE)
+  - title: Volume FileSystem
+    contents: starts_with("db_volume", internal = TRUE)
+  - title: Volumes (Unity Catalog)
+    contents: starts_with("db_uc_volume", internal = TRUE)
+  - title: Execution Contexts
+    contents: starts_with("db_context", internal = TRUE)
+  - title: Jobs
+    contents:
+      - starts_with("db_jobs", internal = TRUE)
+      - job_tasks
+      - job_task
+      - notebook_task
+      - spark_jar_task
+      - spark_python_task
+      - spark_submit_task
+      - pipeline_task
+      - python_wheel_task
+      - for_each_task
+      - condition_task
+      - sql_query_task
+      - sql_file_task
+      - run_job_task
+      - new_cluster
+      - libraries
+      - starts_with("lib_", internal = TRUE)
+      - email_notifications
+      - cron_schedule
+      - git_source
+  - title: Mlflow Model Registry
+    contents: starts_with("db_mlflow", internal = TRUE)
+  - title: R Library Management
+    contents:
+      - add_lib_path
+      - remove_lib_path
+  - title: Repos
+    contents: starts_with("db_repo", internal = TRUE)
+  - title: Schemas (Unity Catalog)
+    contents:
+      - starts_with("db_uc_schema", internal = TRUE)
+  - title: Secrets
+    contents: starts_with("db_secrets", internal = TRUE)
+  - title: SQL Queries
+    contents:
+      - starts_with("db_query", internal = TRUE)
+  - title: Tables (Unity Catalog)
+    contents:
+      - starts_with("db_uc_table", internal = TRUE)
+  - title: Vector Search
+    contents:
+      - starts_with("db_vs", internal = TRUE)
+      - embedding_source_column
+      - is.embedding_source_column
+      - embedding_vector_column
+      - is.embedding_vector_column
+      - delta_sync_index_spec
+      - direct_access_index_spec
+      - is.vector_search_index_spec
+      - is.direct_access_index
+      - is.delta_sync_index
+  - title: Warehouses
+    contents:
+      - starts_with("db_sql", internal = TRUE)
+      - get_and_start_warehouse
+  - title: DBI Backend
+    contents:
+      - DatabricksSQL
+  - title: Workspaces
+    contents: starts_with("db_workspace", internal = TRUE)
+  - title: Request Helpers
+    contents:
+      - db_request
+      - db_perform_request
+      - db_req_error_body
+      - db_request_json
+  - title: Low Level Helpers
+    contents: starts_with("is.", internal = TRUE)
+  - title: Workspace Connection
+    contents:
+      - open_workspace
+      - close_workspace
+  - title: REPL
+    contents:
+      - db_repl
