@@ -1,4 +1,4 @@
-# [brickster](https://databrickslabs.github.io/brickster/) <a href='https://databrickslabs.github.io/brickster/'><img src="man/figures/logo.png" align="right" height="139px"/></a>
+# [brickster](https://databrickslabs.github.io/brickster/) <img src="man/figures/logo.png" align="right" height="139px"/>
 
 <!-- badges: start -->
 
@@ -80,7 +80,7 @@ result <- nyc_taxi |>
 `{brickster}` is very deliberate with choosing what API's are wrapped. `{brickster}` isn't intended to replace IaC tooling (e.g. [Terraform](#0)) or to be used for account/workspace administration.
 
 | API | Available | Version |
-|------------------------------------|------------------|------------------|
+|------------------------------------|-------------------|-------------------|
 | [DBFS](https://docs.databricks.com/api/workspace/dbfs) | Yes | 2.0 |
 | [Secrets](https://docs.databricks.com/api/workspace/secrets) | Yes | 2.0 |
 | [Repos](https://docs.databricks.com/api/workspace/repos) | Yes | 2.0 |
