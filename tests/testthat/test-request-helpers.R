@@ -27,8 +27,12 @@ test_that("request helpers - building requests", {
   expect_identical(req$body$data, body)
   expect_no_error(req$options$useragent)
   expect_equal(req$policies$retry_max_tries, 3)
-  expect_equal(req$headers$Authorization, paste("Bearer", token))
-
+  if (packageVersion("httr2") >= "1.1.2.9000") {
+    headers <- httr2::req_get_headers(req, "reveal")
+  } else {
+    headers <- req$headers
+  }
+  expect_equal(headers$Authorization, paste("Bearer", token))
 
   req_json <- db_request_json(req)
   expect_equal(unclass(req_json), "{\"a\":1,\"b\":2}")
