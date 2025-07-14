@@ -6,6 +6,8 @@
 \usage{
 db_volume_dir_delete(
   path,
+  recursive = FALSE,
+  verbose = FALSE,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
@@ -14,6 +16,10 @@ db_volume_dir_delete(
 \arguments{
 \item{path}{Absolute path of the file in the Files API, omitting the initial
 slash.}
+
+\item{recursive}{If TRUE, recursively delete directory contents (default: FALSE)}
+
+\item{verbose}{If TRUE, announce each file/directory deletion (default: FALSE)}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
@@ -33,6 +39,7 @@ Other Volumes FileSystem API:
 \code{\link{db_volume_file_exists}()},
 \code{\link{db_volume_list}()},
 \code{\link{db_volume_read}()},
+\code{\link{db_volume_upload_dir}()},
 \code{\link{db_volume_write}()}
 }
 \concept{Volumes FileSystem API}

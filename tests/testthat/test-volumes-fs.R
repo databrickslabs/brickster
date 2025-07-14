@@ -81,3 +81,49 @@ test_that("Volumes API - don't perform", {
   expect_s3_class(resp_delte, "httr2_request")
 
 })
+
+test_that("db_volume_upload_dir - don't perform", {
+  
+  withr::local_envvar(c(
+    "DATABRICKS_HOST" = "http://mock_host",
+    "DATABRICKS_TOKEN" = "mock_token"
+  ))
+  
+  # Create temporary directory with test files
+  temp_dir <- withr::local_tempdir()
+  subdir <- file.path(temp_dir, "subdir")
+  dir.create(subdir)
+  
+  # Create test files
+  writeLines("test content 1", file.path(temp_dir, "file1.txt"))
+  writeLines("test content 2", file.path(temp_dir, "file2.txt"))
+  writeLines("test content 3", file.path(subdir, "file3.txt"))
+  
+  valid_volume_path <- "/Volumes/catalog/schema/volume/"
+  
+  # Test that function executes without error (will fail at HTTP request stage in test environment)
+  expect_error(
+    db_volume_upload_dir(
+      local_dir = temp_dir,
+      volume_dir = valid_volume_path
+    )
+  )
+  
+  # Test with non-existent directory
+  expect_error(
+    db_volume_upload_dir(
+      local_dir = "/path/that/does/not/exist",
+      volume_dir = valid_volume_path
+    ),
+    "Local directory does not exist"
+  )
+  
+  # Test with invalid volume path
+  expect_error(
+    db_volume_upload_dir(
+      local_dir = temp_dir,
+      volume_dir = "/invalid/path"
+    )
+  )
+  
+})

@@ -5,16 +5,21 @@
 #' @param path Absolute path of the file in the Files API, omitting the initial
 #' slash.
 #' @param destination Path to write downloaded file to.
+#' @param progress If TRUE, show progress bar for file operations (default: TRUE for uploads/downloads, FALSE for other operations)
 #' @inheritParams db_dbfs_create
 #' @inheritParams db_sql_warehouse_create
 #'
 #' @family Volumes FileSystem API
 #'
 #' @export
-db_volume_read <- function(path, destination,
-                           host = db_host(), token = db_token(),
-                           perform_request = TRUE) {
-
+db_volume_read <- function(
+  path,
+  destination,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE,
+  progress = TRUE
+) {
   db_volume_action(
     path = path,
     destination = destination,
@@ -22,9 +27,9 @@ db_volume_read <- function(path, destination,
     type = "files",
     host = host,
     token = token,
-    perform_request = perform_request
+    perform_request = perform_request,
+    progress = progress
   )
-
 }
 
 #' Volume FileSystem Delete
@@ -36,19 +41,21 @@ db_volume_read <- function(path, destination,
 #' @family Volumes FileSystem API
 #'
 #' @export
-db_volume_delete <- function(path,
-                             host = db_host(), token = db_token(),
-                             perform_request = TRUE) {
-
+db_volume_delete <- function(
+  path,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   db_volume_action(
     path = path,
     action = "DELETE",
     type = "files",
     host = host,
     token = token,
-    perform_request = perform_request
+    perform_request = perform_request,
+    progress = FALSE
   )
-
 }
 
 #' Volume FileSystem List Directory Contents
@@ -60,10 +67,12 @@ db_volume_delete <- function(path,
 #' @family Volumes FileSystem API
 #'
 #' @export
-db_volume_list <- function(path,
-                           host = db_host(), token = db_token(),
-                           perform_request = TRUE) {
-
+db_volume_list <- function(
+  path,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   # TODO: paginate automatically
 
   db_volume_action(
@@ -72,9 +81,9 @@ db_volume_list <- function(path,
     type = "directories",
     host = host,
     token = token,
-    perform_request = perform_request
+    perform_request = perform_request,
+    progress = FALSE
   )
-
 }
 
 
@@ -94,9 +103,15 @@ db_volume_list <- function(path,
 #' @family Volumes FileSystem API
 #'
 #' @export
-db_volume_write <- function(path, file = NULL, overwrite = FALSE,
-                        host = db_host(), token = db_token(), perform_request = TRUE) {
-
+db_volume_write <- function(
+  path,
+  file = NULL,
+  overwrite = FALSE,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE,
+  progress = TRUE
+) {
   if (is.null(file)) {
     stop(cli::format_error(c(
       "Nothing to upload:",
@@ -112,9 +127,9 @@ db_volume_write <- function(path, file = NULL, overwrite = FALSE,
     type = "files",
     host = host,
     token = token,
-    perform_request = perform_request
+    perform_request = perform_request,
+    progress = progress
   )
-
 }
 
 
@@ -128,20 +143,21 @@ db_volume_write <- function(path, file = NULL, overwrite = FALSE,
 #' @family Volumes FileSystem API
 #'
 #' @export
-db_volume_file_exists <- function(path,
-                                  host = db_host(), token = db_token(),
-                                  perform_request = TRUE) {
-
+db_volume_file_exists <- function(
+  path,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   db_volume_action(
     path = path,
-    file = file,
     action = "HEAD",
     type = "files",
     host = host,
     token = token,
-    perform_request = perform_request
+    perform_request = perform_request,
+    progress = FALSE
   )
-
 }
 
 #' Volume FileSystem Create Directory
@@ -153,23 +169,27 @@ db_volume_file_exists <- function(path,
 #' @family Volumes FileSystem API
 #'
 #' @export
-db_volume_dir_create <- function(path,
-                                 host = db_host(), token = db_token(),
-                                 perform_request = TRUE) {
-
+db_volume_dir_create <- function(
+  path,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   db_volume_action(
     path = path,
     action = "PUT",
     type = "directories",
     host = host,
     token = token,
-    perform_request = perform_request
+    perform_request = perform_request,
+    progress = FALSE
   )
-
 }
 
 #' Volume FileSystem Delete Directory
 #'
+#' @param recursive If TRUE, recursively delete directory contents (default: FALSE)
+#' @param verbose If TRUE, announce each file/directory deletion (default: FALSE)
 #' @inheritParams auth_params
 #' @inheritParams db_volume_read
 #' @inheritParams db_sql_warehouse_create
@@ -177,9 +197,31 @@ db_volume_dir_create <- function(path,
 #' @family Volumes FileSystem API
 #'
 #' @export
-db_volume_dir_delete <- function(path,
-                                 host = db_host(), token = db_token(),
-                                 perform_request = TRUE) {
+db_volume_dir_delete <- function(
+  path,
+  recursive = FALSE,
+  verbose = FALSE,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
+  if (recursive) {
+    # Recursively delete contents first
+    db_volume_recursive_delete_contents(
+      path,
+      host = host,
+      token = token,
+      verbose = verbose
+    )
+  }
+
+  # Delete the directory itself
+  # For recursive mode, always perform requests; for non-recursive, respect parameter
+  effective_perform_request <- if (recursive) TRUE else perform_request
+
+  if (verbose && effective_perform_request) {
+    cli::cli_inform("Deleting directory: {.path {path}}")
+  }
 
   db_volume_action(
     path = path,
@@ -187,9 +229,53 @@ db_volume_dir_delete <- function(path,
     type = "directories",
     host = host,
     token = token,
-    perform_request = perform_request
+    perform_request = effective_perform_request,
+    progress = FALSE
   )
+}
 
+#' Recursively delete all contents of a volume directory
+#' @keywords internal
+db_volume_recursive_delete_contents <- function(
+  path,
+  host,
+  token,
+  verbose = FALSE
+) {
+  tryCatch(
+    {
+      # List directory contents
+      contents <- db_volume_list(path, host = host, token = token)$contents
+
+      if (!is.null(contents) && length(contents) > 0) {
+        # Delete all files and subdirectories
+        for (item in contents) {
+          item_path <- file.path(path, item$name)
+
+          if (item$is_directory) {
+            # Recursively delete subdirectory and all its contents
+            db_volume_dir_delete(
+              item_path,
+              recursive = TRUE,
+              verbose = verbose,
+              host = host,
+              token = token
+            )
+          } else {
+            # Delete file
+            if (verbose) {
+              cli::cli_inform("Deleting file: {.path {item_path}}")
+            }
+            db_volume_delete(item_path, host = host, token = token)
+          }
+        }
+      }
+    },
+    error = function(e) {
+      # If listing fails, directory might be empty or not exist, continue
+      # This handles edge cases like permissions or already deleted directories
+    }
+  )
 }
 
 
@@ -202,19 +288,21 @@ db_volume_dir_delete <- function(path,
 #' @family Volumes FileSystem API
 #'
 #' @export
-db_volume_dir_exists <- function(path,
-                                 host = db_host(), token = db_token(),
-                                 perform_request = TRUE) {
-
+db_volume_dir_exists <- function(
+  path,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   db_volume_action(
     path = path,
     action = "HEAD",
     type = "directories",
     host = host,
     token = token,
-    perform_request = perform_request
+    perform_request = perform_request,
+    progress = FALSE
   )
-
 }
 
 
@@ -226,15 +314,18 @@ is_valid_volume_path <- function(path) {
 }
 
 
-db_volume_action <- function(path,
-                             file = NULL,
-                             overwrite = NULL,
-                             destination = NULL,
-                             action = c("HEAD", "PUT", "DELETE", "GET"),
-                             type = c("directories", "files"),
-                             host = db_host(), token = db_token(),
-                             perform_request = TRUE) {
-
+db_volume_action <- function(
+  path,
+  file = NULL,
+  overwrite = NULL,
+  destination = NULL,
+  action = c("HEAD", "PUT", "DELETE", "GET"),
+  type = c("directories", "files"),
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE,
+  progress = TRUE
+) {
   path <- is_valid_volume_path(path)
   action <- match.arg(action)
   type <- match.arg(type)
@@ -258,23 +349,29 @@ db_volume_action <- function(path,
     }
 
     # show progress when uploading and downloading files
-    req <- req |>
-      httr2::req_progress(type = ifelse(action == "GET", "down", "up"))
+    if (progress) {
+      req <- req |>
+        httr2::req_progress(type = ifelse(action == "GET", "down", "up"))
+    }
+  } else if (type == "files" && action == "PUT") {
+    # Add body file even without progress
+    req <- httr2::req_body_file(req, file)
   }
-
 
   if (perform_request) {
     resp <- req |>
-      httr2::req_error(is_error = function(resp) httr2::resp_status(resp) == 500) |>
+      httr2::req_error(is_error = function(resp) {
+        httr2::resp_status(resp) == 500
+      }) |>
       httr2::req_perform(path = destination) |>
       httr2::resp_check_status()
 
     if (action == "HEAD") {
-      return (httr2::resp_status(resp) == 200)
+      return(httr2::resp_status(resp) == 200)
     }
 
     if (action %in% c("PUT", "DELETE")) {
-      return (httr2::resp_status(resp) == 204)
+      return(httr2::resp_status(resp) == 204)
     }
 
     # GET on files is used for downloading - useful to return location
@@ -285,10 +382,91 @@ db_volume_action <- function(path,
         return(destination)
       }
     }
-
   } else {
     req
   }
+}
 
+#' Upload Directory to Volume in Parallel
+#'
+#' Upload all files from a local directory to a volume directory using parallel requests.
+#'
+#' @param local_dir Path to local directory containing files to upload
+#' @param volume_dir Volume directory path (must start with /Volumes/)
+#' @param overwrite Flag to overwrite existing files (default: TRUE)
+#' @param preserve_structure If TRUE, preserve subdirectory structure (default: TRUE)
+#' @inheritParams auth_params
+#' @inheritParams db_sql_warehouse_create
+#'
+#' @return TRUE if all uploads successful
+#' @family Volumes FileSystem API
+#'
+#' @export
+db_volume_upload_dir <- function(
+  local_dir,
+  volume_dir,
+  overwrite = TRUE,
+  preserve_structure = TRUE,
+  host = db_host(),
+  token = db_token()
+) {
+  # Validate inputs
+  if (!dir.exists(local_dir)) {
+    cli::cli_abort("Local directory does not exist: {local_dir}")
+  }
 
+  volume_dir <- is_valid_volume_path(volume_dir)
+
+  # Get all files to upload
+  local_files <- list.files(
+    local_dir,
+    full.names = TRUE,
+    recursive = preserve_structure
+  )
+
+  if (length(local_files) == 0) {
+    cli::cli_warn("No files found in directory: {local_dir}")
+    return(TRUE)
+  }
+
+  # Create volume directory
+  db_volume_dir_create(volume_dir, host = host, token = token)
+
+  # Prepare requests for parallel execution
+  requests <- purrr::map(local_files, function(local_file) {
+    if (preserve_structure) {
+      # Preserve relative path structure
+      rel_path <- sub(paste0(local_dir, "/"), "", local_file)
+      volume_file <- file.path(volume_dir, rel_path)
+
+      # Create subdirectories if needed
+      volume_subdir <- dirname(volume_file)
+      if (volume_subdir != volume_dir) {
+        db_volume_dir_create(volume_subdir, host = host, token = token)
+      }
+    } else {
+      # Upload to root of volume directory
+      volume_file <- file.path(volume_dir, basename(local_file))
+    }
+
+    # Create upload request (no individual progress for parallel uploads)
+    db_volume_action(
+      path = volume_file,
+      file = local_file,
+      overwrite = overwrite,
+      action = "PUT",
+      type = "files",
+      host = host,
+      token = token,
+      perform_request = FALSE,
+      progress = FALSE
+    )
+  })
+
+  httr2::req_perform_parallel(
+    requests,
+    on_error = "stop"
+  )
+
+  TRUE
 }

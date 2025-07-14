@@ -48,11 +48,11 @@ test_that("DatabricksConnection validation methods work", {
     host = "test_host",
     token = "test_token",
     catalog = "test_catalog",
-    schema = "test_schema"
+    schema = "test_schema",
+    staging_volume = ""
   )
 
   expect_true(dbIsValid(con))
-  expect_true(dbIsReadOnly(con))
 
   # Test show method
   expect_output(show(con), "<DatabricksConnection>")
@@ -76,7 +76,8 @@ test_that("DatabricksConnection with invalid parameters fails validation", {
     host = "test_host",
     token = "test_token",
     catalog = "",
-    schema = ""
+    schema = "",
+    staging_volume = ""
   )
   expect_false(dbIsValid(con_invalid))
 })
@@ -88,7 +89,8 @@ test_that("Data type mapping works correctly", {
     host = "test_host",
     token = "test_token",
     catalog = "",
-    schema = ""
+    schema = "",
+    staging_volume = ""
   )
 
   test_data <- list(
@@ -109,27 +111,31 @@ test_that("Data type mapping works correctly", {
   expect_equal(unname(types["POSIXct"]), "TIMESTAMP")
 })
 
-test_that("Read-only restrictions work offline", {
+test_that("Transaction restrictions work offline", {
   con <- new(
     "DatabricksConnection",
     warehouse_id = "test_warehouse",
     host = "test_host",
     token = "test_token",
     catalog = "",
-    schema = ""
+    schema = "",
+    staging_volume = ""
   )
 
-  expect_error(
-    dbSendStatement(con, "CREATE TABLE test (x INT)"),
-    "read-only connection"
-  )
-  expect_error(
-    dbExecute(con, "CREATE TABLE test (x INT)"),
-    "read-only connection"
-  )
+  # Transactions are not supported
   expect_error(dbBegin(con), "not supported")
   expect_error(dbCommit(con), "not supported")
   expect_error(dbRollback(con), "not supported")
+  
+  # SQL statements should work but will fail due to connection (not read-only restriction)
+  expect_error(
+    dbSendStatement(con, "CREATE TABLE test (x INT)"),
+    "Failed to connect|Could not resolve hostname"
+  )
+  expect_error(
+    dbExecute(con, "CREATE TABLE test (x INT)"),
+    "Failed to connect|Could not resolve hostname"
+  )
 })
 
 test_that("Quote handling utility functions work", {
@@ -155,7 +161,8 @@ test_that("DatabricksResult show method works", {
       host = "test_host",
       token = "test_token",
       catalog = "",
-      schema = ""
+      schema = "",
+      staging_volume = ""
     ),
     completed = FALSE,
     rows_fetched = 0
@@ -173,7 +180,8 @@ test_that("DatabricksConnection with empty catalog/schema works", {
     host = "test_host",
     token = "test_token",
     catalog = "",
-    schema = ""
+    schema = "",
+    staging_volume = ""
   )
 
   info <- dbGetInfo(con)
@@ -187,7 +195,8 @@ test_that("DatabricksConnection with catalog only works", {
     host = "test_host",
     token = "test_token",
     catalog = "test_catalog",
-    schema = ""
+    schema = "",
+    staging_volume = ""
   )
 
   info <- dbGetInfo(con)
@@ -205,7 +214,8 @@ test_that("DatabricksResult edge cases work offline", {
       host = "test_host",
       token = "test_token",
       catalog = "",
-      schema = ""
+      schema = "",
+      staging_volume = ""
     ),
     completed = TRUE,
     rows_fetched = 5
@@ -233,7 +243,6 @@ test_that("DBI connection can be created with valid warehouse_id", {
   expect_s4_class(con, "DatabricksConnection")
   expect_true(is(con, "DBIConnection"))
   expect_true(dbIsValid(con))
-  expect_true(dbIsReadOnly(con))
 
   # Clean up
   dbDisconnect(con)
@@ -255,24 +264,23 @@ test_that("DBI connection info is correct", {
   dbDisconnect(con)
 })
 
-test_that("Write operations are properly blocked", {
+test_that("Transaction operations are not supported", {
   drv <- DatabricksSQL()
   warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
   skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
 
   con <- dbConnect(drv, warehouse_id = warehouse_id)
 
-  expect_error(
-    dbSendStatement(con, "CREATE TABLE test (x INT)"),
-    "read-only connection"
-  )
-  expect_error(
-    dbExecute(con, "CREATE TABLE test (x INT)"),
-    "read-only connection"
-  )
+  # Only transactions are not supported, DDL/DML should work
   expect_error(dbBegin(con), "not supported")
   expect_error(dbCommit(con), "not supported")
   expect_error(dbRollback(con), "not supported")
+
+  # SQL statements should work (test with a safe operation that won't leave artifacts)
+  expect_no_error({
+    result <- dbGetQuery(con, "SELECT 1 as test_col")
+    expect_equal(result$test_col, 1)
+  })
 
   dbDisconnect(con)
 })
@@ -559,4 +567,68 @@ test_that("dbplyr field discovery integration works", {
   })
 
   dbDisconnect(con)
+})
+
+
+test_that("Volume method selection logic works correctly", {
+  # Test data of different sizes
+  small_data <- data.frame(x = 1:100, y = letters[1:100])
+  medium_data <- data.frame(x = 1:15000, y = rep(letters, 15000/26)[1:15000])
+  large_data <- data.frame(x = 1:25000, y = rep(letters, 25000/26)[1:25000])
+  
+  # Test without volume (should always return FALSE)
+  expect_false(db_should_use_volume_method(small_data, NULL))
+  expect_false(db_should_use_volume_method(medium_data, NULL))
+  
+  # Test with volume but small data (should return FALSE)
+  expect_false(db_should_use_volume_method(small_data, "/Volumes/test/test/test"))
+  
+  # Test with volume but medium data (should return FALSE as threshold is > 20000)
+  expect_false(db_should_use_volume_method(medium_data, "/Volumes/test/test/test"))
+  
+  # Test temporary table (should always return FALSE regardless of size/volume)
+  expect_false(db_should_use_volume_method(
+    large_data, 
+    "/Volumes/test/test/test", 
+    temporary = TRUE
+  ))
+  
+  # Test large data with volume (should depend on arrow availability)
+  skip_if(!rlang::is_installed("arrow"), "arrow package not available")
+  expect_true(db_should_use_volume_method(large_data, "/Volumes/test/test/test"))
+})
+
+test_that("dbAppendTable method signatures work correctly offline", {
+  # Create mock connection object
+  con <- new(
+    "DatabricksConnection",
+    warehouse_id = "test_warehouse",
+    host = "test_host",
+    token = "test_token",
+    catalog = "",
+    schema = "",
+    staging_volume = ""
+  )
+  
+  # Test data
+  test_data <- data.frame(x = 1:3, y = c("a", "b", "c"))
+  
+  # Test that method exists for character table names
+  expect_true(hasMethod("dbAppendTable", c("DatabricksConnection", "character", "data.frame")))
+  
+  # Test that method exists for Id table names
+  expect_true(hasMethod("dbAppendTable", c("DatabricksConnection", "Id", "data.frame")))
+  
+  # Test with character name (will fail due to connection, but method should exist)
+  expect_error(
+    dbAppendTable(con, "test_table", test_data),
+    "Failed to connect|does not exist"
+  )
+  
+  # Test with Id name (will fail due to connection, but method should exist)
+  id_name <- DBI::Id(catalog = "test", schema = "default", table = "test_table")
+  expect_error(
+    dbAppendTable(con, id_name, test_data),
+    "Failed to connect|does not exist"
+  )
 })

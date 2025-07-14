@@ -2,7 +2,7 @@
 % Please edit documentation in R/databricks-dbi.R
 \name{dbExecute,DatabricksConnection,character-method}
 \alias{dbExecute,DatabricksConnection,character-method}
-\title{Execute statement on Databricks (not supported)}
+\title{Execute statement on Databricks}
 \usage{
 \S4method{dbExecute}{DatabricksConnection,character}(conn, statement, ...)
 }
@@ -14,8 +14,8 @@
 \item{...}{Additional arguments (ignored)}
 }
 \value{
-Always throws an error (read-only connection)
+Number of rows in result set (from metadata, without loading data)
 }
 \description{
-Execute statement on Databricks (not supported)
+Execute statement on Databricks
 }

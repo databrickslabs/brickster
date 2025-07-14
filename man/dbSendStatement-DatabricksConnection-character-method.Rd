@@ -2,7 +2,7 @@
 % Please edit documentation in R/databricks-dbi.R
 \name{dbSendStatement,DatabricksConnection,character-method}
 \alias{dbSendStatement,DatabricksConnection,character-method}
-\title{Send statement to Databricks (not supported)}
+\title{Send statement to Databricks}
 \usage{
 \S4method{dbSendStatement}{DatabricksConnection,character}(conn, statement, ...)
 }
@@ -14,8 +14,8 @@
 \item{...}{Additional arguments (ignored)}
 }
 \value{
-Always throws an error (read-only connection)
+A DatabricksResult object
 }
 \description{
-Send statement to Databricks (not supported)
+Send statement to Databricks
 }

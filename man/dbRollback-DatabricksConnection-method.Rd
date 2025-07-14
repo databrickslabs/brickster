@@ -12,7 +12,7 @@
 \item{...}{Additional arguments (ignored)}
 }
 \value{
-Always throws an error (read-only connection)
+Always throws an error (transactions not supported)
 }
 \description{
 Rollback transaction (not supported)

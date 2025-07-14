@@ -287,9 +287,8 @@ test_that("Connection methods work as expected", {
 
   con <- DBI::dbConnect(drv, warehouse_id = warehouse_id)
 
-  # Test that connection is valid and read-only
+  # Test that connection is valid
   expect_true(DBI::dbIsValid(con))
-  expect_true(DBI::dbIsReadOnly(con))
 
   DBI::dbDisconnect(con)
 })

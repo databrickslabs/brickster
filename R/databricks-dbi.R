@@ -26,7 +26,8 @@ setClass(
     host = "character",
     token = "character",
     catalog = "character",
-    schema = "character"
+    schema = "character",
+    staging_volume = "character"
   )
 )
 
@@ -70,11 +71,12 @@ setMethod("show", "DatabricksDriver", function(object) {
 # Connection Methods -----------------------------------------------------------
 
 #' Connect to Databricks SQL Warehouse
-#' 
+#'
 #' @param drv A DatabricksDriver object
 #' @param warehouse_id ID of the SQL warehouse to connect to
 #' @param catalog Optional catalog name to use as default
 #' @param schema Optional schema name to use as default
+#' @param staging_volume Optional volume path for large dataset staging
 #' @param token Authentication token (defaults to db_token())
 #' @param host Databricks workspace host (defaults to db_host())
 #' @param ... Additional arguments (ignored)
@@ -88,6 +90,7 @@ setMethod(
     warehouse_id,
     catalog = NULL,
     schema = NULL,
+    staging_volume = NULL,
     token = db_token(),
     host = db_host(),
     ...
@@ -126,7 +129,8 @@ setMethod(
       host = host,
       token = token,
       catalog = if (is.null(catalog)) "" else catalog,
-      schema = if (is.null(schema)) "" else schema
+      schema = if (is.null(schema)) "" else schema,
+      staging_volume = if (is.null(staging_volume)) "" else staging_volume
     )
   }
 )
@@ -156,6 +160,7 @@ setMethod("dbIsValid", "DatabricksConnection", function(dbObj, ...) {
     nchar(dbObj@token) > 0
 })
 
+
 #' Show method for DatabricksConnection
 #' @param object A DatabricksConnection object
 #' @export
@@ -168,6 +173,9 @@ setMethod("show", "DatabricksConnection", function(object) {
   }
   if (nchar(object@schema) > 0) {
     cat("  Schema:", object@schema, "\n")
+  }
+  if (!is.null(object@staging_volume) && nchar(object@staging_volume) > 0) {
+    cat("  Staging Volume:", object@staging_volume, "\n")
   }
 })
 
@@ -184,10 +192,6 @@ setMethod(
   signature = c(conn = "DatabricksConnection", statement = "character"),
   function(conn, statement, ...) {
     # Validate inputs
-    if (!dbIsValid(conn)) {
-      cli::cli_abort("Connection is not valid")
-    }
-
     if (
       missing(statement) || is.null(statement) || nchar(trimws(statement)) == 0
     ) {
@@ -247,35 +251,87 @@ setMethod(
 )
 
 # Read-only enforcement
-#' Send statement to Databricks (not supported)
+#' Send statement to Databricks
 #' @param conn A DatabricksConnection object
 #' @param statement SQL statement
 #' @param ... Additional arguments (ignored)
-#' @return Always throws an error (read-only connection)
+#' @return A DatabricksResult object
 #' @export
 setMethod(
   "dbSendStatement",
   signature = c(conn = "DatabricksConnection", statement = "character"),
   function(conn, statement, ...) {
-    cli::cli_abort(
-      "This is a read-only connection. Use dbSendQuery() for SELECT statements only."
+    # Validate inputs
+    if (
+      missing(statement) || is.null(statement) || nchar(trimws(statement)) == 0
+    ) {
+      cli::cli_abort("statement must be provided and non-empty")
+    }
+
+    # Execute statement asynchronously
+    resp <- db_sql_exec_query(
+      warehouse_id = conn@warehouse_id,
+      statement = statement,
+      catalog = if (nchar(conn@catalog) > 0) conn@catalog else NULL,
+      schema = if (nchar(conn@schema) > 0) conn@schema else NULL,
+      disposition = "EXTERNAL_LINKS",
+      format = "ARROW_STREAM",
+      wait_timeout = "0s", # Async execution
+      host = conn@host,
+      token = conn@token
+    )
+
+    # Create result object
+    new(
+      "DatabricksResult",
+      statement_id = resp$statement_id,
+      statement = statement,
+      connection = conn,
+      completed = FALSE,
+      rows_fetched = 0
     )
   }
 )
 
-#' Execute statement on Databricks (not supported)
+#' Execute statement on Databricks
 #' @param conn A DatabricksConnection object
 #' @param statement SQL statement
 #' @param ... Additional arguments (ignored)
-#' @return Always throws an error (read-only connection)
+#' @return Number of rows in result set (from metadata, without loading data)
 #' @export
 setMethod(
   "dbExecute",
   signature = c(conn = "DatabricksConnection", statement = "character"),
   function(conn, statement, ...) {
-    cli::cli_abort(
-      "This is a read-only connection. Use dbGetQuery() for SELECT statements only."
+    # Validate inputs
+    if (
+      missing(statement) || is.null(statement) || nchar(trimws(statement)) == 0
+    ) {
+      cli::cli_abort("statement must be provided and non-empty")
+    }
+
+    # Execute statement synchronously to get metadata without loading data
+    status <- db_sql_exec_and_wait(
+      warehouse_id = conn@warehouse_id,
+      statement = statement,
+      catalog = if (nchar(conn@catalog) > 0) conn@catalog else NULL,
+      schema = if (nchar(conn@schema) > 0) conn@schema else NULL,
+      disposition = "EXTERNAL_LINKS",
+      format = "ARROW_STREAM",
+      wait_timeout = "10s",
+      host = conn@host,
+      token = conn@token
     )
+
+    # Return row count from manifest without loading data
+    # For DDL statements, total_row_count may be 0 or NULL
+    if (
+      !is.null(status$manifest) && !is.null(status$manifest$total_row_count)
+    ) {
+      as.integer(status$manifest$total_row_count)
+    } else {
+      0L
+    }
   }
 )
 
@@ -293,20 +349,8 @@ setMethod("dbFetch", "DatabricksResult", function(res, n = -1, ...) {
     return(data.frame())
   }
 
-  # Get current status (poll if needed)
-  status <- db_sql_exec_status(
-    statement_id = res@statement_id,
-    host = res@connection@host,
-    token = res@connection@token
-  )
-
-  if (status$status$state %in% c("RUNNING", "PENDING")) {
-    status <- db_sql_exec_poll_for_success(res@statement_id)
-  }
-
-  if (status$status$state == "FAILED") {
-    cli::cli_abort("Query failed: {status$status$error$message}")
-  }
+  # Poll for completion (handles status checking internally)
+  status <- db_sql_exec_poll_for_success(res@statement_id)
 
   # Check for empty results early and return immediately
   # Use total_row_count to detect empty result sets
@@ -497,6 +541,37 @@ setMethod(
   }
 )
 
+#' Check if table exists (Id method)
+#' @param conn A DatabricksConnection object
+#' @param name Table name as Id object
+#' @param ... Additional arguments (ignored)
+#' @return TRUE if table exists, FALSE otherwise
+#' @export
+setMethod(
+  "dbExistsTable",
+  signature = c(conn = "DatabricksConnection", name = "Id"),
+  function(conn, name, ...) {
+    if (!dbIsValid(conn)) {
+      cli::cli_abort("Connection is not valid")
+    }
+
+    # Convert Id to quoted string
+    quoted_name <- dbQuoteIdentifier(conn, name)
+
+    # Use DESCRIBE TABLE to check existence
+    tryCatch(
+      {
+        sql <- paste0("DESCRIBE TABLE ", quoted_name)
+        dbGetQuery(conn, sql, disposition = "INLINE")
+        TRUE
+      },
+      error = function(e) {
+        FALSE
+      }
+    )
+  }
+)
+
 #' Get connection information
 #' @param dbObj A DatabricksConnection object
 #' @param ... Additional arguments (ignored)
@@ -559,43 +634,35 @@ setMethod(
   }
 )
 
-# Read-only transaction methods (for completeness)
+# Transaction methods (not supported)
 #' Begin transaction (not supported)
 #' @param conn A DatabricksConnection object
 #' @param ... Additional arguments (ignored)
-#' @return Always throws an error (read-only connection)
+#' @return Always throws an error (transactions not supported)
 #' @export
 setMethod("dbBegin", "DatabricksConnection", function(conn, ...) {
-  cli::cli_abort("Transactions are not supported in this read-only interface")
+  cli::cli_abort("Transactions are not supported")
 })
 
 #' Commit transaction (not supported)
 #' @param conn A DatabricksConnection object
 #' @param ... Additional arguments (ignored)
-#' @return Always throws an error (read-only connection)
+#' @return Always throws an error (transactions not supported)
 #' @export
 setMethod("dbCommit", "DatabricksConnection", function(conn, ...) {
-  cli::cli_abort("Transactions are not supported in this read-only interface")
+  cli::cli_abort("Transactions are not supported")
 })
 
 #' Rollback transaction (not supported)
 #' @param conn A DatabricksConnection object
 #' @param ... Additional arguments (ignored)
-#' @return Always throws an error (read-only connection)
+#' @return Always throws an error (transactions not supported)
 #' @export
 setMethod("dbRollback", "DatabricksConnection", function(conn, ...) {
-  cli::cli_abort("Transactions are not supported in this read-only interface")
+  cli::cli_abort("Transactions are not supported")
 })
 
 # Additional utility methods
-#' Check if connection is read-only
-#' @param dbObj A DatabricksConnection object
-#' @param ... Additional arguments (ignored)
-#' @return TRUE (always read-only for Databricks connections)
-#' @export
-setMethod("dbIsReadOnly", "DatabricksConnection", function(dbObj, ...) {
-  TRUE
-})
 
 #' Map R data types to Databricks SQL types
 #' @param dbObj A DatabricksConnection object
@@ -668,5 +735,685 @@ setMethod(
     # Handle schema.table identifiers
     names <- purrr::map_chr(x@name, ~ paste0("`", .x, "`"))
     DBI::SQL(paste(names, collapse = "."))
+  }
+)
+
+# Write Methods ----------------------------------------------------------------
+
+#' Write a data frame to Databricks table
+#' @param conn A DatabricksConnection object
+#' @param name Table name (character, Id, or SQL)
+#' @param value Data frame to write
+#' @param overwrite If TRUE, overwrite existing table
+#' @param append If TRUE, append to existing table
+#' @param row.names If TRUE, preserve row names as a column
+#' @param temporary If TRUE, create temporary table
+#' @param field.types Named character vector of SQL types for columns
+#' @param staging_volume Optional volume path for large dataset staging
+#' @param progress If TRUE, show progress bar for file uploads (default: TRUE)
+#' @param ... Additional arguments
+#' @return TRUE invisibly on success
+#' @export
+setMethod(
+  "dbWriteTable",
+  signature = c("DatabricksConnection", "character", "data.frame"),
+  function(
+    conn,
+    name,
+    value,
+    overwrite = FALSE,
+    append = FALSE,
+    row.names = FALSE,
+    temporary = FALSE,
+    field.types = NULL,
+    staging_volume = NULL,
+    progress = TRUE,
+    ...
+  ) {
+    # Validate inputs
+    if (overwrite && append) {
+      cli::cli_abort("Cannot specify both overwrite = TRUE and append = TRUE")
+    }
+
+    if (nrow(value) == 0) {
+      cli::cli_abort("Cannot write empty data frame")
+    }
+
+    # Handle row names
+    if (row.names) {
+      if (".row_names" %in% names(value)) {
+        cli::cli_abort(
+          "Cannot preserve row names: column '.row_names' already exists"
+        )
+      }
+      value <- tibble::add_column(
+        value,
+        .row_names = rownames(value),
+        .before = 1
+      )
+    }
+
+    # Quote table name
+    quoted_name <- dbQuoteIdentifier(conn, name)
+
+    # Use staging_volume from connection if not provided
+    if (!is.null(staging_volume)) {
+      effective_staging_volume <- staging_volume
+    } else if (nchar(conn@staging_volume) > 0) {
+      effective_staging_volume <- conn@staging_volume
+    } else {
+      effective_staging_volume <- NULL
+    }
+
+    # Handle table existence checks for both methods
+    table_exists <- dbExistsTable(conn, name)
+
+    if (table_exists && !overwrite && !append) {
+      cli::cli_abort(
+        "Table {quoted_name} already exists. Use overwrite = TRUE or append = TRUE"
+      )
+    }
+
+    if (append && !table_exists) {
+      cli::cli_abort(
+        "Table {quoted_name} does not exist. Cannot append to non-existing table."
+      )
+    }
+
+    # Check if we should use volume-based method
+    if (
+      db_should_use_volume_method(value, effective_staging_volume, temporary)
+    ) {
+      db_write_table_volume(
+        conn,
+        quoted_name,
+        value,
+        effective_staging_volume,
+        append,
+        progress
+      )
+    } else {
+      db_write_table_standard(
+        conn,
+        quoted_name,
+        value,
+        overwrite,
+        append,
+        field.types,
+        temporary
+      )
+    }
+
+    invisible(TRUE)
+  }
+)
+
+#' Write a data frame to Databricks table (Id method)
+#' @param conn A DatabricksConnection object
+#' @param name Table name as Id object
+#' @param value Data frame to write
+#' @param overwrite If TRUE, overwrite existing table
+#' @param append If TRUE, append to existing table
+#' @param row.names If TRUE, preserve row names as a column
+#' @param temporary If TRUE, create temporary table
+#' @param field.types Named character vector of SQL types for columns
+#' @param staging_volume Optional volume path for large dataset staging
+#' @param progress If TRUE, show progress bar for file uploads (default: TRUE)
+#' @param ... Additional arguments
+#' @return TRUE invisibly on success
+#' @export
+setMethod(
+  "dbWriteTable",
+  signature = c("DatabricksConnection", "Id", "data.frame"),
+  function(
+    conn,
+    name,
+    value,
+    overwrite = FALSE,
+    append = FALSE,
+    row.names = FALSE,
+    temporary = FALSE,
+    field.types = NULL,
+    staging_volume = NULL,
+    progress = TRUE,
+    ...
+  ) {
+    # Handle Id object by implementing the logic directly instead of delegating
+    # This avoids double-quoting issues
+
+    # Validate inputs
+    if (overwrite && append) {
+      cli::cli_abort("Cannot specify both overwrite = TRUE and append = TRUE")
+    }
+
+    if (nrow(value) == 0) {
+      cli::cli_abort("Cannot write empty data frame")
+    }
+
+    # Handle row names if requested
+    if (row.names) {
+      value <- tibble::add_column(
+        value,
+        row_names = rownames(value),
+        .before = 1
+      )
+    }
+
+    # Get proper quoted name for Id object
+    quoted_name <- dbQuoteIdentifier(conn, name)
+
+    # Determine staging volume to use
+    effective_staging_volume <- staging_volume
+    if (is.null(effective_staging_volume) && nchar(conn@staging_volume) > 0) {
+      effective_staging_volume <- conn@staging_volume
+    }
+
+    # Check if table exists for overwrite/append logic
+    table_exists <- dbExistsTable(conn, name)
+    if (table_exists && !overwrite && !append) {
+      cli::cli_abort(
+        "Table {quoted_name} already exists. Use overwrite = TRUE or append = TRUE"
+      )
+    }
+
+    if (append && !table_exists) {
+      cli::cli_abort(
+        "Table {quoted_name} does not exist. Cannot append to non-existing table."
+      )
+    }
+
+    # Check if we should use volume-based method
+    if (
+      db_should_use_volume_method(value, effective_staging_volume, temporary)
+    ) {
+      db_write_table_volume(
+        conn,
+        quoted_name,
+        value,
+        effective_staging_volume,
+        append,
+        progress
+      )
+    } else {
+      db_write_table_standard(
+        conn,
+        quoted_name,
+        value,
+        overwrite,
+        append,
+        field.types,
+        temporary
+      )
+    }
+
+    invisible(TRUE)
+  }
+)
+
+#' Write table using standard SQL approach
+#' @keywords internal
+db_write_table_standard <- function(
+  conn,
+  quoted_name,
+  value,
+  overwrite,
+  append,
+  field.types,
+  temporary = FALSE
+) {
+  if (append) {
+    # For append, use atomic INSERT INTO with SELECT VALUES
+    if (nrow(value) > 0) {
+      db_append_with_select_values(conn, quoted_name, value)
+    }
+  } else {
+    # For create/overwrite, use atomic CTAS with VALUES
+    db_create_table_as_select_values(
+      conn,
+      quoted_name,
+      value,
+      field.types,
+      temporary,
+      overwrite
+    )
+  }
+}
+
+#' Create table from data frame structure
+#' @keywords internal
+db_create_table_from_data <- function(
+  conn,
+  quoted_name,
+  value,
+  field.types,
+  temporary = FALSE,
+  overwrite = FALSE
+) {
+  # Generate column definitions
+  if (is.null(field.types)) {
+    # Use automatic type mapping for each column
+    col_types <- purrr::map_chr(value, function(col) {
+      switch(
+        class(col)[1],
+        logical = "BOOLEAN",
+        integer = "INT",
+        numeric = "DOUBLE",
+        character = "STRING",
+        Date = "DATE",
+        POSIXct = "TIMESTAMP",
+        "STRING"
+      )
+    })
+  } else {
+    # Use provided types
+    col_types <- field.types[names(value)]
+    # Fill missing types with automatic mapping
+    missing_types <- is.na(col_types) |
+      names(value) %in% names(field.types) == FALSE
+    col_types[missing_types] <- purrr::map_chr(
+      value[missing_types],
+      function(col) {
+        switch(
+          class(col)[1],
+          logical = "BOOLEAN",
+          integer = "INT",
+          numeric = "DOUBLE",
+          character = "STRING",
+          Date = "DATE",
+          POSIXct = "TIMESTAMP",
+          "STRING"
+        )
+      }
+    )
+  }
+
+  # Build column definitions
+  col_names <- purrr::map_chr(names(value), ~ dbQuoteIdentifier(conn, .x))
+  col_defs <- paste(col_names, col_types, collapse = ", ")
+
+  # Create table
+  if (temporary) {
+    table_keyword <- "CREATE TEMPORARY TABLE"
+  } else if (overwrite) {
+    table_keyword <- "CREATE OR REPLACE TABLE"
+  } else {
+    table_keyword <- "CREATE TABLE"
+  }
+  create_sql <- paste0(table_keyword, " ", quoted_name, " (", col_defs, ")")
+  dbExecute(conn, create_sql)
+}
+
+
+#' Generate VALUES SQL from data frame
+#' @keywords internal
+db_generate_values_sql <- function(conn, data) {
+  # Convert each row to SQL values
+  row_values <- apply(data, 1, function(row) {
+    values <- purrr::map_chr(row, function(val) {
+      if (is.na(val)) {
+        "NULL"
+      } else if (is.character(val)) {
+        paste0("'", gsub("'", "''", val), "'") # Escape single quotes
+      } else if (is.logical(val)) {
+        if (val) "TRUE" else "FALSE"
+      } else {
+        as.character(val)
+      }
+    })
+    paste0("(", paste(values, collapse = ", "), ")")
+  })
+
+  paste(row_values, collapse = ", ")
+}
+
+#' Generate type-aware VALUES SQL from data frame
+#' @keywords internal
+db_generate_typed_values_sql <- function(conn, data) {
+  # Convert each row to SQL values with proper typing
+  row_values <- apply(data, 1, function(row) {
+    values <- purrr::map2_chr(row, names(data), function(val, col_name) {
+      col_data <- data[[col_name]]
+
+      if (is.na(val)) {
+        "NULL"
+      } else if (is.logical(col_data)) {
+        if (as.logical(val)) "TRUE" else "FALSE"
+      } else if (is.numeric(col_data)) {
+        # Don't quote numeric values to preserve type
+        as.character(val)
+      } else if (is.character(col_data)) {
+        # Quote string values and escape single quotes
+        paste0("'", gsub("'", "''", val), "'")
+      } else {
+        # Default to quoted string for other types
+        paste0("'", gsub("'", "''", as.character(val)), "'")
+      }
+    })
+    paste0("(", paste(values, collapse = ", "), ")")
+  })
+
+  paste(row_values, collapse = ", ")
+}
+
+#' Create table using atomic CTAS with VALUES
+#' @keywords internal
+db_create_table_as_select_values <- function(
+  conn,
+  quoted_name,
+  value,
+  field.types,
+  temporary = FALSE,
+  overwrite = FALSE
+) {
+  if (nrow(value) == 0) {
+    # For empty data, fall back to CREATE TABLE with schema
+    db_create_table_from_data(
+      conn,
+      quoted_name,
+      value,
+      field.types,
+      temporary,
+      overwrite
+    )
+    return()
+  }
+
+  # Build table creation keywords
+  if (temporary) {
+    table_keyword <- "CREATE TEMPORARY TABLE"
+  } else if (overwrite) {
+    table_keyword <- "CREATE OR REPLACE TABLE"
+  } else {
+    table_keyword <- "CREATE TABLE"
+  }
+
+  # Get column names with proper quoting
+  col_names <- purrr::map_chr(names(value), ~ dbQuoteIdentifier(conn, .x))
+  col_list <- paste(col_names, collapse = ", ")
+
+  # Generate VALUES clause with type-aware formatting
+  values_sql <- db_generate_typed_values_sql(conn, value)
+
+  # Build complete CTAS statement
+  ctas_sql <- paste0(
+    table_keyword,
+    " ",
+    quoted_name,
+    " AS SELECT * FROM VALUES ",
+    values_sql,
+    " AS t(",
+    col_list,
+    ")"
+  )
+
+  # Execute using helper function
+  db_sql_exec_and_wait(
+    warehouse_id = conn@warehouse_id,
+    statement = ctas_sql,
+    catalog = if (nchar(conn@catalog) > 0) conn@catalog else NULL,
+    schema = if (nchar(conn@schema) > 0) conn@schema else NULL,
+    disposition = "INLINE",
+    format = "JSON_ARRAY",
+    wait_timeout = "10s",
+    host = conn@host,
+    token = conn@token
+  )
+}
+
+#' Append data using atomic INSERT INTO with SELECT VALUES
+#' @keywords internal
+db_append_with_select_values <- function(conn, quoted_name, value) {
+  # Get column names with proper quoting
+  col_names <- purrr::map_chr(names(value), ~ dbQuoteIdentifier(conn, .x))
+  col_list <- paste(col_names, collapse = ", ")
+
+  # Generate VALUES clause with type-aware formatting
+  values_sql <- db_generate_typed_values_sql(conn, value)
+
+  # Build atomic INSERT statement
+  insert_sql <- paste0(
+    "INSERT INTO ",
+    quoted_name,
+    " SELECT * FROM VALUES ",
+    values_sql,
+    " AS t(",
+    col_list,
+    ")"
+  )
+
+  # Execute using helper function
+  db_sql_exec_and_wait(
+    warehouse_id = conn@warehouse_id,
+    statement = insert_sql,
+    catalog = if (nchar(conn@catalog) > 0) conn@catalog else NULL,
+    schema = if (nchar(conn@schema) > 0) conn@schema else NULL,
+    disposition = "INLINE",
+    format = "JSON_ARRAY",
+    wait_timeout = "10s",
+    host = conn@host,
+    token = conn@token
+  )
+}
+
+#' Check if volume method should be used
+#' @keywords internal
+db_should_use_volume_method <- function(
+  value,
+  staging_volume,
+  temporary = FALSE
+) {
+  n_rows <- nrow(value)
+  has_volume <- !is.null(staging_volume) && nchar(staging_volume) > 0
+
+  # Temporary tables should use standard method (COPY INTO may not support them)
+  if (temporary) {
+    return(FALSE)
+  }
+
+  # Check if arrow is available
+  has_arrow <- rlang::is_installed("arrow")
+
+  # Check dataset size limits without volume staging
+  if (!has_volume) {
+    if (n_rows > 50000) {
+      # Fail for very large datasets
+      cli::cli_abort(c(
+        "Cannot write {n_rows} rows without volume staging.",
+        "x" = "Standard SQL method is not suitable for datasets larger than 30,000 rows.",
+        "i" = "Use the {.arg staging_volume} parameter to enable volume-based uploads.",
+        "i" = "Example: {.code dbWriteTable(conn, name, data, staging_volume = '/Volumes/catalog/schema/volume')}"
+      ))
+    } else if (n_rows >= 20000 && has_arrow) {
+      # Warn about performance for medium-large datasets
+      cli::cli_warn(c(
+        "Writing {n_rows} rows using standard SQL method will be slow.",
+        "i" = "Consider using {.arg staging_volume} parameter for better performance.",
+        "i" = "Example: {.code dbWriteTable(conn, name, data, staging_volume = '/Volumes/catalog/schema/volume')}"
+      ))
+    }
+  }
+
+  has_volume && n_rows > 20000 && has_arrow
+}
+
+#' Write table using volume-based approach
+#' @keywords internal
+db_write_table_volume <- function(
+  conn,
+  quoted_name,
+  value,
+  staging_volume,
+  append = FALSE,
+  progress = TRUE
+) {
+  # Validate volume path
+  staging_volume <- is_valid_volume_path(staging_volume)
+
+  if (
+    !db_volume_dir_exists(staging_volume, host = conn@host, token = conn@token)
+  ) {
+    cli::cli_abort("Staging volume directory does not exist: {staging_volume}")
+  }
+
+  # Generate unique directory name for dataset
+  temp_dirname <- paste0(
+    "brickster_upload_",
+    format(Sys.time(), "%Y%m%d_%H%M%S"),
+    "_",
+    sample(10000:99999, 1)
+  )
+
+  volume_dataset_path <- file.path(staging_volume, temp_dirname)
+  local_temp_dir <- file.path(tempdir(), temp_dirname)
+
+  # Set up cleanup hooks to ensure cleanup happens even if there are errors
+  on.exit(
+    {
+      # Cleanup local directory
+      if (dir.exists(local_temp_dir)) {
+        unlink(local_temp_dir, recursive = TRUE)
+      }
+
+      # Clean up volume directory (recursive since it contains files)
+      # Use tryCatch to avoid errors during cleanup from stopping the exit handler
+      tryCatch(
+        {
+          db_volume_dir_delete(
+            volume_dataset_path,
+            recursive = TRUE,
+            host = conn@host,
+            token = conn@token
+          )
+        },
+        error = function(e) {
+          # Log cleanup failure but don't stop execution
+          cli::cli_warn(
+            "Failed to clean up volume directory {volume_dataset_path}: {e$message}"
+          )
+        }
+      )
+    },
+    add = TRUE
+  )
+
+  # Write dataset locally using arrow with ZSTD compression
+  arrow::write_dataset(
+    value,
+    local_temp_dir,
+    format = "parquet",
+    compression = "zstd",
+    max_rows_per_file = 5000000L
+  )
+
+  # Create directory on volume
+  db_volume_dir_create(
+    volume_dataset_path,
+    host = conn@host,
+    token = conn@token
+  )
+
+  # Upload all parquet files to volume using parallel method
+  db_volume_upload_dir(
+    local_dir = local_temp_dir,
+    volume_dir = volume_dataset_path,
+    overwrite = TRUE,
+    preserve_structure = TRUE,
+    host = conn@host,
+    token = conn@token
+  )
+
+  # Execute SQL based on operation type
+  if (append) {
+    # Append to existing table
+    copy_sql <- paste0(
+      "COPY INTO ",
+      quoted_name,
+      " ",
+      "FROM '",
+      volume_dataset_path,
+      "' ",
+      "FILEFORMAT = PARQUET"
+    )
+  } else {
+    # Create new table from parquet files using READ_FILES
+    copy_sql <- paste0(
+      "CREATE OR REPLACE TABLE ",
+      quoted_name,
+      " AS SELECT * FROM READ_FILES('",
+      volume_dataset_path,
+      "', format => 'parquet')"
+    )
+  }
+
+  # Execute SQL using helper function (inline since we don't need data back)
+  db_sql_exec_and_wait(
+    warehouse_id = conn@warehouse_id,
+    statement = copy_sql,
+    catalog = if (nchar(conn@catalog) > 0) conn@catalog else NULL,
+    schema = if (nchar(conn@schema) > 0) conn@schema else NULL,
+    disposition = "INLINE",
+    format = "JSON_ARRAY",
+    wait_timeout = "10s",
+    host = conn@host,
+    token = conn@token
+  )
+}
+
+#' Append rows to an existing Databricks table
+#' @param conn A DatabricksConnection object
+#' @param name Table name (character, Id, or SQL)
+#' @param value Data frame to append
+#' @param ... Additional arguments
+#' @param row.names If TRUE, preserve row names as a column
+#' @return TRUE invisibly on success
+#' @export
+setMethod(
+  "dbAppendTable",
+  signature = c("DatabricksConnection", "character", "data.frame"),
+  function(conn, name, value, ..., row.names = FALSE) {
+    # Validate inputs
+    if (nrow(value) == 0) {
+      cli::cli_abort("Cannot append empty data frame")
+    }
+
+    # Check table exists
+    if (!dbExistsTable(conn, name)) {
+      cli::cli_abort(
+        "Table {name} does not exist. Use dbWriteTable() to create it first."
+      )
+    }
+
+    # Use dbWriteTable with append = TRUE
+    dbWriteTable(conn, name, value, append = TRUE, row.names = row.names, ...)
+  }
+)
+
+#' Append rows to an existing Databricks table (Id method)
+#' @param conn A DatabricksConnection object
+#' @param name Table name as Id object
+#' @param value Data frame to append
+#' @param ... Additional arguments
+#' @param row.names If TRUE, preserve row names as a column
+#' @return TRUE invisibly on success
+#' @export
+setMethod(
+  "dbAppendTable",
+  signature = c("DatabricksConnection", "Id", "data.frame"),
+  function(conn, name, value, ..., row.names = FALSE) {
+    # Validate inputs
+    if (nrow(value) == 0) {
+      cli::cli_abort("Cannot append empty data frame")
+    }
+
+    # Check table exists
+    if (!dbExistsTable(conn, name)) {
+      table_name <- as.character(dbQuoteIdentifier(conn, name))
+      cli::cli_abort(
+        "Table {table_name} does not exist. Use dbWriteTable() to create it first."
+      )
+    }
+
+    # Use dbWriteTable with append = TRUE
+    dbWriteTable(conn, name, value, append = TRUE, row.names = row.names, ...)
   }
 )

@@ -9,6 +9,7 @@
   warehouse_id,
   catalog = NULL,
   schema = NULL,
+  staging_volume = NULL,
   token = db_token(),
   host = db_host(),
   ...
@@ -22,6 +23,8 @@
 \item{catalog}{Optional catalog name to use as default}
 
 \item{schema}{Optional schema name to use as default}
+
+\item{staging_volume}{Optional volume path for large dataset staging}
 
 \item{token}{Authentication token (defaults to db_token())}
 
