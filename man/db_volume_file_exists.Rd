@@ -33,6 +33,7 @@ Other Volumes FileSystem API:
 \code{\link{db_volume_dir_exists}()},
 \code{\link{db_volume_list}()},
 \code{\link{db_volume_read}()},
+\code{\link{db_volume_upload_dir}()},
 \code{\link{db_volume_write}()}
 }
 \concept{Volumes FileSystem API}

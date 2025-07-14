@@ -10,7 +10,8 @@ db_volume_write(
   overwrite = FALSE,
   host = db_host(),
   token = db_token(),
-  perform_request = TRUE
+  perform_request = TRUE,
+  progress = TRUE
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ existing files.}
 
 \item{perform_request}{If \code{TRUE} (default) the request is performed, if
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
+
+\item{progress}{If TRUE, show progress bar for file operations (default: TRUE for uploads/downloads, FALSE for other operations)}
 }
 \description{
 Upload a file to volume filesystem.
@@ -43,6 +46,7 @@ Other Volumes FileSystem API:
 \code{\link{db_volume_dir_exists}()},
 \code{\link{db_volume_file_exists}()},
 \code{\link{db_volume_list}()},
-\code{\link{db_volume_read}()}
+\code{\link{db_volume_read}()},
+\code{\link{db_volume_upload_dir}()}
 }
 \concept{Volumes FileSystem API}
