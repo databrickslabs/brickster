@@ -10,3 +10,5 @@
 ^LICENSE\.md$
 ^NOTICE
 ^cran-comments\.md$
+^CLAUDE.md
+^\.claude
