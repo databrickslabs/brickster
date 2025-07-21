@@ -25,8 +25,6 @@ db_volume_upload_dir(
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
 \item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}
-
-\item{progress}{If TRUE, show progress bar for uploads (default: FALSE)}
 }
 \value{
 TRUE if all uploads successful
