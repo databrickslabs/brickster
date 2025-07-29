@@ -278,7 +278,7 @@ test_that("Transaction operations are not supported", {
 
   # SQL statements should work (test with a safe operation that won't leave artifacts)
   expect_no_error({
-    result <- dbGetQuery(con, "SELECT 1 as test_col")
+    result <- dbGetQuery(con, "SELECT 1 as test_col", show_progress = FALSE)
     expect_equal(result$test_col, 1)
   })
 
@@ -293,13 +293,13 @@ test_that("dbGetQuery works for simple queries", {
   con <- dbConnect(drv, warehouse_id = warehouse_id)
 
   # Test simple query
-  result <- dbGetQuery(con, "SELECT 1 as test_col")
+  result <- dbGetQuery(con, "SELECT 1 as test_col", show_progress = FALSE)
   expect_s3_class(result, "data.frame")
   expect_equal(nrow(result), 1)
   expect_equal(result$test_col, 1)
 
   # Test more complex query
-  result <- dbGetQuery(con, "SELECT 1 as a, 'test' as b, 3.14 as c")
+  result <- dbGetQuery(con, "SELECT 1 as a, 'test' as b, 3.14 as c", show_progress = FALSE)
   expect_equal(nrow(result), 1)
   expect_equal(ncol(result), 3)
   expect_equal(result$a, 1)
@@ -395,7 +395,7 @@ test_that("Connection with catalog and schema works", {
   expect_equal(con@schema, schema)
 
   # Test query in specific catalog/schema context
-  result <- dbGetQuery(con, "SELECT 1 as test")
+  result <- dbGetQuery(con, "SELECT 1 as test", show_progress = FALSE)
   expect_equal(result$test, 1)
 
   dbDisconnect(con)
@@ -410,7 +410,7 @@ test_that("Error handling works correctly", {
 
   # Test invalid SQL - expect any error containing "PARSE_SYNTAX_ERROR" or "Query failed"
   expect_error(
-    dbGetQuery(con, "INVALID SQL STATEMENT"),
+    dbGetQuery(con, "INVALID SQL STATEMENT", show_progress = FALSE),
     "(Query failed|PARSE_SYNTAX_ERROR)"
   )
 
@@ -534,7 +534,8 @@ test_that("Field discovery query returns correct structure", {
   result <- dbGetQuery(
     con,
     "SELECT 'test' as col1, 1 as col2, current_date() as col3 WHERE 0 = 1",
-    disposition = "INLINE"
+    disposition = "INLINE",
+    show_progress = FALSE
   )
 
   expect_s3_class(result, "data.frame")

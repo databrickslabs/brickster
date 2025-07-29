@@ -31,7 +31,7 @@
 
 \item{row.names}{If TRUE, preserve row names as a column}
 
-\item{temporary}{If TRUE, create temporary table}
+\item{temporary}{If TRUE, create temporary table (NOT SUPPORTED - will error)}
 
 \item{field.types}{Named character vector of SQL types for columns}
 

@@ -12,7 +12,8 @@ test_that("dbplyr edition declaration works offline", {
     host = "test_host",
     token = "test_token",
     catalog = "",
-    schema = ""
+    schema = "",
+    staging_volume = ""
   )
 
   edition <- dbplyr::dbplyr_edition(con)
@@ -26,7 +27,8 @@ test_that("String function translations work offline", {
     host = "test_host",
     token = "test_token",
     catalog = "",
-    schema = ""
+    schema = "",
+    staging_volume = ""
   )
 
   # Test basic string translations without executing
@@ -44,7 +46,8 @@ test_that("Aggregation function translations work offline", {
     host = "test_host",
     token = "test_token",
     catalog = "",
-    schema = ""
+    schema = "",
+    staging_volume = ""
   )
 
   # Test aggregation translations without executing
@@ -71,7 +74,8 @@ test_that("Identifier escaping uses backticks", {
     host = "test_host",
     token = "test_token",
     catalog = "",
-    schema = ""
+    schema = "",
+    staging_volume = ""
   )
 
   # Test identifier escaping
@@ -92,7 +96,8 @@ test_that("String escaping uses single quotes", {
     host = "test_host",
     token = "test_token",
     catalog = "",
-    schema = ""
+    schema = "",
+    staging_volume = ""
   )
 
   # Test string escaping
@@ -101,21 +106,73 @@ test_that("String escaping uses single quotes", {
   expect_true(grepl("test string", as.character(escaped)))
 })
 
-test_that("Read-only table operations are blocked offline", {
+test_that("sql_query_save validates inputs offline", {
   con <- new(
     "DatabricksConnection",
     warehouse_id = "test_warehouse",
     host = "test_host",
     token = "test_token",
     catalog = "",
-    schema = ""
+    schema = "",
+    staging_volume = ""
   )
 
+  # Test input validation
+  expect_error(
+    dbplyr::sql_query_save(con, "", "temp_table"),
+    "SQL query must be provided and non-empty"
+  )
+  
+  expect_error(
+    dbplyr::sql_query_save(con, "SELECT 1", ""),
+    "Table/view name must be provided and non-empty"
+  )
+  
+  # Test with invalid connection (will fail at execution, not validation)
   expect_error(
     dbplyr::sql_query_save(con, "SELECT 1", "temp_table"),
-    "not supported in read-only mode"
+    "Failed to connect|Could not resolve hostname"
   )
 })
+
+
+test_that("copy_to validates inputs offline", {
+  con <- new(
+    "DatabricksConnection",
+    warehouse_id = "test_warehouse",
+    host = "test_host",
+    token = "test_token",
+    catalog = "",
+    schema = "",
+    staging_volume = ""
+  )
+
+  # Test input validation
+  expect_error(
+    copy_to.DatabricksConnection(con, "not_a_dataframe"),
+    "df must be a data frame"
+  )
+  
+  expect_error(
+    copy_to.DatabricksConnection(con, data.frame()),
+    "Cannot copy empty data frame"
+  )
+})
+
+test_that("Temporary name generation works correctly", {
+  # Test basic name generation
+  name1 <- generate_temp_name()
+  name2 <- generate_temp_name()
+  
+  expect_true(grepl("^dbplyr_temp_", name1))
+  expect_true(grepl("^dbplyr_temp_", name2))
+  expect_false(name1 == name2) # Should be unique
+  
+  # Test custom prefix
+  custom_name <- generate_temp_name("custom_prefix")
+  expect_true(grepl("^custom_prefix_", custom_name))
+})
+
 
 test_that("SQL table analyze generates correct SQL", {
   con <- new(
@@ -124,7 +181,8 @@ test_that("SQL table analyze generates correct SQL", {
     host = "test_host",
     token = "test_token",
     catalog = "",
-    schema = ""
+    schema = "",
+    staging_volume = ""
   )
 
   sql <- dbplyr::sql_table_analyze(con, "test_table")
@@ -264,21 +322,23 @@ test_that("Basic dplyr operations translate correctly", {
   DBI::dbDisconnect(con)
 })
 
-test_that("Read-only restrictions are enforced with live connection", {
+test_that("sql_query_save creates temporary views with live connection", {
   drv <- DatabricksSQL()
   warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
   skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
 
   con <- DBI::dbConnect(drv, warehouse_id = warehouse_id)
 
-  # Test that temporary table creation is blocked
-  expect_error(
-    dbplyr::sql_query_save(con, "SELECT 1", "temp_table"),
-    "not supported in read-only mode"
-  )
+  # Test temporary view creation returns name
+  temp_name <- dbplyr::sql_query_save(con, "SELECT 1 as test_col", "test_temp_view")
+  expect_true(is.character(temp_name))
+  expect_true(nchar(temp_name) > 0)
 
   DBI::dbDisconnect(con)
 })
+
+
+
 
 test_that("Connection methods work as expected", {
   drv <- DatabricksSQL()

@@ -4,7 +4,13 @@
 \alias{dbGetQuery,DatabricksConnection,character-method}
 \title{Execute SQL query and return results}
 \usage{
-\S4method{dbGetQuery}{DatabricksConnection,character}(conn, statement, disposition = "EXTERNAL_LINKS", ...)
+\S4method{dbGetQuery}{DatabricksConnection,character}(
+  conn,
+  statement,
+  disposition = "EXTERNAL_LINKS",
+  show_progress = TRUE,
+  ...
+)
 }
 \arguments{
 \item{conn}{A DatabricksConnection object}
@@ -13,6 +19,8 @@
 
 \item{disposition}{Query disposition mode: "EXTERNAL_LINKS" (default) for large results,
 "INLINE" for small metadata queries (automatically chooses appropriate format)}
+
+\item{show_progress}{If TRUE, show progress updates during query execution (default: TRUE)}
 
 \item{...}{Additional arguments passed to underlying query execution}
 }

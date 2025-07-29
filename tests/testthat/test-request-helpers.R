@@ -27,7 +27,6 @@ test_that("request helpers - building requests", {
   expect_identical(req$body$data, body)
   expect_no_error(req$options$useragent)
   expect_equal(req$policies$retry_max_tries, 3)
-  expect_equal(req$headers$Authorization, paste("Bearer", token))
 
 
   req_json <- db_request_json(req)

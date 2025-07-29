@@ -2,24 +2,24 @@
 % Please edit documentation in R/databricks-dbplyr.R
 \name{sql_query_save.DatabricksConnection}
 \alias{sql_query_save.DatabricksConnection}
-\title{Handle temporary table creation (not supported in read-only mode)}
+\title{Create temporary views and tables in Databricks}
 \usage{
 \method{sql_query_save}{DatabricksConnection}(con, sql, name, temporary = TRUE, ...)
 }
 \arguments{
 \item{con}{A DatabricksConnection object}
 
-\item{sql}{SQL query to save as table}
+\item{sql}{SQL query to save as table/view}
 
-\item{name}{Name for the temporary table}
+\item{name}{Name for the temporary view or table}
 
-\item{temporary}{Whether the table should be temporary}
+\item{temporary}{Whether the object should be temporary (default: TRUE)}
 
 \item{...}{Additional arguments (ignored)}
 }
 \value{
-Always throws an error (read-only connection)
+The table/view name (invisibly)
 }
 \description{
-Handle temporary table creation (not supported in read-only mode)
+Create temporary views and tables in Databricks
 }

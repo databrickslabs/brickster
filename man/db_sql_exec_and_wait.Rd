@@ -16,7 +16,8 @@ db_sql_exec_and_wait(
   disposition = c("EXTERNAL_LINKS", "INLINE"),
   format = c("ARROW_STREAM", "JSON_ARRAY"),
   host = db_host(),
-  token = db_token()
+  token = db_token(),
+  show_progress = TRUE
 )
 }
 \arguments{

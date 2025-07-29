@@ -96,7 +96,8 @@ test_that("SQL Execution API", {
   expect_no_error({
     resp_query <- db_sql_query(
       warehouse_id = test_warehouse$id,
-      statement = "select 1"
+      statement = "select 1",
+      show_progress = FALSE
     )
   })
   expect_s3_class(resp_query, "tbl_df")
@@ -105,7 +106,8 @@ test_that("SQL Execution API", {
     resp_query <- db_sql_query(
       warehouse_id = test_warehouse$id,
       statement = "select 1",
-      return_arrow = TRUE
+      return_arrow = TRUE,
+      show_progress = FALSE
     )
   })
   expect_s3_class(resp_query, c("Table", "ArrowTabular"))
@@ -125,7 +127,7 @@ test_that("db_sql_query works as expected", {
   skip_if(nchar(warehouse_id) == 0, "No warehouse_id available")
   
   # Test basic query using the core function
-  result <- db_sql_query(warehouse_id, "SELECT 1 as test_col")
+  result <- db_sql_query(warehouse_id, "SELECT 1 as test_col", show_progress = FALSE)
   expect_s3_class(result, "data.frame")
   expect_equal(nrow(result), 1)
   expect_equal(result$test_col, 1)
@@ -136,7 +138,7 @@ test_that("db_sql_query handles complex queries", {
   skip_if(nchar(warehouse_id) == 0, "No warehouse_id available")
   
   # Test more complex query
-  result <- db_sql_query(warehouse_id, "SELECT 1 as a, 'test' as b, 3.14 as c")
+  result <- db_sql_query(warehouse_id, "SELECT 1 as a, 'test' as b, 3.14 as c", show_progress = FALSE)
   expect_s3_class(result, "data.frame")
   expect_equal(nrow(result), 1)
   expect_equal(ncol(result), 3)
@@ -151,7 +153,7 @@ test_that("db_sql_query handles errors correctly", {
   
   # Test invalid SQL
   expect_error(
-    db_sql_query(warehouse_id, "INVALID SQL STATEMENT"),
+    db_sql_query(warehouse_id, "INVALID SQL STATEMENT", show_progress = FALSE),
     "Query failed|PARSE_SYNTAX_ERROR"
   )
 })
@@ -169,7 +171,8 @@ test_that("db_sql_query works with catalog and schema", {
     warehouse_id, 
     "SELECT 1 as test",
     catalog = catalog,
-    schema = schema
+    schema = schema,
+    show_progress = FALSE
   )
   expect_s3_class(result, "data.frame")
   expect_equal(result$test, 1)

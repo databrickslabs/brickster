@@ -350,8 +350,11 @@ db_volume_action <- function(
 
     # show progress when uploading and downloading files
     if (progress) {
+      # Use httr2 progress with custom formatting
       req <- req |>
-        httr2::req_progress(type = ifelse(action == "GET", "down", "up"))
+        httr2::req_progress(
+          type = ifelse(action == "GET", "down", "up")
+        )
     }
   } else if (type == "files" && action == "PUT") {
     # Add body file even without progress
@@ -463,9 +466,16 @@ db_volume_upload_dir <- function(
     )
   })
 
+  # Execute parallel uploads with styled progress bars
   httr2::req_perform_parallel(
     requests,
-    on_error = "stop"
+    on_error = "stop",
+    progress = list(
+      clear = FALSE,
+      type = "iterator",
+      format = "Uploading {cli::pb_bar} {cli::pb_percent} [{cli::pb_elapsed}]",
+      format_done = "{cli::col_green('\\u2714')} Data uploaded [{cli::pb_elapsed}]"
+    )
   )
 
   TRUE

@@ -112,7 +112,8 @@ setMethod(
           catalog = catalog,
           schema = schema,
           host = host,
-          token = token
+          token = token,
+          show_progress = FALSE
         )
       },
       error = function(e) {
@@ -229,13 +230,14 @@ setMethod(
 #' @param statement SQL statement to execute
 #' @param disposition Query disposition mode: "EXTERNAL_LINKS" (default) for large results,
 #'   "INLINE" for small metadata queries (automatically chooses appropriate format)
+#' @param show_progress If TRUE, show progress updates during query execution (default: TRUE)
 #' @param ... Additional arguments passed to underlying query execution
 #' @return A data.frame with query results
 #' @export
 setMethod(
   "dbGetQuery",
   signature = c(conn = "DatabricksConnection", statement = "character"),
-  function(conn, statement, disposition = "EXTERNAL_LINKS", ...) {
+  function(conn, statement, disposition = "EXTERNAL_LINKS", show_progress = TRUE, ...) {
     # Use unified db_sql_query function
     db_sql_query(
       warehouse_id = conn@warehouse_id,
@@ -245,7 +247,8 @@ setMethod(
       return_arrow = FALSE,
       disposition = disposition,
       host = conn@host,
-      token = conn@token
+      token = conn@token,
+      show_progress = show_progress
     )
   }
 )
@@ -320,7 +323,8 @@ setMethod(
       format = "ARROW_STREAM",
       wait_timeout = "10s",
       host = conn@host,
-      token = conn@token
+      token = conn@token,
+      show_progress = FALSE # No progress for metadata queries
     )
 
     # Return row count from manifest without loading data
@@ -497,7 +501,7 @@ setMethod("dbListTables", "DatabricksConnection", function(conn, ...) {
     "SHOW TABLES"
   }
 
-  result <- dbGetQuery(conn, sql, disposition = "INLINE")
+  result <- dbGetQuery(conn, sql, disposition = "INLINE", show_progress = FALSE)
 
   # Extract table names from result
   if ("tableName" %in% names(result)) {
@@ -531,7 +535,7 @@ setMethod(
     tryCatch(
       {
         sql <- paste0("DESCRIBE TABLE ", clean_name)
-        dbGetQuery(conn, sql, disposition = "INLINE")
+        dbGetQuery(conn, sql, disposition = "INLINE", show_progress = FALSE)
         TRUE
       },
       error = function(e) {
@@ -562,7 +566,7 @@ setMethod(
     tryCatch(
       {
         sql <- paste0("DESCRIBE TABLE ", quoted_name)
-        dbGetQuery(conn, sql, disposition = "INLINE")
+        dbGetQuery(conn, sql, disposition = "INLINE", show_progress = FALSE)
         TRUE
       },
       error = function(e) {
@@ -701,8 +705,24 @@ setMethod(
   "dbQuoteIdentifier",
   signature("DatabricksConnection", "character"),
   function(conn, x, ...) {
-    # Simple identifiers - wrap in backticks
-    quoted <- paste0("`", x, "`")
+    # Handle each element of the character vector
+    quoted <- purrr::map_chr(x, function(single_x) {
+      # Check if this is a three-part name (catalog.schema.table)
+      if (grepl("^[^.]+\\.[^.]+\\.[^.]+$", single_x)) {
+        # Split into parts and quote each separately
+        parts <- strsplit(single_x, "\\.")[[1]]
+        if (length(parts) == 3) {
+          quoted_parts <- paste0("`", parts, "`")
+          paste(quoted_parts, collapse = ".")
+        } else {
+          # Fallback to simple quoting
+          paste0("`", single_x, "`")
+        }
+      } else {
+        # Simple identifiers - wrap in backticks
+        paste0("`", single_x, "`")
+      }
+    })
     DBI::SQL(quoted)
   }
 )
@@ -747,7 +767,7 @@ setMethod(
 #' @param overwrite If TRUE, overwrite existing table
 #' @param append If TRUE, append to existing table
 #' @param row.names If TRUE, preserve row names as a column
-#' @param temporary If TRUE, create temporary table
+#' @param temporary If TRUE, create temporary table (NOT SUPPORTED - will error)
 #' @param field.types Named character vector of SQL types for columns
 #' @param staging_volume Optional volume path for large dataset staging
 #' @param progress If TRUE, show progress bar for file uploads (default: TRUE)
@@ -773,6 +793,12 @@ setMethod(
     # Validate inputs
     if (overwrite && append) {
       cli::cli_abort("Cannot specify both overwrite = TRUE and append = TRUE")
+    }
+
+    if (temporary) {
+      cli::cli_abort(
+        "Temporary tables are not supported with the SQL Statement Execution API"
+      )
     }
 
     if (nrow(value) == 0) {
@@ -855,7 +881,7 @@ setMethod(
 #' @param overwrite If TRUE, overwrite existing table
 #' @param append If TRUE, append to existing table
 #' @param row.names If TRUE, preserve row names as a column
-#' @param temporary If TRUE, create temporary table
+#' @param temporary If TRUE, create temporary table (NOT SUPPORTED - will error)
 #' @param field.types Named character vector of SQL types for columns
 #' @param staging_volume Optional volume path for large dataset staging
 #' @param progress If TRUE, show progress bar for file uploads (default: TRUE)
@@ -884,6 +910,12 @@ setMethod(
     # Validate inputs
     if (overwrite && append) {
       cli::cli_abort("Cannot specify both overwrite = TRUE and append = TRUE")
+    }
+
+    if (temporary) {
+      cli::cli_abort(
+        "Temporary tables are not supported with the SQL Statement Execution API"
+      )
     }
 
     if (nrow(value) == 0) {
@@ -950,6 +982,54 @@ setMethod(
   }
 )
 
+#' Write table to Databricks (AsIs name signature)
+#' @param conn DatabricksConnection object
+#' @param name Table name as AsIs object (from I())
+#' @param value Data frame to write
+#' @param overwrite If TRUE, overwrite existing table
+#' @param append If TRUE, append to existing table
+#' @param row.names If TRUE, preserve row names as a column
+#' @param temporary If TRUE, create temporary table (NOT SUPPORTED - will error)
+#' @param field.types Named character vector of SQL types for columns
+#' @param staging_volume Optional volume path for large dataset staging
+#' @param progress If TRUE, show progress bar for file uploads (default: TRUE)
+#' @param ... Additional arguments
+#' @return TRUE invisibly on success
+#' @export
+setMethod(
+  "dbWriteTable",
+  signature = c("DatabricksConnection", "AsIs", "data.frame"),
+  function(
+    conn,
+    name,
+    value,
+    overwrite = FALSE,
+    append = FALSE,
+    row.names = FALSE,
+    temporary = FALSE,
+    field.types = NULL,
+    staging_volume = NULL,
+    progress = TRUE,
+    ...
+  ) {
+    # Convert AsIs to character and delegate to character method
+    char_name <- as.character(name)
+    dbWriteTable(
+      conn = conn,
+      name = char_name,
+      value = value,
+      overwrite = overwrite,
+      append = append,
+      row.names = row.names,
+      temporary = temporary,
+      field.types = field.types,
+      staging_volume = staging_volume,
+      progress = progress,
+      ...
+    )
+  }
+)
+
 #' Write table using standard SQL approach
 #' @keywords internal
 db_write_table_standard <- function(
@@ -961,6 +1041,18 @@ db_write_table_standard <- function(
   field.types,
   temporary = FALSE
 ) {
+  if (temporary) {
+    cli::cli_abort(
+      "Temporary tables are not supported with the SQL Statement Execution API"
+    )
+  }
+  
+  # Show progress for table creation
+  cli::cli_progress_step(
+    if (append) "Appending data to table" else "Creating table",
+    if (append) "Data appended" else "Table created"
+  )
+  
   if (append) {
     # For append, use atomic INSERT INTO with SELECT VALUES
     if (nrow(value) > 0) {
@@ -977,6 +1069,8 @@ db_write_table_standard <- function(
       overwrite
     )
   }
+  
+  cli::cli_progress_done()
 }
 
 #' Create table from data frame structure
@@ -989,6 +1083,11 @@ db_create_table_from_data <- function(
   temporary = FALSE,
   overwrite = FALSE
 ) {
+  if (temporary) {
+    cli::cli_abort(
+      "Temporary tables are not supported with the SQL Statement Execution API"
+    )
+  }
   # Generate column definitions
   if (is.null(field.types)) {
     # Use automatic type mapping for each column
@@ -1105,6 +1204,11 @@ db_create_table_as_select_values <- function(
   temporary = FALSE,
   overwrite = FALSE
 ) {
+  if (temporary) {
+    cli::cli_abort(
+      "Temporary tables are not supported with the SQL Statement Execution API"
+    )
+  }
   if (nrow(value) == 0) {
     # For empty data, fall back to CREATE TABLE with schema
     db_create_table_from_data(
@@ -1156,7 +1260,8 @@ db_create_table_as_select_values <- function(
     format = "JSON_ARRAY",
     wait_timeout = "10s",
     host = conn@host,
-    token = conn@token
+    token = conn@token,
+    show_progress = FALSE
   )
 }
 
@@ -1191,7 +1296,8 @@ db_append_with_select_values <- function(conn, quoted_name, value) {
     format = "JSON_ARRAY",
     wait_timeout = "10s",
     host = conn@host,
-    token = conn@token
+    token = conn@token,
+    show_progress = FALSE
   )
 }
 
@@ -1296,7 +1402,14 @@ db_write_table_volume <- function(
     add = TRUE
   )
 
-  # Write dataset locally using arrow with ZSTD compression
+  # Convert to Parquet
+  if (progress) {
+    cli::cli_progress_step(
+      "Converting to Parquet format",
+      "Parquet files created"
+    )
+  }
+
   arrow::write_dataset(
     value,
     local_temp_dir,
@@ -1305,14 +1418,18 @@ db_write_table_volume <- function(
     max_rows_per_file = 5000000L
   )
 
-  # Create directory on volume
+  if (progress) {
+    cli::cli_progress_done()
+  }
+
+  # Create staging directory
   db_volume_dir_create(
     volume_dataset_path,
     host = conn@host,
     token = conn@token
   )
 
-  # Upload all parquet files to volume using parallel method
+  # Upload files to volume
   db_volume_upload_dir(
     local_dir = local_temp_dir,
     volume_dir = volume_dataset_path,
@@ -1321,6 +1438,14 @@ db_write_table_volume <- function(
     host = conn@host,
     token = conn@token
   )
+
+  # Execute SQL to create/populate table
+  if (progress) {
+    cli::cli_progress_step(
+      if (append) "Appending data to table" else "Creating table from uploaded data",
+      if (append) "Data appended" else "Table created"
+    )
+  }
 
   # Execute SQL based on operation type
   if (append) {
@@ -1355,8 +1480,11 @@ db_write_table_volume <- function(
     format = "JSON_ARRAY",
     wait_timeout = "10s",
     host = conn@host,
-    token = conn@token
+    token = conn@token,
+    show_progress = FALSE
   )
+
+  if (progress) cli::cli_progress_done()
 }
 
 #' Append rows to an existing Databricks table

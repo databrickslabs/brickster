@@ -301,13 +301,21 @@ db_sql_exec_and_wait <- function(
   disposition = c("EXTERNAL_LINKS", "INLINE"),
   format = c("ARROW_STREAM", "JSON_ARRAY"),
   host = db_host(),
-  token = db_token()
+  token = db_token(),
+  show_progress = TRUE
 ) {
   # Validate arguments
   disposition <- match.arg(disposition)
   format <- match.arg(format)
 
-  # Execute query with specified disposition and format
+  # Execute query with optional progress tracking
+  if (show_progress) {
+    cli::cli_progress_step(
+      "Running query",
+      "Query completed"
+    )
+  }
+
   resp <- db_sql_exec_query(
     warehouse_id = warehouse_id,
     statement = statement,
@@ -326,12 +334,22 @@ db_sql_exec_and_wait <- function(
 
   # Poll for completion if still running
   if (resp$status$state %in% c("RUNNING", "PENDING")) {
+    if (show_progress) {
+      cli::cli_progress_update("Checking status...")
+    }
     resp <- db_sql_exec_poll_for_success(resp$statement_id)
   }
 
-  # Check for query failure
+  # Check for query failure and complete progress
   if (resp$status$state == "FAILED") {
+    if (show_progress) {
+      cli::cli_progress_done(result = "failed")
+    }
     cli::cli_abort(resp$status$error$message)
+  }
+
+  if (show_progress) {
+    cli::cli_progress_done()
   }
 
   resp
@@ -477,14 +495,23 @@ db_sql_fetch_results <- function(
         httr2::req_timeout(300)
     )
 
-  # Download arrow stream data with high parallelism
+  # Download with styled progress bar
   ipc_data <- httr2::req_perform_parallel(
     links,
     max_active = max_active_connections,
-    progress = TRUE
+    progress = list(
+      clear = FALSE,
+      format = "Fetching {cli::pb_bar} {cli::pb_percent} [{cli::pb_elapsed}]",
+      format_done = "{cli::col_green('\\u2714')} Data fetched [{cli::pb_elapsed}]",
+      type = "iterator"
+    )
   )
 
-  # Process Arrow data
+  # Process data with progress
+  cli::cli_progress_step(
+    "Processing query results",
+    "Query results processed"
+  )
   if (rlang::is_installed("arrow")) {
     # Read IPC data as arrow tables
     arrow_tbls <- ipc_data |>
@@ -508,6 +535,7 @@ db_sql_fetch_results <- function(
     ) |>
       purrr::list_rbind()
   }
+  cli::cli_progress_done()
 
   # Apply row limit if specified
   if (!is.null(row_limit) && row_limit > 0 && nrow(results) > row_limit) {
@@ -525,6 +553,7 @@ db_sql_fetch_results <- function(
 #' [arrow::Table].
 #' @param max_active_connections Integer to decide on concurrent downloads.
 #' @param disposition Disposition mode ("INLINE" or "EXTERNAL_LINKS")
+#' @param show_progress If TRUE, show progress updates during query execution (default: TRUE)
 #' @returns [tibble::tibble] or [arrow::Table].
 #' @export
 db_sql_query <- function(
@@ -539,7 +568,8 @@ db_sql_query <- function(
   max_active_connections = 30,
   disposition = "EXTERNAL_LINKS",
   host = db_host(),
-  token = db_token()
+  token = db_token(),
+  show_progress = TRUE
 ) {
   # Choose format based on disposition
   format <- if (disposition == "INLINE") "JSON_ARRAY" else "ARROW_STREAM"
@@ -557,7 +587,8 @@ db_sql_query <- function(
     disposition = disposition,
     format = format,
     host = host,
-    token = token
+    token = token,
+    show_progress = show_progress
   )
 
   # Check for empty results early and return immediately

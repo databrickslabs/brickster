@@ -7,7 +7,9 @@
 #' @importFrom dbplyr sql_variant sql_translator base_scalar base_agg base_win
 #' @importFrom dbplyr sql_prefix sql sql_table_analyze sql_quote sql_query_fields
 #' @importFrom dbplyr translate_sql dbplyr_edition sql_query_save simulate_spark_sql
+#' @importFrom dplyr copy_to
 #' @importFrom glue glue_sql
+#' @importFrom purrr map_chr map2_chr
 #' @name databricks-dbplyr
 NULL
 
@@ -50,13 +52,26 @@ sql_table_analyze.DatabricksConnection <- function(con, table, ...) {
 
 # Table Operations ---------------------------------------------------------------
 
-#' Handle temporary table creation (not supported in read-only mode)
+#' Generate unique temporary table/view name
+#' @param prefix Base name prefix (default: "dbplyr_temp")
+#' @return Unique temporary name
+#' @keywords internal
+generate_temp_name <- function(prefix = "dbplyr_temp") {
+  paste0(
+    prefix, "_", 
+    format(Sys.time(), "%Y%m%d_%H%M%S"), "_", 
+    sample(10000:99999, 1)
+  )
+}
+
+
+#' Create temporary views and tables in Databricks
 #' @param con A DatabricksConnection object
-#' @param sql SQL query to save as table
-#' @param name Name for the temporary table
-#' @param temporary Whether the table should be temporary
+#' @param sql SQL query to save as table/view
+#' @param name Name for the temporary view or table
+#' @param temporary Whether the object should be temporary (default: TRUE)
 #' @param ... Additional arguments (ignored)
-#' @return Always throws an error (read-only connection)
+#' @return The table/view name (invisibly)
 #' @export
 #' @method sql_query_save DatabricksConnection
 sql_query_save.DatabricksConnection <- function(
@@ -66,10 +81,61 @@ sql_query_save.DatabricksConnection <- function(
   temporary = TRUE,
   ...
 ) {
-  cli::cli_abort(
-    "Temporary table creation is not supported in read-only mode. Use collect() to retrieve results."
-  )
+  # Validate inputs
+  if (!DBI::dbIsValid(con)) {
+    cli::cli_abort("Connection is not valid")
+  }
+  
+  if (missing(name) || is.null(name) || nchar(trimws(name)) == 0) {
+    cli::cli_abort("Table/view name must be provided and non-empty")
+  }
+  
+  if (missing(sql) || is.null(sql) || nchar(trimws(as.character(sql))) == 0) {
+    cli::cli_abort("SQL query must be provided and non-empty")
+  }
+  
+  # For user-provided names, ensure uniqueness to avoid conflicts
+  # Don't modify dbplyr-generated names (they start with dbplyr_)
+  if (temporary && is.character(name) && !grepl("^dbplyr_", name) && nchar(trimws(name)) > 0) {
+    name <- generate_temp_name(name)
+  }
+  
+  # Create appropriate SQL based on temporary flag
+  if (temporary) {
+    # Use TEMPORARY VIEW for session-scoped objects
+    if (is.character(name) && grepl("^`.*`$", name)) {
+      quoted_name <- name  # Already quoted
+    } else {
+      quoted_name <- DBI::dbQuoteIdentifier(con, name)
+    }
+    create_sql <- paste0(
+      "CREATE OR REPLACE TEMPORARY VIEW ", 
+      quoted_name, 
+      " AS ", 
+      as.character(sql)
+    )
+  } else {
+    # Use regular table for persistent objects
+    if (is.character(name) && grepl("^`.*`$", name)) {
+      quoted_name <- name  # Already quoted
+    } else {
+      quoted_name <- DBI::dbQuoteIdentifier(con, name)
+    }
+    create_sql <- paste0(
+      "CREATE OR REPLACE TABLE ", 
+      quoted_name, 
+      " AS ", 
+      as.character(sql)
+    )
+  }
+  
+  # Execute the creation SQL
+  DBI::dbExecute(con, create_sql)
+  
+  invisible(name)
 }
+
+
 
 # Query Field Discovery ---------------------------------------------------------
 
@@ -86,6 +152,104 @@ sql_query_save.DatabricksConnection <- function(
 sql_query_fields.DatabricksConnection <- function(con, sql, ...) {
   # Use the default dbplyr implementation
   NextMethod()
+}
+
+#' Copy data frame to Databricks as table or view
+#' @param dest A DatabricksConnection object
+#' @param df Data frame to copy
+#' @param name Name for the table/view
+#' @param overwrite Whether to overwrite existing table/view
+#' @param temporary Whether to create as temporary view (default: TRUE, but NOT SUPPORTED - will error)
+#' @param ... Additional arguments passed to dbWriteTable
+#' @return dbplyr table reference
+#' @details Note: temporary=TRUE will result in an error as temporary tables are not
+#'   supported with the SQL Statement Execution API. Use temporary=FALSE to create regular tables.
+#' @export
+#' @method copy_to DatabricksConnection
+copy_to.DatabricksConnection <- function(
+  dest,
+  df,
+  name = deparse(substitute(df)),
+  overwrite = FALSE,
+  temporary = TRUE,
+  ...
+) {
+  # Validate inputs
+  if (!DBI::dbIsValid(dest)) {
+    cli::cli_abort("Connection is not valid")
+  }
+  
+  if (!is.data.frame(df)) {
+    cli::cli_abort("df must be a data frame")
+  }
+  
+  # Note: sql_query_save will handle name generation for temporary objects
+  
+  if (temporary) {
+    # For temporary views, try using dbWriteTable with temporary=TRUE
+    # This should work better with SEA than the VALUES approach
+    if (nrow(df) == 0) {
+      cli::cli_abort("Cannot copy empty data frame")
+    }
+    
+    # Use dbWriteTable with temporary=TRUE - let DBI handle the implementation
+    DBI::dbWriteTable(
+      dest, 
+      name, 
+      df, 
+      overwrite = overwrite, 
+      temporary = TRUE,  # Let DBI handle temporary table creation
+      ...
+    )
+    final_name <- name
+    
+  } else {
+    # For persistent tables, use dbWriteTable directly
+    DBI::dbWriteTable(
+      dest, 
+      name, 
+      df, 
+      overwrite = overwrite, 
+      temporary = FALSE,
+      ...
+    )
+    final_name <- name
+  }
+  
+  # Return dbplyr table reference
+  dplyr::tbl(dest, final_name)
+}
+
+#' Generate typed VALUES SQL for temporary views (helper)
+#' @param con DatabricksConnection object
+#' @param data Data frame
+#' @return SQL VALUES clause
+#' @keywords internal
+db_generate_typed_values_sql_for_view <- function(con, data) {
+  # Convert each row to SQL values with proper typing
+  row_values <- apply(data, 1, function(row) {
+    values <- purrr::map2_chr(row, names(data), function(val, col_name) {
+      col_data <- data[[col_name]]
+      
+      if (is.na(val)) {
+        "NULL"
+      } else if (is.logical(col_data)) {
+        if (as.logical(val)) "TRUE" else "FALSE"
+      } else if (is.numeric(col_data)) {
+        # Don't quote numeric values to preserve type
+        as.character(val)
+      } else if (is.character(col_data)) {
+        # Quote string values and escape single quotes
+        paste0("'", gsub("'", "''", val), "'")
+      } else {
+        # Default to quoted string for other types
+        paste0("'", gsub("'", "''", as.character(val)), "'")
+      }
+    })
+    paste0("(", paste(values, collapse = ", "), ")")
+  })
+  
+  paste(row_values, collapse = ", ")
 }
 
 # Slightly modified version of sparklyr/R/dplyr_sql_translation.R (thank you!)
