@@ -237,7 +237,13 @@ setMethod(
 setMethod(
   "dbGetQuery",
   signature = c(conn = "DatabricksConnection", statement = "character"),
-  function(conn, statement, disposition = "EXTERNAL_LINKS", show_progress = TRUE, ...) {
+  function(
+    conn,
+    statement,
+    disposition = "EXTERNAL_LINKS",
+    show_progress = TRUE,
+    ...
+  ) {
     # Use unified db_sql_query function
     db_sql_query(
       warehouse_id = conn@warehouse_id,
@@ -623,7 +629,8 @@ setMethod(
       return_arrow = FALSE,
       disposition = "INLINE",
       host = conn@host,
-      token = conn@token
+      token = conn@token,
+      show_progress = FALSE
     )
 
     # Extract column names
@@ -1046,13 +1053,12 @@ db_write_table_standard <- function(
       "Temporary tables are not supported with the SQL Statement Execution API"
     )
   }
-  
+
   # Show progress for table creation
   cli::cli_progress_step(
-    if (append) "Appending data to table" else "Creating table",
-    if (append) "Data appended" else "Table created"
+    if (append) "Appending data to table" else "Creating table"
   )
-  
+
   if (append) {
     # For append, use atomic INSERT INTO with SELECT VALUES
     if (nrow(value) > 0) {
@@ -1069,7 +1075,7 @@ db_write_table_standard <- function(
       overwrite
     )
   }
-  
+
   cli::cli_progress_done()
 }
 
@@ -1382,6 +1388,10 @@ db_write_table_volume <- function(
 
       # Clean up volume directory (recursive since it contains files)
       # Use tryCatch to avoid errors during cleanup from stopping the exit handler
+      if (progress) {
+        cli::cli_progress_step("Cleaning up files staged to volume")
+      }
+
       tryCatch(
         {
           db_volume_dir_delete(
@@ -1390,8 +1400,16 @@ db_write_table_volume <- function(
             host = conn@host,
             token = conn@token
           )
+
+          if (progress) {
+            cli::cli_progress_done()
+          }
         },
         error = function(e) {
+          if (progress) {
+            cli::cli_progress_done(result = "failed")
+          }
+
           # Log cleanup failure but don't stop execution
           cli::cli_warn(
             "Failed to clean up volume directory {volume_dataset_path}: {e$message}"
@@ -1404,10 +1422,7 @@ db_write_table_volume <- function(
 
   # Convert to Parquet
   if (progress) {
-    cli::cli_progress_step(
-      "Converting to Parquet format",
-      "Parquet files created"
-    )
+    cli::cli_progress_step("Converting to Parquet format")
   }
 
   arrow::write_dataset(
@@ -1442,7 +1457,11 @@ db_write_table_volume <- function(
   # Execute SQL to create/populate table
   if (progress) {
     cli::cli_progress_step(
-      if (append) "Appending data to table" else "Creating table from uploaded data",
+      if (append) {
+        "Appending data to table"
+      } else {
+        "Creating table from uploaded data"
+      },
       if (append) "Data appended" else "Table created"
     )
   }

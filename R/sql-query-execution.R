@@ -83,7 +83,7 @@ db_sql_exec_query <- function(
   byte_limit = NULL,
   disposition = c("INLINE", "EXTERNAL_LINKS"),
   format = c("JSON_ARRAY", "ARROW_STREAM", "CSV"),
-  wait_timeout = "10s",
+  wait_timeout = "0s",
   on_wait_timeout = c("CONTINUE", "CANCEL"),
   host = db_host(),
   token = db_token(),
@@ -260,16 +260,26 @@ db_sql_exec_result <- function(
 #'
 #' @inheritParams db_sql_exec_cancel
 #' @param interval Number of seconds between status checks.
-db_sql_exec_poll_for_success <- function(statement_id, interval = 1) {
+db_sql_exec_poll_for_success <- function(
+  statement_id,
+  interval = 1
+) {
   is_query_running <- TRUE
 
   while (is_query_running) {
     Sys.sleep(interval)
     status <- db_sql_exec_status(statement_id = statement_id)
+
     if (status$status$state == "SUCCEEDED") {
       is_query_running <- FALSE
     } else if (status$status$state %in% c("FAILED", "CLOSED", "CANCELED")) {
-      cli::cli_abort("Query failed with status: {.val {status$status$state}}")
+      # Get the actual error message if available
+      if (!is.null(status$status$error$message)) {
+        error_msg <- status$status$error$message
+      } else {
+        error_msg <- paste("Query failed with status:", status$status$state)
+      }
+      cli::cli_abort(error_msg)
     }
   }
 
@@ -297,7 +307,7 @@ db_sql_exec_and_wait <- function(
   parameters = NULL,
   row_limit = NULL,
   byte_limit = NULL,
-  wait_timeout = "10s",
+  wait_timeout = "0s",
   disposition = c("EXTERNAL_LINKS", "INLINE"),
   format = c("ARROW_STREAM", "JSON_ARRAY"),
   host = db_host(),
@@ -310,10 +320,7 @@ db_sql_exec_and_wait <- function(
 
   # Execute query with optional progress tracking
   if (show_progress) {
-    cli::cli_progress_step(
-      "Running query",
-      "Query completed"
-    )
+    cli::cli_progress_step("Submitting query")
   }
 
   resp <- db_sql_exec_query(
@@ -335,23 +342,17 @@ db_sql_exec_and_wait <- function(
   # Poll for completion if still running
   if (resp$status$state %in% c("RUNNING", "PENDING")) {
     if (show_progress) {
-      cli::cli_progress_update("Checking status...")
+      cli::cli_progress_step("Executing query")
     }
     resp <- db_sql_exec_poll_for_success(resp$statement_id)
   }
 
-  # Check for query failure and complete progress
+  # Check for query failure
   if (resp$status$state == "FAILED") {
-    if (show_progress) {
-      cli::cli_progress_done(result = "failed")
-    }
     cli::cli_abort(resp$status$error$message)
   }
 
-  if (show_progress) {
-    cli::cli_progress_done()
-  }
-
+  cli::cli_progress_done()
   resp
 }
 
@@ -467,6 +468,13 @@ db_sql_fetch_results <- function(
   host = db_host(),
   token = db_token()
 ) {
+  # Show fetching progress with row count
+  total_rows <- manifest$total_row_count
+  cli::cli_progress_step(
+    "Fetching {cli::no(total_rows)} rows",
+    "Downloaded {cli::no(total_rows)} rows"
+  )
+
   # This function only handles external links disposition
   # Get chunk information (empty handling done upstream)
   total_chunks <- manifest$total_chunk_count - 1
@@ -491,23 +499,22 @@ db_sql_fetch_results <- function(
         httr2::req_timeout(300)
     )
 
-  # Download with styled progress bar
+  # Download with progress bar
   ipc_data <- httr2::req_perform_parallel(
     links,
     max_active = max_active_connections,
     progress = list(
-      clear = FALSE,
-      format = "Fetching {cli::pb_bar} {cli::pb_percent} [{cli::pb_elapsed}]",
-      format_done = "{cli::col_green('\\u2714')} Data fetched [{cli::pb_elapsed}]",
+      clear = TRUE,
+      format = "Downloading {cli::pb_bar} {cli::pb_percent} [{cli::pb_elapsed}]",
+      format_failed = "Download failed [{cli::pb_elapsed}]",
       type = "iterator"
     )
   )
 
-  # Process data with progress
-  cli::cli_progress_step(
-    "Processing query results",
-    "Query results processed"
-  )
+  cli::cli_progress_done()
+
+  cli::cli_progress_step("Processing results")
+
   if (rlang::is_installed("arrow")) {
     # Read IPC data as arrow tables
     arrow_tbls <- ipc_data |>
@@ -579,7 +586,7 @@ db_sql_query <- function(
     parameters = parameters,
     row_limit = row_limit,
     byte_limit = byte_limit,
-    wait_timeout = "10s",
+    wait_timeout = "0s",
     disposition = disposition,
     format = format,
     host = host,
