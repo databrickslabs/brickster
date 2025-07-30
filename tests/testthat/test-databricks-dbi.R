@@ -234,12 +234,29 @@ test_that("DatabricksResult edge cases work offline", {
 
 # Online Tests (require warehouse connection) --------------------------------
 
+skip_on_cran()
+skip_unless_authenticated()
+
+# Set up test warehouse for all DBI tests
+test_warehouse_id <- tryCatch({
+  create_test_warehouse()
+}, error = function(e) {
+  # Return NULL if warehouse creation fails
+  NULL
+})
+
+# Skip all tests if warehouse creation failed
+skip_if(is.null(test_warehouse_id), "Could not create test warehouse")
+
+# Set up cleanup on exit (only if warehouse was created successfully)
+withr::defer({
+  cleanup_test_warehouse(test_warehouse_id)
+}, testthat::teardown_env())
+
 test_that("DBI connection can be created with valid warehouse_id", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- dbConnect(drv, warehouse_id = test_warehouse_id)
   expect_s4_class(con, "DatabricksConnection")
   expect_true(is(con, "DBIConnection"))
   expect_true(dbIsValid(con))
@@ -250,14 +267,12 @@ test_that("DBI connection can be created with valid warehouse_id", {
 
 test_that("DBI connection info is correct", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- dbConnect(drv, warehouse_id = test_warehouse_id)
   info <- dbGetInfo(con)
 
   expect_type(info, "list")
-  expect_equal(info$warehouse_id, warehouse_id)
+  expect_equal(info$warehouse_id, test_warehouse_id)
   expect_equal(info$db.version, "Databricks SQL")
   expect_true(is.character(info$host))
 
@@ -266,10 +281,8 @@ test_that("DBI connection info is correct", {
 
 test_that("Transaction operations are not supported", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   # Only transactions are not supported, DDL/DML should work
   expect_error(dbBegin(con), "not supported")
@@ -287,10 +300,8 @@ test_that("Transaction operations are not supported", {
 
 test_that("dbGetQuery works for simple queries", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   # Test simple query
   result <- dbGetQuery(con, "SELECT 1 as test_col", show_progress = FALSE)
@@ -311,10 +322,8 @@ test_that("dbGetQuery works for simple queries", {
 
 test_that("dbSendQuery and dbFetch work correctly", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   # Test async query execution
   res <- dbSendQuery(con, "SELECT 1 as test_col")
@@ -343,10 +352,8 @@ test_that("dbSendQuery and dbFetch work correctly", {
 
 test_that("dbColumnInfo works", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   res <- dbSendQuery(con, "SELECT 1 as test_int, 'hello' as test_string")
 
@@ -365,10 +372,8 @@ test_that("dbColumnInfo works", {
 
 test_that("Table listing functions work", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   # Test dbListTables (may be empty but should not error)
   tables <- dbListTables(con)
@@ -379,15 +384,12 @@ test_that("Table listing functions work", {
 
 test_that("Connection with catalog and schema works", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
   catalog <- "system"
   schema <- "information_schema"
 
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
   con <- dbConnect(
     drv,
-    warehouse_id = warehouse_id,
+    warehouse_id = test_warehouse_id,
     catalog = catalog,
     schema = schema
   )
@@ -403,10 +405,8 @@ test_that("Connection with catalog and schema works", {
 
 test_that("Error handling works correctly", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   # Test invalid SQL - expect any error containing "PARSE_SYNTAX_ERROR" or "Query failed"
   expect_error(
@@ -423,10 +423,8 @@ test_that("Error handling works correctly", {
 
 test_that("dbDataType works correctly with live connection", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   # Test type mapping
   test_data <- list(
@@ -451,10 +449,8 @@ test_that("dbDataType works correctly with live connection", {
 
 test_that("dbExistsTable works correctly", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   # Test with a table that should not exist
   expect_false(dbExistsTable(con, "non_existent_table_12345"))
@@ -467,10 +463,8 @@ test_that("dbExistsTable works correctly", {
 
 test_that("dbListFields handles errors gracefully", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   # Test with non-existent table should error
   expect_error(dbListFields(con, "non_existent_table_12345"))
@@ -480,10 +474,8 @@ test_that("dbListFields handles errors gracefully", {
 
 test_that("DatabricksResult methods work with empty results", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   # Test with query that returns no rows
   res <- dbSendQuery(con, "SELECT 1 as test WHERE 1 = 0")
@@ -507,10 +499,8 @@ test_that("DatabricksResult methods work with empty results", {
 
 test_that("Field discovery works with information_schema tables", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   # Test field discovery on information_schema.tables
   expect_no_error({
@@ -525,10 +515,8 @@ test_that("Field discovery works with information_schema tables", {
 
 test_that("Field discovery query returns correct structure", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   # Test that field discovery query (WHERE 0 = 1) returns empty result with correct structure
   result <- dbGetQuery(
@@ -548,10 +536,8 @@ test_that("Field discovery query returns correct structure", {
 
 test_that("dbplyr field discovery integration works", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   # Test that dbplyr can discover fields for SQL queries
   expect_no_error({

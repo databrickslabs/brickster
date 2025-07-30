@@ -8,8 +8,6 @@ db_sql_create_empty_result(manifest)
 }
 \arguments{
 \item{manifest}{Query result manifest containing schema information}
-
-\item{row_limit}{Integer, limit number of rows returned (applied after creation)}
 }
 \value{
 tibble with zero rows but correct column types

@@ -418,9 +418,6 @@ db_sql_process_inline <- function(result_data, manifest, row_limit = NULL) {
   results
 }
 
-# TODO:
-# - add verbose mode (progress bars + cli)?
-
 #' Create Empty Data Frame from Query Manifest
 #'
 #' @description
@@ -428,7 +425,6 @@ db_sql_process_inline <- function(result_data, manifest, row_limit = NULL) {
 #' based on the query result manifest schema. Used when query returns zero rows.
 #'
 #' @param manifest Query result manifest containing schema information
-#' @param row_limit Integer, limit number of rows returned (applied after creation)
 #' @returns tibble with zero rows but correct column types
 #' @keywords internal
 db_sql_create_empty_result <- function(manifest) {

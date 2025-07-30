@@ -193,12 +193,29 @@ test_that("SQL table analyze generates correct SQL", {
 
 # Online Tests (require warehouse connection) --------------------------------
 
+skip_on_cran()
+skip_unless_authenticated()
+
+# Set up test warehouse for all dbplyr tests
+test_warehouse_id_dbplyr <- tryCatch({
+  create_test_warehouse()
+}, error = function(e) {
+  # Return NULL if warehouse creation fails
+  NULL
+})
+
+# Skip all tests if warehouse creation failed
+skip_if(is.null(test_warehouse_id_dbplyr), "Could not create test warehouse")
+
+# Set up cleanup on exit (only if warehouse was created successfully)
+withr::defer({
+  cleanup_test_warehouse(test_warehouse_id_dbplyr)
+}, testthat::teardown_env())
+
 test_that("dbplyr edition is correctly declared with live connection", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- DBI::dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- DBI::dbConnect(drv, warehouse_id = test_warehouse_id_dbplyr)
   edition <- dbplyr::dbplyr_edition(con)
   expect_equal(edition, 2L)
 
@@ -207,10 +224,8 @@ test_that("dbplyr edition is correctly declared with live connection", {
 
 test_that("String function translations work with live connection", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- DBI::dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- DBI::dbConnect(drv, warehouse_id = test_warehouse_id_dbplyr)
 
   # Test basic string translations
   expect_true(grepl(
@@ -224,10 +239,8 @@ test_that("String function translations work with live connection", {
 
 test_that("Aggregation function translations work with live connection", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- DBI::dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- DBI::dbConnect(drv, warehouse_id = test_warehouse_id_dbplyr)
 
   # Test aggregation translations
   expect_true(grepl(
@@ -250,10 +263,8 @@ test_that("Aggregation function translations work with live connection", {
 
 test_that("Identifier escaping works with live connection", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- DBI::dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- DBI::dbConnect(drv, warehouse_id = test_warehouse_id_dbplyr)
 
   # Test identifier escaping
   escaped <- DBI::dbQuoteIdentifier(con, "my_table")
@@ -265,10 +276,8 @@ test_that("Identifier escaping works with live connection", {
 
 test_that("String escaping works with live connection", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- DBI::dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- DBI::dbConnect(drv, warehouse_id = test_warehouse_id_dbplyr)
 
   # Test string escaping
   escaped <- DBI::dbQuoteString(con, "test string")
@@ -280,10 +289,8 @@ test_that("String escaping works with live connection", {
 
 test_that("dbplyr dplyr::tbl() integration works", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- DBI::dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- DBI::dbConnect(drv, warehouse_id = test_warehouse_id_dbplyr)
 
   # Create a mock table reference using I() to prevent field discovery
   expect_no_error({
@@ -296,10 +303,8 @@ test_that("dbplyr dplyr::tbl() integration works", {
 
 test_that("Basic dplyr operations translate correctly", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- DBI::dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- DBI::dbConnect(drv, warehouse_id = test_warehouse_id_dbplyr)
 
   # Test basic dplyr operations without executing
   expect_no_error({
@@ -324,10 +329,8 @@ test_that("Basic dplyr operations translate correctly", {
 
 test_that("sql_query_save creates temporary views with live connection", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- DBI::dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- DBI::dbConnect(drv, warehouse_id = test_warehouse_id_dbplyr)
 
   # Test temporary view creation returns name
   temp_name <- dbplyr::sql_query_save(con, "SELECT 1 as test_col", "test_temp_view")
@@ -337,15 +340,10 @@ test_that("sql_query_save creates temporary views with live connection", {
   DBI::dbDisconnect(con)
 })
 
-
-
-
 test_that("Connection methods work as expected", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- DBI::dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- DBI::dbConnect(drv, warehouse_id = test_warehouse_id_dbplyr)
 
   # Test that connection is valid
   expect_true(DBI::dbIsValid(con))
@@ -355,10 +353,8 @@ test_that("Connection methods work as expected", {
 
 test_that("Complex dbplyr translations work correctly", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- DBI::dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- DBI::dbConnect(drv, warehouse_id = test_warehouse_id_dbplyr)
 
   # Test window functions
   expect_true(grepl(
@@ -397,10 +393,8 @@ test_that("Complex dbplyr translations work correctly", {
 
 test_that("dbQuoteIdentifier handles complex identifiers", {
   drv <- DatabricksSQL()
-  warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  skip_if(nchar(warehouse_id) == 0, "No DATABRICKS_WAREHOUSE_ID available")
-
-  con <- DBI::dbConnect(drv, warehouse_id = warehouse_id)
+  
+  con <- DBI::dbConnect(drv, warehouse_id = test_warehouse_id_dbplyr)
 
   # Test with Id object (schema.table)
   id_obj <- DBI::Id(
