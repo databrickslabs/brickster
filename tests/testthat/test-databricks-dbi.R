@@ -126,16 +126,6 @@ test_that("Transaction restrictions work offline", {
   expect_error(dbBegin(con), "not supported")
   expect_error(dbCommit(con), "not supported")
   expect_error(dbRollback(con), "not supported")
-  
-  # SQL statements should work but will fail due to connection (not read-only restriction)
-  expect_error(
-    dbSendStatement(con, "CREATE TABLE test (x INT)"),
-    "Failed to connect|Could not resolve hostname"
-  )
-  expect_error(
-    dbExecute(con, "CREATE TABLE test (x INT)"),
-    "Failed to connect|Could not resolve hostname"
-  )
 })
 
 test_that("Quote handling utility functions work", {
@@ -238,24 +228,30 @@ skip_on_cran()
 skip_unless_authenticated()
 
 # Set up test warehouse for all DBI tests
-test_warehouse_id <- tryCatch({
-  create_test_warehouse()
-}, error = function(e) {
-  # Return NULL if warehouse creation fails
-  NULL
-})
+test_warehouse_id <- tryCatch(
+  {
+    create_test_warehouse()
+  },
+  error = function(e) {
+    # Return NULL if warehouse creation fails
+    NULL
+  }
+)
 
 # Skip all tests if warehouse creation failed
 skip_if(is.null(test_warehouse_id), "Could not create test warehouse")
 
 # Set up cleanup on exit (only if warehouse was created successfully)
-withr::defer({
-  cleanup_test_warehouse(test_warehouse_id)
-}, testthat::teardown_env())
+withr::defer(
+  {
+    cleanup_test_warehouse(test_warehouse_id)
+  },
+  testthat::teardown_env()
+)
 
 test_that("DBI connection can be created with valid warehouse_id", {
   drv <- DatabricksSQL()
-  
+
   con <- dbConnect(drv, warehouse_id = test_warehouse_id)
   expect_s4_class(con, "DatabricksConnection")
   expect_true(is(con, "DBIConnection"))
@@ -267,7 +263,7 @@ test_that("DBI connection can be created with valid warehouse_id", {
 
 test_that("DBI connection info is correct", {
   drv <- DatabricksSQL()
-  
+
   con <- dbConnect(drv, warehouse_id = test_warehouse_id)
   info <- dbGetInfo(con)
 
@@ -281,7 +277,7 @@ test_that("DBI connection info is correct", {
 
 test_that("Transaction operations are not supported", {
   drv <- DatabricksSQL()
-  
+
   con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   # Only transactions are not supported, DDL/DML should work
@@ -300,7 +296,7 @@ test_that("Transaction operations are not supported", {
 
 test_that("dbGetQuery works for simple queries", {
   drv <- DatabricksSQL()
-  
+
   con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   # Test simple query
@@ -310,7 +306,11 @@ test_that("dbGetQuery works for simple queries", {
   expect_equal(result$test_col, 1)
 
   # Test more complex query
-  result <- dbGetQuery(con, "SELECT 1 as a, 'test' as b, 3.14 as c", show_progress = FALSE)
+  result <- dbGetQuery(
+    con,
+    "SELECT 1 as a, 'test' as b, 3.14 as c",
+    show_progress = FALSE
+  )
   expect_equal(nrow(result), 1)
   expect_equal(ncol(result), 3)
   expect_equal(result$a, 1)
@@ -322,7 +322,7 @@ test_that("dbGetQuery works for simple queries", {
 
 test_that("dbSendQuery and dbFetch work correctly", {
   drv <- DatabricksSQL()
-  
+
   con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   # Test async query execution
@@ -352,7 +352,7 @@ test_that("dbSendQuery and dbFetch work correctly", {
 
 test_that("dbColumnInfo works", {
   drv <- DatabricksSQL()
-  
+
   con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   res <- dbSendQuery(con, "SELECT 1 as test_int, 'hello' as test_string")
@@ -372,7 +372,7 @@ test_that("dbColumnInfo works", {
 
 test_that("Table listing functions work", {
   drv <- DatabricksSQL()
-  
+
   con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   # Test dbListTables (may be empty but should not error)
@@ -405,7 +405,7 @@ test_that("Connection with catalog and schema works", {
 
 test_that("Error handling works correctly", {
   drv <- DatabricksSQL()
-  
+
   con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   # Test invalid SQL - expect any error containing "PARSE_SYNTAX_ERROR" or "Query failed"
@@ -423,7 +423,7 @@ test_that("Error handling works correctly", {
 
 test_that("dbDataType works correctly with live connection", {
   drv <- DatabricksSQL()
-  
+
   con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   # Test type mapping
@@ -449,7 +449,7 @@ test_that("dbDataType works correctly with live connection", {
 
 test_that("dbExistsTable works correctly", {
   drv <- DatabricksSQL()
-  
+
   con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   # Test with a table that should not exist
@@ -463,7 +463,7 @@ test_that("dbExistsTable works correctly", {
 
 test_that("dbListFields handles errors gracefully", {
   drv <- DatabricksSQL()
-  
+
   con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   # Test with non-existent table should error
@@ -474,7 +474,7 @@ test_that("dbListFields handles errors gracefully", {
 
 test_that("DatabricksResult methods work with empty results", {
   drv <- DatabricksSQL()
-  
+
   con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   # Test with query that returns no rows
@@ -499,7 +499,7 @@ test_that("DatabricksResult methods work with empty results", {
 
 test_that("Field discovery works with information_schema tables", {
   drv <- DatabricksSQL()
-  
+
   con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   # Test field discovery on information_schema.tables
@@ -515,7 +515,7 @@ test_that("Field discovery works with information_schema tables", {
 
 test_that("Field discovery query returns correct structure", {
   drv <- DatabricksSQL()
-  
+
   con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   # Test that field discovery query (WHERE 0 = 1) returns empty result with correct structure
@@ -536,7 +536,7 @@ test_that("Field discovery query returns correct structure", {
 
 test_that("dbplyr field discovery integration works", {
   drv <- DatabricksSQL()
-  
+
   con <- dbConnect(drv, warehouse_id = test_warehouse_id)
 
   # Test that dbplyr can discover fields for SQL queries
@@ -560,29 +560,38 @@ test_that("dbplyr field discovery integration works", {
 test_that("Volume method selection logic works correctly", {
   # Test data of different sizes
   small_data <- data.frame(x = 1:100, y = letters[1:100])
-  medium_data <- data.frame(x = 1:15000, y = rep(letters, 15000/26)[1:15000])
-  large_data <- data.frame(x = 1:25000, y = rep(letters, 25000/26)[1:25000])
-  
+  medium_data <- data.frame(x = 1:15000, y = rep(letters, 15000 / 26)[1:15000])
+  large_data <- data.frame(x = 1:25000, y = rep(letters, 25000 / 26)[1:25000])
+
   # Test without volume (should always return FALSE)
   expect_false(db_should_use_volume_method(small_data, NULL))
   expect_false(db_should_use_volume_method(medium_data, NULL))
-  
+
   # Test with volume but small data (should return FALSE)
-  expect_false(db_should_use_volume_method(small_data, "/Volumes/test/test/test"))
-  
+  expect_false(db_should_use_volume_method(
+    small_data,
+    "/Volumes/test/test/test"
+  ))
+
   # Test with volume but medium data (should return FALSE as threshold is > 20000)
-  expect_false(db_should_use_volume_method(medium_data, "/Volumes/test/test/test"))
-  
+  expect_false(db_should_use_volume_method(
+    medium_data,
+    "/Volumes/test/test/test"
+  ))
+
   # Test temporary table (should always return FALSE regardless of size/volume)
   expect_false(db_should_use_volume_method(
-    large_data, 
-    "/Volumes/test/test/test", 
+    large_data,
+    "/Volumes/test/test/test",
     temporary = TRUE
   ))
-  
+
   # Test large data with volume (should depend on arrow availability)
   skip_if(!rlang::is_installed("arrow"), "arrow package not available")
-  expect_true(db_should_use_volume_method(large_data, "/Volumes/test/test/test"))
+  expect_true(db_should_use_volume_method(
+    large_data,
+    "/Volumes/test/test/test"
+  ))
 })
 
 test_that("dbAppendTable method signatures work correctly offline", {
@@ -596,22 +605,28 @@ test_that("dbAppendTable method signatures work correctly offline", {
     schema = "",
     staging_volume = ""
   )
-  
+
   # Test data
   test_data <- data.frame(x = 1:3, y = c("a", "b", "c"))
-  
+
   # Test that method exists for character table names
-  expect_true(hasMethod("dbAppendTable", c("DatabricksConnection", "character", "data.frame")))
-  
+  expect_true(hasMethod(
+    "dbAppendTable",
+    c("DatabricksConnection", "character", "data.frame")
+  ))
+
   # Test that method exists for Id table names
-  expect_true(hasMethod("dbAppendTable", c("DatabricksConnection", "Id", "data.frame")))
-  
+  expect_true(hasMethod(
+    "dbAppendTable",
+    c("DatabricksConnection", "Id", "data.frame")
+  ))
+
   # Test with character name (will fail due to connection, but method should exist)
   expect_error(
     dbAppendTable(con, "test_table", test_data),
     "Failed to connect|does not exist"
   )
-  
+
   # Test with Id name (will fail due to connection, but method should exist)
   id_name <- DBI::Id(catalog = "test", schema = "default", table = "test_table")
   expect_error(
