@@ -12,7 +12,7 @@ db_sql_exec_and_wait(
   parameters = NULL,
   row_limit = NULL,
   byte_limit = NULL,
-  wait_timeout = "10s",
+  wait_timeout = "0s",
   disposition = c("EXTERNAL_LINKS", "INLINE"),
   format = c("ARROW_STREAM", "JSON_ARRAY"),
   host = db_host(),

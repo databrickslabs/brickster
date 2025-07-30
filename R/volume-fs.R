@@ -475,7 +475,7 @@ db_volume_upload_dir <- function(
       type = "iterator",
       format = "Uploading {cli::pb_bar} {cli::pb_percent} [{cli::pb_elapsed}]",
       format_done = "{cli::col_green('\\u2714')} Data uploaded [{cli::pb_elapsed}]",
-      format_failed = "Data upload failed [{cli::pb_elapsed}]",
+      format_failed = "Data upload failed [{cli::pb_elapsed}]"
     )
   )
 
