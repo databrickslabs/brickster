@@ -122,8 +122,22 @@ reference:
       - starts_with("db_sql", internal = TRUE)
       - get_and_start_warehouse
   - title: DBI Backend
+    desc: "Standard DBI interface for Databricks SQL warehouses"
     contents:
       - DatabricksSQL
+      - matches("DatabricksDriver")
+      - matches("DatabricksConnection") 
+      - matches("DatabricksResult")
+  - title: dbplyr Backend
+    desc: "dbplyr support for dplyr syntax with Databricks SQL"
+    contents:
+      - sql_query_fields.DatabricksConnection
+      - sql_query_save.DatabricksConnection
+      - sql_table_analyze.DatabricksConnection
+      - sql_translation.DatabricksConnection
+      - copy_to.DatabricksConnection
+      - db_collect.DatabricksConnection
+      - dbplyr_edition.DatabricksConnection
   - title: Workspaces
     contents: starts_with("db_workspace", internal = TRUE)
   - title: Request Helpers
