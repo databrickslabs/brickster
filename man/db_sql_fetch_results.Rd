@@ -11,7 +11,8 @@ db_sql_fetch_results(
   max_active_connections = 30,
   row_limit = NULL,
   host = db_host(),
-  token = db_token()
+  token = db_token(),
+  show_progress = TRUE
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ db_sql_fetch_results(
 \item{host}{Databricks host}
 
 \item{token}{Databricks token}
+
+\item{show_progress}{If TRUE, show progress updates during result fetching (default: TRUE)}
 }
 \value{
 tibble or arrow Table with query results

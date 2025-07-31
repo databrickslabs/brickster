@@ -260,9 +260,11 @@ db_sql_exec_result <- function(
 #'
 #' @inheritParams db_sql_exec_cancel
 #' @param interval Number of seconds between status checks.
+#' @param show_progress If TRUE, show progress updates during polling (default: TRUE)
 db_sql_exec_poll_for_success <- function(
   statement_id,
-  interval = 1
+  interval = 1,
+  show_progress = TRUE
 ) {
   is_query_running <- TRUE
 
@@ -344,7 +346,7 @@ db_sql_exec_and_wait <- function(
     if (show_progress) {
       cli::cli_progress_step("Executing query")
     }
-    resp <- db_sql_exec_poll_for_success(resp$statement_id)
+    resp <- db_sql_exec_poll_for_success(resp$statement_id, show_progress = FALSE)
   }
 
   # Check for query failure
@@ -352,7 +354,6 @@ db_sql_exec_and_wait <- function(
     cli::cli_abort(resp$status$error$message)
   }
 
-  cli::cli_progress_done()
   resp
 }
 
@@ -457,6 +458,7 @@ db_sql_create_empty_result <- function(manifest) {
 #' @param row_limit Integer, limit number of rows returned (applied after fetch)
 #' @param host Databricks host
 #' @param token Databricks token
+#' @param show_progress If TRUE, show progress updates during result fetching (default: TRUE)
 #' @returns tibble or arrow Table with query results
 #' @keywords internal
 db_sql_fetch_results <- function(
@@ -466,14 +468,17 @@ db_sql_fetch_results <- function(
   max_active_connections = 30,
   row_limit = NULL,
   host = db_host(),
-  token = db_token()
+  token = db_token(),
+  show_progress = TRUE
 ) {
   # Show fetching progress with row count
-  total_rows <- manifest$total_row_count
-  cli::cli_progress_step(
-    "Fetching {cli::no(total_rows)} rows",
-    "Downloaded {cli::no(total_rows)} rows"
-  )
+  if (show_progress) {
+    total_rows <- manifest$total_row_count
+    cli::cli_progress_step(
+      "Fetching {cli::no(total_rows)} rows",
+      "Downloaded {cli::no(total_rows)} rows"
+    )
+  }
 
   # This function only handles external links disposition
   # Get chunk information (empty handling done upstream)
@@ -511,9 +516,10 @@ db_sql_fetch_results <- function(
     )
   )
 
-  cli::cli_progress_done()
-
-  cli::cli_progress_step("Processing results")
+  if (show_progress) {
+    cli::cli_progress_done()
+    cli::cli_progress_step("Processing results")
+  }
 
   if (rlang::is_installed("arrow")) {
     # Read IPC data as arrow tables
@@ -594,6 +600,7 @@ db_sql_query <- function(
     show_progress = show_progress
   )
 
+
   # Check for empty results early and return immediately
   # Use total_row_count to detect empty result sets
   if (resp$manifest$total_row_count == 0) {
@@ -617,7 +624,8 @@ db_sql_query <- function(
       max_active_connections = max_active_connections,
       row_limit = row_limit,
       host = host,
-      token = token
+      token = token,
+      show_progress = show_progress
     )
   }
 }

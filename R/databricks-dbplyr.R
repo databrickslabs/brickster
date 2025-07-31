@@ -6,7 +6,7 @@
 #'
 #' @importFrom dbplyr sql_variant sql_translator base_scalar base_agg base_win
 #' @importFrom dbplyr sql_prefix sql sql_table_analyze sql_quote sql_query_fields
-#' @importFrom dbplyr translate_sql dbplyr_edition sql_query_save simulate_spark_sql
+#' @importFrom dbplyr translate_sql dbplyr_edition sql_query_save simulate_spark_sql db_collect
 #' @importFrom dplyr copy_to
 #' @importFrom glue glue_sql
 #' @importFrom purrr map_chr map2_chr
@@ -150,9 +150,14 @@ sql_query_save.DatabricksConnection <- function(
 #' @export
 #' @method sql_query_fields DatabricksConnection
 sql_query_fields.DatabricksConnection <- function(con, sql, ...) {
-  # Use the default dbplyr implementation
-  NextMethod()
+  # Instead of using WHERE (0 = 1), use LIMIT 0 which is more efficient in Databricks
+  result <- paste0("SELECT * FROM (", sql, ") LIMIT 0")
+  dbplyr::sql(result)
 }
+
+
+
+
 
 #' Copy data frame to Databricks as table or view
 #' @param dest A DatabricksConnection object
@@ -532,4 +537,30 @@ spark_sql_translation <- function(con) {
     aggregate = spark_base_sql_variant$aggregate,
     window = spark_base_sql_variant$window
   )
+}
+
+# Override dbplyr collect method for proper progress timing
+#' Collect query results with proper progress timing for Databricks
+#' @param con A DatabricksConnection object
+#' @param sql SQL query to execute
+#' @param n Maximum number of rows to collect (-1 for all)
+#' @param warn_incomplete Whether to warn if results were truncated
+#' @param ... Additional arguments
+#' @return A data frame with query results
+#' @export
+#' @method db_collect DatabricksConnection
+db_collect.DatabricksConnection <- function(con, sql, n = -1, warn_incomplete = TRUE, ...) {
+  # Use dbGetQuery which already has proper progress handling
+  out <- dbGetQuery(con, sql, show_progress = TRUE)
+  
+  # Apply row limit if specified
+  if (n > 0 && nrow(out) > n) {
+    out <- out[1:n, ]
+    if (warn_incomplete) {
+      warning("Only first ", n, " results retrieved. Use n = -1 to retrieve all.",
+              call. = FALSE)
+    }
+  }
+  
+  out
 }

@@ -244,6 +244,13 @@ setMethod(
     show_progress = TRUE,
     ...
   ) {
+    # Detect schema discovery queries (LIMIT 0) and optimize them
+    if (endsWith(trimws(statement), "LIMIT 0")) {
+      # Force INLINE disposition and disable progress for schema queries
+      disposition <- "INLINE"
+      show_progress <- FALSE
+    }
+    
     # Use unified db_sql_query function
     db_sql_query(
       warehouse_id = conn@warehouse_id,
@@ -359,15 +366,22 @@ setMethod("dbFetch", "DatabricksResult", function(res, n = -1, ...) {
     return(data.frame())
   }
 
-  # Poll for completion (handles status checking internally)
-  status <- db_sql_exec_poll_for_success(res@statement_id)
+  # Check if we need to poll for completion and start executing step
+  initial_status <- db_sql_exec_status(statement_id = res@statement_id)
+  if (initial_status$status$state %in% c("RUNNING", "PENDING")) {
+    cli::cli_progress_step("Executing query")
+    status <- db_sql_exec_poll_for_success(res@statement_id, show_progress = FALSE)
+  } else {
+    # Already completed
+    status <- initial_status
+  }
 
   # Check for empty results early and return immediately
   # Use total_row_count to detect empty result sets
   if (status$manifest$total_row_count == 0) {
     results <- db_sql_create_empty_result(status$manifest)
   } else {
-    # Use helper function to fetch results (no more duplicated logic!)
+    # Use helper function to fetch results with progress
     results <- db_sql_fetch_results(
       statement_id = res@statement_id,
       manifest = status$manifest,
@@ -375,7 +389,8 @@ setMethod("dbFetch", "DatabricksResult", function(res, n = -1, ...) {
       max_active_connections = 30,
       row_limit = if (n > 0) n else NULL,
       host = res@connection@host,
-      token = res@connection@token
+      token = res@connection@token,
+      show_progress = TRUE
     )
   }
 
@@ -1389,7 +1404,7 @@ db_write_table_volume <- function(
       # Clean up volume directory (recursive since it contains files)
       # Use tryCatch to avoid errors during cleanup from stopping the exit handler
       if (progress) {
-        cli::cli_progress_step("Cleaning up files staged to volume")
+        cli::cli_progress_step("Clearing staged files")
       }
 
       tryCatch(
@@ -1422,7 +1437,7 @@ db_write_table_volume <- function(
 
   # Convert to Parquet
   if (progress) {
-    cli::cli_progress_step("Converting to Parquet format")
+    cli::cli_progress_step("Writing files")
   }
 
   arrow::write_dataset(
@@ -1564,3 +1579,4 @@ setMethod(
     dbWriteTable(conn, name, value, append = TRUE, row.names = row.names, ...)
   }
 )
+
