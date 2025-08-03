@@ -346,7 +346,10 @@ db_sql_exec_and_wait <- function(
     if (show_progress) {
       cli::cli_progress_step("Executing query")
     }
-    resp <- db_sql_exec_poll_for_success(resp$statement_id, show_progress = FALSE)
+    resp <- db_sql_exec_poll_for_success(
+      resp$statement_id,
+      show_progress = FALSE
+    )
   }
 
   # Check for query failure
@@ -523,13 +526,10 @@ db_sql_fetch_results <- function(
 
   if (rlang::is_installed("arrow")) {
     # Read IPC data as arrow tables
-    arrow_tbls <- ipc_data |>
-      purrr::map(
-        ~ arrow::read_ipc_stream(
-          httr2::resp_body_raw(.x),
-          as_data_frame = FALSE
-        )
-      )
+    arrow_tbls <- purrr::map(
+      ipc_data,
+      ~ arrow::read_ipc_stream(.x$body, as_data_frame = FALSE)
+    )
     results <- do.call(arrow::concat_tables, arrow_tbls)
 
     # Convert to tibble unless arrow table requested
@@ -540,7 +540,7 @@ db_sql_fetch_results <- function(
     # Fallback to nanoarrow
     results <- purrr::map(
       ipc_data,
-      ~ tibble::as_tibble(nanoarrow::read_nanoarrow(.x))
+      ~ tibble::as_tibble(nanoarrow::read_nanoarrow(.x$body))
     ) |>
       purrr::list_rbind()
   }
@@ -599,7 +599,6 @@ db_sql_query <- function(
     token = token,
     show_progress = show_progress
   )
-
 
   # Check for empty results early and return immediately
   # Use total_row_count to detect empty result sets

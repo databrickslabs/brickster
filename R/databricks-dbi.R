@@ -597,6 +597,26 @@ setMethod(
   }
 )
 
+#' Check if table exists (AsIs method)
+#' @param conn A DatabricksConnection object
+#' @param name Table name as AsIs object (from I())
+#' @param ... Additional arguments (ignored)
+#' @return TRUE if table exists, FALSE otherwise
+#' @export
+setMethod(
+  "dbExistsTable",
+  signature = c(conn = "DatabricksConnection", name = "AsIs"),
+  function(conn, name, ...) {
+    if (!dbIsValid(conn)) {
+      cli::cli_abort("Connection is not valid")
+    }
+
+    # Convert AsIs to character and use the character method
+    char_name <- as.character(name)
+    dbExistsTable(conn, char_name)
+  }
+)
+
 #' Get connection information
 #' @param dbObj A DatabricksConnection object
 #' @param ... Additional arguments (ignored)
@@ -657,6 +677,26 @@ setMethod(
       # Fallback to first column
       result[[1]]
     }
+  }
+)
+
+#' List column names of a Databricks table (AsIs method)
+#' @param conn A DatabricksConnection object
+#' @param name Table name as AsIs object (from I())
+#' @param ... Additional arguments (ignored)
+#' @return Character vector of column names
+#' @export
+setMethod(
+  "dbListFields",
+  signature = c(conn = "DatabricksConnection", name = "AsIs"),
+  function(conn, name, ...) {
+    if (!dbIsValid(conn)) {
+      cli::cli_abort("Connection is not valid")
+    }
+
+    # Convert AsIs to character and use the character method
+    char_name <- as.character(name)
+    dbListFields(conn, char_name)
   }
 )
 
