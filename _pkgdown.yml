@@ -124,13 +124,15 @@ reference:
   - title: DBI Backend
     desc: "Standard DBI interface for Databricks SQL warehouses"
     contents:
+      - databricks-dbi
       - DatabricksSQL
       - matches("DatabricksDriver")
-      - matches("DatabricksConnection") 
+      - matches("DatabricksConnection")
       - matches("DatabricksResult")
   - title: dbplyr Backend
     desc: "dbplyr support for dplyr syntax with Databricks SQL"
     contents:
+      - databricks-dbplyr
       - sql_query_fields.DatabricksConnection
       - sql_query_save.DatabricksConnection
       - sql_table_analyze.DatabricksConnection
