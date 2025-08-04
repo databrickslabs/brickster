@@ -14,6 +14,8 @@
 
 -   Browser workspace assets via RStudio Connections Pane ([`open_workspace()`](https://databrickslabs.github.io/brickster/reference/open_workspace.html))
 
+-   `{DBI}` + `{dbplyr}` backend (no more ODBC installs!)
+
 -   Interactive Databricks REPL
 
 ## Quick Start
@@ -94,7 +96,7 @@ volume_csv <- read_csv(downloaded_file)
 
 ### Databricks REPL
 
-Run commands against an existing interactive Databricks cluster, read the [vignette](https://databrickslabs.github.io/brickster/articles/remote-repl.html) for more details.
+Run commands against an existing interactive Databricks cluster, read this [article](https://databrickslabs.github.io/brickster/articles/remote-repl.html) for more details.
 
 ``` r
 library(brickster)
