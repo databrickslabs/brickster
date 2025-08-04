@@ -33,11 +33,6 @@ Copyright 2023 testthat authors
 
 ropensci/magick - https://github.com/ropensci/magick
 Copyright 2024 Jeroen Ooms
-
-rstudio/rstudionapi - https://github.com/rstudio/rstudioapi
-Copyright 2015 RStudio
-tidyverse/rvest - https://github.com/tidyverse/rvest
-Copyright 2023 rvest authors
 __________
 This Software contains code from the following open source projects, licensed under the GPL-2/GPL-3 licenses:
 
@@ -46,9 +41,6 @@ Copyright Simon Urbanek
 
 dvdscripter/ini - https://github.com/dvdscripter/ini
 Copyright 2018 David Valentim Dias
-
-rstudio/DT - https://github.com/rstudio/DT
-Copyright DT authors
 
 rstudio/htmltools - https://github.com/rstudio/htmltools
 Copyright htmltools authors

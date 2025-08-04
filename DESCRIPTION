@@ -1,6 +1,6 @@
 Package: brickster
 Title: R Toolkit for 'Databricks'
-Version: 0.2.8.1
+Version: 0.2.9
 Authors@R: 
   c(
     person(given = "Zac",
@@ -26,11 +26,14 @@ Imports:
     base64enc,
     cli,
     curl,
+    DBI,
+    dbplyr,
     dplyr,
     glue,
     httr2 (>= 1.0.4),
     ini,
     jsonlite,
+    methods,
     nanoarrow,
     purrr,
     R6,

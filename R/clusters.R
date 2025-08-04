@@ -576,7 +576,9 @@ db_cluster_resize <- function(
   perform_request = TRUE
 ) {
   if (is.null(num_workers) && is.null(autoscale)) {
-    cli::cli_abort("Must specify either {.arg num_workers} or {.arg autoscale}.")
+    cli::cli_abort(
+      "Must specify either {.arg num_workers} or {.arg autoscale}."
+    )
   }
 
   body <- list(
@@ -922,9 +924,13 @@ get_and_start_cluster <- function(
       host = host,
       token = token
     )
-    if (!silent) cli::cli_progress_update()
+    if (!silent) {
+      cli::cli_progress_update()
+    }
     if (cluster_status$state %in% c("TERMINATED", "TERMINATING")) {
-      if (!silent) cli::cli_progress_done(result = "failed")
+      if (!silent) {
+        cli::cli_progress_done(result = "failed")
+      }
       break
     }
   }
@@ -975,7 +981,9 @@ get_latest_dbr <- function(
   }
 
   if ((gpu || ml) && photon) {
-    cli::cli_abort("Cannot use {.arg ml}/{.arg gpu} runtimes with {.arg photon}")
+    cli::cli_abort(
+      "Cannot use {.arg ml}/{.arg gpu} runtimes with {.arg photon}"
+    )
   }
 
   runtimes <- db_cluster_runtime_versions(host = host, token = token)

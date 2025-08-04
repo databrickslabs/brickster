@@ -177,19 +177,6 @@ test_that("Jobs API", {
     )
   )
 
-  # create job with simple task
-  simple_task_job <- db_jobs_create(
-    name = "brickster example: simple",
-    tasks = job_tasks(simple_task),
-    # 9am every day, paused currently
-    schedule = cron_schedule(
-      quartz_cron_expression = "0 0 9 * * ?",
-      pause_status = "PAUSED"
-    ),
-    job_clusters = job_clusters,
-    perform_request = TRUE
-  )
-
   expect_no_error({
     resp_list <- db_jobs_list()
   })

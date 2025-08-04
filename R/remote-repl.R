@@ -133,14 +133,6 @@ db_repl <- function(
   }
 
   language <- match.arg(language)
-  manager <- db_context_manager$new(
-    cluster_id,
-    if (language == "sh") "py" else language,
-    host = host,
-    token = token
-  )
-  on.exit(manager$close())
-  prompt <- repl_prompt(language)
 
   manager <- db_context_manager$new(
     cluster_id,
@@ -157,8 +149,11 @@ db_repl <- function(
 
   repeat {
     # choose prompt based on R-buffer state
-    prompt <- if (language == "r" && length(buffer) > 0) prompt_cont else
+    prompt <- if (language == "r" && length(buffer) > 0) {
+      prompt_cont
+    } else {
       prompt_main
+    }
     line <- readline(prompt)
 
     # language-switch command always applies at top-level (empty R buffer)
@@ -192,7 +187,9 @@ db_repl <- function(
       code <- paste(buffer, collapse = "\n")
       res <- manager$cmd_run(code, "r")
       out <- trimws(res)
-      if (length(out) > 0 && nzchar(out)) cat(out, "\n")
+      if (length(out) > 0 && nzchar(out)) {
+        cat(out, "\n")
+      }
       buffer <- character()
     } else {
       # non-R: single-line send

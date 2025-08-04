@@ -4,12 +4,14 @@
 \alias{db_sql_exec_poll_for_success}
 \title{Poll a Query Until Successful}
 \usage{
-db_sql_exec_poll_for_success(statement_id, interval = 1)
+db_sql_exec_poll_for_success(statement_id, interval = 1, show_progress = TRUE)
 }
 \arguments{
 \item{statement_id}{String, query execution \code{statement_id}}
 
 \item{interval}{Number of seconds between status checks.}
+
+\item{show_progress}{If TRUE, show progress updates during polling (default: TRUE)}
 }
 \description{
 Poll a Query Until Successful

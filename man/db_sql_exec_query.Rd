@@ -14,7 +14,7 @@ db_sql_exec_query(
   byte_limit = NULL,
   disposition = c("INLINE", "EXTERNAL_LINKS"),
   format = c("JSON_ARRAY", "ARROW_STREAM", "CSV"),
-  wait_timeout = "10s",
+  wait_timeout = "0s",
   on_wait_timeout = c("CONTINUE", "CANCEL"),
   host = db_host(),
   token = db_token(),

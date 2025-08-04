@@ -1,3 +1,5 @@
+# Tests for SQL execution functionality including low-level API and high-level db_sql_query
+
 test_that("SQL Execution API - don't perform", {
   withr::local_envvar(c(
     "DATABRICKS_HOST" = "http://mock_host",
@@ -94,7 +96,8 @@ test_that("SQL Execution API", {
   expect_no_error({
     resp_query <- db_sql_query(
       warehouse_id = test_warehouse$id,
-      statement = "select 1"
+      statement = "select 1",
+      show_progress = FALSE
     )
   })
   expect_s3_class(resp_query, "tbl_df")
@@ -103,7 +106,8 @@ test_that("SQL Execution API", {
     resp_query <- db_sql_query(
       warehouse_id = test_warehouse$id,
       statement = "select 1",
-      return_arrow = TRUE
+      return_arrow = TRUE,
+      show_progress = FALSE
     )
   })
   expect_s3_class(resp_query, c("Table", "ArrowTabular"))
@@ -114,4 +118,68 @@ test_that("SQL Execution API", {
       id = test_warehouse$id
     )
   })
+})
+
+# Additional db_sql_query tests -----------------------------------------------
+
+skip_on_cran()
+skip_unless_authenticated()
+
+# Set up test warehouse for db_sql_query tests
+test_warehouse_id_sql <- tryCatch({
+  create_test_warehouse()
+}, error = function(e) {
+  # Return NULL if warehouse creation fails
+  NULL
+})
+
+# Skip all tests if warehouse creation failed
+skip_if(is.null(test_warehouse_id_sql), "Could not create test warehouse")
+
+# Set up cleanup on exit (only if warehouse was created successfully)
+withr::defer({
+  cleanup_test_warehouse(test_warehouse_id_sql)
+}, testthat::teardown_env())
+
+test_that("db_sql_query works as expected", {
+  # Test basic query using the core function
+  result <- db_sql_query(test_warehouse_id_sql, "SELECT 1 as test_col", show_progress = FALSE)
+  expect_s3_class(result, "data.frame")
+  expect_equal(nrow(result), 1)
+  expect_equal(result$test_col, 1)
+})
+
+test_that("db_sql_query handles complex queries", {
+  # Test more complex query
+  result <- db_sql_query(test_warehouse_id_sql, "SELECT 1 as a, 'test' as b, 3.14 as c", show_progress = FALSE)
+  expect_s3_class(result, "data.frame")
+  expect_equal(nrow(result), 1)
+  expect_equal(ncol(result), 3)
+  expect_equal(result$a, 1)
+  expect_equal(result$b, "test")
+  expect_equal(result$c, 3.14)
+})
+
+test_that("db_sql_query handles errors correctly", {
+  # Test invalid SQL
+  expect_error(
+    db_sql_query(test_warehouse_id_sql, "INVALID SQL STATEMENT", show_progress = FALSE),
+    "Query failed|PARSE_SYNTAX_ERROR"
+  )
+})
+
+test_that("db_sql_query works with catalog and schema", {
+  catalog <- "system"
+  schema <- "information_schema"
+  
+  # Test query with catalog and schema context
+  result <- db_sql_query(
+    test_warehouse_id_sql, 
+    "SELECT 1 as test",
+    catalog = catalog,
+    schema = schema,
+    show_progress = FALSE
+  )
+  expect_s3_class(result, "data.frame")
+  expect_equal(result$test, 1)
 })

@@ -14,8 +14,10 @@ db_sql_query(
   byte_limit = NULL,
   return_arrow = FALSE,
   max_active_connections = 30,
+  disposition = "EXTERNAL_LINKS",
   host = db_host(),
-  token = db_token()
+  token = db_token(),
+  show_progress = TRUE
 )
 }
 \arguments{
@@ -57,9 +59,13 @@ true. When using \code{EXTERNAL_LINKS} disposition, a default byte_limit of
 
 \item{max_active_connections}{Integer to decide on concurrent downloads.}
 
+\item{disposition}{Disposition mode ("INLINE" or "EXTERNAL_LINKS")}
+
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
 \item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}
+
+\item{show_progress}{If TRUE, show progress updates during query execution (default: TRUE)}
 }
 \value{
 \link[tibble:tibble]{tibble::tibble} or \link[arrow:Table-class]{arrow::Table}.
