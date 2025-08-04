@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="index.html">brickster</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,6 +45,7 @@
     <li><a class="dropdown-item" href="articles/managing-jobs.html">Job Management</a></li>
     <li><a class="dropdown-item" href="articles/remote-repl.html">Databricks REPL</a></li>
     <li><a class="dropdown-item" href="articles/setup-auth.html">Connect to a Databricks Workspace</a></li>
+    <li><a class="dropdown-item" href="articles/sql-backend.html">`{DBI}`/`{dbplyr}` backend</a></li>
   </ul>
 </li>
       </ul>
@@ -63,23 +64,22 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header">
 <img src="logo.png" class="logo" alt=""><h1 id="brickster-">
-<a href="https://databrickslabs.github.io/brickster/">brickster</a> 
-<a class="anchor" aria-label="anchor" href="#brickster-"></a>
+<a href="https://databrickslabs.github.io/brickster/">brickster</a> <a class="anchor" aria-label="anchor" href="#brickster-"></a>
 </h1>
 </div>
 <!-- badges: start -->
 
 <!-- badges: end -->
+<div class="section level2">
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+</h2>
 <p><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> is the R toolkit for Databricks, it includes:</p>
 <ul>
 <li><p>Wrappers for <a href="https://docs.databricks.com/api/workspace/introduction" class="external-link">Databricks API’s</a> (e.g. <a href="https://databrickslabs.github.io/brickster/reference/db_cluster_list.html"><code>db_cluster_list</code></a>, <a href="https://databrickslabs.github.io/brickster/reference/db_volume_read.html"><code>db_volume_read</code></a>)</p></li>
 <li><p>Browser workspace assets via RStudio Connections Pane (<a href="https://databrickslabs.github.io/brickster/reference/open_workspace.html"><code>open_workspace()</code></a>)</p></li>
+<li><p><a href="https://dbi.r-dbi.org" class="external-link">DBI</a> + <a href="https://dbplyr.tidyverse.org/" class="external-link">dbplyr</a> backend (no more ODBC installs!)</p></li>
 <li><p>Interactive Databricks REPL</p></li>
 </ul>
-<div class="section level2">
-<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
-</h2>
-<p><code>remotes::install_github("databrickslabs/brickster")</code></p>
 </div>
 <div class="section level2">
 <h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
@@ -91,16 +91,96 @@
 <span><span class="co"># first request will open browser window to login</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>DATABRICKS_HOST <span class="op">=</span> <span class="st">"https://&lt;workspace-prefix&gt;.cloud.databricks.com"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># list all SQL warehouses</span></span>
-<span><span class="va">warehouses</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/db_sql_warehouse_list.html">db_sql_warehouse_list</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># open RStudio/Positron connection pane to view Databricks resources</span></span>
+<span><span class="fu"><a href="reference/open_workspace.html">open_workspace</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># read `data.csv` from a volume</span></span>
+<span><span class="co"># list all SQL warehouses</span></span>
+<span><span class="va">warehouses</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/db_sql_warehouse_list.html">db_sql_warehouse_list</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>Refer to the <a href="https://databrickslabs.github.io/brickster/articles/setup-auth.html">“Connect to a Databricks Workspace”</a> article for more details on getting authentication configured.</p>
+</div>
+<div class="section level2">
+<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
+</h2>
+<div class="section level3">
+<h3 id="dbi-backend">
+<code>{DBI}</code> Backend<a class="anchor" aria-label="anchor" href="#dbi-backend"></a>
+</h3>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dbi.r-dbi.org" class="external-link">DBI</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Connect to Databricks using DBI (assumes you followed quickstart to authenticate)</span></span>
+<span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="reference/DatabricksSQL.html">DatabricksSQL</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  warehouse_id <span class="op">=</span> <span class="st">"&lt;warehouse-id&gt;"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Standard {DBI} operations</span></span>
+<span><span class="va">tables</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbListTables.html" class="external-link">dbListTables</a></span><span class="op">(</span><span class="va">con</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"SELECT * FROM samples.nyctaxi.trips LIMIT 5"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Use with {dbplyr} for {dplyr} syntax</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dbplyr.tidyverse.org/" class="external-link">dbplyr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">nyc_taxi</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html" class="external-link">tbl</a></span><span class="op">(</span><span class="va">con</span>, <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="st">"samples.nyctaxi.trips"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="va">nyc_taxi</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu">year</span><span class="op">(</span><span class="va">tpep_pickup_datetime</span><span class="op">)</span> <span class="op">==</span> <span class="fl">2016</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">pickup_zip</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span></span>
+<span>    trip_count <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    avg_fare <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">fare_amount</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    avg_distance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">trip_distance</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="download--upload-to-volume">Download &amp; Upload to Volume<a class="anchor" aria-label="anchor" href="#download--upload-to-volume"></a>
+</h3>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://readr.tidyverse.org" class="external-link">readr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># upload `data.csv` to a volume</span></span>
+<span><span class="va">local_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
+<span><span class="fu">write_csv</span><span class="op">(</span>x <span class="op">=</span> <span class="va">iris</span>, file <span class="op">=</span> <span class="va">local_file</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/db_volume_write.html">db_volume_write</a></span><span class="op">(</span></span>
+<span>  path <span class="op">=</span> <span class="st">"/Volumes/&lt;catalog&gt;/&lt;schema&gt;/&lt;volume&gt;/data.csv"</span>,</span>
+<span>  file <span class="op">=</span> <span class="va">local_file</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># read `data.csv` from a volume and write to a file</span></span>
+<span><span class="va">downloaded_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
 <span><span class="va">file</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/db_volume_read.html">db_volume_read</a></span><span class="op">(</span></span>
 <span>  path <span class="op">=</span> <span class="st">"/Volumes/&lt;catalog&gt;/&lt;schema&gt;/&lt;volume&gt;/data.csv"</span>,</span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>pattern <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
+<span>  destination <span class="op">=</span> <span class="va">downloaded_file</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">volume_csv</span> <span class="op">&lt;-</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu">read_csv</span><span class="op">(</span><span class="va">file</span><span class="op">)</span></span></code></pre></div>
-<p>Refer to the <a href="https://databrickslabs.github.io/brickster/articles/setup-auth.html">“Connect to a Databricks Workspace”</a> article for more details on getting authentication configured.</p>
+<span><span class="va">volume_csv</span> <span class="op">&lt;-</span> <span class="fu">read_csv</span><span class="op">(</span><span class="va">downloaded_file</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="databricks-repl">Databricks REPL<a class="anchor" aria-label="anchor" href="#databricks-repl"></a>
+</h3>
+<p>Run commands against an existing interactive Databricks cluster, read this <a href="https://databrickslabs.github.io/brickster/articles/remote-repl.html">article</a> for more details.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># commands after this will run on the interactive cluster</span></span>
+<span><span class="co"># read the vignette for more details</span></span>
+<span><span class="fu"><a href="reference/db_repl.html">db_repl</a></span><span class="op">(</span>cluster_id <span class="op">=</span> <span class="st">"&lt;interactive_cluster_id&gt;"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="gifs/db_repl.gif"></p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<pre><code><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"brickster"</span><span class="op">)</span></span></code></pre>
+<div class="section level3">
+<h3 id="development-version">Development Version<a class="anchor" aria-label="anchor" href="#development-version"></a>
+</h3>
+<pre><code><span><span class="co"># install.packages("pak")</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"databrickslabs/brickster"</span><span class="op">)</span></span></code></pre>
+</div>
 </div>
 <div class="section level2">
 <h2 id="api-coverage">API Coverage<a class="anchor" aria-label="anchor" href="#api-coverage"></a>
@@ -108,9 +188,9 @@
 <p><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> is very deliberate with choosing what API’s are wrapped. <a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> isn’t intended to replace IaC tooling (e.g. <a href="#id_0">Terraform</a>) or to be used for account/workspace administration.</p>
 <table class="table">
 <colgroup>
-<col width="52%">
-<col width="23%">
-<col width="23%">
+<col width="47%">
+<col width="26%">
+<col width="26%">
 </colgroup>
 <thead><tr class="header">
 <th>API</th>

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">brickster</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,6 +22,7 @@
     <li><a class="dropdown-item" href="../articles/managing-jobs.html">Job Management</a></li>
     <li><a class="dropdown-item" href="../articles/remote-repl.html">Databricks REPL</a></li>
     <li><a class="dropdown-item" href="../articles/setup-auth.html">Connect to a Databricks Workspace</a></li>
+    <li><a class="dropdown-item" href="../articles/sql-backend.html">`{DBI}`/`{dbplyr}` backend</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -497,6 +498,18 @@
 
         </dt>
         <dd>Volume FileSystem Read</dd>
+      </dl><dl><dt>
+
+          <code><a href="db_volume_recursive_delete_contents.html">db_volume_recursive_delete_contents()</a></code>
+
+        </dt>
+        <dd>Recursively delete all contents of a volume directory</dd>
+      </dl><dl><dt>
+
+          <code><a href="db_volume_upload_dir.html">db_volume_upload_dir()</a></code>
+
+        </dt>
+        <dd>Upload Directory to Volume in Parallel</dd>
       </dl><dl><dt>
 
           <code><a href="db_volume_write.html">db_volume_write()</a></code>
@@ -1321,6 +1334,18 @@
 
       <dl><dt>
 
+          <code><a href="db_sql_create_empty_result.html">db_sql_create_empty_result()</a></code>
+
+        </dt>
+        <dd>Create Empty Data Frame from Query Manifest</dd>
+      </dl><dl><dt>
+
+          <code><a href="db_sql_exec_and_wait.html">db_sql_exec_and_wait()</a></code>
+
+        </dt>
+        <dd>Execute SQL Query and Wait for Completion</dd>
+      </dl><dl><dt>
+
           <code><a href="db_sql_exec_cancel.html">db_sql_exec_cancel()</a></code>
 
         </dt>
@@ -1351,10 +1376,22 @@
         <dd>Get SQL Query Status</dd>
       </dl><dl><dt>
 
+          <code><a href="db_sql_fetch_results.html">db_sql_fetch_results()</a></code>
+
+        </dt>
+        <dd>Fetch SQL Query Results from Completed Query</dd>
+      </dl><dl><dt>
+
           <code><a href="db_sql_global_warehouse_get.html">db_sql_global_warehouse_get()</a></code>
 
         </dt>
         <dd>Get Global Warehouse Config</dd>
+      </dl><dl><dt>
+
+          <code><a href="db_sql_process_inline.html">db_sql_process_inline()</a></code>
+
+        </dt>
+        <dd>Process Inline SQL Query Results</dd>
       </dl><dl><dt>
 
           <code><a href="db_sql_query.html">db_sql_query()</a></code>
@@ -1367,6 +1404,12 @@
 
         </dt>
         <dd>List Warehouse Query History</dd>
+      </dl><dl><dt>
+
+          <code><a href="db_sql_type_to_empty_vector.html">db_sql_type_to_empty_vector()</a></code>
+
+        </dt>
+        <dd>Create Empty R Vector from Databricks SQL Type</dd>
       </dl><dl><dt>
 
           <code><a href="db_sql_warehouse_create.html">db_sql_warehouse_create()</a></code>
@@ -1415,6 +1458,358 @@
 
         </dt>
         <dd>Get and Start Warehouse</dd>
+      </dl></div><div class="section level2">
+      <h2 id="dbi-backend">DBI Backend<a class="anchor" aria-label="anchor" href="#dbi-backend"></a></h2>
+
+      <div class="section-desc"><p>Standard DBI interface for Databricks SQL warehouses</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="databricks-dbi.html">databricks-dbi</a></code>
+
+        </dt>
+        <dd>DBI Interface for Databricks SQL Warehouses</dd>
+      </dl><dl><dt>
+
+          <code><a href="DatabricksSQL.html">DatabricksSQL()</a></code>
+
+        </dt>
+        <dd>Create Databricks SQL Driver</dd>
+      </dl><dl><dt>
+
+          <code><a href="DatabricksDriver-class.html">DatabricksDriver-class</a></code>
+
+        </dt>
+        <dd>DBI Driver for Databricks</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbConnect-DatabricksDriver-method.html">dbConnect(<i>&lt;DatabricksDriver&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Connect to Databricks SQL Warehouse</dd>
+      </dl><dl><dt>
+
+          <code><a href="show-DatabricksDriver-method.html">show(<i>&lt;DatabricksDriver&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Show method for DatabricksDriver</dd>
+      </dl><dl><dt>
+
+          <code><a href="DatabricksConnection-class.html">DatabricksConnection-class</a></code>
+
+        </dt>
+        <dd>DBI Connection for Databricks</dd>
+      </dl><dl><dt>
+
+          <code><a href="copy_to.DatabricksConnection.html">copy_to(<i>&lt;DatabricksConnection&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Copy data frame to Databricks as table or view</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbAppendTable-DatabricksConnection-Id-data.frame-method.html">dbAppendTable(<i>&lt;DatabricksConnection&gt;</i>,<i>&lt;Id&gt;</i>,<i>&lt;data.frame&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Append rows to an existing Databricks table (Id method)</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbAppendTable-DatabricksConnection-character-data.frame-method.html">dbAppendTable(<i>&lt;DatabricksConnection&gt;</i>,<i>&lt;character&gt;</i>,<i>&lt;data.frame&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Append rows to an existing Databricks table</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbBegin-DatabricksConnection-method.html">dbBegin(<i>&lt;DatabricksConnection&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Begin transaction (not supported)</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbCommit-DatabricksConnection-method.html">dbCommit(<i>&lt;DatabricksConnection&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Commit transaction (not supported)</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbDataType-DatabricksConnection-method.html">dbDataType(<i>&lt;DatabricksConnection&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Map R data types to Databricks SQL types</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbDisconnect-DatabricksConnection-method.html">dbDisconnect(<i>&lt;DatabricksConnection&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Disconnect from Databricks</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbExecute-DatabricksConnection-character-method.html">dbExecute(<i>&lt;DatabricksConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Execute statement on Databricks</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbExistsTable-DatabricksConnection-AsIs-method.html">dbExistsTable(<i>&lt;DatabricksConnection&gt;</i>,<i>&lt;AsIs&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Check if table exists (AsIs method)</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbExistsTable-DatabricksConnection-Id-method.html">dbExistsTable(<i>&lt;DatabricksConnection&gt;</i>,<i>&lt;Id&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Check if table exists (Id method)</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbExistsTable-DatabricksConnection-character-method.html">dbExistsTable(<i>&lt;DatabricksConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Check if table exists in Databricks</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbGetInfo-DatabricksConnection-method.html">dbGetInfo(<i>&lt;DatabricksConnection&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Get connection information</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbGetQuery-DatabricksConnection-character-method.html">dbGetQuery(<i>&lt;DatabricksConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Execute SQL query and return results</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbIsValid-DatabricksConnection-method.html">dbIsValid(<i>&lt;DatabricksConnection&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Check if connection is valid</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbListFields-DatabricksConnection-AsIs-method.html">dbListFields(<i>&lt;DatabricksConnection&gt;</i>,<i>&lt;AsIs&gt;</i>)</a></code>
+
+        </dt>
+        <dd>List column names of a Databricks table (AsIs method)</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbListFields-DatabricksConnection-character-method.html">dbListFields(<i>&lt;DatabricksConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code>
+
+        </dt>
+        <dd>List column names of a Databricks table</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbListTables-DatabricksConnection-method.html">dbListTables(<i>&lt;DatabricksConnection&gt;</i>)</a></code>
+
+        </dt>
+        <dd>List tables in Databricks catalog/schema</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbQuoteIdentifier-DatabricksConnection-Id-method.html">dbQuoteIdentifier(<i>&lt;DatabricksConnection&gt;</i>,<i>&lt;Id&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Quote complex identifiers (schema.table)</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbQuoteIdentifier-DatabricksConnection-SQL-method.html">dbQuoteIdentifier(<i>&lt;DatabricksConnection&gt;</i>,<i>&lt;SQL&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Quote SQL objects (passthrough)</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbQuoteIdentifier-DatabricksConnection-character-method.html">dbQuoteIdentifier(<i>&lt;DatabricksConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Quote identifiers for Databricks SQL</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbRollback-DatabricksConnection-method.html">dbRollback(<i>&lt;DatabricksConnection&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Rollback transaction (not supported)</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbSendQuery-DatabricksConnection-character-method.html">dbSendQuery(<i>&lt;DatabricksConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Send query to Databricks (asynchronous)</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbSendStatement-DatabricksConnection-character-method.html">dbSendStatement(<i>&lt;DatabricksConnection&gt;</i>,<i>&lt;character&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Send statement to Databricks</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbWriteTable-DatabricksConnection-AsIs-data.frame-method.html">dbWriteTable(<i>&lt;DatabricksConnection&gt;</i>,<i>&lt;AsIs&gt;</i>,<i>&lt;data.frame&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Write table to Databricks (AsIs name signature)</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbWriteTable-DatabricksConnection-Id-data.frame-method.html">dbWriteTable(<i>&lt;DatabricksConnection&gt;</i>,<i>&lt;Id&gt;</i>,<i>&lt;data.frame&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Write a data frame to Databricks table (Id method)</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbWriteTable-DatabricksConnection-character-data.frame-method.html">dbWriteTable(<i>&lt;DatabricksConnection&gt;</i>,<i>&lt;character&gt;</i>,<i>&lt;data.frame&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Write a data frame to Databricks table</dd>
+      </dl><dl><dt>
+
+          <code><a href="db_collect.DatabricksConnection.html">db_collect(<i>&lt;DatabricksConnection&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Collect query results with proper progress timing for Databricks</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbplyr_edition.DatabricksConnection.html">dbplyr_edition(<i>&lt;DatabricksConnection&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Declare dbplyr API version for Databricks connections</dd>
+      </dl><dl><dt>
+
+          <code><a href="show-DatabricksConnection-method.html">show(<i>&lt;DatabricksConnection&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Show method for DatabricksConnection</dd>
+      </dl><dl><dt>
+
+          <code><a href="sql_query_fields.DatabricksConnection.html">sql_query_fields(<i>&lt;DatabricksConnection&gt;</i>)</a></code>
+
+        </dt>
+        <dd>SQL Query Fields for Databricks connections</dd>
+      </dl><dl><dt>
+
+          <code><a href="sql_query_save.DatabricksConnection.html">sql_query_save(<i>&lt;DatabricksConnection&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Create temporary views and tables in Databricks</dd>
+      </dl><dl><dt>
+
+          <code><a href="sql_table_analyze.DatabricksConnection.html">sql_table_analyze(<i>&lt;DatabricksConnection&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Handle table analysis for Databricks</dd>
+      </dl><dl><dt>
+
+          <code><a href="DatabricksResult-class.html">DatabricksResult-class</a></code>
+
+        </dt>
+        <dd>DBI Result for Databricks</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbClearResult-DatabricksResult-method.html">dbClearResult(<i>&lt;DatabricksResult&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Clear result set</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbColumnInfo-DatabricksResult-method.html">dbColumnInfo(<i>&lt;DatabricksResult&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Get column information from result</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbFetch-DatabricksResult-method.html">dbFetch(<i>&lt;DatabricksResult&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Fetch results from Databricks query</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbGetRowCount-DatabricksResult-method.html">dbGetRowCount(<i>&lt;DatabricksResult&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Get number of rows fetched</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbGetRowsAffected-DatabricksResult-method.html">dbGetRowsAffected(<i>&lt;DatabricksResult&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Get number of rows affected (not applicable for SELECT)</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbGetStatement-DatabricksResult-method.html">dbGetStatement(<i>&lt;DatabricksResult&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Get SQL statement from result</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbHasCompleted-DatabricksResult-method.html">dbHasCompleted(<i>&lt;DatabricksResult&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Check if query has completed</dd>
+      </dl><dl><dt>
+
+          <code><a href="show-DatabricksResult-method.html">show(<i>&lt;DatabricksResult&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Show method for DatabricksResult</dd>
+      </dl></div><div class="section level2">
+      <h2 id="dbplyr-backend">dbplyr Backend<a class="anchor" aria-label="anchor" href="#dbplyr-backend"></a></h2>
+
+      <div class="section-desc"><p>dbplyr support for dplyr syntax with Databricks SQL</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="databricks-dbplyr.html">databricks-dbplyr</a></code>
+
+        </dt>
+        <dd>dbplyr Backend for Databricks SQL</dd>
+      </dl><dl><dt>
+
+          <code><a href="sql_query_fields.DatabricksConnection.html">sql_query_fields(<i>&lt;DatabricksConnection&gt;</i>)</a></code>
+
+        </dt>
+        <dd>SQL Query Fields for Databricks connections</dd>
+      </dl><dl><dt>
+
+          <code><a href="sql_query_save.DatabricksConnection.html">sql_query_save(<i>&lt;DatabricksConnection&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Create temporary views and tables in Databricks</dd>
+      </dl><dl><dt>
+
+          <code><a href="sql_table_analyze.DatabricksConnection.html">sql_table_analyze(<i>&lt;DatabricksConnection&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Handle table analysis for Databricks</dd>
+      </dl><dl><dt>
+
+          <code><a href="sql_translation.DatabricksConnection.html">sql_translation(<i>&lt;DatabricksConnection&gt;</i>)</a></code>
+
+        </dt>
+        <dd>SQL translation environment for Databricks SQL</dd>
+      </dl><dl><dt>
+
+          <code><a href="copy_to.DatabricksConnection.html">copy_to(<i>&lt;DatabricksConnection&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Copy data frame to Databricks as table or view</dd>
+      </dl><dl><dt>
+
+          <code><a href="db_collect.DatabricksConnection.html">db_collect(<i>&lt;DatabricksConnection&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Collect query results with proper progress timing for Databricks</dd>
+      </dl><dl><dt>
+
+          <code><a href="dbplyr_edition.DatabricksConnection.html">dbplyr_edition(<i>&lt;DatabricksConnection&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Declare dbplyr API version for Databricks connections</dd>
       </dl></div><div class="section level2">
       <h2 id="workspaces">Workspaces<a class="anchor" aria-label="anchor" href="#workspaces"></a></h2>
 
