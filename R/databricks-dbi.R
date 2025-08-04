@@ -250,7 +250,7 @@ setMethod(
       disposition <- "INLINE"
       show_progress <- FALSE
     }
-    
+
     # Use unified db_sql_query function
     db_sql_query(
       warehouse_id = conn@warehouse_id,
@@ -370,7 +370,10 @@ setMethod("dbFetch", "DatabricksResult", function(res, n = -1, ...) {
   initial_status <- db_sql_exec_status(statement_id = res@statement_id)
   if (initial_status$status$state %in% c("RUNNING", "PENDING")) {
     cli::cli_progress_step("Executing query")
-    status <- db_sql_exec_poll_for_success(res@statement_id, show_progress = FALSE)
+    status <- db_sql_exec_poll_for_success(
+      res@statement_id,
+      show_progress = FALSE
+    )
   } else {
     # Already completed
     status <- initial_status
@@ -1619,4 +1622,3 @@ setMethod(
     dbWriteTable(conn, name, value, append = TRUE, row.names = row.names, ...)
   }
 )
-
