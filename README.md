@@ -6,6 +6,8 @@
 
 <!-- badges: end -->
 
+## Overview
+
 `{brickster}` is the R toolkit for Databricks, it includes:
 
 -   Wrappers for [Databricks API's](https://docs.databricks.com/api/workspace/introduction) (e.g. [`db_cluster_list`](https://databrickslabs.github.io/brickster/reference/db_cluster_list.html), [`db_volume_read`](https://databrickslabs.github.io/brickster/reference/db_volume_read.html))
@@ -13,10 +15,6 @@
 -   Browser workspace assets via RStudio Connections Pane ([`open_workspace()`](https://databrickslabs.github.io/brickster/reference/open_workspace.html))
 
 -   Interactive Databricks REPL
-
-## Installation
-
-`remotes::install_github("databrickslabs/brickster")`
 
 ## Quick Start
 
@@ -27,22 +25,18 @@ library(brickster)
 # first request will open browser window to login
 Sys.setenv(DATABRICKS_HOST = "https://<workspace-prefix>.cloud.databricks.com")
 
+# open RStudio/Positron connection pane to view Databricks resources
+open_workspace()
+
 # list all SQL warehouses
 warehouses <- db_sql_warehouse_list()
-
-# read `data.csv` from a volume
-file <- db_volume_read(
-  path = "/Volumes/<catalog>/<schema>/<volume>/data.csv",
-  tempfile(pattern = ".csv")
-)
-volume_csv <- readr::read_csv(file)
 ```
 
 Refer to the ["Connect to a Databricks Workspace"](https://databrickslabs.github.io/brickster/articles/setup-auth.html) article for more details on getting authentication configured.
 
-## `{DBI}` Backend
+## Usage
 
-`{brickster}` provides a complete DBI backend for Databricks SQL warehouses, enabling standard database operations with R:
+### `{DBI}` Backend
 
 ``` r
 library(brickster)
@@ -75,12 +69,62 @@ result <- nyc_taxi |>
   collect()
 ```
 
+### Download & Upload to Volume
+
+``` r
+library(readr)
+library(brickster)
+
+# upload `data.csv` to a volume
+local_file <- tempfile(fileext = ".csv")
+write_csv(x = iris, file = local_file)
+db_volume_write(
+  path = "/Volumes/<catalog>/<schema>/<volume>/data.csv",
+  file = local_file
+)
+
+# read `data.csv` from a volume and write to a file
+downloaded_file <- tempfile(fileext = ".csv")
+file <- db_volume_read(
+  path = "/Volumes/<catalog>/<schema>/<volume>/data.csv",
+  destination = downloaded_file
+)
+volume_csv <- read_csv(downloaded_file)
+```
+
+### Databricks REPL
+
+Run commands against an existing interactive Databricks cluster, read the [vignette](https://databrickslabs.github.io/brickster/articles/remote-repl.html) for more details.
+
+``` r
+library(brickster)
+
+# commands after this will run on the interactive cluster
+# read the vignette for more details
+db_repl(cluster_id = "<interactive_cluster_id>")
+```
+
+![](gifs/db_repl.gif)
+
+## Installation
+
+```         
+install.packages("brickster")
+```
+
+### Development Version
+
+```         
+# install.packages("pak")
+pak::pak("databrickslabs/brickster")
+```
+
 ## API Coverage
 
 `{brickster}` is very deliberate with choosing what API's are wrapped. `{brickster}` isn't intended to replace IaC tooling (e.g. [Terraform](#0)) or to be used for account/workspace administration.
 
 | API | Available | Version |
-|------------------------------------|-------------------|-------------------|
+|----------------------------------|-------------------|-------------------|
 | [DBFS](https://docs.databricks.com/api/workspace/dbfs) | Yes | 2.0 |
 | [Secrets](https://docs.databricks.com/api/workspace/secrets) | Yes | 2.0 |
 | [Repos](https://docs.databricks.com/api/workspace/repos) | Yes | 2.0 |
