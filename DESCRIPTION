@@ -49,7 +49,16 @@ Suggests:
     knitr,
     magick,
     rmarkdown,
-    withr
+    withr,
+    cachem,
+    digest,
+    gt,
+    shiny,
+    shinyjs,
+    stringr,
+    rstudioapi,
+    callr,
+    openssl
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 VignetteBuilder: knitr
