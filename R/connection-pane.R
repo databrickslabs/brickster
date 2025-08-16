@@ -851,7 +851,12 @@ preview_object <- function(host, token, rowLimit,
     } else if (!is.null(catalog) & !is.null(schema) & !is.null(model)) {
       path <- paste0(c("models", catalog, schema, model), collapse = "/")
     } else if (!is.null(catalog) & !is.null(schema) & !is.null(volume)) {
-      path <- paste0(c("volumes", catalog, schema, volume), collapse = "/")
+      browse_path(
+        path=glue::glue("/Volumes/{catalog}/{schema}/{volume}/"),
+        host=host,
+        token=token
+      )
+      return(data.frame(x="Opening volume browser. Please close this tab."))
     } else if (!is.null(catalog) & !is.null(schema) & !is.null(table)) {
       path <- paste0(c(catalog, schema, table), collapse = "/")
     } else if (!is.null(catalog) & !is.null(schema)) {
