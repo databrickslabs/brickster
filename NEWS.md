@@ -1,5 +1,7 @@
 # brickster 0.2.9
--   Added DBI + dbplyr backend support: `DatabricksSQL()` driver for standard DBI operations
+- Added DBI + dbplyr backend support: `DatabricksSQL()` driver for standard DBI operations
+- Increase support for job level parameters
+- Added `db_jobs_repair_run` 
 
 # brickster 0.2.8
 
