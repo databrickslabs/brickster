@@ -78,6 +78,7 @@ Other Jobs API:
 \code{\link{db_jobs_delete}()},
 \code{\link{db_jobs_get}()},
 \code{\link{db_jobs_list}()},
+\code{\link{db_jobs_repair_run}()},
 \code{\link{db_jobs_reset}()},
 \code{\link{db_jobs_run_now}()},
 \code{\link{db_jobs_runs_cancel}()},

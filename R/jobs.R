@@ -7,6 +7,8 @@
 #' [new_cluster()]) that can be shared and reused by tasks of this job.
 #' Libraries cannot be declared in a shared job cluster. You must declare
 #' dependent libraries in task settings.
+#' @param parameters Named list of job level parameters. Values of the list
+#' represent default values.
 #' @param email_notifications Instance of [email_notifications()].
 #' @param timeout_seconds An optional timeout applied to each run of this job.
 #' The default behavior is to have no timeout.
@@ -37,6 +39,7 @@ db_jobs_create <- function(
   tasks,
   schedule = NULL,
   job_clusters = NULL,
+  parameters = list(),
   email_notifications = NULL,
   timeout_seconds = NULL,
   max_concurrent_runs = 1,
@@ -226,6 +229,7 @@ db_jobs_reset <- function(
   schedule,
   tasks,
   job_clusters = NULL,
+  parameters = list(),
   email_notifications = NULL,
   timeout_seconds = NULL,
   max_concurrent_runs = 1,
@@ -346,21 +350,99 @@ db_jobs_update <- function(
   }
 }
 
+#' Repair A Job Run
+#'
+#' @param run_id Job run ID of the run to repair. The run must not be in progress.
+#' @param rerun_tasks Character vector. Task keys of the task runs to repair.
+#' @param job_parameters Named list of job level parameters used in the run.
+#' @param latest_repair_id The ID of the latest repair. This parameter is not required
+#' when repairing a run for the first time, but must be provided on subsequent requests
+#' to repair the same run.
+#' @param performance_target The performance mode on a serverless job (either
+#' `'PERFORMANCE_OPTIMIZED'` or `'STANDARD'`). The performance target determines
+#' the level of compute performance or cost-efficiency for the run. This field
+#' overrides the performance target defined on the job level.
+#' @param pipeline_full_refresh Boolean. Controls whether the pipeline should perform
+#' a full refresh.
+#' @param rerun_all_failed_tasks Boolean. If `TRUE`, repair all failed tasks.
+#' Only one of `rerun_tasks` or `rerun_all_failed_tasks` can be used.
+#' @param rerun_dependent_tasks Boolean. If `TRUE`, repair all tasks that depend
+#' on the tasks in `rerun_tasks`, even if they were previously successful. Can be
+#' also used in combination with `rerun_all_failed_tasks.`
+#' @inheritParams auth_params
+#' @inheritParams db_jobs_reset
+#' @inheritParams db_sql_warehouse_create
+#'
+#' @details
+#' Parameters which are shared with [db_jobs_create()] are optional, only
+#' specify those that are changing.
+#'
+#' @family Jobs API
+#'
+#' @export
+db_jobs_repair_run <- function(
+  run_id,
+  rerun_tasks = NULL,
+  job_parameters = list(),
+  latest_repair_id = NULL,
+  performance_target = NULL,
+  pipeline_full_refresh = NULL,
+  rerun_all_failed_tasks = NULL,
+  rerun_dependent_tasks = NULL,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
+  # only one of rerun_tasks or rerun_all_failed_tasks can be specified
+  if (!is.null(rerun_tasks) && !is.null(rerun_all_failed_tasks)) {
+    cli::cli_abort(
+      "Only one of {.arg rerun_tasks} or {.arg rerun_all_failed_tasks} can be specified."
+    )
+  }
+
+  if (!is.null(performance_target)) {
+    performance_target <- match.arg(
+      performance_target,
+      choices = c("PERFORMANCE_OPTIMIZED", "STANDARD")
+    )
+  }
+
+  body <- list(
+    run_id = as.character(run_id),
+    rerun_tasks = rerun_tasks,
+    job_parameters = job_parameters,
+    latest_repair_id = latest_repair_id,
+    performance_target = performance_target,
+    rerun_all_failed_tasks = rerun_all_failed_tasks,
+    rerun_dependent_tasks = rerun_dependent_tasks
+  )
+
+  body <- purrr::discard(body, is.null)
+
+  if (!is.null(pipeline_full_refresh)) {
+    body$pipeline_params <- list(full_refresh = pipeline_full_refresh)
+  }
+
+  req <- db_request(
+    endpoint = "jobs/runs/repair",
+    method = "POST",
+    version = "2.2",
+    body = body,
+    host = host,
+    token = token
+  )
+
+  if (perform_request) {
+    db_perform_request(req)
+  } else {
+    req
+  }
+}
+
+
 #' Trigger A New Job Run
 #'
-#' @param jar_params Named list. Parameters are used to invoke the main
-#' function of the main class specified in the Spark JAR task. If not specified
-#' upon run-now, it defaults to an empty list. `jar_params` cannot be specified
-#' in conjunction with `notebook_params`.
-#' @param notebook_params Named list. Parameters is passed to the notebook
-#' and is accessible through the `dbutils.widgets.get` function. If not specified
-#' upon run-now, the triggered run uses the job’s base parameters.
-#' @param python_params Named list. Parameters are passed to Python file as
-#' command-line parameters. If specified upon run-now, it would overwrite the
-#' parameters specified in job setting.
-#' @param spark_submit_params Named list. Parameters are passed to spark-submit
-#' script as command-line parameters. If specified upon run-now, it would
-#' overwrite the parameters specified in job setting.
+#' @param parameters Named list of job level parameters.
 #' @inheritParams auth_params
 #' @inheritParams db_jobs_get
 #' @inheritParams db_sql_warehouse_create
@@ -374,20 +456,14 @@ db_jobs_update <- function(
 #' @export
 db_jobs_run_now <- function(
   job_id,
-  jar_params = list(),
-  notebook_params = list(),
-  python_params = list(),
-  spark_submit_params = list(),
+  parameters = list(),
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
 ) {
   body <- list(
     job_id = job_id,
-    jar_params = jar_params,
-    notebook_params = notebook_params,
-    python_params = python_params,
-    spark_submit_params = spark_submit_params
+    job_parameters = parameters
   )
 
   req <- db_request(
@@ -502,7 +578,9 @@ db_jobs_runs_list <- function(
   run_type <- match.arg(run_type, several.ok = FALSE)
 
   if (active_only && completed_only) {
-    cli::cli_abort("{.arg active_only} and {.arg completed_only} cannot both be {.val TRUE}.")
+    cli::cli_abort(
+      "{.arg active_only} and {.arg completed_only} cannot both be {.val TRUE}."
+    )
   }
 
   body <- list(

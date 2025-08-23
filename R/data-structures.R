@@ -1741,7 +1741,9 @@ delta_sync_index_spec <- function(
   }
 
   if (is.null(embedding_vector_columns) & is.null(embedding_source_columns)) {
-    cli::cli_abort("Must specify at least one embedding vector or source column")
+    cli::cli_abort(
+      "Must specify at least one embedding vector or source column"
+    )
   }
 
   obj <- list(
@@ -1835,7 +1837,9 @@ direct_access_index_spec <- function(
   }
 
   if (is.null(embedding_vector_columns) & is.null(embedding_source_columns)) {
-    cli::cli_abort("Must specify at least one embedding vector or source column")
+    cli::cli_abort(
+      "Must specify at least one embedding vector or source column"
+    )
   }
 
   if (is.null(schema)) {
