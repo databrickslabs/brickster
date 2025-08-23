@@ -6,10 +6,7 @@
 \usage{
 db_jobs_run_now(
   job_id,
-  jar_params = list(),
-  notebook_params = list(),
-  python_params = list(),
-  spark_submit_params = list(),
+  parameters = list(),
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
@@ -18,22 +15,7 @@ db_jobs_run_now(
 \arguments{
 \item{job_id}{The canonical identifier of the job.}
 
-\item{jar_params}{Named list. Parameters are used to invoke the main
-function of the main class specified in the Spark JAR task. If not specified
-upon run-now, it defaults to an empty list. \code{jar_params} cannot be specified
-in conjunction with \code{notebook_params}.}
-
-\item{notebook_params}{Named list. Parameters is passed to the notebook
-and is accessible through the \code{dbutils.widgets.get} function. If not specified
-upon run-now, the triggered run uses the job’s base parameters.}
-
-\item{python_params}{Named list. Parameters are passed to Python file as
-command-line parameters. If specified upon run-now, it would overwrite the
-parameters specified in job setting.}
-
-\item{spark_submit_params}{Named list. Parameters are passed to spark-submit
-script as command-line parameters. If specified upon run-now, it would
-overwrite the parameters specified in job setting.}
+\item{parameters}{Named list of job level parameters.}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
@@ -57,6 +39,7 @@ Other Jobs API:
 \code{\link{db_jobs_delete}()},
 \code{\link{db_jobs_get}()},
 \code{\link{db_jobs_list}()},
+\code{\link{db_jobs_repair_run}()},
 \code{\link{db_jobs_reset}()},
 \code{\link{db_jobs_runs_cancel}()},
 \code{\link{db_jobs_runs_delete}()},

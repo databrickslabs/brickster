@@ -9,6 +9,7 @@ db_jobs_create(
   tasks,
   schedule = NULL,
   job_clusters = NULL,
+  parameters = list(),
   email_notifications = NULL,
   timeout_seconds = NULL,
   max_concurrent_runs = 1,
@@ -32,6 +33,9 @@ db_jobs_create(
 \code{\link[=new_cluster]{new_cluster()}}) that can be shared and reused by tasks of this job.
 Libraries cannot be declared in a shared job cluster. You must declare
 dependent libraries in task settings.}
+
+\item{parameters}{Named list of job level parameters. Values of the list
+represent default values.}
 
 \item{email_notifications}{Instance of \code{\link[=email_notifications]{email_notifications()}}.}
 
@@ -73,6 +77,7 @@ Other Jobs API:
 \code{\link{db_jobs_delete}()},
 \code{\link{db_jobs_get}()},
 \code{\link{db_jobs_list}()},
+\code{\link{db_jobs_repair_run}()},
 \code{\link{db_jobs_reset}()},
 \code{\link{db_jobs_run_now}()},
 \code{\link{db_jobs_runs_cancel}()},

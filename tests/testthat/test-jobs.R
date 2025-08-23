@@ -139,6 +139,55 @@ test_that("Jobs API - don't perform", {
     perform_request = F
   )
   expect_s3_class(resp_run_submit, "httr2_request")
+
+  # Test db_jobs_repair_run
+  resp_repair_run <- db_jobs_repair_run(
+    run_id = "some_run_id",
+    rerun_tasks = c("task1", "task2"),
+    job_parameters = list(param1 = "value1"),
+    perform_request = F
+  )
+  expect_s3_class(resp_repair_run, "httr2_request")
+
+  # Test with rerun_all_failed_tasks
+  resp_repair_all <- db_jobs_repair_run(
+    run_id = "some_run_id",
+    rerun_all_failed_tasks = TRUE,
+    rerun_dependent_tasks = TRUE,
+    perform_request = F
+  )
+  expect_s3_class(resp_repair_all, "httr2_request")
+
+  # Test with performance target
+  resp_repair_perf <- db_jobs_repair_run(
+    run_id = "some_run_id",
+    rerun_tasks = c("task1"),
+    performance_target = "PERFORMANCE_OPTIMIZED",
+    pipeline_full_refresh = TRUE,
+    latest_repair_id = "repair_123",
+    perform_request = F
+  )
+  expect_s3_class(resp_repair_perf, "httr2_request")
+
+  # Test error when both rerun_tasks and rerun_all_failed_tasks are specified
+  expect_error({
+    db_jobs_repair_run(
+      run_id = "some_run_id",
+      rerun_tasks = c("task1"),
+      rerun_all_failed_tasks = TRUE,
+      perform_request = F
+    )
+  })
+
+  # Test error for invalid performance_target
+  expect_error({
+    db_jobs_repair_run(
+      run_id = "some_run_id",
+      rerun_tasks = c("task1"),
+      performance_target = "INVALID_TARGET",
+      perform_request = F
+    )
+  })
 })
 
 skip_on_cran()
