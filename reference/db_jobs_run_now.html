@@ -47,10 +47,7 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">db_jobs_run_now</span><span class="op">(</span></span>
 <span>  <span class="va">job_id</span>,</span>
-<span>  jar_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  notebook_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  python_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  spark_submit_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  host <span class="op">=</span> <span class="fu"><a href="db_host.html">db_host</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  token <span class="op">=</span> <span class="fu"><a href="db_token.html">db_token</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  perform_request <span class="op">=</span> <span class="cn">TRUE</span></span>
@@ -65,29 +62,8 @@
 <dd><p>The canonical identifier of the job.</p></dd>
 
 
-<dt id="arg-jar-params">jar_params<a class="anchor" aria-label="anchor" href="#arg-jar-params"></a></dt>
-<dd><p>Named list. Parameters are used to invoke the main
-function of the main class specified in the Spark JAR task. If not specified
-upon run-now, it defaults to an empty list. <code>jar_params</code> cannot be specified
-in conjunction with <code>notebook_params</code>.</p></dd>
-
-
-<dt id="arg-notebook-params">notebook_params<a class="anchor" aria-label="anchor" href="#arg-notebook-params"></a></dt>
-<dd><p>Named list. Parameters is passed to the notebook
-and is accessible through the <code>dbutils.widgets.get</code> function. If not specified
-upon run-now, the triggered run uses the job’s base parameters.</p></dd>
-
-
-<dt id="arg-python-params">python_params<a class="anchor" aria-label="anchor" href="#arg-python-params"></a></dt>
-<dd><p>Named list. Parameters are passed to Python file as
-command-line parameters. If specified upon run-now, it would overwrite the
-parameters specified in job setting.</p></dd>
-
-
-<dt id="arg-spark-submit-params">spark_submit_params<a class="anchor" aria-label="anchor" href="#arg-spark-submit-params"></a></dt>
-<dd><p>Named list. Parameters are passed to spark-submit
-script as command-line parameters. If specified upon run-now, it would
-overwrite the parameters specified in job setting.</p></dd>
+<dt id="arg-parameters">parameters<a class="anchor" aria-label="anchor" href="#arg-parameters"></a></dt>
+<dd><p>Named list of job level parameters.</p></dd>
 
 
 <dt id="arg-host">host<a class="anchor" aria-label="anchor" href="#arg-host"></a></dt>
@@ -116,6 +92,7 @@ overwrite the parameters specified in job setting.</p></dd>
 <code><a href="db_jobs_delete.html">db_jobs_delete</a>()</code>,
 <code><a href="db_jobs_get.html">db_jobs_get</a>()</code>,
 <code><a href="db_jobs_list.html">db_jobs_list</a>()</code>,
+<code><a href="db_jobs_repair_run.html">db_jobs_repair_run</a>()</code>,
 <code><a href="db_jobs_reset.html">db_jobs_reset</a>()</code>,
 <code><a href="db_jobs_runs_cancel.html">db_jobs_runs_cancel</a>()</code>,
 <code><a href="db_jobs_runs_delete.html">db_jobs_runs_delete</a>()</code>,

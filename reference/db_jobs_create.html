@@ -50,6 +50,7 @@
 <span>  <span class="va">tasks</span>,</span>
 <span>  schedule <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  job_clusters <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  email_notifications <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  timeout_seconds <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  max_concurrent_runs <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -84,6 +85,11 @@
 <code><a href="new_cluster.html">new_cluster()</a></code>) that can be shared and reused by tasks of this job.
 Libraries cannot be declared in a shared job cluster. You must declare
 dependent libraries in task settings.</p></dd>
+
+
+<dt id="arg-parameters">parameters<a class="anchor" aria-label="anchor" href="#arg-parameters"></a></dt>
+<dd><p>Named list of job level parameters. Values of the list
+represent default values.</p></dd>
 
 
 <dt id="arg-email-notifications">email_notifications<a class="anchor" aria-label="anchor" href="#arg-email-notifications"></a></dt>
@@ -142,6 +148,7 @@ the notebooks used by this job's notebook tasks. Instance of <code><a href="git_
 <code><a href="db_jobs_delete.html">db_jobs_delete</a>()</code>,
 <code><a href="db_jobs_get.html">db_jobs_get</a>()</code>,
 <code><a href="db_jobs_list.html">db_jobs_list</a>()</code>,
+<code><a href="db_jobs_repair_run.html">db_jobs_repair_run</a>()</code>,
 <code><a href="db_jobs_reset.html">db_jobs_reset</a>()</code>,
 <code><a href="db_jobs_run_now.html">db_jobs_run_now</a>()</code>,
 <code><a href="db_jobs_runs_cancel.html">db_jobs_runs_cancel</a>()</code>,
