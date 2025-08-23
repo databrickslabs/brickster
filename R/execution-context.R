@@ -143,7 +143,9 @@ db_context_command_run <- function(
 
   # only can have one of `command` or `command_file`
   if (!is.null(command) && !is.null(command_file)) {
-    cli::cli_abort("Must specify {.arg command} OR {.arg command_file}, not both.")
+    cli::cli_abort(
+      "Must specify {.arg command} OR {.arg command_file}, not both."
+    )
   }
 
   if (!is.null(command_file)) {
@@ -331,10 +333,14 @@ db_context_command_parse <- function(
 
   # Check for required suggested packages
   required_pkgs <- c("huxtable", "magick", "grid", "htmltools")
-  missing_pkgs <- required_pkgs[!purrr::map_lgl(required_pkgs, rlang::is_installed)]
-  
+  missing_pkgs <- required_pkgs[
+    !purrr::map_lgl(required_pkgs, rlang::is_installed)
+  ]
+
   if (length(missing_pkgs) > 0) {
-    cli::cli_abort("Required packages missing: {.pkg {missing_pkgs}}. Install with: install.packages({deparse(missing_pkgs)})")
+    cli::cli_abort(
+      "Required packages missing: {.pkg {missing_pkgs}}. Install with: install.packages({deparse(missing_pkgs)})"
+    )
   }
 
   if (x$results$resultType == "error") {
@@ -351,7 +357,7 @@ db_context_command_parse <- function(
     names(tbl) <- schema$names
 
     output_tbl <- huxtable::hux(tbl) |>
-      huxtable::set_all_borders(TRUE) |>
+      huxtable::set_all_borders() |>
       huxtable::set_font_size(10) |>
       huxtable::set_position("left")
     huxtable::print_screen(output_tbl)
