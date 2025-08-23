@@ -50,7 +50,14 @@ db_jobs_create <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
-  format <- "MULTI_TASK"
+  # parameters converted to nested structure to conform to api
+  parameters <- purrr::imap(
+    parameters,
+    ~ {
+      list(name = .y, default = .x)
+    }
+  )
+  parameters <- stats::setNames(parameters, NULL)
 
   # jobs clusters is transformed to meet API structure required
   job_clusters <- purrr::imap(
@@ -73,10 +80,10 @@ db_jobs_create <- function(
     timeout_seconds = timeout_seconds,
     schedule = schedule,
     max_concurrent_runs = max_concurrent_runs,
-    format = format,
     access_control_list = access_control_list,
     git_source = git_source,
-    queue = list(enabled = queue)
+    queue = list(enabled = queue),
+    parameters = parameters
   )
 
   body <- purrr::discard(body, is.null)
@@ -240,8 +247,6 @@ db_jobs_reset <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
-  format <- "MULTI_TASK"
-
   job_clusters <- prepare_jobs_clusters(job_clusters)
   body <- list(
     name = name,
@@ -251,7 +256,6 @@ db_jobs_reset <- function(
     timeout_seconds = timeout_seconds,
     schedule = schedule,
     max_concurrent_runs = max_concurrent_runs,
-    format = format,
     access_control_list = access_control_list,
     git_source = git_source,
     queue = list(enabled = queue)
@@ -308,8 +312,6 @@ db_jobs_update <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
-  format <- "MULTI_TASK"
-
   # jobs clusters is transformed to meet API structure required
   job_clusters <- prepare_jobs_clusters(job_clusters)
 
@@ -321,7 +323,6 @@ db_jobs_update <- function(
     timeout_seconds = timeout_seconds,
     schedule = schedule,
     max_concurrent_runs = max_concurrent_runs,
-    format = format,
     access_control_list = access_control_list,
     git_source = git_source,
     queue = list(enabled = queue)
@@ -406,6 +407,14 @@ db_jobs_repair_run <- function(
       choices = c("PERFORMANCE_OPTIMIZED", "STANDARD")
     )
   }
+
+  job_parameters <- purrr::imap(
+    job_parameters,
+    ~ {
+      list(name = .y, default = .x)
+    }
+  )
+  job_parameters <- stats::setNames(job_parameters, NULL)
 
   body <- list(
     run_id = as.character(run_id),
