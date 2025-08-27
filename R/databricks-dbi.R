@@ -11,6 +11,7 @@
 NULL
 
 # S4 Class Definitions --------------------------------------------------------
+setClassUnion("characterOrNULL", c("character", "NULL"))
 
 #' DBI Driver for Databricks
 #' @export
@@ -24,7 +25,7 @@ setClass(
   slots = list(
     warehouse_id = "character",
     host = "character",
-    token = "character",
+    token = "characterOrNULL",
     catalog = "character",
     schema = "character",
     staging_volume = "character"
