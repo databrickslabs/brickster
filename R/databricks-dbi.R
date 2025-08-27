@@ -157,9 +157,7 @@ setMethod("dbIsValid", "DatabricksConnection", function(dbObj, ...) {
   !is.null(dbObj@warehouse_id) &&
     nchar(dbObj@warehouse_id) > 0 &&
     !is.null(dbObj@host) &&
-    nchar(dbObj@host) > 0 &&
-    !is.null(dbObj@token) &&
-    nchar(dbObj@token) > 0
+    nchar(dbObj@host) > 0
 })
 
 
