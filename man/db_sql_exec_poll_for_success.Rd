@@ -4,7 +4,13 @@
 \alias{db_sql_exec_poll_for_success}
 \title{Poll a Query Until Successful}
 \usage{
-db_sql_exec_poll_for_success(statement_id, interval = 1, show_progress = TRUE)
+db_sql_exec_poll_for_success(
+  statement_id,
+  interval = 1,
+  show_progress = TRUE,
+  host = db_host(),
+  token = db_token()
+)
 }
 \arguments{
 \item{statement_id}{String, query execution \code{statement_id}}
@@ -12,6 +18,10 @@ db_sql_exec_poll_for_success(statement_id, interval = 1, show_progress = TRUE)
 \item{interval}{Number of seconds between status checks.}
 
 \item{show_progress}{If TRUE, show progress updates during polling (default: TRUE)}
+
+\item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
+
+\item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}
 }
 \description{
 Poll a Query Until Successful
