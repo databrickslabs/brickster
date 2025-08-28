@@ -496,6 +496,8 @@ db_sql_fetch_results <- function(
     .x = seq.int(total_chunks, from = 0),
     .f = db_sql_exec_result,
     statement_id = statement_id,
+    host = host,
+    token = token,
     perform_request = FALSE
   )
 
