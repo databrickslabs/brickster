@@ -264,13 +264,15 @@ db_sql_exec_result <- function(
 db_sql_exec_poll_for_success <- function(
   statement_id,
   interval = 1,
-  show_progress = TRUE
+  show_progress = TRUE,
+  host = db_host(),
+  token = db_token()
 ) {
   is_query_running <- TRUE
 
   while (is_query_running) {
     Sys.sleep(interval)
-    status <- db_sql_exec_status(statement_id = statement_id)
+    status <- db_sql_exec_status(statement_id = statement_id, host=host, token=token)
 
     if (status$status$state == "SUCCEEDED") {
       is_query_running <- FALSE
@@ -348,7 +350,9 @@ db_sql_exec_and_wait <- function(
     }
     resp <- db_sql_exec_poll_for_success(
       resp$statement_id,
-      show_progress = FALSE
+      show_progress = FALSE,
+      host = host,
+      token = token
     )
   }
 

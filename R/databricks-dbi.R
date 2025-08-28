@@ -371,7 +371,9 @@ setMethod("dbFetch", "DatabricksResult", function(res, n = -1, ...) {
     cli::cli_progress_step("Executing query")
     status <- db_sql_exec_poll_for_success(
       res@statement_id,
-      show_progress = FALSE
+      show_progress = FALSE,
+      host = res@connection@host,
+      token = res@connection@token
     )
   } else {
     # Already completed
