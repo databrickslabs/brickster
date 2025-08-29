@@ -11,6 +11,7 @@
 NULL
 
 # S4 Class Definitions --------------------------------------------------------
+setClassUnion("characterOrNULL", c("character", "NULL"))
 
 #' DBI Driver for Databricks
 #' @export
@@ -24,7 +25,7 @@ setClass(
   slots = list(
     warehouse_id = "character",
     host = "character",
-    token = "character",
+    token = "characterOrNULL",
     catalog = "character",
     schema = "character",
     staging_volume = "character"
@@ -156,9 +157,7 @@ setMethod("dbIsValid", "DatabricksConnection", function(dbObj, ...) {
   !is.null(dbObj@warehouse_id) &&
     nchar(dbObj@warehouse_id) > 0 &&
     !is.null(dbObj@host) &&
-    nchar(dbObj@host) > 0 &&
-    !is.null(dbObj@token) &&
-    nchar(dbObj@token) > 0
+    nchar(dbObj@host) > 0
 })
 
 
@@ -372,7 +371,9 @@ setMethod("dbFetch", "DatabricksResult", function(res, n = -1, ...) {
     cli::cli_progress_step("Executing query")
     status <- db_sql_exec_poll_for_success(
       res@statement_id,
-      show_progress = FALSE
+      show_progress = FALSE,
+      host = res@connection@host,
+      token = res@connection@token
     )
   } else {
     # Already completed
