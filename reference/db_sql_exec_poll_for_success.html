@@ -45,7 +45,13 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">db_sql_exec_poll_for_success</span><span class="op">(</span><span class="va">statement_id</span>, interval <span class="op">=</span> <span class="fl">1</span>, show_progress <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">db_sql_exec_poll_for_success</span><span class="op">(</span></span>
+<span>  <span class="va">statement_id</span>,</span>
+<span>  interval <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  host <span class="op">=</span> <span class="fu"><a href="db_host.html">db_host</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  token <span class="op">=</span> <span class="fu"><a href="db_token.html">db_token</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -62,6 +68,14 @@
 
 <dt id="arg-show-progress">show_progress<a class="anchor" aria-label="anchor" href="#arg-show-progress"></a></dt>
 <dd><p>If TRUE, show progress updates during polling (default: TRUE)</p></dd>
+
+
+<dt id="arg-host">host<a class="anchor" aria-label="anchor" href="#arg-host"></a></dt>
+<dd><p>Databricks workspace URL, defaults to calling <code><a href="db_host.html">db_host()</a></code>.</p></dd>
+
+
+<dt id="arg-token">token<a class="anchor" aria-label="anchor" href="#arg-token"></a></dt>
+<dd><p>Databricks workspace token, defaults to calling <code><a href="db_token.html">db_token()</a></code>.</p></dd>
 
 </dl></div>
 
