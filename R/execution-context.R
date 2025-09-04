@@ -343,7 +343,13 @@ db_context_command_parse <- function(
   }
 
   if (x$results$resultType == "table") {
-    schema <- dplyr::bind_rows(x$results$schema)
+    schema_raw <- x$results$schema
+    schema <- dplyr::bind_rows(schema_raw)
+
+    cat("brickster debug: schema_raw structure:\n")
+    utils::str(schema_raw)
+    cat("brickster debug: schema tibble:\n")
+    print(schema)
 
     tbl <- purrr::list_transpose(x$results$data) |>
       as.data.frame()
@@ -351,7 +357,7 @@ db_context_command_parse <- function(
     names(tbl) <- schema$names
 
     output_tbl <- huxtable::hux(tbl) |>
-      huxtable::set_all_borders(TRUE) |>
+      huxtable::set_all_borders() |>
       huxtable::set_font_size(10) |>
       huxtable::set_position("left")
     huxtable::print_screen(output_tbl)
