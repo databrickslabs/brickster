@@ -79,6 +79,6 @@ When you change between languages all variables should persist unless REPL is ex
 
 -   Not designed to work with interactive serverless compute
 
--   Cannot persist or recover sessions
+-   Optional: persist and reattach sessions by alias (contexts are ephemeral and become invalid if the cluster is restarted or the context expires)
 
 -   Multi-line expressions are only supported for R. Python, Scala, and SQL are limited to single line expressions.

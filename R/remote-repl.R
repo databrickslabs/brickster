@@ -39,17 +39,46 @@ db_context_manager <- R6::R6Class(
       cluster_id,
       language = c("r", "py", "scala", "sql", "sh"),
       host = db_host(),
-      token = db_token()
+      token = db_token(),
+      context_id = NULL
     ) {
       language <- match.arg(language)
       private$cluster_id <- cluster_id
       private$host <- host
       private$token <- token
+
+      # ensure cluster is running (reattach will still need this)
       cluster_info <- get_and_start_cluster(
         private$cluster_id,
         host = host,
         token = token
       )
+
+      # If a context_id is provided, attempt to attach; if invalid, fall back to create
+      if (!is.null(context_id)) {
+        private$context_id <- context_id
+        ok <- try(
+          {
+            db_context_status(
+              cluster_id = private$cluster_id,
+              context_id = private$context_id,
+              host = host,
+              token = token
+            )
+          },
+          silent = TRUE
+        )
+        if (!inherits(ok, "try-error")) {
+          return(invisible(self))
+        } else {
+          cli::cli_alert_info(
+            "Existing execution context is invalid or expired; creating a new one."
+          )
+          private$context_id <- NULL
+        }
+      }
+
+      # Otherwise create a new context
       cli::cli_progress_step(
         msg = "{.header Creating execution context...}",
         msg_done = "{.header Execution context created}"
@@ -104,8 +133,12 @@ db_context_manager <- R6::R6Class(
 )
 # nocov end
 
-repl_prompt <- function(language) {
-  glue::glue("[Databricks][{lang(language)}]> ")
+repl_prompt <- function(language, name = NULL) {
+  if (!is.null(name) && nzchar(name)) {
+    glue::glue("[{name}][{lang(language)}]> ")
+  } else {
+    glue::glue("[Databricks][{lang(language)}]> ")
+  }
 }
 
 # nocov start
@@ -119,12 +152,17 @@ repl_prompt <- function(language) {
 #' @param cluster_id Cluster Id to create REPL context against.
 #' @param language for REPL ('r', 'py', 'scala', 'sql', 'sh') are
 #' supported.
+#' @param name Optional alias to attach/save a context. If provided, `db_repl()`
+#' will attach to an existing saved context for this workspace if present;
+#' otherwise it will create a new context and save it under this alias.
+#' When `name` is provided, the context is not destroyed on exit.
 #' @inheritParams auth_params
 #'
 #' @export
 db_repl <- function(
-  cluster_id,
+  cluster_id = NULL,
   language = c("r", "py", "scala", "sql", "sh"),
+  name = NULL,
   host = db_host(),
   token = db_token()
 ) {
@@ -134,16 +172,77 @@ db_repl <- function(
 
   language <- match.arg(language)
 
-  manager <- db_context_manager$new(
-    cluster_id,
-    if (language == "sh") "py" else language,
-    host = host,
-    token = token
-  )
-  on.exit(manager$close())
+  # If a name is provided and exists, plan to attach; otherwise new and save
+  context_id <- NULL
+  saved <- NULL
+  if (!is.null(name)) {
+    saved <- db_context_lookup(name, host = host)
+    if (!is.null(saved)) {
+      if (is.null(cluster_id)) {
+        cluster_id <- saved$cluster_id
+      }
+      context_id <- saved$context_id
+      cli::cli_alert_info(
+        "Attaching to saved context {.val {name}} on cluster {.val {cluster_id}}"
+      )
+    } else {
+      cli::cli_alert_info(
+        "No saved context {.val {name}}. A new one will be created and saved."
+      )
+    }
+  }
 
-  # prompts for current language
-  prompt_main <- repl_prompt(language)
+  if (is.null(cluster_id)) {
+    cli::cli_abort(
+      "Must supply {.arg cluster_id} or attach via {.arg name} that exists."
+    )
+  }
+
+  manager <- db_context_manager$new(
+    cluster_id = cluster_id,
+    language = if (language == "sh") "py" else language,
+    host = host,
+    token = token,
+    context_id = context_id
+  )
+
+  # If name provided, do not destroy on exit (persistent); otherwise, clean up.
+  if (is.null(name)) {
+    on.exit(manager$close(), add = TRUE)
+  }
+
+  # Register or update alias if name provided
+  if (!is.null(name)) {
+    new_id <- manager$.__enclos_env__$private$context_id
+    if (!is.null(saved)) {
+      if (!identical(saved$context_id, new_id)) {
+        db_context_register(
+          alias = name,
+          cluster_id = cluster_id,
+          context_id = new_id,
+          host = host,
+          language = language
+        )
+        cli::cli_alert_success(
+          "Saved context renewed for {.val {name}} (id: {.val {new_id}})"
+        )
+      }
+    } else {
+      db_context_register(
+        alias = name,
+        cluster_id = cluster_id,
+        context_id = new_id,
+        host = host,
+        language = language
+      )
+      cli::cli_alert_success(
+        "Saved context as {.val {name}} (id: {.val {new_id}})"
+      )
+    }
+  }
+
+  # prompts for current language (prefix with alias if present)
+  prompt_main <- repl_prompt(language, name)
   prompt_cont <- sub("([> ]+)$", "+ ", prompt_main)
   buffer <- character()
 
@@ -161,7 +260,7 @@ db_repl <- function(
       length(buffer) == 0 && line %in% c(":r", ":py", ":scala", ":sql", ":sh")
     ) {
       language <- sub("^:", "", line)
-      prompt_main <- repl_prompt(language)
+      prompt_main <- repl_prompt(language, name)
       prompt_cont <- sub("([> ]+)$", "+ ", prompt_main)
       buffer <- character() # drop any partial R buffer
       next
