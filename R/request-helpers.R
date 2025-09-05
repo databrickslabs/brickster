@@ -10,6 +10,20 @@
 #' @param token Databricks token, defaults to [db_token()].
 #' @param ... Parameters passed on to [httr2::req_body_json()] when `body` is not `NULL`.
 #'
+#' @details
+#'
+#' If you need to pass advanced options to the request, you can use the
+#' option `"brickster.request.options"`. For instance, to force HTTP/1.1 you can
+#' use:
+#'
+#' ```
+#' options("brickster.request.options" = list(
+#'   http_version = curl::curl_symbols("CURL_HTTP_VERSION_1_1")$value)
+#' )
+#' ```
+#'
+#' These options will be passed to [httr2::req_options()].
+#'
 #' @family Request Helpers
 #'
 #' @return request
@@ -34,6 +48,11 @@ db_request <- function(endpoint, method, version = NULL, body = NULL, host, toke
     httr2::req_url_path_append(endpoint) |>
     httr2::req_method(method) |>
     httr2::req_retry(max_tries = 3, backoff = ~ 2)
+
+  req_opt <- getOption("brickster.request.options")
+  if (!is.null(req_opt)) {
+    req <- do.call(httr2::req_options, c(list(req), req_opt))
+  }
 
   # if token is present use directly
   # otherwise initiate OAuth 2.0 U2M Workspace flow

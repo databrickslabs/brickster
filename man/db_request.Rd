@@ -27,6 +27,18 @@ request
 \description{
 Databricks Request Helper
 }
+\details{
+If you need to pass advanced options to the request, you can use the
+option \code{"brickster.request.options"}. For instance, to force HTTP/1.1 you can
+use:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{options("brickster.request.options" = list(
+  http_version = curl::curl_symbols("CURL_HTTP_VERSION_1_1")$value)
+)
+}\if{html}{\out{</div>}}
+
+These options will be passed to \code{\link[httr2:req_options]{httr2::req_options()}}.
+}
 \seealso{
 Other Request Helpers: 
 \code{\link{db_perform_request}()},
