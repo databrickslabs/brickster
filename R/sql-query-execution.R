@@ -272,7 +272,11 @@ db_sql_exec_poll_for_success <- function(
 
   while (is_query_running) {
     Sys.sleep(interval)
-    status <- db_sql_exec_status(statement_id = statement_id, host=host, token=token)
+    status <- db_sql_exec_status(
+      statement_id = statement_id,
+      host = host,
+      token = token
+    )
 
     if (status$status$state == "SUCCEEDED") {
       is_query_running <- FALSE
@@ -462,6 +466,7 @@ db_sql_create_empty_result <- function(manifest) {
 #' @param manifest Query result manifest from status response
 #' @param return_arrow Boolean, return arrow Table instead of tibble
 #' @param max_active_connections Integer for concurrent downloads
+#' @param fetch_timeout Integer, timeout in seconds for downloading each result chunk
 #' @param row_limit Integer, limit number of rows returned (applied after fetch)
 #' @param host Databricks host
 #' @param token Databricks token
@@ -473,6 +478,7 @@ db_sql_fetch_results <- function(
   manifest,
   return_arrow = FALSE,
   max_active_connections = 30,
+  fetch_timeout = 300,
   row_limit = NULL,
   host = db_host(),
   token = db_token(),
@@ -507,11 +513,16 @@ db_sql_fetch_results <- function(
   links <- resps |>
     purrr::map(httr2::resp_body_json) |>
     purrr::map_chr(~ .x$external_links[[1]]$external_link) |>
-    purrr::map(
-      ~ httr2::request(.x) |>
-        httr2::req_retry(max_tries = 3, backoff = ~1) |>
-        httr2::req_timeout(300)
-    )
+    purrr::map(function(link) {
+      req <- httr2::request(link) |>
+        httr2::req_retry(max_tries = 3, backoff = ~1)
+
+      if (!is.null(fetch_timeout)) {
+        req <- httr2::req_timeout(req, fetch_timeout)
+      }
+
+      req
+    })
 
   # Download with progress bar
   ipc_data <- httr2::req_perform_parallel(
@@ -567,6 +578,7 @@ db_sql_fetch_results <- function(
 #' @param return_arrow Boolean, determine if result is [tibble::tibble] or
 #' [arrow::Table].
 #' @param max_active_connections Integer to decide on concurrent downloads.
+#' @param fetch_timeout Integer, timeout in seconds for downloading each result chunk
 #' @param disposition Disposition mode ("INLINE" or "EXTERNAL_LINKS")
 #' @param show_progress If TRUE, show progress updates during query execution (default: TRUE)
 #' @returns [tibble::tibble] or [arrow::Table].
@@ -581,6 +593,7 @@ db_sql_query <- function(
   byte_limit = NULL,
   return_arrow = FALSE,
   max_active_connections = 30,
+  fetch_timeout = 300,
   disposition = "EXTERNAL_LINKS",
   host = db_host(),
   token = db_token(),
@@ -627,6 +640,7 @@ db_sql_query <- function(
       manifest = resp$manifest,
       return_arrow = return_arrow,
       max_active_connections = max_active_connections,
+      fetch_timeout = fetch_timeout,
       row_limit = row_limit,
       host = host,
       token = token,

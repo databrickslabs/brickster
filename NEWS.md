@@ -1,6 +1,7 @@
 # brickster 0.2.10
 - Increment version of httr2 required (>= 1.1.1)
-
+- DBI connections expose `max_active_connections` and `fetch_timeout` to
+  control result download concurrency and timeouts
 
 # brickster 0.2.9
 - Added DBI + dbplyr backend support: `DatabricksSQL()` driver for standard DBI operations

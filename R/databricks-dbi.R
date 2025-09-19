@@ -28,7 +28,9 @@ setClass(
     token = "characterOrNULL",
     catalog = "character",
     schema = "character",
-    staging_volume = "character"
+    staging_volume = "character",
+    max_active_connections = "numeric",
+    fetch_timeout = "numeric"
   )
 )
 
@@ -78,6 +80,10 @@ setMethod("show", "DatabricksDriver", function(object) {
 #' @param catalog Optional catalog name to use as default
 #' @param schema Optional schema name to use as default
 #' @param staging_volume Optional volume path for large dataset staging
+#' @param max_active_connections Maximum number of concurrent download
+#' connections when fetching query results (default: 30)
+#' @param fetch_timeout Timeout in seconds for downloading each result chunk
+#' (default: 300)
 #' @param token Authentication token (defaults to db_token())
 #' @param host Databricks workspace host (defaults to db_host())
 #' @param ... Additional arguments (ignored)
@@ -92,6 +98,8 @@ setMethod(
     catalog = NULL,
     schema = NULL,
     staging_volume = NULL,
+    max_active_connections = 30,
+    fetch_timeout = 300,
     token = db_token(),
     host = db_host(),
     ...
@@ -103,6 +111,14 @@ setMethod(
       cli::cli_abort("warehouse_id must be provided and non-empty")
     }
 
+    if (!is.numeric(max_active_connections) || max_active_connections <= 0) {
+      cli::cli_abort("max_active_connections must be a positive numeric value")
+    }
+
+    if (!is.numeric(fetch_timeout) || fetch_timeout <= 0) {
+      cli::cli_abort("fetch_timeout must be a positive numeric value")
+    }
+
     # Validate connection by testing a simple query
     tryCatch(
       {
@@ -112,6 +128,8 @@ setMethod(
           disposition = "INLINE",
           catalog = catalog,
           schema = schema,
+          max_active_connections = max_active_connections,
+          fetch_timeout = fetch_timeout,
           host = host,
           token = token,
           show_progress = FALSE
@@ -132,7 +150,9 @@ setMethod(
       token = token,
       catalog = if (is.null(catalog)) "" else catalog,
       schema = if (is.null(schema)) "" else schema,
-      staging_volume = if (is.null(staging_volume)) "" else staging_volume
+      staging_volume = if (is.null(staging_volume)) "" else staging_volume,
+      max_active_connections = max_active_connections,
+      fetch_timeout = fetch_timeout
     )
   }
 )
@@ -177,6 +197,8 @@ setMethod("show", "DatabricksConnection", function(object) {
   if (!is.null(object@staging_volume) && nchar(object@staging_volume) > 0) {
     cat("  Staging Volume:", object@staging_volume, "\n")
   }
+  cat("  Max Active Connections:", object@max_active_connections, "\n")
+  cat("  Fetch Timeout (s):", object@fetch_timeout, "\n")
 })
 
 # Query Methods ----------------------------------------------------------------
@@ -258,6 +280,8 @@ setMethod(
       schema = if (nchar(conn@schema) > 0) conn@schema else NULL,
       return_arrow = FALSE,
       disposition = disposition,
+      max_active_connections = conn@max_active_connections,
+      fetch_timeout = conn@fetch_timeout,
       host = conn@host,
       token = conn@token,
       show_progress = show_progress
@@ -390,7 +414,8 @@ setMethod("dbFetch", "DatabricksResult", function(res, n = -1, ...) {
       statement_id = res@statement_id,
       manifest = status$manifest,
       return_arrow = FALSE,
-      max_active_connections = 30,
+      max_active_connections = res@connection@max_active_connections,
+      fetch_timeout = res@connection@fetch_timeout,
       row_limit = if (n > 0) n else NULL,
       host = res@connection@host,
       token = res@connection@token,
@@ -667,6 +692,8 @@ setMethod(
       schema = if (nchar(conn@schema) > 0) conn@schema else NULL,
       return_arrow = FALSE,
       disposition = "INLINE",
+      max_active_connections = conn@max_active_connections,
+      fetch_timeout = conn@fetch_timeout,
       host = conn@host,
       token = conn@token,
       show_progress = FALSE

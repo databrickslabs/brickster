@@ -10,6 +10,8 @@
   catalog = NULL,
   schema = NULL,
   staging_volume = NULL,
+  max_active_connections = 30,
+  fetch_timeout = 300,
   token = db_token(),
   host = db_host(),
   ...
@@ -25,6 +27,12 @@
 \item{schema}{Optional schema name to use as default}
 
 \item{staging_volume}{Optional volume path for large dataset staging}
+
+\item{max_active_connections}{Maximum number of concurrent download
+connections when fetching query results (default: 30)}
+
+\item{fetch_timeout}{Timeout in seconds for downloading each result chunk
+(default: 300)}
 
 \item{token}{Authentication token (defaults to db_token())}
 
