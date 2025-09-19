@@ -30,7 +30,7 @@ Imports:
     dbplyr,
     dplyr,
     glue,
-    httr2 (>= 1.0.4),
+    httr2 (>= 1.1.1),
     ini,
     jsonlite,
     methods,

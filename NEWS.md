@@ -1,3 +1,7 @@
+# brickster 0.2.10
+- Increment version of httr2 required (>= 1.1.1)
+
+
 # brickster 0.2.9
 - Added DBI + dbplyr backend support: `DatabricksSQL()` driver for standard DBI operations
 - Increase support for job level parameters
