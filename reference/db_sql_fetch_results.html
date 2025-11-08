@@ -9,7 +9,7 @@ Handles Arrow stream processing and data conversion."><meta property="og:image" 
 
     <a class="navbar-brand me-2" href="../index.html">brickster</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.10</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,7 +37,7 @@ Handles Arrow stream processing and data conversion."><meta property="og:image" 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Fetch SQL Query Results from Completed Query</h1>
-      <small class="dont-index">Source: <a href="https://github.com/databrickslabs/brickster/blob/v0.2.9/R/sql-query-execution.R" class="external-link"><code>R/sql-query-execution.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/databrickslabs/brickster/blob/main/R/sql-query-execution.R" class="external-link"><code>R/sql-query-execution.R</code></a></small>
       <div class="d-none name"><code>db_sql_fetch_results.Rd</code></div>
     </div>
 
@@ -53,6 +53,7 @@ Handles Arrow stream processing and data conversion.</p>
 <span>  <span class="va">manifest</span>,</span>
 <span>  return_arrow <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  max_active_connections <span class="op">=</span> <span class="fl">30</span>,</span>
+<span>  fetch_timeout <span class="op">=</span> <span class="fl">300</span>,</span>
 <span>  row_limit <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  host <span class="op">=</span> <span class="fu"><a href="db_host.html">db_host</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  token <span class="op">=</span> <span class="fu"><a href="db_token.html">db_token</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -78,6 +79,10 @@ Handles Arrow stream processing and data conversion.</p>
 
 <dt id="arg-max-active-connections">max_active_connections<a class="anchor" aria-label="anchor" href="#arg-max-active-connections"></a></dt>
 <dd><p>Integer for concurrent downloads</p></dd>
+
+
+<dt id="arg-fetch-timeout">fetch_timeout<a class="anchor" aria-label="anchor" href="#arg-fetch-timeout"></a></dt>
+<dd><p>Integer, timeout in seconds for downloading each result chunk</p></dd>
 
 
 <dt id="arg-row-limit">row_limit<a class="anchor" aria-label="anchor" href="#arg-row-limit"></a></dt>
@@ -110,7 +115,7 @@ Handles Arrow stream processing and data conversion.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

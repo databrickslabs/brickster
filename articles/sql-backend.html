@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">brickster</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.10</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,7 +66,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>`{DBI}`/`{dbplyr}` backend</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/databrickslabs/brickster/blob/v0.2.9/vignettes/sql-backend.Rmd" class="external-link"><code>vignettes/sql-backend.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/databrickslabs/brickster/blob/main/vignettes/sql-backend.Rmd" class="external-link"><code>vignettes/sql-backend.Rmd</code></a></small>
       <div class="d-none name"><code>sql-backend.Rmd</code></div>
     </div>
 
@@ -197,27 +197,28 @@ to be specified when establishing the connection, or directly to
 <code>dbWriteQuery</code>.</p>
 <p>Ensure that <code>staging_volume</code> is a valid Volume path and
 you have permission to write files.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># small data (150 rows)</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co"># generates an in-line CTAS</span></span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="fu">dbWriteTable</span>(</span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">conn =</span> con,</span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">name =</span> <span class="fu">Id</span>(<span class="at">catalog =</span> <span class="st">"&lt;catalog&gt;"</span>, <span class="at">schema =</span> <span class="st">"&lt;schema&gt;"</span>, <span class="at">table =</span> <span class="st">"&lt;table&gt;"</span>),</span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">value =</span> iris,</span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="at">overwrite =</span> <span class="cn">TRUE</span></span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>)</span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a></span>
-<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co"># bigger data (4 million rows)</span></span>
-<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co"># writes parquet files to volume then CTAS</span></span>
-<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>iris_big <span class="ot">&lt;-</span> <span class="fu">sample_n</span>(iris, <span class="at">replace =</span> <span class="cn">TRUE</span>, <span class="at">size =</span> <span class="dv">4000000</span>)</span>
-<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a></span>
-<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="fu">dbWriteTable</span>(</span>
-<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  <span class="at">conn =</span> con,</span>
-<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>  <span class="at">name =</span> <span class="fu">Id</span>(<span class="at">catalog =</span> <span class="st">"&lt;catalog&gt;"</span>, <span class="at">schema =</span> <span class="st">"&lt;schema&gt;"</span>, <span class="at">table =</span> <span class="st">"&lt;table&gt;"</span>),</span>
-<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>  <span class="at">value =</span> iris_big,</span>
-<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>  <span class="at">overwrite =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>  <span class="at">staging_volume =</span> <span class="st">"/Volumes/&lt;catalog&gt;/&lt;schema&gt;/&lt;volume&gt;/..."</span> <span class="co"># or inherited from connection</span></span>
-<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>  <span class="at">progress =</span> <span class="cn">TRUE</span></span>
-<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># small data (150 rows)</span></span>
+<span><span class="co"># creates the table schema explicitly then inserts rows inline</span></span>
+<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable</a></span><span class="op">(</span></span>
+<span>  conn <span class="op">=</span> <span class="va">con</span>,</span>
+<span>  name <span class="op">=</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/Id.html" class="external-link">Id</a></span><span class="op">(</span>catalog <span class="op">=</span> <span class="st">"&lt;catalog&gt;"</span>, schema <span class="op">=</span> <span class="st">"&lt;schema&gt;"</span>, table <span class="op">=</span> <span class="st">"&lt;table&gt;"</span><span class="op">)</span>,</span>
+<span>  value <span class="op">=</span> <span class="va">iris</span>,</span>
+<span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># bigger data (4 million rows)</span></span>
+<span><span class="co"># writes parquet files to volume then CTAS</span></span>
+<span><span class="va">iris_big</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/sample_n.html" class="external-link">sample_n</a></span><span class="op">(</span><span class="va">iris</span>, replace <span class="op">=</span> <span class="cn">TRUE</span>, size <span class="op">=</span> <span class="fl">4000000</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable</a></span><span class="op">(</span></span>
+<span>  conn <span class="op">=</span> <span class="va">con</span>,</span>
+<span>  name <span class="op">=</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/Id.html" class="external-link">Id</a></span><span class="op">(</span>catalog <span class="op">=</span> <span class="st">"&lt;catalog&gt;"</span>, schema <span class="op">=</span> <span class="st">"&lt;schema&gt;"</span>, table <span class="op">=</span> <span class="st">"&lt;table&gt;"</span><span class="op">)</span>,</span>
+<span>  value <span class="op">=</span> <span class="va">iris_big</span>,</span>
+<span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  staging_volume <span class="op">=</span> <span class="st">"/Volumes/&lt;catalog&gt;/&lt;schema&gt;/&lt;volume&gt;/..."</span>, <span class="co"># or inherited from connection</span></span>
+<span>  progress <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -283,7 +284,13 @@ makes functions like <code>copy_to</code> only usable when specifying
 <code>temporary</code> as <code>FALSE</code> which will use
 <code>dbWriteTable</code> to create a table.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">iris_remote</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/copy_to.html" class="external-link">copy_to</a></span><span class="op">(</span><span class="va">con</span>, <span class="va">iris</span>, <span class="st">"iris_table"</span>, temporary <span class="op">=</span> <span class="cn">FALSE</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">iris_remote</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/copy_to.html" class="external-link">copy_to</a></span><span class="op">(</span></span>
+<span>  <span class="va">con</span>,</span>
+<span>  <span class="va">iris</span>,</span>
+<span>  <span class="st">"iris_table"</span>,</span>
+<span>  temporary <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="connection-management">Connection Management<a class="anchor" aria-label="anchor" href="#connection-management"></a>
@@ -316,7 +323,7 @@ improve the performance of data loading.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

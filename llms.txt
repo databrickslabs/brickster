@@ -1,0 +1,877 @@
+# [brickster](https://databrickslabs.github.io/brickster/)
+
+## Overview
+
+[brickster](https://github.com/databrickslabs/brickster) is the R
+toolkit for Databricks, it includes:
+
+- Wrappers for [Databricks
+  API’s](https://docs.databricks.com/api/workspace/introduction)
+  (e.g. [`db_cluster_list`](https://databrickslabs.github.io/brickster/reference/db_cluster_list.html),
+  [`db_volume_read`](https://databrickslabs.github.io/brickster/reference/db_volume_read.html))
+
+- Browser workspace assets via RStudio Connections Pane
+  ([`open_workspace()`](https://databrickslabs.github.io/brickster/reference/open_workspace.html))
+
+- [DBI](https://dbi.r-dbi.org) + [dbplyr](https://dbplyr.tidyverse.org/)
+  backend (no more ODBC installs!)
+
+- Interactive Databricks REPL
+
+## Quick Start
+
+``` r
+library(brickster)
+
+# only requires `DATABRICKS_HOST` if using OAuth U2M
+# first request will open browser window to login
+Sys.setenv(DATABRICKS_HOST = "https://<workspace-prefix>.cloud.databricks.com")
+
+# open RStudio/Positron connection pane to view Databricks resources
+open_workspace()
+
+# list all SQL warehouses
+warehouses <- db_sql_warehouse_list()
+```
+
+Refer to the [“Connect to a Databricks
+Workspace”](https://databrickslabs.github.io/brickster/articles/setup-auth.html)
+article for more details on getting authentication configured.
+
+## Usage
+
+### `{DBI}` Backend
+
+``` r
+library(brickster)
+library(DBI)
+
+# Connect to Databricks using DBI (assumes you followed quickstart to authenticate)
+con <- dbConnect(
+  DatabricksSQL(),
+  warehouse_id = "<warehouse-id>"
+)
+
+# Standard {DBI} operations
+tables <- dbListTables(con)
+dbGetQuery(con, "SELECT * FROM samples.nyctaxi.trips LIMIT 5")
+
+# Use with {dbplyr} for {dplyr} syntax
+library(dplyr)
+library(dbplyr)
+
+nyc_taxi <- tbl(con, I("samples.nyctaxi.trips"))
+
+result <- nyc_taxi |>
+  filter(year(tpep_pickup_datetime) == 2016) |>
+  group_by(pickup_zip) |>
+  summarise(
+    trip_count = n(),
+    avg_fare = mean(fare_amount, na.rm = TRUE),
+    avg_distance = mean(trip_distance, na.rm = TRUE)
+  ) |>
+  collect()
+```
+
+### Download & Upload to Volume
+
+``` r
+library(readr)
+library(brickster)
+
+# upload `data.csv` to a volume
+local_file <- tempfile(fileext = ".csv")
+write_csv(x = iris, file = local_file)
+db_volume_write(
+  path = "/Volumes/<catalog>/<schema>/<volume>/data.csv",
+  file = local_file
+)
+
+# read `data.csv` from a volume and write to a file
+downloaded_file <- tempfile(fileext = ".csv")
+file <- db_volume_read(
+  path = "/Volumes/<catalog>/<schema>/<volume>/data.csv",
+  destination = downloaded_file
+)
+volume_csv <- read_csv(downloaded_file)
+```
+
+### Databricks REPL
+
+Run commands against an existing interactive Databricks cluster, read
+this
+[article](https://databrickslabs.github.io/brickster/articles/remote-repl.html)
+for more details.
+
+``` r
+library(brickster)
+
+# commands after this will run on the interactive cluster
+# read the vignette for more details
+db_repl(cluster_id = "<interactive_cluster_id>")
+```
+
+![](gifs/db_repl.gif)
+
+## Installation
+
+    install.packages("brickster")
+
+### Development Version
+
+    # install.packages("pak")
+    pak::pak("databrickslabs/brickster")
+
+## API Coverage
+
+[brickster](https://github.com/databrickslabs/brickster) is very
+deliberate with choosing what API’s are wrapped.
+[brickster](https://github.com/databrickslabs/brickster) isn’t intended
+to replace IaC tooling (e.g. [Terraform](#id_0)) or to be used for
+account/workspace administration.
+
+| API                                                                                     | Available | Version |
+|-----------------------------------------------------------------------------------------|-----------|---------|
+| [DBFS](https://docs.databricks.com/api/workspace/dbfs)                                  | Yes       | 2.0     |
+| [Secrets](https://docs.databricks.com/api/workspace/secrets)                            | Yes       | 2.0     |
+| [Repos](https://docs.databricks.com/api/workspace/repos)                                | Yes       | 2.0     |
+| [mlflow Model Registry](https://docs.databricks.com/api/workspace/modelregistry)        | Yes       | 2.0     |
+| [Clusters](https://docs.databricks.com/api/workspace/clusters)                          | Yes       | 2.0     |
+| [Libraries](https://docs.databricks.com/api/workspace/libraries)                        | Yes       | 2.0     |
+| [Workspace](https://docs.databricks.com/api/workspace/workspace)                        | Yes       | 2.0     |
+| [Endpoints](https://docs.databricks.com/api/workspace/warehouses)                       | Yes       | 2.0     |
+| [Query History](https://docs.databricks.com/api/workspace/queryhistory)                 | Yes       | 2.0     |
+| [Jobs](https://docs.databricks.com/api/workspace/jobs)                                  | Yes       | 2.1     |
+| [Volumes (Files)](https://docs.databricks.com/api/workspace/files)                      | Yes       | 2.0     |
+| [SQL Statement Execution](https://docs.databricks.com/api/workspace/statementexecution) | Yes       | 2.0     |
+| [REST 1.2 Commands](https://docs.databricks.com/api/workspace/commandexecution)         | Partially | 1.2     |
+| [Unity Catalog - Tables](https://docs.databricks.com/api/workspace/tables)              | Yes       | 2.1     |
+| [Unity Catalog - Volumes](https://docs.databricks.com/api/workspace/volumes)            | Yes       | 2.1     |
+| [Unity Catalog](https://docs.databricks.com/api/workspace/catalogs)                     | Partially | 2.1     |
+
+# Package index
+
+## Authentication
+
+- [`db_host()`](https://databrickslabs.github.io/brickster/reference/db_host.md)
+  : Generate/Fetch Databricks Host
+- [`db_token()`](https://databrickslabs.github.io/brickster/reference/db_token.md)
+  : Fetch Databricks Token
+- [`db_wsid()`](https://databrickslabs.github.io/brickster/reference/db_wsid.md)
+  : Fetch Databricks Workspace ID
+- [`db_read_netrc()`](https://databrickslabs.github.io/brickster/reference/db_read_netrc.md)
+  : Read .netrc File
+- [`db_current_user()`](https://databrickslabs.github.io/brickster/reference/db_current_user.md)
+  : Get Current User Info
+- [`db_current_workspace_id()`](https://databrickslabs.github.io/brickster/reference/db_current_workspace_id.md)
+  : Detect Current Workspace ID
+- [`db_current_cloud()`](https://databrickslabs.github.io/brickster/reference/db_current_cloud.md)
+  : Detect Current Workspaces Cloud
+
+## Catalogs (Unity Catalog)
+
+- [`db_uc_catalogs_get()`](https://databrickslabs.github.io/brickster/reference/db_uc_catalogs_get.md)
+  : Get Catalog (Unity Catalog)
+- [`db_uc_catalogs_list()`](https://databrickslabs.github.io/brickster/reference/db_uc_catalogs_list.md)
+  : List Catalogs (Unity Catalog)
+
+## Clusters
+
+- [`db_cluster_action()`](https://databrickslabs.github.io/brickster/reference/db_cluster_action.md)
+  : Cluster Action Helper Function
+- [`db_cluster_create()`](https://databrickslabs.github.io/brickster/reference/db_cluster_create.md)
+  : Create a Cluster
+- [`db_cluster_delete()`](https://databrickslabs.github.io/brickster/reference/db_cluster_delete.md)
+  : Delete/Terminate a Cluster
+- [`db_cluster_edit()`](https://databrickslabs.github.io/brickster/reference/db_cluster_edit.md)
+  : Edit a Cluster
+- [`db_cluster_events()`](https://databrickslabs.github.io/brickster/reference/db_cluster_events.md)
+  : List Cluster Activity Events
+- [`db_cluster_get()`](https://databrickslabs.github.io/brickster/reference/db_cluster_get.md)
+  : Get Details of a Cluster
+- [`db_cluster_list()`](https://databrickslabs.github.io/brickster/reference/db_cluster_list.md)
+  : List Clusters
+- [`db_cluster_list_node_types()`](https://databrickslabs.github.io/brickster/reference/db_cluster_list_node_types.md)
+  : List Available Cluster Node Types
+- [`db_cluster_list_zones()`](https://databrickslabs.github.io/brickster/reference/db_cluster_list_zones.md)
+  : List Availability Zones (AWS Only)
+- [`db_cluster_perm_delete()`](https://databrickslabs.github.io/brickster/reference/db_cluster_perm_delete.md)
+  : Permanently Delete a Cluster
+- [`db_cluster_pin()`](https://databrickslabs.github.io/brickster/reference/db_cluster_pin.md)
+  : Pin a Cluster
+- [`db_cluster_resize()`](https://databrickslabs.github.io/brickster/reference/db_cluster_resize.md)
+  : Resize a Cluster
+- [`db_cluster_restart()`](https://databrickslabs.github.io/brickster/reference/db_cluster_restart.md)
+  : Restart a Cluster
+- [`db_cluster_runtime_versions()`](https://databrickslabs.github.io/brickster/reference/db_cluster_runtime_versions.md)
+  : List Available Databricks Runtime Versions
+- [`db_cluster_start()`](https://databrickslabs.github.io/brickster/reference/db_cluster_start.md)
+  : Start a Cluster
+- [`db_cluster_terminate()`](https://databrickslabs.github.io/brickster/reference/db_cluster_terminate.md)
+  : Delete/Terminate a Cluster
+- [`db_cluster_unpin()`](https://databrickslabs.github.io/brickster/reference/db_cluster_unpin.md)
+  : Unpin a Cluster
+- [`get_and_start_cluster()`](https://databrickslabs.github.io/brickster/reference/get_and_start_cluster.md)
+  : Get and Start Cluster
+- [`get_latest_dbr()`](https://databrickslabs.github.io/brickster/reference/get_latest_dbr.md)
+  : Get Latest Databricks Runtime (DBR)
+- [`aws_attributes()`](https://databrickslabs.github.io/brickster/reference/aws_attributes.md)
+  : AWS Attributes
+- [`gcp_attributes()`](https://databrickslabs.github.io/brickster/reference/gcp_attributes.md)
+  : GCP Attributes
+- [`azure_attributes()`](https://databrickslabs.github.io/brickster/reference/azure_attributes.md)
+  : Azure Attributes
+- [`cluster_autoscale()`](https://databrickslabs.github.io/brickster/reference/cluster_autoscale.md)
+  : Cluster Autoscale
+- [`dbfs_storage_info()`](https://databrickslabs.github.io/brickster/reference/dbfs_storage_info.md)
+  : DBFS Storage Information
+- [`file_storage_info()`](https://databrickslabs.github.io/brickster/reference/file_storage_info.md)
+  : File Storage Information
+- [`s3_storage_info()`](https://databrickslabs.github.io/brickster/reference/s3_storage_info.md)
+  : S3 Storage Info
+- [`cluster_log_conf()`](https://databrickslabs.github.io/brickster/reference/cluster_log_conf.md)
+  : Cluster Log Configuration
+- [`docker_image()`](https://databrickslabs.github.io/brickster/reference/docker_image.md)
+  : Docker Image
+- [`init_script_info()`](https://databrickslabs.github.io/brickster/reference/init_script_info.md)
+  : Init Script Info
+- [`access_control_request()`](https://databrickslabs.github.io/brickster/reference/access_control_request.md)
+  : Access Control Request
+- [`access_control_req_user()`](https://databrickslabs.github.io/brickster/reference/access_control_req_user.md)
+  : Access Control Request For User
+- [`access_control_req_group()`](https://databrickslabs.github.io/brickster/reference/access_control_req_group.md)
+  : Access Control Request for Group
+
+## Cluster Libraries
+
+- [`db_libs_all_cluster_statuses()`](https://databrickslabs.github.io/brickster/reference/db_libs_all_cluster_statuses.md)
+  : Get Status of All Libraries on All Clusters
+- [`db_libs_cluster_status()`](https://databrickslabs.github.io/brickster/reference/db_libs_cluster_status.md)
+  : Get Status of Libraries on Cluster
+- [`db_libs_install()`](https://databrickslabs.github.io/brickster/reference/db_libs_install.md)
+  : Install Library on Cluster
+- [`db_libs_uninstall()`](https://databrickslabs.github.io/brickster/reference/db_libs_uninstall.md)
+  : Uninstall Library on Cluster
+- [`wait_for_lib_installs()`](https://databrickslabs.github.io/brickster/reference/wait_for_lib_installs.md)
+  : Wait for Libraries to Install on Databricks Cluster
+
+## Databricks Notebook Helpers
+
+- [`in_databricks_nb()`](https://databrickslabs.github.io/brickster/reference/in_databricks_nb.md)
+  : Detect if running within Databricks Notebook
+
+## DBFS
+
+- [`db_dbfs_add_block()`](https://databrickslabs.github.io/brickster/reference/db_dbfs_add_block.md)
+  : DBFS Add Block
+- [`db_dbfs_close()`](https://databrickslabs.github.io/brickster/reference/db_dbfs_close.md)
+  : DBFS Close
+- [`db_dbfs_create()`](https://databrickslabs.github.io/brickster/reference/db_dbfs_create.md)
+  : DBFS Create
+- [`db_dbfs_delete()`](https://databrickslabs.github.io/brickster/reference/db_dbfs_delete.md)
+  : DBFS Delete
+- [`db_dbfs_get_status()`](https://databrickslabs.github.io/brickster/reference/db_dbfs_get_status.md)
+  : DBFS Get Status
+- [`db_dbfs_list()`](https://databrickslabs.github.io/brickster/reference/db_dbfs_list.md)
+  : DBFS List
+- [`db_dbfs_mkdirs()`](https://databrickslabs.github.io/brickster/reference/db_dbfs_mkdirs.md)
+  : DBFS mkdirs
+- [`db_dbfs_move()`](https://databrickslabs.github.io/brickster/reference/db_dbfs_move.md)
+  : DBFS Move
+- [`db_dbfs_put()`](https://databrickslabs.github.io/brickster/reference/db_dbfs_put.md)
+  : DBFS Put
+- [`db_dbfs_read()`](https://databrickslabs.github.io/brickster/reference/db_dbfs_read.md)
+  : DBFS Read
+
+## Volume FileSystem
+
+- [`db_volume_delete()`](https://databrickslabs.github.io/brickster/reference/db_volume_delete.md)
+  : Volume FileSystem Delete
+- [`db_volume_dir_create()`](https://databrickslabs.github.io/brickster/reference/db_volume_dir_create.md)
+  : Volume FileSystem Create Directory
+- [`db_volume_dir_delete()`](https://databrickslabs.github.io/brickster/reference/db_volume_dir_delete.md)
+  : Volume FileSystem Delete Directory
+- [`db_volume_dir_exists()`](https://databrickslabs.github.io/brickster/reference/db_volume_dir_exists.md)
+  : Volume FileSystem Check Directory Exists
+- [`db_volume_file_exists()`](https://databrickslabs.github.io/brickster/reference/db_volume_file_exists.md)
+  : Volume FileSystem File Status
+- [`db_volume_list()`](https://databrickslabs.github.io/brickster/reference/db_volume_list.md)
+  : Volume FileSystem List Directory Contents
+- [`db_volume_read()`](https://databrickslabs.github.io/brickster/reference/db_volume_read.md)
+  : Volume FileSystem Read
+- [`db_volume_recursive_delete_contents()`](https://databrickslabs.github.io/brickster/reference/db_volume_recursive_delete_contents.md)
+  : Recursively delete all contents of a volume directory
+- [`db_volume_upload_dir()`](https://databrickslabs.github.io/brickster/reference/db_volume_upload_dir.md)
+  : Upload Directory to Volume in Parallel
+- [`db_volume_write()`](https://databrickslabs.github.io/brickster/reference/db_volume_write.md)
+  : Volume FileSystem Write
+
+## Volumes (Unity Catalog)
+
+- [`db_uc_volumes_create()`](https://databrickslabs.github.io/brickster/reference/db_uc_volumes_create.md)
+  : Update Volume (Unity Catalog)
+- [`db_uc_volumes_delete()`](https://databrickslabs.github.io/brickster/reference/db_uc_volumes_delete.md)
+  : Delete Volume (Unity Catalog)
+- [`db_uc_volumes_get()`](https://databrickslabs.github.io/brickster/reference/db_uc_volumes_get.md)
+  : Get Volume (Unity Catalog)
+- [`db_uc_volumes_list()`](https://databrickslabs.github.io/brickster/reference/db_uc_volumes_list.md)
+  : List Volumes (Unity Catalog)
+- [`db_uc_volumes_update()`](https://databrickslabs.github.io/brickster/reference/db_uc_volumes_update.md)
+  : Update Volume (Unity Catalog)
+
+## Execution Contexts
+
+- [`db_context_command_cancel()`](https://databrickslabs.github.io/brickster/reference/db_context_command_cancel.md)
+  : Cancel a Command
+- [`db_context_command_parse()`](https://databrickslabs.github.io/brickster/reference/db_context_command_parse.md)
+  : Parse Command Results
+- [`db_context_command_run()`](https://databrickslabs.github.io/brickster/reference/db_context_command_run.md)
+  : Run a Command
+- [`db_context_command_run_and_wait()`](https://databrickslabs.github.io/brickster/reference/db_context_command_run_and_wait.md)
+  : Run a Command and Wait For Results
+- [`db_context_command_status()`](https://databrickslabs.github.io/brickster/reference/db_context_command_status.md)
+  : Get Information About a Command
+- [`db_context_create()`](https://databrickslabs.github.io/brickster/reference/db_context_create.md)
+  : Create an Execution Context
+- [`db_context_destroy()`](https://databrickslabs.github.io/brickster/reference/db_context_destroy.md)
+  : Delete an Execution Context
+- [`db_context_manager`](https://databrickslabs.github.io/brickster/reference/db_context_manager.md)
+  : Databricks Execution Context Manager (R6 Class)
+- [`db_context_status()`](https://databrickslabs.github.io/brickster/reference/db_context_status.md)
+  : Get Information About an Execution Context
+
+## Jobs
+
+- [`db_jobs_create()`](https://databrickslabs.github.io/brickster/reference/db_jobs_create.md)
+  : Create Job
+- [`db_jobs_delete()`](https://databrickslabs.github.io/brickster/reference/db_jobs_delete.md)
+  : Delete a Job
+- [`db_jobs_get()`](https://databrickslabs.github.io/brickster/reference/db_jobs_get.md)
+  : Get Job Details
+- [`db_jobs_list()`](https://databrickslabs.github.io/brickster/reference/db_jobs_list.md)
+  : List Jobs
+- [`db_jobs_repair_run()`](https://databrickslabs.github.io/brickster/reference/db_jobs_repair_run.md)
+  : Repair A Job Run
+- [`db_jobs_reset()`](https://databrickslabs.github.io/brickster/reference/db_jobs_reset.md)
+  : Overwrite All Settings For A Job
+- [`db_jobs_run_now()`](https://databrickslabs.github.io/brickster/reference/db_jobs_run_now.md)
+  : Trigger A New Job Run
+- [`db_jobs_runs_cancel()`](https://databrickslabs.github.io/brickster/reference/db_jobs_runs_cancel.md)
+  : Cancel Job Run
+- [`db_jobs_runs_delete()`](https://databrickslabs.github.io/brickster/reference/db_jobs_runs_delete.md)
+  : Delete Job Run
+- [`db_jobs_runs_export()`](https://databrickslabs.github.io/brickster/reference/db_jobs_runs_export.md)
+  : Export Job Run Output
+- [`db_jobs_runs_get()`](https://databrickslabs.github.io/brickster/reference/db_jobs_runs_get.md)
+  : Get Job Run Details
+- [`db_jobs_runs_get_output()`](https://databrickslabs.github.io/brickster/reference/db_jobs_runs_get_output.md)
+  : Get Job Run Output
+- [`db_jobs_runs_list()`](https://databrickslabs.github.io/brickster/reference/db_jobs_runs_list.md)
+  : List Job Runs
+- [`db_jobs_runs_submit()`](https://databrickslabs.github.io/brickster/reference/db_jobs_runs_submit.md)
+  : Create And Trigger A One-Time Run
+- [`db_jobs_update()`](https://databrickslabs.github.io/brickster/reference/db_jobs_update.md)
+  : Partially Update A Job
+- [`job_tasks()`](https://databrickslabs.github.io/brickster/reference/job_tasks.md)
+  : Job Tasks
+- [`job_task()`](https://databrickslabs.github.io/brickster/reference/job_task.md)
+  : Job Task
+- [`notebook_task()`](https://databrickslabs.github.io/brickster/reference/notebook_task.md)
+  : Notebook Task
+- [`spark_jar_task()`](https://databrickslabs.github.io/brickster/reference/spark_jar_task.md)
+  : Spark Jar Task
+- [`spark_python_task()`](https://databrickslabs.github.io/brickster/reference/spark_python_task.md)
+  : Spark Python Task
+- [`spark_submit_task()`](https://databrickslabs.github.io/brickster/reference/spark_submit_task.md)
+  : Spark Submit Task
+- [`pipeline_task()`](https://databrickslabs.github.io/brickster/reference/pipeline_task.md)
+  : Pipeline Task
+- [`python_wheel_task()`](https://databrickslabs.github.io/brickster/reference/python_wheel_task.md)
+  : Python Wheel Task
+- [`for_each_task()`](https://databrickslabs.github.io/brickster/reference/for_each_task.md)
+  : For Each Task
+- [`condition_task()`](https://databrickslabs.github.io/brickster/reference/condition_task.md)
+  : Condition Task
+- [`sql_query_task()`](https://databrickslabs.github.io/brickster/reference/sql_query_task.md)
+  : SQL Query Task
+- [`sql_file_task()`](https://databrickslabs.github.io/brickster/reference/sql_file_task.md)
+  : SQL File Task
+- [`run_job_task()`](https://databrickslabs.github.io/brickster/reference/run_job_task.md)
+  : Run Job Task
+- [`new_cluster()`](https://databrickslabs.github.io/brickster/reference/new_cluster.md)
+  : New Cluster
+- [`libraries()`](https://databrickslabs.github.io/brickster/reference/libraries.md)
+  : Libraries
+- [`lib_cran()`](https://databrickslabs.github.io/brickster/reference/lib_cran.md)
+  : Cran Library (R)
+- [`lib_egg()`](https://databrickslabs.github.io/brickster/reference/lib_egg.md)
+  : Egg Library (Python)
+- [`lib_jar()`](https://databrickslabs.github.io/brickster/reference/lib_jar.md)
+  : Jar Library (Scala)
+- [`lib_maven()`](https://databrickslabs.github.io/brickster/reference/lib_maven.md)
+  : Maven Library (Scala)
+- [`lib_pypi()`](https://databrickslabs.github.io/brickster/reference/lib_pypi.md)
+  : PyPi Library (Python)
+- [`lib_whl()`](https://databrickslabs.github.io/brickster/reference/lib_whl.md)
+  : Wheel Library (Python)
+- [`email_notifications()`](https://databrickslabs.github.io/brickster/reference/email_notifications.md)
+  : Email Notifications
+- [`cron_schedule()`](https://databrickslabs.github.io/brickster/reference/cron_schedule.md)
+  : Cron Schedule
+- [`git_source()`](https://databrickslabs.github.io/brickster/reference/git_source.md)
+  : Git Source for Job Notebook Tasks
+
+## Mlflow Model Registry
+
+- [`db_mlflow_model_approve_transition_req()`](https://databrickslabs.github.io/brickster/reference/db_mlflow_model_approve_transition_req.md)
+  : Approve Model Version Stage Transition Request
+- [`db_mlflow_model_delete_transition_req()`](https://databrickslabs.github.io/brickster/reference/db_mlflow_model_delete_transition_req.md)
+  : Delete a Model Version Stage Transition Request
+- [`db_mlflow_model_open_transition_reqs()`](https://databrickslabs.github.io/brickster/reference/db_mlflow_model_open_transition_reqs.md)
+  : Get All Open Stage Transition Requests for the Model Version
+- [`db_mlflow_model_reject_transition_req()`](https://databrickslabs.github.io/brickster/reference/db_mlflow_model_reject_transition_req.md)
+  : Reject Model Version Stage Transition Request
+- [`db_mlflow_model_transition_req()`](https://databrickslabs.github.io/brickster/reference/db_mlflow_model_transition_req.md)
+  : Make a Model Version Stage Transition Request
+- [`db_mlflow_model_transition_stage()`](https://databrickslabs.github.io/brickster/reference/db_mlflow_model_transition_stage.md)
+  : Transition a Model Version's Stage
+- [`db_mlflow_model_version_comment()`](https://databrickslabs.github.io/brickster/reference/db_mlflow_model_version_comment.md)
+  : Make a Comment on a Model Version
+- [`db_mlflow_model_version_comment_delete()`](https://databrickslabs.github.io/brickster/reference/db_mlflow_model_version_comment_delete.md)
+  : Delete a Comment on a Model Version
+- [`db_mlflow_model_version_comment_edit()`](https://databrickslabs.github.io/brickster/reference/db_mlflow_model_version_comment_edit.md)
+  : Edit a Comment on a Model Version
+- [`db_mlflow_registered_model_details()`](https://databrickslabs.github.io/brickster/reference/db_mlflow_registered_model_details.md)
+  : Get Registered Model Details
+
+## R Library Management
+
+- [`add_lib_path()`](https://databrickslabs.github.io/brickster/reference/add_lib_path.md)
+  : Add Library Path
+- [`remove_lib_path()`](https://databrickslabs.github.io/brickster/reference/remove_lib_path.md)
+  : Remove Library Path
+
+## Repos
+
+- [`db_repo_create()`](https://databrickslabs.github.io/brickster/reference/db_repo_create.md)
+  : Create Repo
+- [`db_repo_delete()`](https://databrickslabs.github.io/brickster/reference/db_repo_delete.md)
+  : Delete Repo
+- [`db_repo_get()`](https://databrickslabs.github.io/brickster/reference/db_repo_get.md)
+  : Get Repo
+- [`db_repo_get_all()`](https://databrickslabs.github.io/brickster/reference/db_repo_get_all.md)
+  : Get All Repos
+- [`db_repo_update()`](https://databrickslabs.github.io/brickster/reference/db_repo_update.md)
+  : Update Repo
+
+## Schemas (Unity Catalog)
+
+- [`db_uc_schemas_get()`](https://databrickslabs.github.io/brickster/reference/db_uc_schemas_get.md)
+  : Get Schema (Unity Catalog)
+- [`db_uc_schemas_list()`](https://databrickslabs.github.io/brickster/reference/db_uc_schemas_list.md)
+  : List Schemas (Unity Catalog)
+
+## Secrets
+
+- [`db_secrets_delete()`](https://databrickslabs.github.io/brickster/reference/db_secrets_delete.md)
+  : Delete Secret in Secret Scope
+- [`db_secrets_list()`](https://databrickslabs.github.io/brickster/reference/db_secrets_list.md)
+  : List Secrets in Secret Scope
+- [`db_secrets_put()`](https://databrickslabs.github.io/brickster/reference/db_secrets_put.md)
+  : Put Secret in Secret Scope
+- [`db_secrets_scope_acl_delete()`](https://databrickslabs.github.io/brickster/reference/db_secrets_scope_acl_delete.md)
+  : Delete Secret Scope ACL
+- [`db_secrets_scope_acl_get()`](https://databrickslabs.github.io/brickster/reference/db_secrets_scope_acl_get.md)
+  : Get Secret Scope ACL
+- [`db_secrets_scope_acl_list()`](https://databrickslabs.github.io/brickster/reference/db_secrets_scope_acl_list.md)
+  : List Secret Scope ACL's
+- [`db_secrets_scope_acl_put()`](https://databrickslabs.github.io/brickster/reference/db_secrets_scope_acl_put.md)
+  : Put ACL on Secret Scope
+- [`db_secrets_scope_create()`](https://databrickslabs.github.io/brickster/reference/db_secrets_scope_create.md)
+  : Create Secret Scope
+- [`db_secrets_scope_delete()`](https://databrickslabs.github.io/brickster/reference/db_secrets_scope_delete.md)
+  : Delete Secret Scope
+- [`db_secrets_scope_list_all()`](https://databrickslabs.github.io/brickster/reference/db_secrets_scope_list_all.md)
+  : List Secret Scopes
+
+## SQL Queries
+
+- [`db_query_create()`](https://databrickslabs.github.io/brickster/reference/db_query_create.md)
+  : Create a SQL Query
+- [`db_query_delete()`](https://databrickslabs.github.io/brickster/reference/db_query_delete.md)
+  : Delete a SQL Query
+- [`db_query_get()`](https://databrickslabs.github.io/brickster/reference/db_query_get.md)
+  : Get a SQL Query
+- [`db_query_list()`](https://databrickslabs.github.io/brickster/reference/db_query_list.md)
+  : List SQL Queries
+- [`db_query_update()`](https://databrickslabs.github.io/brickster/reference/db_query_update.md)
+  : Update a SQL Query
+
+## Tables (Unity Catalog)
+
+- [`db_uc_tables_delete()`](https://databrickslabs.github.io/brickster/reference/db_uc_tables_delete.md)
+  : Delete Table (Unity Catalog)
+- [`db_uc_tables_exists()`](https://databrickslabs.github.io/brickster/reference/db_uc_tables_exists.md)
+  : Check Table Exists (Unity Catalog)
+- [`db_uc_tables_get()`](https://databrickslabs.github.io/brickster/reference/db_uc_tables_get.md)
+  : Get Table (Unity Catalog)
+- [`db_uc_tables_list()`](https://databrickslabs.github.io/brickster/reference/db_uc_tables_list.md)
+  : List Tables (Unity Catalog)
+- [`db_uc_tables_summaries()`](https://databrickslabs.github.io/brickster/reference/db_uc_tables_summaries.md)
+  : List Table Summaries (Unity Catalog)
+
+## Vector Search
+
+- [`db_vs_endpoints_create()`](https://databrickslabs.github.io/brickster/reference/db_vs_endpoints_create.md)
+  : Create a Vector Search Endpoint
+- [`db_vs_endpoints_delete()`](https://databrickslabs.github.io/brickster/reference/db_vs_endpoints_delete.md)
+  : Delete a Vector Search Endpoint
+- [`db_vs_endpoints_get()`](https://databrickslabs.github.io/brickster/reference/db_vs_endpoints_get.md)
+  : Get a Vector Search Endpoint
+- [`db_vs_endpoints_list()`](https://databrickslabs.github.io/brickster/reference/db_vs_endpoints_list.md)
+  : List Vector Search Endpoints
+- [`db_vs_indexes_create()`](https://databrickslabs.github.io/brickster/reference/db_vs_indexes_create.md)
+  : Create a Vector Search Index
+- [`db_vs_indexes_delete()`](https://databrickslabs.github.io/brickster/reference/db_vs_indexes_delete.md)
+  : Delete a Vector Search Index
+- [`db_vs_indexes_delete_data()`](https://databrickslabs.github.io/brickster/reference/db_vs_indexes_delete_data.md)
+  : Delete Data from a Vector Search Index
+- [`db_vs_indexes_get()`](https://databrickslabs.github.io/brickster/reference/db_vs_indexes_get.md)
+  : Get a Vector Search Index
+- [`db_vs_indexes_list()`](https://databrickslabs.github.io/brickster/reference/db_vs_indexes_list.md)
+  : List Vector Search Indexes
+- [`db_vs_indexes_query()`](https://databrickslabs.github.io/brickster/reference/db_vs_indexes_query.md)
+  : Query a Vector Search Index
+- [`db_vs_indexes_query_next_page()`](https://databrickslabs.github.io/brickster/reference/db_vs_indexes_query_next_page.md)
+  : Query Vector Search Next Page
+- [`db_vs_indexes_scan()`](https://databrickslabs.github.io/brickster/reference/db_vs_indexes_scan.md)
+  : Scan a Vector Search Index
+- [`db_vs_indexes_sync()`](https://databrickslabs.github.io/brickster/reference/db_vs_indexes_sync.md)
+  : Synchronize a Vector Search Index
+- [`db_vs_indexes_upsert_data()`](https://databrickslabs.github.io/brickster/reference/db_vs_indexes_upsert_data.md)
+  : Upsert Data into a Vector Search Index
+- [`embedding_source_column()`](https://databrickslabs.github.io/brickster/reference/embedding_source_column.md)
+  : Embedding Source Column
+- [`is.embedding_source_column()`](https://databrickslabs.github.io/brickster/reference/is.embedding_source_column.md)
+  : Test if object is of class EmbeddingSourceColumn
+- [`embedding_vector_column()`](https://databrickslabs.github.io/brickster/reference/embedding_vector_column.md)
+  : Embedding Vector Column
+- [`is.embedding_vector_column()`](https://databrickslabs.github.io/brickster/reference/is.embedding_vector_column.md)
+  : Test if object is of class EmbeddingVectorColumn
+- [`delta_sync_index_spec()`](https://databrickslabs.github.io/brickster/reference/delta_sync_index_spec.md)
+  : Delta Sync Vector Search Index Specification
+- [`direct_access_index_spec()`](https://databrickslabs.github.io/brickster/reference/direct_access_index_spec.md)
+  : Delta Sync Vector Search Index Specification
+- [`is.vector_search_index_spec()`](https://databrickslabs.github.io/brickster/reference/is.vector_search_index_spec.md)
+  : Test if object is of class VectorSearchIndexSpec
+- [`is.direct_access_index()`](https://databrickslabs.github.io/brickster/reference/is.direct_access_index.md)
+  : Test if object is of class DirectAccessIndex
+- [`is.delta_sync_index()`](https://databrickslabs.github.io/brickster/reference/is.delta_sync_index.md)
+  : Test if object is of class DeltaSyncIndex
+
+## Warehouses
+
+- [`db_sql_create_empty_result()`](https://databrickslabs.github.io/brickster/reference/db_sql_create_empty_result.md)
+  : Create Empty Data Frame from Query Manifest
+- [`db_sql_exec_and_wait()`](https://databrickslabs.github.io/brickster/reference/db_sql_exec_and_wait.md)
+  : Execute SQL Query and Wait for Completion
+- [`db_sql_exec_cancel()`](https://databrickslabs.github.io/brickster/reference/db_sql_exec_cancel.md)
+  : Cancel SQL Query
+- [`db_sql_exec_poll_for_success()`](https://databrickslabs.github.io/brickster/reference/db_sql_exec_poll_for_success.md)
+  : Poll a Query Until Successful
+- [`db_sql_exec_query()`](https://databrickslabs.github.io/brickster/reference/db_sql_exec_query.md)
+  : Execute SQL Query
+- [`db_sql_exec_result()`](https://databrickslabs.github.io/brickster/reference/db_sql_exec_result.md)
+  : Get SQL Query Results
+- [`db_sql_exec_status()`](https://databrickslabs.github.io/brickster/reference/db_sql_exec_status.md)
+  : Get SQL Query Status
+- [`db_sql_fetch_results()`](https://databrickslabs.github.io/brickster/reference/db_sql_fetch_results.md)
+  : Fetch SQL Query Results from Completed Query
+- [`db_sql_global_warehouse_get()`](https://databrickslabs.github.io/brickster/reference/db_sql_global_warehouse_get.md)
+  : Get Global Warehouse Config
+- [`db_sql_process_inline()`](https://databrickslabs.github.io/brickster/reference/db_sql_process_inline.md)
+  : Process Inline SQL Query Results
+- [`db_sql_query()`](https://databrickslabs.github.io/brickster/reference/db_sql_query.md)
+  : Execute query with SQL Warehouse
+- [`db_sql_query_history()`](https://databrickslabs.github.io/brickster/reference/db_sql_query_history.md)
+  : List Warehouse Query History
+- [`db_sql_type_to_empty_vector()`](https://databrickslabs.github.io/brickster/reference/db_sql_type_to_empty_vector.md)
+  : Create Empty R Vector from Databricks SQL Type
+- [`db_sql_warehouse_create()`](https://databrickslabs.github.io/brickster/reference/db_sql_warehouse_create.md)
+  : Create Warehouse
+- [`db_sql_warehouse_delete()`](https://databrickslabs.github.io/brickster/reference/db_sql_warehouse_delete.md)
+  : Delete Warehouse
+- [`db_sql_warehouse_edit()`](https://databrickslabs.github.io/brickster/reference/db_sql_warehouse_edit.md)
+  : Edit Warehouse
+- [`db_sql_warehouse_get()`](https://databrickslabs.github.io/brickster/reference/db_sql_warehouse_get.md)
+  : Get Warehouse
+- [`db_sql_warehouse_list()`](https://databrickslabs.github.io/brickster/reference/db_sql_warehouse_list.md)
+  : List Warehouses
+- [`db_sql_warehouse_start()`](https://databrickslabs.github.io/brickster/reference/db_sql_warehouse_start.md)
+  : Start Warehouse
+- [`db_sql_warehouse_stop()`](https://databrickslabs.github.io/brickster/reference/db_sql_warehouse_stop.md)
+  : Stop Warehouse
+- [`get_and_start_warehouse()`](https://databrickslabs.github.io/brickster/reference/get_and_start_warehouse.md)
+  : Get and Start Warehouse
+
+## DBI Backend
+
+Standard DBI interface for Databricks SQL warehouses
+
+- [`databricks-dbi`](https://databrickslabs.github.io/brickster/reference/databricks-dbi.md)
+  : DBI Interface for Databricks SQL Warehouses
+- [`DatabricksSQL()`](https://databrickslabs.github.io/brickster/reference/DatabricksSQL.md)
+  : Create Databricks SQL Driver
+- [`DatabricksDriver-class`](https://databrickslabs.github.io/brickster/reference/DatabricksDriver-class.md)
+  : DBI Driver for Databricks
+- [`dbConnect(`*`<DatabricksDriver>`*`)`](https://databrickslabs.github.io/brickster/reference/dbConnect-DatabricksDriver-method.md)
+  : Connect to Databricks SQL Warehouse
+- [`show(`*`<DatabricksDriver>`*`)`](https://databrickslabs.github.io/brickster/reference/show-DatabricksDriver-method.md)
+  : Show method for DatabricksDriver
+- [`DatabricksConnection-class`](https://databrickslabs.github.io/brickster/reference/DatabricksConnection-class.md)
+  : DBI Connection for Databricks
+- [`copy_to(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/copy_to.DatabricksConnection.md)
+  : Copy data frame to Databricks as table or view
+- [`dbAppendTable(`*`<DatabricksConnection>`*`,`*`<Id>`*`,`*`<data.frame>`*`)`](https://databrickslabs.github.io/brickster/reference/dbAppendTable-DatabricksConnection-Id-data.frame-method.md)
+  : Append rows to an existing Databricks table (Id method)
+- [`dbAppendTable(`*`<DatabricksConnection>`*`,`*`<character>`*`,`*`<data.frame>`*`)`](https://databrickslabs.github.io/brickster/reference/dbAppendTable-DatabricksConnection-character-data.frame-method.md)
+  : Append rows to an existing Databricks table
+- [`dbBegin(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/dbBegin-DatabricksConnection-method.md)
+  : Begin transaction (not supported)
+- [`dbCommit(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/dbCommit-DatabricksConnection-method.md)
+  : Commit transaction (not supported)
+- [`dbDataType(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/dbDataType-DatabricksConnection-method.md)
+  : Map R data types to Databricks SQL types
+- [`dbDisconnect(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/dbDisconnect-DatabricksConnection-method.md)
+  : Disconnect from Databricks
+- [`dbExecute(`*`<DatabricksConnection>`*`,`*`<character>`*`)`](https://databrickslabs.github.io/brickster/reference/dbExecute-DatabricksConnection-character-method.md)
+  : Execute statement on Databricks
+- [`dbExistsTable(`*`<DatabricksConnection>`*`,`*`<AsIs>`*`)`](https://databrickslabs.github.io/brickster/reference/dbExistsTable-DatabricksConnection-AsIs-method.md)
+  : Check if table exists (AsIs method)
+- [`dbExistsTable(`*`<DatabricksConnection>`*`,`*`<Id>`*`)`](https://databrickslabs.github.io/brickster/reference/dbExistsTable-DatabricksConnection-Id-method.md)
+  : Check if table exists (Id method)
+- [`dbExistsTable(`*`<DatabricksConnection>`*`,`*`<character>`*`)`](https://databrickslabs.github.io/brickster/reference/dbExistsTable-DatabricksConnection-character-method.md)
+  : Check if table exists in Databricks
+- [`dbGetInfo(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/dbGetInfo-DatabricksConnection-method.md)
+  : Get connection information
+- [`dbGetQuery(`*`<DatabricksConnection>`*`,`*`<character>`*`)`](https://databrickslabs.github.io/brickster/reference/dbGetQuery-DatabricksConnection-character-method.md)
+  : Execute SQL query and return results
+- [`dbIsValid(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/dbIsValid-DatabricksConnection-method.md)
+  : Check if connection is valid
+- [`dbListFields(`*`<DatabricksConnection>`*`,`*`<AsIs>`*`)`](https://databrickslabs.github.io/brickster/reference/dbListFields-DatabricksConnection-AsIs-method.md)
+  : List column names of a Databricks table (AsIs method)
+- [`dbListFields(`*`<DatabricksConnection>`*`,`*`<character>`*`)`](https://databrickslabs.github.io/brickster/reference/dbListFields-DatabricksConnection-character-method.md)
+  : List column names of a Databricks table
+- [`dbListTables(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/dbListTables-DatabricksConnection-method.md)
+  : List tables in Databricks catalog/schema
+- [`dbQuoteIdentifier(`*`<DatabricksConnection>`*`,`*`<Id>`*`)`](https://databrickslabs.github.io/brickster/reference/dbQuoteIdentifier-DatabricksConnection-Id-method.md)
+  : Quote complex identifiers (schema.table)
+- [`dbQuoteIdentifier(`*`<DatabricksConnection>`*`,`*`<SQL>`*`)`](https://databrickslabs.github.io/brickster/reference/dbQuoteIdentifier-DatabricksConnection-SQL-method.md)
+  : Quote SQL objects (passthrough)
+- [`dbQuoteIdentifier(`*`<DatabricksConnection>`*`,`*`<character>`*`)`](https://databrickslabs.github.io/brickster/reference/dbQuoteIdentifier-DatabricksConnection-character-method.md)
+  : Quote identifiers for Databricks SQL
+- [`dbRollback(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/dbRollback-DatabricksConnection-method.md)
+  : Rollback transaction (not supported)
+- [`dbSendQuery(`*`<DatabricksConnection>`*`,`*`<character>`*`)`](https://databrickslabs.github.io/brickster/reference/dbSendQuery-DatabricksConnection-character-method.md)
+  : Send query to Databricks (asynchronous)
+- [`dbSendStatement(`*`<DatabricksConnection>`*`,`*`<character>`*`)`](https://databrickslabs.github.io/brickster/reference/dbSendStatement-DatabricksConnection-character-method.md)
+  : Send statement to Databricks
+- [`dbWriteTable(`*`<DatabricksConnection>`*`,`*`<AsIs>`*`,`*`<data.frame>`*`)`](https://databrickslabs.github.io/brickster/reference/dbWriteTable-DatabricksConnection-AsIs-data.frame-method.md)
+  : Write table to Databricks (AsIs name signature)
+- [`dbWriteTable(`*`<DatabricksConnection>`*`,`*`<Id>`*`,`*`<data.frame>`*`)`](https://databrickslabs.github.io/brickster/reference/dbWriteTable-DatabricksConnection-Id-data.frame-method.md)
+  : Write a data frame to Databricks table (Id method)
+- [`dbWriteTable(`*`<DatabricksConnection>`*`,`*`<character>`*`,`*`<data.frame>`*`)`](https://databrickslabs.github.io/brickster/reference/dbWriteTable-DatabricksConnection-character-data.frame-method.md)
+  : Write a data frame to Databricks table
+- [`db_collect(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/db_collect.DatabricksConnection.md)
+  : Collect query results with proper progress timing for Databricks
+- [`dbplyr_edition(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/dbplyr_edition.DatabricksConnection.md)
+  : Declare dbplyr API version for Databricks connections
+- [`show(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/show-DatabricksConnection-method.md)
+  : Show method for DatabricksConnection
+- [`sql_query_fields(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/sql_query_fields.DatabricksConnection.md)
+  : SQL Query Fields for Databricks connections
+- [`sql_query_save(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/sql_query_save.DatabricksConnection.md)
+  : Create temporary views and tables in Databricks
+- [`sql_table_analyze(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/sql_table_analyze.DatabricksConnection.md)
+  : Handle table analysis for Databricks
+- [`DatabricksResult-class`](https://databrickslabs.github.io/brickster/reference/DatabricksResult-class.md)
+  : DBI Result for Databricks
+- [`dbClearResult(`*`<DatabricksResult>`*`)`](https://databrickslabs.github.io/brickster/reference/dbClearResult-DatabricksResult-method.md)
+  : Clear result set
+- [`dbColumnInfo(`*`<DatabricksResult>`*`)`](https://databrickslabs.github.io/brickster/reference/dbColumnInfo-DatabricksResult-method.md)
+  : Get column information from result
+- [`dbFetch(`*`<DatabricksResult>`*`)`](https://databrickslabs.github.io/brickster/reference/dbFetch-DatabricksResult-method.md)
+  : Fetch results from Databricks query
+- [`dbGetRowCount(`*`<DatabricksResult>`*`)`](https://databrickslabs.github.io/brickster/reference/dbGetRowCount-DatabricksResult-method.md)
+  : Get number of rows fetched
+- [`dbGetRowsAffected(`*`<DatabricksResult>`*`)`](https://databrickslabs.github.io/brickster/reference/dbGetRowsAffected-DatabricksResult-method.md)
+  : Get number of rows affected (not applicable for SELECT)
+- [`dbGetStatement(`*`<DatabricksResult>`*`)`](https://databrickslabs.github.io/brickster/reference/dbGetStatement-DatabricksResult-method.md)
+  : Get SQL statement from result
+- [`dbHasCompleted(`*`<DatabricksResult>`*`)`](https://databrickslabs.github.io/brickster/reference/dbHasCompleted-DatabricksResult-method.md)
+  : Check if query has completed
+- [`show(`*`<DatabricksResult>`*`)`](https://databrickslabs.github.io/brickster/reference/show-DatabricksResult-method.md)
+  : Show method for DatabricksResult
+
+## dbplyr Backend
+
+dbplyr support for dplyr syntax with Databricks SQL
+
+- [`databricks-dbplyr`](https://databrickslabs.github.io/brickster/reference/databricks-dbplyr.md)
+  : dbplyr Backend for Databricks SQL
+- [`sql_query_fields(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/sql_query_fields.DatabricksConnection.md)
+  : SQL Query Fields for Databricks connections
+- [`sql_query_save(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/sql_query_save.DatabricksConnection.md)
+  : Create temporary views and tables in Databricks
+- [`sql_table_analyze(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/sql_table_analyze.DatabricksConnection.md)
+  : Handle table analysis for Databricks
+- [`sql_translation(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/sql_translation.DatabricksConnection.md)
+  : SQL translation environment for Databricks SQL
+- [`copy_to(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/copy_to.DatabricksConnection.md)
+  : Copy data frame to Databricks as table or view
+- [`db_collect(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/db_collect.DatabricksConnection.md)
+  : Collect query results with proper progress timing for Databricks
+- [`dbplyr_edition(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/dbplyr_edition.DatabricksConnection.md)
+  : Declare dbplyr API version for Databricks connections
+
+## Workspaces
+
+- [`db_workspace_delete()`](https://databrickslabs.github.io/brickster/reference/db_workspace_delete.md)
+  : Delete Object/Directory (Workspaces)
+- [`db_workspace_export()`](https://databrickslabs.github.io/brickster/reference/db_workspace_export.md)
+  : Export Notebook or Directory (Workspaces)
+- [`db_workspace_get_status()`](https://databrickslabs.github.io/brickster/reference/db_workspace_get_status.md)
+  : Get Object Status (Workspaces)
+- [`db_workspace_import()`](https://databrickslabs.github.io/brickster/reference/db_workspace_import.md)
+  : Import Notebook/Directory (Workspaces)
+- [`db_workspace_list()`](https://databrickslabs.github.io/brickster/reference/db_workspace_list.md)
+  : List Directory Contents (Workspaces)
+- [`db_workspace_mkdirs()`](https://databrickslabs.github.io/brickster/reference/db_workspace_mkdirs.md)
+  : Make a Directory (Workspaces)
+
+## Request Helpers
+
+- [`db_request()`](https://databrickslabs.github.io/brickster/reference/db_request.md)
+  : Databricks Request Helper
+- [`db_perform_request()`](https://databrickslabs.github.io/brickster/reference/db_perform_request.md)
+  : Perform Databricks API Request
+- [`db_req_error_body()`](https://databrickslabs.github.io/brickster/reference/db_req_error_body.md)
+  : Propagate Databricks API Errors
+- [`db_request_json()`](https://databrickslabs.github.io/brickster/reference/db_request_json.md)
+  : Generate Request JSON
+
+## Low Level Helpers
+
+- [`is.access_control_req_group()`](https://databrickslabs.github.io/brickster/reference/is.access_control_req_group.md)
+  : Test if object is of class AccessControlRequestForGroup
+- [`is.access_control_req_user()`](https://databrickslabs.github.io/brickster/reference/is.access_control_req_user.md)
+  : Test if object is of class AccessControlRequestForUser
+- [`is.access_control_request()`](https://databrickslabs.github.io/brickster/reference/is.access_control_request.md)
+  : Test if object is of class AccessControlRequest
+- [`is.aws_attributes()`](https://databrickslabs.github.io/brickster/reference/is.aws_attributes.md)
+  : Test if object is of class AwsAttributes
+- [`is.azure_attributes()`](https://databrickslabs.github.io/brickster/reference/is.azure_attributes.md)
+  : Test if object is of class AzureAttributes
+- [`is.cluster_autoscale()`](https://databrickslabs.github.io/brickster/reference/is.cluster_autoscale.md)
+  : Test if object is of class AutoScale
+- [`is.cluster_log_conf()`](https://databrickslabs.github.io/brickster/reference/is.cluster_log_conf.md)
+  : Test if object is of class ClusterLogConf
+- [`is.condition_task()`](https://databrickslabs.github.io/brickster/reference/is.condition_task.md)
+  : Test if object is of class ConditionTask
+- [`is.cron_schedule()`](https://databrickslabs.github.io/brickster/reference/is.cron_schedule.md)
+  : Test if object is of class CronSchedule
+- [`is.dbfs_storage_info()`](https://databrickslabs.github.io/brickster/reference/is.dbfs_storage_info.md)
+  : Test if object is of class DbfsStorageInfo
+- [`is.delta_sync_index()`](https://databrickslabs.github.io/brickster/reference/is.delta_sync_index.md)
+  : Test if object is of class DeltaSyncIndex
+- [`is.direct_access_index()`](https://databrickslabs.github.io/brickster/reference/is.direct_access_index.md)
+  : Test if object is of class DirectAccessIndex
+- [`is.docker_image()`](https://databrickslabs.github.io/brickster/reference/is.docker_image.md)
+  : Test if object is of class DockerImage
+- [`is.email_notifications()`](https://databrickslabs.github.io/brickster/reference/is.email_notifications.md)
+  : Test if object is of class JobEmailNotifications
+- [`is.embedding_source_column()`](https://databrickslabs.github.io/brickster/reference/is.embedding_source_column.md)
+  : Test if object is of class EmbeddingSourceColumn
+- [`is.embedding_vector_column()`](https://databrickslabs.github.io/brickster/reference/is.embedding_vector_column.md)
+  : Test if object is of class EmbeddingVectorColumn
+- [`is.file_storage_info()`](https://databrickslabs.github.io/brickster/reference/is.file_storage_info.md)
+  : Test if object is of class FileStorageInfo
+- [`is.for_each_task()`](https://databrickslabs.github.io/brickster/reference/is.for_each_task.md)
+  : Test if object is of class ForEachTask
+- [`is.gcp_attributes()`](https://databrickslabs.github.io/brickster/reference/is.gcp_attributes.md)
+  : Test if object is of class GcpAttributes
+- [`is.git_source()`](https://databrickslabs.github.io/brickster/reference/is.git_source.md)
+  : Test if object is of class GitSource
+- [`is.init_script_info()`](https://databrickslabs.github.io/brickster/reference/is.init_script_info.md)
+  : Test if object is of class InitScriptInfo
+- [`is.job_task()`](https://databrickslabs.github.io/brickster/reference/is.job_task.md)
+  : Test if object is of class JobTaskSettings
+- [`is.lib_cran()`](https://databrickslabs.github.io/brickster/reference/is.lib_cran.md)
+  : Test if object is of class CranLibrary
+- [`is.lib_egg()`](https://databrickslabs.github.io/brickster/reference/is.lib_egg.md)
+  : Test if object is of class EggLibrary
+- [`is.lib_jar()`](https://databrickslabs.github.io/brickster/reference/is.lib_jar.md)
+  : Test if object is of class JarLibrary
+- [`is.lib_maven()`](https://databrickslabs.github.io/brickster/reference/is.lib_maven.md)
+  : Test if object is of class MavenLibrary
+- [`is.lib_pypi()`](https://databrickslabs.github.io/brickster/reference/is.lib_pypi.md)
+  : Test if object is of class PyPiLibrary
+- [`is.lib_whl()`](https://databrickslabs.github.io/brickster/reference/is.lib_whl.md)
+  : Test if object is of class WhlLibrary
+- [`is.libraries()`](https://databrickslabs.github.io/brickster/reference/is.libraries.md)
+  : Test if object is of class Libraries
+- [`is.library()`](https://databrickslabs.github.io/brickster/reference/is.library.md)
+  : Test if object is of class Library
+- [`is.new_cluster()`](https://databrickslabs.github.io/brickster/reference/is.new_cluster.md)
+  : Test if object is of class NewCluster
+- [`is.notebook_task()`](https://databrickslabs.github.io/brickster/reference/is.notebook_task.md)
+  : Test if object is of class NotebookTask
+- [`is.pipeline_task()`](https://databrickslabs.github.io/brickster/reference/is.pipeline_task.md)
+  : Test if object is of class PipelineTask
+- [`is.python_wheel_task()`](https://databrickslabs.github.io/brickster/reference/is.python_wheel_task.md)
+  : Test if object is of class PythonWheelTask
+- [`is.run_job_task()`](https://databrickslabs.github.io/brickster/reference/is.run_job_task.md)
+  : Test if object is of class RunJobTask
+- [`is.s3_storage_info()`](https://databrickslabs.github.io/brickster/reference/is.s3_storage_info.md)
+  : Test if object is of class S3StorageInfo
+- [`is.spark_jar_task()`](https://databrickslabs.github.io/brickster/reference/is.spark_jar_task.md)
+  : Test if object is of class SparkJarTask
+- [`is.spark_python_task()`](https://databrickslabs.github.io/brickster/reference/is.spark_python_task.md)
+  : Test if object is of class SparkPythonTask
+- [`is.spark_submit_task()`](https://databrickslabs.github.io/brickster/reference/is.spark_submit_task.md)
+  : Test if object is of class SparkSubmitTask
+- [`is.sql_file_task()`](https://databrickslabs.github.io/brickster/reference/is.sql_file_task.md)
+  : Test if object is of class SqlFileTask
+- [`is.sql_query_task()`](https://databrickslabs.github.io/brickster/reference/is.sql_query_task.md)
+  : Test if object is of class SqlQueryTask
+- [`is.valid_task_type()`](https://databrickslabs.github.io/brickster/reference/is.valid_task_type.md)
+  : Test if object is of class JobTask
+- [`is.vector_search_index_spec()`](https://databrickslabs.github.io/brickster/reference/is.vector_search_index_spec.md)
+  : Test if object is of class VectorSearchIndexSpec
+
+## Workspace Connection
+
+- [`open_workspace()`](https://databrickslabs.github.io/brickster/reference/open_workspace.md)
+  : Connect to Databricks Workspace
+- [`close_workspace()`](https://databrickslabs.github.io/brickster/reference/close_workspace.md)
+  : Close Databricks Workspace Connection
+
+## REPL
+
+- [`db_repl()`](https://databrickslabs.github.io/brickster/reference/db_repl.md)
+  : Remote REPL to Databricks Cluster
+
+# Articles
+
+### All vignettes
+
+- [Cluster
+  Management](https://databrickslabs.github.io/brickster/articles/cluster-management.md):
+- [Job
+  Management](https://databrickslabs.github.io/brickster/articles/managing-jobs.md):
+- [Databricks
+  REPL](https://databrickslabs.github.io/brickster/articles/remote-repl.md):
+- [Connect to a Databricks
+  Workspace](https://databrickslabs.github.io/brickster/articles/setup-auth.md):
+- [\`{DBI}\`/\`{dbplyr}\`
+  backend](https://databrickslabs.github.io/brickster/articles/sql-backend.md):

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">brickster</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.10</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,7 +35,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Connect to Databricks SQL Warehouse</h1>
-      <small class="dont-index">Source: <a href="https://github.com/databrickslabs/brickster/blob/v0.2.9/R/databricks-dbi.R" class="external-link"><code>R/databricks-dbi.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/databrickslabs/brickster/blob/main/R/databricks-dbi.R" class="external-link"><code>R/databricks-dbi.R</code></a></small>
       <div class="d-none name"><code>dbConnect-DatabricksDriver-method.Rd</code></div>
     </div>
 
@@ -52,6 +52,8 @@
 <span>  catalog <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  schema <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  staging_volume <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  max_active_connections <span class="op">=</span> <span class="fl">30</span>,</span>
+<span>  fetch_timeout <span class="op">=</span> <span class="fl">300</span>,</span>
 <span>  token <span class="op">=</span> <span class="fu"><a href="db_token.html">db_token</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  host <span class="op">=</span> <span class="fu"><a href="db_host.html">db_host</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -82,6 +84,16 @@
 <dd><p>Optional volume path for large dataset staging</p></dd>
 
 
+<dt id="arg-max-active-connections">max_active_connections<a class="anchor" aria-label="anchor" href="#arg-max-active-connections"></a></dt>
+<dd><p>Maximum number of concurrent download
+connections when fetching query results (default: 30)</p></dd>
+
+
+<dt id="arg-fetch-timeout">fetch_timeout<a class="anchor" aria-label="anchor" href="#arg-fetch-timeout"></a></dt>
+<dd><p>Timeout in seconds for downloading each result chunk
+(default: 300)</p></dd>
+
+
 <dt id="arg-token">token<a class="anchor" aria-label="anchor" href="#arg-token"></a></dt>
 <dd><p>Authentication token (defaults to db_token())</p></dd>
 
@@ -108,7 +120,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>
