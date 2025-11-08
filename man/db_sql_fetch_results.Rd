@@ -9,6 +9,7 @@ db_sql_fetch_results(
   manifest,
   return_arrow = FALSE,
   max_active_connections = 30,
+  fetch_timeout = 300,
   row_limit = NULL,
   host = db_host(),
   token = db_token(),
@@ -23,6 +24,8 @@ db_sql_fetch_results(
 \item{return_arrow}{Boolean, return arrow Table instead of tibble}
 
 \item{max_active_connections}{Integer for concurrent downloads}
+
+\item{fetch_timeout}{Integer, timeout in seconds for downloading each result chunk}
 
 \item{row_limit}{Integer, limit number of rows returned (applied after fetch)}
 

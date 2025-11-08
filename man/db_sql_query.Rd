@@ -14,6 +14,7 @@ db_sql_query(
   byte_limit = NULL,
   return_arrow = FALSE,
   max_active_connections = 30,
+  fetch_timeout = 300,
   disposition = "EXTERNAL_LINKS",
   host = db_host(),
   token = db_token(),
@@ -58,6 +59,8 @@ true. When using \code{EXTERNAL_LINKS} disposition, a default byte_limit of
 \link[arrow:Table-class]{arrow::Table}.}
 
 \item{max_active_connections}{Integer to decide on concurrent downloads.}
+
+\item{fetch_timeout}{Integer, timeout in seconds for downloading each result chunk}
 
 \item{disposition}{Disposition mode ("INLINE" or "EXTERNAL_LINKS")}
 
