@@ -1151,7 +1151,7 @@ db_write_table_standard <- function(
       db_append_with_select_values(conn, quoted_name, value)
     }
   } else {
-    # For create/overwrite, use atomic CTAS with VALUES
+    # For create/overwrite, explicitly create schema then insert rows
     db_create_table_as_select_values(
       conn,
       quoted_name,
@@ -1286,7 +1286,7 @@ db_generate_typed_values_sql <- function(conn, data) {
   paste(row_values, collapse = ", ")
 }
 
-#' Create table using atomic CTAS with VALUES
+#' Create table with explicit schema before inserting values
 #' @keywords internal
 db_create_table_as_select_values <- function(
   conn,
@@ -1301,60 +1301,26 @@ db_create_table_as_select_values <- function(
       "Temporary tables are not supported with the SQL Statement Execution API"
     )
   }
-  if (nrow(value) == 0) {
-    # For empty data, fall back to CREATE TABLE with schema
-    db_create_table_from_data(
-      conn,
-      quoted_name,
-      value,
-      field.types,
-      temporary,
-      overwrite
-    )
-    return()
-  }
 
-  # Build table creation keywords
-  if (temporary) {
-    table_keyword <- "CREATE TEMPORARY TABLE"
-  } else if (overwrite) {
-    table_keyword <- "CREATE OR REPLACE TABLE"
-  } else {
-    table_keyword <- "CREATE TABLE"
-  }
-
-  # Get column names with proper quoting
-  col_names <- purrr::map_chr(names(value), ~ dbQuoteIdentifier(conn, .x))
-  col_list <- paste(col_names, collapse = ", ")
-
-  # Generate VALUES clause with type-aware formatting
-  values_sql <- db_generate_typed_values_sql(conn, value)
-
-  # Build complete CTAS statement
-  ctas_sql <- paste0(
-    table_keyword,
-    " ",
+  # First create the table with explicit column definitions to avoid
+  # Databricks inferring overly specific types (e.g., DECIMAL(6, 4)).
+  db_create_table_from_data(
+    conn,
     quoted_name,
-    " AS SELECT * FROM VALUES ",
-    values_sql,
-    " AS t(",
-    col_list,
-    ")"
+    value,
+    field.types,
+    temporary,
+    overwrite
   )
 
-  # Execute using helper function
-  db_sql_exec_and_wait(
-    warehouse_id = conn@warehouse_id,
-    statement = ctas_sql,
-    catalog = if (nchar(conn@catalog) > 0) conn@catalog else NULL,
-    schema = if (nchar(conn@schema) > 0) conn@schema else NULL,
-    disposition = "INLINE",
-    format = "JSON_ARRAY",
-    wait_timeout = "10s",
-    host = conn@host,
-    token = conn@token,
-    show_progress = FALSE
-  )
+  # Nothing more to do if there are no rows to insert after seeding.
+  if (nrow(value) == 0) {
+    return(invisible(NULL))
+  }
+
+  # Populate the newly created table using INSERT ... SELECT ... VALUES so that
+  # the schema we just created is preserved for future appends.
+  db_append_with_select_values(conn, quoted_name, value)
 }
 
 #' Append data using atomic INSERT INTO with SELECT VALUES

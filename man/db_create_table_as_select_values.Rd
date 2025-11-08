@@ -2,7 +2,7 @@
 % Please edit documentation in R/databricks-dbi.R
 \name{db_create_table_as_select_values}
 \alias{db_create_table_as_select_values}
-\title{Create table using atomic CTAS with VALUES}
+\title{Create table with explicit schema before inserting values}
 \usage{
 db_create_table_as_select_values(
   conn,
@@ -14,6 +14,6 @@ db_create_table_as_select_values(
 )
 }
 \description{
-Create table using atomic CTAS with VALUES
+Create table with explicit schema before inserting values
 }
 \keyword{internal}

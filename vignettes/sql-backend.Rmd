@@ -75,11 +75,13 @@ con <- dbConnect(
 ### Reading Data
 
 Execute SQL directly and return results as data frames:
+
 ```{r}
 trips <- dbGetQuery(con, "SELECT * FROM samples.nyctaxi.trips LIMIT 10")
 ```
 
 Tables can be references either via `Id()`, `I()`, or using the name as-is:
+
 ```{r}
 # List available tables
 tables <- dbListTables(con)
@@ -108,7 +110,7 @@ Ensure that `staging_volume` is a valid Volume path and you have permission to w
 
 ```{r}
 # small data (150 rows)
-# generates an in-line CTAS
+# creates the table schema explicitly then inserts rows inline
 dbWriteTable(
   conn = con,
   name = Id(catalog = "<catalog>", schema = "<schema>", table = "<table>"),
@@ -125,7 +127,7 @@ dbWriteTable(
   name = Id(catalog = "<catalog>", schema = "<schema>", table = "<table>"),
   value = iris_big,
   overwrite = TRUE,
-  staging_volume = "/Volumes/<catalog>/<schema>/<volume>/..." # or inherited from connection
+  staging_volume = "/Volumes/<catalog>/<schema>/<volume>/...", # or inherited from connection
   progress = TRUE
 )
 
@@ -136,6 +138,7 @@ dbWriteTable(
 ### Reading Data
 
 As in the `{DBI}` backend tables can be referenced either via `Id()`, `I()`, or using the name as-is in `tbl()`:
+
 ```{r}
 # Connect to existing tables
 tbl(con, "samples.nyctaxi.trips")
@@ -190,7 +193,13 @@ top_zipz <- trips_summary |>
 A key difference is that temporary tables are not supported - this makes functions like `copy_to` only usable when specifying `temporary` as `FALSE` which will use `dbWriteTable` to create a table.
 
 ```{r}
-iris_remote <- copy_to(con, iris, "iris_table", temporary = FALSE, overwrite = TRUE)
+iris_remote <- copy_to(
+  con,
+  iris,
+  "iris_table",
+  temporary = FALSE,
+  overwrite = TRUE
+)
 ```
 
 ## Connection Management
