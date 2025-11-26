@@ -12,6 +12,7 @@ db_jobs_update(
   schedule = NULL,
   tasks = NULL,
   job_clusters = NULL,
+  parameters = NULL,
   email_notifications = NULL,
   timeout_seconds = NULL,
   max_concurrent_runs = NULL,
@@ -57,6 +58,11 @@ db_jobs_update(
   that can be shared and reused by tasks of this job. Libraries cannot
   be declared in a shared job cluster. You must declare dependent
   libraries in task settings.
+
+- parameters:
+
+  Named list of job level parameters. Values of the list represent
+  default values.
 
 - email_notifications:
 
@@ -110,7 +116,9 @@ db_jobs_update(
 
 Parameters which are shared with
 [`db_jobs_create()`](https://databrickslabs.github.io/brickster/reference/db_jobs_create.md)
-are optional, only specify those that are changing.
+are optional, only specify those that are changing. Job-level parameters
+can be updated using the same structure as
+[`db_jobs_create()`](https://databrickslabs.github.io/brickster/reference/db_jobs_create.md).
 
 ## See also
 

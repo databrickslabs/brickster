@@ -7,6 +7,9 @@
   control result download concurrency and timeouts
 - DBI/dbplyr write table methods now make two transactions (create empty
   table –\> insert into) to ensure type correctness
+- Allow optional schedules in
+  [`db_jobs_reset()`](https://databrickslabs.github.io/brickster/reference/db_jobs_reset.md)
+  and propagate parameters in reset/update requests.
 
 ## brickster 0.2.9
 

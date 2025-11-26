@@ -8,8 +8,8 @@ Overwrite All Settings For A Job
 db_jobs_reset(
   job_id,
   name,
-  schedule,
   tasks,
+  schedule = NULL,
   job_clusters = NULL,
   parameters = list(),
   email_notifications = NULL,
@@ -34,15 +34,15 @@ db_jobs_reset(
 
   Name for the job.
 
-- schedule:
-
-  Instance of
-  [`cron_schedule()`](https://databrickslabs.github.io/brickster/reference/cron_schedule.md).
-
 - tasks:
 
   Task specifications to be executed by this job. Use
   [`job_tasks()`](https://databrickslabs.github.io/brickster/reference/job_tasks.md).
+
+- schedule:
+
+  Instance of
+  [`cron_schedule()`](https://databrickslabs.github.io/brickster/reference/cron_schedule.md).
 
 - job_clusters:
 

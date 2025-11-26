@@ -48,8 +48,8 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">db_jobs_reset</span><span class="op">(</span></span>
 <span>  <span class="va">job_id</span>,</span>
 <span>  <span class="va">name</span>,</span>
-<span>  <span class="va">schedule</span>,</span>
 <span>  <span class="va">tasks</span>,</span>
+<span>  schedule <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  job_clusters <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  email_notifications <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -76,13 +76,13 @@
 <dd><p>Name for the job.</p></dd>
 
 
-<dt id="arg-schedule">schedule<a class="anchor" aria-label="anchor" href="#arg-schedule"></a></dt>
-<dd><p>Instance of <code><a href="cron_schedule.html">cron_schedule()</a></code>.</p></dd>
-
-
 <dt id="arg-tasks">tasks<a class="anchor" aria-label="anchor" href="#arg-tasks"></a></dt>
 <dd><p>Task specifications to be executed by this job. Use
 <code><a href="job_tasks.html">job_tasks()</a></code>.</p></dd>
+
+
+<dt id="arg-schedule">schedule<a class="anchor" aria-label="anchor" href="#arg-schedule"></a></dt>
+<dd><p>Instance of <code><a href="cron_schedule.html">cron_schedule()</a></code>.</p></dd>
 
 
 <dt id="arg-job-clusters">job_clusters<a class="anchor" aria-label="anchor" href="#arg-job-clusters"></a></dt>

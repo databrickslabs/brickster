@@ -52,6 +52,7 @@
 <span>  schedule <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  tasks <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  job_clusters <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  parameters <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  email_notifications <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  timeout_seconds <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  max_concurrent_runs <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -95,6 +96,11 @@ nested fields is not supported. This field is optional. Must be a <code><a href=
 <code><a href="new_cluster.html">new_cluster()</a></code>) that can be shared and reused by tasks of this job.
 Libraries cannot be declared in a shared job cluster. You must declare
 dependent libraries in task settings.</p></dd>
+
+
+<dt id="arg-parameters">parameters<a class="anchor" aria-label="anchor" href="#arg-parameters"></a></dt>
+<dd><p>Named list of job level parameters. Values of the list
+represent default values.</p></dd>
 
 
 <dt id="arg-email-notifications">email_notifications<a class="anchor" aria-label="anchor" href="#arg-email-notifications"></a></dt>
@@ -143,7 +149,8 @@ the notebooks used by this job's notebook tasks. Instance of <code><a href="git_
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Parameters which are shared with <code><a href="db_jobs_create.html">db_jobs_create()</a></code> are optional, only
-specify those that are changing.</p>
+specify those that are changing. Job-level parameters can be updated using
+the same structure as <code><a href="db_jobs_create.html">db_jobs_create()</a></code>.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
