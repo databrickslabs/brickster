@@ -1,15 +1,16 @@
 # brickster 0.2.10
-- Increment version of httr2 required (>= 1.1.1)
-- DBI connections expose `max_active_connections` and `fetch_timeout` to
-  control result download concurrency and timeouts
-- DBI/dbplyr write table methods now make two transactions (create empty table --> insert into) to ensure type correctness
-- Allow optional schedules in `db_jobs_reset()` and propagate parameters in reset/update requests.
 
+-   Increment version of httr2 required (\>= 1.1.1)
+-   DBI connections expose `max_active_connections` and `fetch_timeout` to control result download concurrency and timeouts
+-   DBI/dbplyr write table methods now make two transactions (create empty table --\> insert into) to ensure type correctness
+-   Allow optional schedules in `db_jobs_reset()` and propagate parameters in reset/update requests.
+-   DBI/dbplyr inline writes now preserve single quotes in character columns via explicit escaping (#130)
 
 # brickster 0.2.9
-- Added DBI + dbplyr backend support: `DatabricksSQL()` driver for standard DBI operations
-- Increase support for job level parameters
-- Added `db_jobs_repair_run` 
+
+-   Added DBI + dbplyr backend support: `DatabricksSQL()` driver for standard DBI operations
+-   Increase support for job level parameters
+-   Added `db_jobs_repair_run`
 
 # brickster 0.2.8
 

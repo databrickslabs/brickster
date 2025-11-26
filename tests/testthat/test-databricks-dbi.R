@@ -139,6 +139,34 @@ test_that("Quote handling utility functions work", {
   expect_equal(clean_quoted('"samples.nyctaxi.trips"'), "samples.nyctaxi.trips")
 })
 
+test_that("db_generate_typed_values_sql preserves single quotes", {
+  con <- new(
+    "DatabricksConnection",
+    warehouse_id = "test_warehouse",
+    host = "test_host",
+    token = "test_token",
+    catalog = "",
+    schema = "",
+    staging_volume = ""
+  )
+
+  test_value <- "O'Connor & D'Angelo's data"
+
+  values_sql <- brickster:::db_generate_typed_values_sql(
+    con,
+    data.frame(test = test_value, stringsAsFactors = FALSE)
+  )
+
+  expect_equal(values_sql, "('O\\'Connor & D\\'Angelo\\'s data')")
+
+  view_values_sql <- brickster:::db_generate_typed_values_sql_for_view(
+    con,
+    data.frame(test = test_value, stringsAsFactors = FALSE)
+  )
+
+  expect_equal(view_values_sql, "('O\\'Connor & D\\'Angelo\\'s data')")
+})
+
 test_that("DatabricksResult show method works", {
   # Create a result object for testing
   res <- new(
