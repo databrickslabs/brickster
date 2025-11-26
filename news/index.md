@@ -10,6 +10,9 @@
 - Allow optional schedules in
   [`db_jobs_reset()`](https://databrickslabs.github.io/brickster/reference/db_jobs_reset.md)
   and propagate parameters in reset/update requests.
+- DBI/dbplyr inline writes now preserve single quotes in character
+  columns via explicit escaping
+  ([\#130](https://github.com/databrickslabs/brickster/issues/130))
 
 ## brickster 0.2.9
 

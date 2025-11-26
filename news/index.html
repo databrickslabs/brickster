@@ -44,6 +44,7 @@
 <li>DBI connections expose <code>max_active_connections</code> and <code>fetch_timeout</code> to control result download concurrency and timeouts</li>
 <li>DBI/dbplyr write table methods now make two transactions (create empty table –&gt; insert into) to ensure type correctness</li>
 <li>Allow optional schedules in <code><a href="../reference/db_jobs_reset.html">db_jobs_reset()</a></code> and propagate parameters in reset/update requests.</li>
+<li>DBI/dbplyr inline writes now preserve single quotes in character columns via explicit escaping (<a href="https://github.com/databrickslabs/brickster/issues/130" class="external-link">#130</a>)</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.9" id="brickster-029">brickster 0.2.9<a class="anchor" aria-label="anchor" href="#brickster-029"></a></h2><p class="text-muted">CRAN release: 2025-09-04</p>

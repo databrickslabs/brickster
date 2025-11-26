@@ -104,6 +104,7 @@
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_dbfs_move.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_dbfs_put.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_dbfs_read.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/db_escape_string_literal.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_generate_typed_values_sql.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_generate_typed_values_sql_for_view.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_generate_values_sql.html</loc></url>
