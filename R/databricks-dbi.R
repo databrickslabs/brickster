@@ -1244,7 +1244,7 @@ db_generate_values_sql <- function(conn, data) {
       if (is.na(val)) {
         "NULL"
       } else if (is.character(val)) {
-        paste0("'", gsub("'", "''", val), "'") # Escape single quotes
+        db_escape_string_literal(conn, val)
       } else if (is.logical(val)) {
         if (val) "TRUE" else "FALSE"
       } else {
@@ -1274,16 +1274,29 @@ db_generate_typed_values_sql <- function(conn, data) {
         as.character(val)
       } else if (is.character(col_data)) {
         # Quote string values and escape single quotes
-        paste0("'", gsub("'", "''", val), "'")
+        db_escape_string_literal(conn, val)
       } else {
         # Default to quoted string for other types
-        paste0("'", gsub("'", "''", as.character(val)), "'")
+        db_escape_string_literal(conn, as.character(val))
       }
     })
     paste0("(", paste(values, collapse = ", "), ")")
   })
 
   paste(row_values, collapse = ", ")
+}
+
+#' Escape string literals for inline SQL VALUES
+#' @keywords internal
+db_escape_string_literal <- function(conn, val) {
+  if (is.na(val)) {
+    return("NULL")
+  }
+
+  # Spark SQL accepts backslash-escaped quotes; escape backslashes first
+  escaped <- gsub("\\\\", "\\\\\\\\", val)
+  escaped <- gsub("'", "\\\\'", escaped)
+  paste0("'", escaped, "'")
 }
 
 #' Create table with explicit schema before inserting values
@@ -1368,14 +1381,12 @@ db_should_use_volume_method <- function(
 ) {
   n_rows <- nrow(value)
   has_volume <- !is.null(staging_volume) && nchar(staging_volume) > 0
+  has_arrow <- rlang::is_installed("arrow")
 
   # Temporary tables should use standard method (COPY INTO may not support them)
   if (temporary) {
     return(FALSE)
   }
-
-  # Check if arrow is available
-  has_arrow <- rlang::is_installed("arrow")
 
   # Check dataset size limits without volume staging
   if (!has_volume) {

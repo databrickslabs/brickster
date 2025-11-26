@@ -245,10 +245,10 @@ db_generate_typed_values_sql_for_view <- function(con, data) {
         as.character(val)
       } else if (is.character(col_data)) {
         # Quote string values and escape single quotes
-        paste0("'", gsub("'", "''", val), "'")
+        db_escape_string_literal(con, val)
       } else {
         # Default to quoted string for other types
-        paste0("'", gsub("'", "''", as.character(val)), "'")
+        db_escape_string_literal(con, as.character(val))
       }
     })
     paste0("(", paste(values, collapse = ", "), ")")
