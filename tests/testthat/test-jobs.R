@@ -5,7 +5,7 @@ test_that("Jobs API - don't perform", {
   ))
 
   resp_list <- db_jobs_list(
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_list, "httr2_request")
 
@@ -46,28 +46,41 @@ test_that("Jobs API - don't perform", {
       pause_status = "PAUSED"
     ),
     job_clusters = job_clusters,
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_create, "httr2_request")
 
   resp_delete <- db_jobs_delete(
     job_id = "some_job_id",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_delete, "httr2_request")
 
   resp_get <- db_jobs_get(
     job_id = "some_job_id",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_get, "httr2_request")
 
   resp_update <- db_jobs_update(
     job_id = "some_job_id",
     name = "brickster example: renamed job",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_update, "httr2_request")
+
+  resp_update_params <- db_jobs_update(
+    job_id = "some_job_id",
+    parameters = list(foo = "bar", baz = 2),
+    perform_request = FALSE
+  )
+  expect_equal(
+    resp_update_params$body$data$new_settings$parameters,
+    list(
+      list(name = "foo", default = "bar"),
+      list(name = "baz", default = 2)
+    )
+  )
 
   resp_reset <- db_jobs_reset(
     job_id = "some_job_id",
@@ -78,49 +91,63 @@ test_that("Jobs API - don't perform", {
       pause_status = "PAUSED"
     ),
     job_clusters = job_clusters,
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_reset, "httr2_request")
 
+  resp_reset_no_schedule <- db_jobs_reset(
+    job_id = "some_job_id",
+    name = "brickster example: reset job without schedule",
+    tasks = job_tasks(simple_task),
+    parameters = list(reset_param = "abc"),
+    perform_request = FALSE
+  )
+  expect_s3_class(resp_reset_no_schedule, "httr2_request")
+  expect_equal(
+    resp_reset_no_schedule$body$data$new_settings$parameters,
+    list(list(name = "reset_param", default = "abc"))
+  )
+  expect_null(resp_reset_no_schedule$body$data$new_settings$schedule)
+
   resp_run_now <- db_jobs_run_now(
     job_id = "some_job_id",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_run_now, "httr2_request")
 
   resp_run_cancel <- db_jobs_runs_cancel(
     run_id = "some_run_id",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_run_cancel, "httr2_request")
 
   resp_run_del <- db_jobs_runs_delete(
     run_id = "some_run_id",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_run_del, "httr2_request")
 
   resp_run_export <- db_jobs_runs_export(
     run_id = "some_run_id",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_run_export, "httr2_request")
 
   resp_run_get <- db_jobs_runs_get(
     run_id = "some_run_id",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_run_get, "httr2_request")
 
   resp_run_get_output <- db_jobs_runs_get_output(
     run_id = "some_run_id",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_run_get_output, "httr2_request")
 
   resp_run_list <- db_jobs_runs_list(
     job_id = "some_job_id",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_run_list, "httr2_request")
   expect_error({
@@ -128,7 +155,7 @@ test_that("Jobs API - don't perform", {
       job_id = "some_job_id",
       active_only = TRUE,
       completed_only = TRUE,
-      perform_request = F
+      perform_request = FALSE
     )
   })
 
@@ -136,7 +163,7 @@ test_that("Jobs API - don't perform", {
     tasks = job_tasks(simple_task),
     run_name = "brickster example: one-off job",
     idempotency_token = "my_job_run_token",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_run_submit, "httr2_request")
 
@@ -145,7 +172,7 @@ test_that("Jobs API - don't perform", {
     run_id = "some_run_id",
     rerun_tasks = c("task1", "task2"),
     job_parameters = list(param1 = "value1"),
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_repair_run, "httr2_request")
 
@@ -154,7 +181,7 @@ test_that("Jobs API - don't perform", {
     run_id = "some_run_id",
     rerun_all_failed_tasks = TRUE,
     rerun_dependent_tasks = TRUE,
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_repair_all, "httr2_request")
 
@@ -165,7 +192,7 @@ test_that("Jobs API - don't perform", {
     performance_target = "PERFORMANCE_OPTIMIZED",
     pipeline_full_refresh = TRUE,
     latest_repair_id = "repair_123",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_repair_perf, "httr2_request")
 
@@ -175,7 +202,7 @@ test_that("Jobs API - don't perform", {
       run_id = "some_run_id",
       rerun_tasks = c("task1"),
       rerun_all_failed_tasks = TRUE,
-      perform_request = F
+      perform_request = FALSE
     )
   })
 
@@ -185,7 +212,7 @@ test_that("Jobs API - don't perform", {
       run_id = "some_run_id",
       rerun_tasks = c("task1"),
       performance_target = "INVALID_TARGET",
-      perform_request = F
+      perform_request = FALSE
     )
   })
 })

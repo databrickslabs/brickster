@@ -11,6 +11,7 @@ db_jobs_update(
   schedule = NULL,
   tasks = NULL,
   job_clusters = NULL,
+  parameters = NULL,
   email_notifications = NULL,
   timeout_seconds = NULL,
   max_concurrent_runs = NULL,
@@ -39,6 +40,9 @@ nested fields is not supported. This field is optional. Must be a \code{list()}.
 \code{\link[=new_cluster]{new_cluster()}}) that can be shared and reused by tasks of this job.
 Libraries cannot be declared in a shared job cluster. You must declare
 dependent libraries in task settings.}
+
+\item{parameters}{Named list of job level parameters. Values of the list
+represent default values.}
 
 \item{email_notifications}{Instance of \code{\link[=email_notifications]{email_notifications()}}.}
 
@@ -70,7 +74,8 @@ Partially Update A Job
 }
 \details{
 Parameters which are shared with \code{\link[=db_jobs_create]{db_jobs_create()}} are optional, only
-specify those that are changing.
+specify those that are changing. Job-level parameters can be updated using
+the same structure as \code{db_jobs_create()}.
 }
 \seealso{
 Other Jobs API: 
