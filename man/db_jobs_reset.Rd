@@ -7,7 +7,7 @@
 db_jobs_reset(
   job_id,
   name,
-  schedule,
+  schedule = NULL,
   tasks,
   job_clusters = NULL,
   parameters = list(),

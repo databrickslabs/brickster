@@ -226,15 +226,14 @@ db_jobs_get <- function(
 #' @inheritParams db_jobs_delete
 #' @inheritParams db_jobs_create
 #' @inheritParams db_sql_warehouse_create
-#'
 #' @family Jobs API
 #'
 #' @export
 db_jobs_reset <- function(
   job_id,
   name,
-  schedule,
   tasks,
+  schedule = NULL,
   job_clusters = NULL,
   parameters = list(),
   email_notifications = NULL,
@@ -247,6 +246,14 @@ db_jobs_reset <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
+  parameters <- purrr::imap(
+    parameters,
+    ~ {
+      list(name = .y, default = .x)
+    }
+  )
+  parameters <- stats::setNames(parameters, NULL)
+
   job_clusters <- prepare_jobs_clusters(job_clusters)
   body <- list(
     name = name,
@@ -258,7 +265,8 @@ db_jobs_reset <- function(
     max_concurrent_runs = max_concurrent_runs,
     access_control_list = access_control_list,
     git_source = git_source,
-    queue = list(enabled = queue)
+    queue = list(enabled = queue),
+    parameters = parameters
   )
 
   body <- purrr::discard(body, is.null)
@@ -290,7 +298,8 @@ db_jobs_reset <- function(
 #'
 #' @details
 #' Parameters which are shared with [db_jobs_create()] are optional, only
-#' specify those that are changing.
+#' specify those that are changing. Job-level parameters can be updated using
+#' the same structure as `db_jobs_create()`.
 #'
 #' @family Jobs API
 #'
@@ -302,6 +311,7 @@ db_jobs_update <- function(
   schedule = NULL,
   tasks = NULL,
   job_clusters = NULL,
+  parameters = NULL,
   email_notifications = NULL,
   timeout_seconds = NULL,
   max_concurrent_runs = NULL,
@@ -314,11 +324,21 @@ db_jobs_update <- function(
 ) {
   # jobs clusters is transformed to meet API structure required
   job_clusters <- prepare_jobs_clusters(job_clusters)
+  if (!is.null(parameters)) {
+    parameters <- purrr::imap(
+      parameters,
+      ~ {
+        list(name = .y, default = .x)
+      }
+    )
+    parameters <- stats::setNames(parameters, NULL)
+  }
 
   body <- list(
     name = name,
     tasks = tasks,
     job_clusters = job_clusters,
+    parameters = parameters,
     email_notifications = email_notifications,
     timeout_seconds = timeout_seconds,
     schedule = schedule,
