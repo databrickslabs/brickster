@@ -614,11 +614,54 @@ test_that("Volume method selection logic works correctly", {
     temporary = TRUE
   ))
 
-  # Test large data with volume (should depend on arrow availability)
-  skip_if(!rlang::is_installed("arrow"), "arrow package not available")
+  # Test large data with volume (should use volume method)
   expect_true(db_should_use_volume_method(
     large_data,
     "/Volumes/test/test/test"
+  ))
+})
+
+test_that("db_write_table_volume enforces arrow availability", {
+  con <- new(
+    "DatabricksConnection",
+    warehouse_id = "test_warehouse",
+    host = "test_host",
+    token = "test_token",
+    catalog = "",
+    schema = "",
+    staging_volume = ""
+  )
+
+  quoted_name <- dbQuoteIdentifier(con, "test_table")
+  medium_data <- data.frame(x = seq_len(30000), y = "a")
+  large_data <- data.frame(x = seq_len(60000), y = "a")
+
+  expect_no_warning(expect_error(
+    with_mocked_bindings(
+      db_write_table_volume(
+        con,
+        quoted_name,
+        medium_data,
+        "/Volumes/test/test/test"
+      ),
+      is_installed = function(...) FALSE,
+      .package = "rlang"
+    ),
+    "Volume-based writes require"
+  ))
+
+  expect_no_warning(expect_error(
+    with_mocked_bindings(
+      db_write_table_volume(
+        con,
+        quoted_name,
+        large_data,
+        "/Volumes/test/test/test"
+      ),
+      is_installed = function(...) FALSE,
+      .package = "rlang"
+    ),
+    "Volume-based writes require"
   ))
 })
 

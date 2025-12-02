@@ -1048,9 +1048,20 @@ setMethod(
     }
 
     # Check if we should use volume-based method
-    if (
-      db_should_use_volume_method(value, effective_staging_volume, temporary)
-    ) {
+    use_staging_volume <- db_should_use_volume_method(
+      value,
+      effective_staging_volume,
+      temporary
+    )
+
+    if (use_staging_volume) {
+      if (!rlang::is_installed("arrow")) {
+        cli::cli_abort(c(
+          "Volume-based writes require the {.pkg arrow} package.",
+          "i" = "Install it with {.code install.packages('arrow')}."
+        ))
+      }
+
       db_write_table_volume(
         conn,
         quoted_name,
@@ -1381,7 +1392,6 @@ db_should_use_volume_method <- function(
 ) {
   n_rows <- nrow(value)
   has_volume <- !is.null(staging_volume) && nchar(staging_volume) > 0
-  has_arrow <- rlang::is_installed("arrow")
 
   # Temporary tables should use standard method (COPY INTO may not support them)
   if (temporary) {
@@ -1398,7 +1408,7 @@ db_should_use_volume_method <- function(
         "i" = "Use the {.arg staging_volume} parameter to enable volume-based uploads.",
         "i" = "Example: {.code dbWriteTable(conn, name, data, staging_volume = '/Volumes/catalog/schema/volume')}"
       ))
-    } else if (n_rows >= 20000 && has_arrow) {
+    } else if (n_rows >= 20000) {
       # Warn about performance for medium-large datasets
       cli::cli_warn(c(
         "Writing {n_rows} rows using standard SQL method will be slow.",
@@ -1408,7 +1418,7 @@ db_should_use_volume_method <- function(
     }
   }
 
-  has_volume && n_rows > 20000 && has_arrow
+  has_volume && n_rows > 20000
 }
 
 #' Write table using volume-based approach
