@@ -254,6 +254,10 @@ db_jobs_reset <- function(
   )
   parameters <- stats::setNames(parameters, NULL)
 
+  if (!is.null(queue)) {
+    queue <- list(enabled = queue)
+  }
+
   job_clusters <- prepare_jobs_clusters(job_clusters)
   body <- list(
     name = name,
@@ -265,7 +269,7 @@ db_jobs_reset <- function(
     max_concurrent_runs = max_concurrent_runs,
     access_control_list = access_control_list,
     git_source = git_source,
-    queue = list(enabled = queue),
+    queue = queue,
     parameters = parameters
   )
 
@@ -334,6 +338,10 @@ db_jobs_update <- function(
     parameters <- stats::setNames(parameters, NULL)
   }
 
+  if (!is.null(queue)) {
+    queue <- list(enabled = queue)
+  }
+
   body <- list(
     name = name,
     tasks = tasks,
@@ -345,7 +353,7 @@ db_jobs_update <- function(
     max_concurrent_runs = max_concurrent_runs,
     access_control_list = access_control_list,
     git_source = git_source,
-    queue = list(enabled = queue)
+    queue = queue
   )
 
   body <- purrr::discard(body, is.null)
