@@ -1449,7 +1449,7 @@ db_write_table_volume <- function(
   )
 
   volume_dataset_path <- file.path(staging_volume, temp_dirname)
-  local_temp_dir <- file.path(tempdir(), temp_dirname)
+  local_temp_dir <- file.path(normalizePath(tempdir(), "/"), temp_dirname)
 
   # Set up cleanup hooks to ensure cleanup happens even if there are errors
   on.exit(
