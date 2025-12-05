@@ -105,6 +105,9 @@ reference:
   - title: Tables (Unity Catalog)
     contents:
       - starts_with("db_uc_table", internal = TRUE)
+  - title: Lakebase
+    contents:
+      - starts_with("db_lakebase", internal = TRUE)
   - title: Vector Search
     contents:
       - starts_with("db_vs", internal = TRUE)
