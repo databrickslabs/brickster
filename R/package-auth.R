@@ -170,16 +170,12 @@ read_databrickscfg <- function(
 
   home_dir <- fs::path_home()
 
-  # if (.Platform$OS.type == "windows") {
-  #   home_dir <- Sys.getenv("USERPROFILE")
-  # } else {
-  #   home_dir <- Sys.getenv("HOME")
-  # }
-
   # use the .databrickscfg location specified in DATABRICKS_CONFIG_FILE
   databricks_config_file <- Sys.getenv("DATABRICKS_CONFIG_FILE")
   if (nchar(databricks_config_file) == 0) {
     config_path <- fs::path(home_dir, ".databrickscfg")
+  } else {
+    config_path <- databricks_config_file
   }
   config_path <- fs::path_real(config_path)
 
