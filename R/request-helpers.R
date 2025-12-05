@@ -14,8 +14,15 @@
 #'
 #' @return request
 #' @import httr2
-db_request <- function(endpoint, method, version = NULL, body = NULL, host, token, ...) {
-
+db_request <- function(
+  endpoint,
+  method,
+  version = NULL,
+  body = NULL,
+  host,
+  token,
+  ...
+) {
   url <- structure(
     list(
       scheme = "https",
@@ -33,14 +40,13 @@ db_request <- function(endpoint, method, version = NULL, body = NULL, host, toke
     httr2::req_user_agent(string = user_agent_str) |>
     httr2::req_url_path_append(endpoint) |>
     httr2::req_method(method) |>
-    httr2::req_retry(max_tries = 3, backoff = ~ 2)
+    httr2::req_retry(max_tries = 3, backoff = ~2)
 
   # if token is present use directly
   # otherwise initiate OAuth 2.0 U2M Workspace flow
   if (!is.null(token)) {
     req <- httr2::req_auth_bearer_token(req = req, token = token)
   } else if (!is_hosted_session() && rlang::is_interactive()) {
-
     # fetch client
     oauth_client <- getOption(
       x = "brickster_oauth_client",
@@ -55,7 +61,6 @@ db_request <- function(endpoint, method, version = NULL, body = NULL, host, toke
       auth_url = oauth_client$auth_url,
       redirect_uri = "http://localhost:8020"
     )
-
   } else {
     cli::cli_abort("cannot find token or initiate OAuth U2M flow")
   }
@@ -67,7 +72,6 @@ db_request <- function(endpoint, method, version = NULL, body = NULL, host, toke
   }
 
   req
-
 }
 
 

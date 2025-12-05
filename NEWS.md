@@ -1,4 +1,7 @@
 # brickster 0.2.11
+-   Added Lakebase workspace database helpers (`db_lakebase_*`) including
+    credential generation, instance listing, instance lookup by name or UID,
+    and catalog retrieval (#113)
 -   Moving all filesystem related calls to {fs} (#140)
 
 # brickster 0.2.10
