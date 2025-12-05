@@ -30,6 +30,7 @@ Imports:
     dbplyr,
     dplyr,
     glue,
+    fs,
     httr2 (>= 1.1.1),
     ini,
     jsonlite,

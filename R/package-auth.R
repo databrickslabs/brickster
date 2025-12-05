@@ -168,19 +168,20 @@ read_databrickscfg <- function(
     profile <- "DEFAULT"
   }
 
-  if (.Platform$OS.type == "windows") {
-    home_dir <- Sys.getenv("USERPROFILE")
-  } else {
-    home_dir <- Sys.getenv("HOME")
-  }
+  home_dir <- fs::path_home()
+
+  # if (.Platform$OS.type == "windows") {
+  #   home_dir <- Sys.getenv("USERPROFILE")
+  # } else {
+  #   home_dir <- Sys.getenv("HOME")
+  # }
 
   # use the .databrickscfg location specified in DATABRICKS_CONFIG_FILE
   databricks_config_file <- Sys.getenv("DATABRICKS_CONFIG_FILE")
-  if (nchar(databricks_config_file) != 0) {
-    config_path <- databricks_config_file
-  } else {
-    config_path <- file.path(home_dir, ".databrickscfg")
+  if (nchar(databricks_config_file) == 0) {
+    config_path <- fs::path(home_dir, ".databrickscfg")
   }
+  config_path <- fs::path_real(config_path)
 
   # read config file (ini format) and fetch values from specified profile
   vars <- ini::read.ini(config_path)[[profile]]

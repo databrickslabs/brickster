@@ -4,6 +4,7 @@
 -   DBI/dbplyr write table methods now make two transactions (create empty table --\> insert into) to ensure type correctness
 -   Allow optional schedules in `db_jobs_reset()` and propagate parameters in reset/update requests.
 -   DBI/dbplyr inline writes now preserve single quotes in character columns via explicit escaping (#130)
+-   Moving all filesystem related calls to {fs} (#140)
 
 # brickster 0.2.9
 
