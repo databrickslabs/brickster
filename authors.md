@@ -16,12 +16,12 @@ Source:
 [`DESCRIPTION`](https://github.com/databrickslabs/brickster/blob/main/DESCRIPTION)
 
 Davies Z, Kurlansik R (2025). *brickster: R Toolkit for 'Databricks'*. R
-package version 0.2.10, <https://github.com/databrickslabs/brickster>.
+package version 0.2.11, <https://github.com/databrickslabs/brickster>.
 
     @Manual{,
       title = {brickster: R Toolkit for 'Databricks'},
       author = {Zac Davies and Rafi Kurlansik},
       year = {2025},
-      note = {R package version 0.2.10},
+      note = {R package version 0.2.11},
       url = {https://github.com/databrickslabs/brickster},
     }

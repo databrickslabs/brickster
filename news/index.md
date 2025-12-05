@@ -1,5 +1,10 @@
 # Changelog
 
+## brickster 0.2.11
+
+- Moving all filesystem related calls to {fs}
+  ([\#140](https://github.com/databrickslabs/brickster/issues/140))
+
 ## brickster 0.2.10
 
 - Increment version of httr2 required (\>= 1.1.1)
