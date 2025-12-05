@@ -369,6 +369,17 @@
 - [`db_uc_tables_summaries()`](https://databrickslabs.github.io/brickster/reference/db_uc_tables_summaries.md)
   : List Table Summaries (Unity Catalog)
 
+## Lakebase
+
+- [`db_lakebase_creds_generate()`](https://databrickslabs.github.io/brickster/reference/db_lakebase_creds_generate.md)
+  : Generate Database Credential
+- [`db_lakebase_get()`](https://databrickslabs.github.io/brickster/reference/db_lakebase_get.md)
+  : Get Database Instance
+- [`db_lakebase_get_by_uid()`](https://databrickslabs.github.io/brickster/reference/db_lakebase_get_by_uid.md)
+  : Find Database Instance by UID
+- [`db_lakebase_list()`](https://databrickslabs.github.io/brickster/reference/db_lakebase_list.md)
+  : List Database Instances
+
 ## Vector Search
 
 - [`db_vs_endpoints_create()`](https://databrickslabs.github.io/brickster/reference/db_vs_endpoints_create.md)

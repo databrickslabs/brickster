@@ -124,6 +124,10 @@
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_jobs_runs_list.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_jobs_runs_submit.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_jobs_update.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/db_lakebase_creds_generate.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/db_lakebase_get.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/db_lakebase_get_by_uid.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/db_lakebase_list.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_libs_all_cluster_statuses.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_libs_cluster_status.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_libs_install.html</loc></url>
