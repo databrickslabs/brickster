@@ -20,17 +20,16 @@
 add_lib_path <- function(path, after, version = FALSE) {
   if (version) {
     rver <- getRversion()
-    lib_path <- file.path(path, rver)
+    lib_path <- fs::path(path, rver)
   } else {
-    lib_path <- file.path(path)
+    lib_path <- fs::path(path)
   }
+
+  lib_path <- fs::path_expand(lib_path)
 
   # ensure directory exists
-  if (!file.exists(lib_path)) {
-    dir.create(lib_path, recursive = TRUE)
-  }
-
-  lib_path <- normalizePath(lib_path, "/")
+  fs::dir_create(lib_path, recurse = TRUE)
+  lib_path <- fs::path_real(lib_path)
 
   cli::cli_alert_info("Primary package path is now {.path {lib_path}}")
   .libPaths(new = append(.libPaths(), lib_path, after = after))
@@ -48,11 +47,16 @@ add_lib_path <- function(path, after, version = FALSE) {
 remove_lib_path <- function(path, version = FALSE) {
   if (version) {
     rver <- getRversion()
-    lib_path <- file.path(path, rver)
+    lib_path <- fs::path(path, rver)
   } else {
-    lib_path <- file.path(path)
+    lib_path <- fs::path(path)
   }
 
-  lib_path <- normalizePath(lib_path, "/")
+  lib_path <- fs::path_expand(lib_path)
+  if (fs::dir_exists(lib_path) || fs::file_exists(lib_path)) {
+    lib_path <- fs::path_real(lib_path)
+  } else {
+    lib_path <- fs::path_norm(lib_path)
+  }
   .libPaths(new = setdiff(.libPaths(), lib_path))
 }

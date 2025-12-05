@@ -1448,15 +1448,15 @@ db_write_table_volume <- function(
     sample(10000:99999, 1)
   )
 
-  volume_dataset_path <- file.path(staging_volume, temp_dirname)
-  local_temp_dir <- file.path(tempdir(), temp_dirname)
+  volume_dataset_path <- fs::path(staging_volume, temp_dirname)
+  local_temp_dir <- fs::path(fs::path_temp(), temp_dirname)
 
   # Set up cleanup hooks to ensure cleanup happens even if there are errors
   on.exit(
     {
       # Cleanup local directory
-      if (dir.exists(local_temp_dir)) {
-        unlink(local_temp_dir, recursive = TRUE)
+      if (fs::dir_exists(local_temp_dir)) {
+        fs::dir_delete(local_temp_dir)
       }
 
       # Clean up volume directory (recursive since it contains files)

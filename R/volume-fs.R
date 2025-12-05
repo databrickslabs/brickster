@@ -250,7 +250,7 @@ db_volume_recursive_delete_contents <- function(
       if (!is.null(contents) && length(contents) > 0) {
         # Delete all files and subdirectories
         for (item in contents) {
-          item_path <- file.path(path, item$name)
+          item_path <- fs::path(path, item$name)
 
           if (item$is_directory) {
             # Recursively delete subdirectory and all its contents
@@ -414,57 +414,55 @@ db_volume_upload_dir <- function(
   token = db_token()
 ) {
   # Validate inputs
-  if (!dir.exists(local_dir)) {
+  if (!fs::dir_exists(local_dir)) {
     cli::cli_abort("Local directory does not exist: {local_dir}")
   }
 
   volume_dir <- is_valid_volume_path(volume_dir)
 
-  # Get all files to upload
-  local_files <- list.files(
-    local_dir,
-    full.names = TRUE,
-    recursive = preserve_structure
-  )
-
-  if (length(local_files) == 0) {
-    cli::cli_warn("No files found in directory: {local_dir}")
-    return(TRUE)
-  }
-
   # Create volume directory
   db_volume_dir_create(volume_dir, host = host, token = token)
 
-  # Prepare requests for parallel execution
-  requests <- purrr::map(local_files, function(local_file) {
-    if (preserve_structure) {
-      # Preserve relative path structure
-      rel_path <- sub(paste0(local_dir, "/"), "", local_file)
-      volume_file <- file.path(volume_dir, rel_path)
+  # map files and generate requests
+  requests <- fs::dir_map(
+    local_dir,
+    recurse = preserve_structure,
+    type = "file",
+    fun = function(local_file) {
+      if (preserve_structure) {
+        # Preserve relative path structure
+        rel_path <- fs::path_rel(local_file, start = local_dir)
+        volume_file <- fs::path(volume_dir, rel_path)
 
-      # Create subdirectories if needed
-      volume_subdir <- dirname(volume_file)
-      if (volume_subdir != volume_dir) {
-        db_volume_dir_create(volume_subdir, host = host, token = token)
+        # Create subdirectories if needed
+        volume_subdir <- fs::path_dir(volume_file)
+        if (volume_subdir != volume_dir) {
+          db_volume_dir_create(volume_subdir, host = host, token = token)
+        }
+      } else {
+        # Upload to root of volume directory
+        volume_file <- fs::path(volume_dir, fs::path_file(local_file))
       }
-    } else {
-      # Upload to root of volume directory
-      volume_file <- file.path(volume_dir, basename(local_file))
-    }
 
-    # Create upload request (no individual progress for parallel uploads)
-    db_volume_action(
-      path = volume_file,
-      file = local_file,
-      overwrite = overwrite,
-      action = "PUT",
-      type = "files",
-      host = host,
-      token = token,
-      perform_request = FALSE,
-      progress = FALSE
-    )
-  })
+      # Create upload request (no individual progress for parallel uploads)
+      db_volume_action(
+        path = volume_file,
+        file = local_file,
+        overwrite = overwrite,
+        action = "PUT",
+        type = "files",
+        host = host,
+        token = token,
+        perform_request = FALSE,
+        progress = FALSE
+      )
+    }
+  )
+
+  if (length(requests) == 0) {
+    cli::cli_warn("No files found in directory: {local_dir}")
+    return(TRUE)
+  }
 
   # Execute parallel uploads with styled progress bars
   httr2::req_perform_parallel(
