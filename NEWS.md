@@ -3,6 +3,7 @@
     credential generation, instance listing, instance lookup by name or UID,
     and catalog retrieval (#113)
 -   Moving all filesystem related calls to {fs} (#140)
+-   The DBI backend now always respects a staging volume when specified, even for small data (#143)
 
 # brickster 0.2.10
 -   Increment version of httr2 required (\>= 1.1.1)

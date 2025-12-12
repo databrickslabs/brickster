@@ -595,14 +595,14 @@ test_that("Volume method selection logic works correctly", {
   expect_false(db_should_use_volume_method(small_data, NULL))
   expect_false(db_should_use_volume_method(medium_data, NULL))
 
-  # Test with volume but small data (should return FALSE)
-  expect_false(db_should_use_volume_method(
+  # Test with volume but small data (should return TRUE)
+  expect_true(db_should_use_volume_method(
     small_data,
     "/Volumes/test/test/test"
   ))
 
-  # Test with volume but medium data (should return FALSE as threshold is > 20000)
-  expect_false(db_should_use_volume_method(
+  # Test with volume but medium data (should return TRUE)
+  expect_true(db_should_use_volume_method(
     medium_data,
     "/Volumes/test/test/test"
   ))
