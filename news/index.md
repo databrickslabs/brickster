@@ -8,6 +8,9 @@
   ([\#113](https://github.com/databrickslabs/brickster/issues/113))
 - Moving all filesystem related calls to {fs}
   ([\#140](https://github.com/databrickslabs/brickster/issues/140))
+- The DBI backend now always respects a staging volume when specified,
+  even for small data
+  ([\#143](https://github.com/databrickslabs/brickster/issues/143))
 
 ## brickster 0.2.10
 
