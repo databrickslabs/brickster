@@ -1393,6 +1393,11 @@ db_should_use_volume_method <- function(
   n_rows <- nrow(value)
   has_volume <- !is.null(staging_volume) && nchar(staging_volume) > 0
 
+  # Always use a staging volume if its specified, regardless of size
+  if (has_volume) {
+    return(TRUE)
+  }
+
   # Temporary tables should use standard method (COPY INTO may not support them)
   if (temporary) {
     return(FALSE)
@@ -1418,7 +1423,7 @@ db_should_use_volume_method <- function(
     }
   }
 
-  has_volume && n_rows > 20000
+  FALSE
 }
 
 #' Write table using volume-based approach
