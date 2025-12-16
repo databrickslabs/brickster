@@ -2,6 +2,8 @@
 
 ## brickster 0.2.11
 
+CRAN release: 2025-12-13
+
 - Added Lakebase workspace database helpers (`db_lakebase_*`) including
   credential generation, instance listing, instance lookup by name or
   UID, and catalog retrieval
@@ -11,6 +13,9 @@
 - The DBI backend now always respects a staging volume when specified,
   even for small data
   ([\#143](https://github.com/databrickslabs/brickster/issues/143))
+- `schemaEvolutionMode` is now always `none` when writing to tables with
+  DBI backend and staging volumes
+  ([\#147](https://github.com/databrickslabs/brickster/issues/147))
 
 ## brickster 0.2.10
 
