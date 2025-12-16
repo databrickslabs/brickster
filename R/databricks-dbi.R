@@ -1563,7 +1563,7 @@ db_write_table_volume <- function(
       quoted_name,
       " AS SELECT * FROM READ_FILES('",
       volume_dataset_path,
-      "', format => 'parquet')"
+      "', format => 'parquet', schemaEvolutionMode => 'none')"
     )
   }
 
