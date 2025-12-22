@@ -129,14 +129,42 @@ test_that("Transaction restrictions work offline", {
 })
 
 test_that("Quote handling utility functions work", {
-  clean_quoted <- function(name) gsub('^"|"$', '', name)
+  clean_quoted <- brickster:::db_clean_table_name
 
   expect_equal(clean_quoted("table_name"), "table_name")
   expect_equal(clean_quoted('"table_name"'), "table_name")
-  expect_equal(clean_quoted('catalog.schema.table'), "catalog.schema.table")
+  expect_equal(clean_quoted("catalog.schema.table"), "catalog.schema.table")
   expect_equal(clean_quoted('"catalog.schema.table"'), "catalog.schema.table")
-  expect_equal(clean_quoted('samples.nyctaxi.trips'), "samples.nyctaxi.trips")
+  expect_equal(clean_quoted("samples.nyctaxi.trips"), "samples.nyctaxi.trips")
   expect_equal(clean_quoted('"samples.nyctaxi.trips"'), "samples.nyctaxi.trips")
+})
+
+test_that("db_prepare_create_table_fields handles inputs", {
+  fields <- c(id = "INT", name = "STRING")
+  result <- brickster:::db_prepare_create_table_fields(fields)
+
+  expect_s3_class(result$value, "data.frame")
+  expect_equal(names(result$value), names(fields))
+  expect_equal(nrow(result$value), 0)
+  expect_equal(result$field_types, fields)
+
+  df_fields <- data.frame(id = integer(), name = character())
+  result <- brickster:::db_prepare_create_table_fields(df_fields)
+  expect_equal(result$value, df_fields)
+  expect_null(result$field_types)
+
+  expect_error(
+    brickster:::db_prepare_create_table_fields(NULL),
+    "fields must be provided"
+  )
+  expect_error(
+    brickster:::db_prepare_create_table_fields(character()),
+    "fields must contain at least one column"
+  )
+  expect_error(
+    brickster:::db_prepare_create_table_fields(c("INT", "STRING")),
+    "named character vector"
+  )
 })
 
 test_that("db_generate_typed_values_sql preserves single quotes", {

@@ -213,12 +213,7 @@ setMethod(
   "dbSendQuery",
   signature = c(conn = "DatabricksConnection", statement = "character"),
   function(conn, statement, ...) {
-    # Validate inputs
-    if (
-      missing(statement) || is.null(statement) || nchar(trimws(statement)) == 0
-    ) {
-      cli::cli_abort("statement must be provided and non-empty")
-    }
+    db_assert_statement(statement)
 
     # Execute query asynchronously
     resp <- db_sql_exec_query(
@@ -300,12 +295,7 @@ setMethod(
   "dbSendStatement",
   signature = c(conn = "DatabricksConnection", statement = "character"),
   function(conn, statement, ...) {
-    # Validate inputs
-    if (
-      missing(statement) || is.null(statement) || nchar(trimws(statement)) == 0
-    ) {
-      cli::cli_abort("statement must be provided and non-empty")
-    }
+    db_assert_statement(statement)
 
     # Execute statement asynchronously
     resp <- db_sql_exec_query(
@@ -342,12 +332,7 @@ setMethod(
   "dbExecute",
   signature = c(conn = "DatabricksConnection", statement = "character"),
   function(conn, statement, ...) {
-    # Validate inputs
-    if (
-      missing(statement) || is.null(statement) || nchar(trimws(statement)) == 0
-    ) {
-      cli::cli_abort("statement must be provided and non-empty")
-    }
+    db_assert_statement(statement)
 
     # Execute statement synchronously to get metadata without loading data
     status <- db_sql_exec_and_wait(
@@ -538,9 +523,7 @@ setMethod("show", "DatabricksResult", function(object) {
 #' @return Character vector of table names
 #' @export
 setMethod("dbListTables", "DatabricksConnection", function(conn, ...) {
-  if (!dbIsValid(conn)) {
-    cli::cli_abort("Connection is not valid")
-  }
+  db_assert_valid_conn(conn)
 
   # Use SQL query approach (standard for DBI drivers)
   sql <- if (nchar(conn@catalog) > 0 && nchar(conn@schema) > 0) {
@@ -574,12 +557,10 @@ setMethod(
   "dbExistsTable",
   signature = c(conn = "DatabricksConnection", name = "character"),
   function(conn, name, ...) {
-    if (!dbIsValid(conn)) {
-      cli::cli_abort("Connection is not valid")
-    }
+    db_assert_valid_conn(conn)
 
     # Clean table name - remove quotes if present
-    clean_name <- gsub('^\"|\"$', '', name)
+    clean_name <- db_clean_table_name(name)
 
     # Use DESCRIBE TABLE to check existence
     tryCatch(
@@ -605,9 +586,7 @@ setMethod(
   "dbExistsTable",
   signature = c(conn = "DatabricksConnection", name = "Id"),
   function(conn, name, ...) {
-    if (!dbIsValid(conn)) {
-      cli::cli_abort("Connection is not valid")
-    }
+    db_assert_valid_conn(conn)
 
     # Convert Id to quoted string
     quoted_name <- dbQuoteIdentifier(conn, name)
@@ -636,13 +615,222 @@ setMethod(
   "dbExistsTable",
   signature = c(conn = "DatabricksConnection", name = "AsIs"),
   function(conn, name, ...) {
-    if (!dbIsValid(conn)) {
-      cli::cli_abort("Connection is not valid")
-    }
+    db_assert_valid_conn(conn)
 
     # Convert AsIs to character and use the character method
     char_name <- as.character(name)
     dbExistsTable(conn, char_name)
+  }
+)
+
+#' Remove a Databricks table
+#' @param conn A DatabricksConnection object
+#' @param name Table name to remove
+#' @param ... Additional arguments (ignored)
+#' @return TRUE invisibly on success
+#' @export
+setMethod(
+  "dbRemoveTable",
+  signature = c(conn = "DatabricksConnection", name = "character"),
+  function(conn, name, ...) {
+    db_assert_valid_conn(conn)
+
+    # Clean table name - remove quotes if present
+    clean_name <- db_clean_table_name(name)
+
+    sql <- paste0("DROP TABLE ", clean_name)
+    dbExecute(conn, sql)
+    invisible(TRUE)
+  }
+)
+
+#' Remove a Databricks table (Id method)
+#' @param conn A DatabricksConnection object
+#' @param name Table name as Id object
+#' @param ... Additional arguments (ignored)
+#' @return TRUE invisibly on success
+#' @export
+setMethod(
+  "dbRemoveTable",
+  signature = c(conn = "DatabricksConnection", name = "Id"),
+  function(conn, name, ...) {
+    db_assert_valid_conn(conn)
+
+    # Convert Id to quoted string
+    quoted_name <- dbQuoteIdentifier(conn, name)
+
+    sql <- paste0("DROP TABLE ", quoted_name)
+    dbExecute(conn, sql)
+    invisible(TRUE)
+  }
+)
+
+#' Remove a Databricks table (AsIs method)
+#' @param conn A DatabricksConnection object
+#' @param name Table name as AsIs object (from I())
+#' @param ... Additional arguments (ignored)
+#' @return TRUE invisibly on success
+#' @export
+setMethod(
+  "dbRemoveTable",
+  signature = c(conn = "DatabricksConnection", name = "AsIs"),
+  function(conn, name, ...) {
+    db_assert_valid_conn(conn)
+
+    # Convert AsIs to character and use the character method
+    char_name <- as.character(name)
+    dbRemoveTable(conn, char_name)
+  }
+)
+
+#' Read a Databricks table
+#' @param conn A DatabricksConnection object
+#' @param name Table name to read
+#' @param ... Additional arguments passed to dbGetQuery
+#' @return A data.frame with table contents
+#' @export
+setMethod(
+  "dbReadTable",
+  signature = c(conn = "DatabricksConnection", name = "character"),
+  function(conn, name, ...) {
+    db_assert_valid_conn(conn)
+
+    # Clean table name - remove quotes if present
+    clean_name <- db_clean_table_name(name)
+
+    sql <- paste0("SELECT * FROM ", clean_name)
+    dbGetQuery(conn, sql, ...)
+  }
+)
+
+#' Read a Databricks table (Id method)
+#' @param conn A DatabricksConnection object
+#' @param name Table name as Id object
+#' @param ... Additional arguments passed to dbGetQuery
+#' @return A data.frame with table contents
+#' @export
+setMethod(
+  "dbReadTable",
+  signature = c(conn = "DatabricksConnection", name = "Id"),
+  function(conn, name, ...) {
+    db_assert_valid_conn(conn)
+
+    # Convert Id to quoted string
+    quoted_name <- dbQuoteIdentifier(conn, name)
+
+    sql <- paste0("SELECT * FROM ", quoted_name)
+    dbGetQuery(conn, sql, ...)
+  }
+)
+
+#' Read a Databricks table (AsIs method)
+#' @param conn A DatabricksConnection object
+#' @param name Table name as AsIs object (from I())
+#' @param ... Additional arguments passed to dbGetQuery
+#' @return A data.frame with table contents
+#' @export
+setMethod(
+  "dbReadTable",
+  signature = c(conn = "DatabricksConnection", name = "AsIs"),
+  function(conn, name, ...) {
+    db_assert_valid_conn(conn)
+
+    # Convert AsIs to character and use the character method
+    char_name <- as.character(name)
+    dbReadTable(conn, char_name, ...)
+  }
+)
+
+#' Create an empty Databricks table
+#' @param conn A DatabricksConnection object
+#' @param name Table name to create
+#' @param fields Either a named character vector of types or a data frame
+#' @param row.names Ignored (included for DBI compatibility)
+#' @param temporary If TRUE, create temporary table (NOT SUPPORTED - will error)
+#' @param ... Additional arguments (ignored)
+#' @return TRUE invisibly on success
+#' @export
+setMethod(
+  "dbCreateTable",
+  signature = c(conn = "DatabricksConnection", name = "character"),
+  function(conn, name, fields, ..., row.names = NULL, temporary = FALSE) {
+    db_assert_valid_conn(conn)
+
+    if (temporary) {
+      cli::cli_abort(
+        "Temporary tables are not supported with the SQL Statement Execution API"
+      )
+    }
+
+    # Clean table name - remove quotes if present
+    clean_name <- db_clean_table_name(name)
+    fields_info <- db_prepare_create_table_fields(fields)
+    db_create_table_from_data(
+      conn,
+      clean_name,
+      fields_info$value,
+      fields_info$field_types,
+      temporary = temporary,
+      overwrite = FALSE
+    )
+    invisible(TRUE)
+  }
+)
+
+#' Create an empty Databricks table (Id method)
+#' @param conn A DatabricksConnection object
+#' @param name Table name as Id object
+#' @param fields Either a named character vector of types or a data frame
+#' @param row.names Ignored (included for DBI compatibility)
+#' @param temporary If TRUE, create temporary table (NOT SUPPORTED - will error)
+#' @param ... Additional arguments (ignored)
+#' @return TRUE invisibly on success
+#' @export
+setMethod(
+  "dbCreateTable",
+  signature = c(conn = "DatabricksConnection", name = "Id"),
+  function(conn, name, fields, ..., row.names = NULL, temporary = FALSE) {
+    db_assert_valid_conn(conn)
+
+    if (temporary) {
+      cli::cli_abort(
+        "Temporary tables are not supported with the SQL Statement Execution API"
+      )
+    }
+
+    # Convert Id to quoted string
+    quoted_name <- dbQuoteIdentifier(conn, name)
+    fields_info <- db_prepare_create_table_fields(fields)
+    db_create_table_from_data(
+      conn,
+      quoted_name,
+      fields_info$value,
+      fields_info$field_types,
+      temporary = temporary,
+      overwrite = FALSE
+    )
+    invisible(TRUE)
+  }
+)
+
+#' Create an empty Databricks table (AsIs method)
+#' @param conn A DatabricksConnection object
+#' @param name Table name as AsIs object (from I())
+#' @param fields Either a named character vector of types or a data frame
+#' @param row.names Ignored (included for DBI compatibility)
+#' @param temporary If TRUE, create temporary table (NOT SUPPORTED - will error)
+#' @param ... Additional arguments (ignored)
+#' @return TRUE invisibly on success
+#' @export
+setMethod(
+  "dbCreateTable",
+  signature = c(conn = "DatabricksConnection", name = "AsIs"),
+  function(conn, name, fields, ..., row.names = NULL, temporary = FALSE) {
+    db_assert_valid_conn(conn)
+
+    # Convert AsIs to character and use the character method
+    char_name <- as.character(name)
+    dbCreateTable(conn, char_name, fields, temporary = temporary, ...)
   }
 )
 
@@ -676,12 +864,10 @@ setMethod(
   "dbListFields",
   signature = c(conn = "DatabricksConnection", name = "character"),
   function(conn, name, ...) {
-    if (!dbIsValid(conn)) {
-      cli::cli_abort("Connection is not valid")
-    }
+    db_assert_valid_conn(conn)
 
     # Clean table name - remove quotes if present
-    clean_name <- gsub('^"|"$', '', name)
+    clean_name <- db_clean_table_name(name)
 
     # Use DESCRIBE TABLE to get column information with inline disposition
     sql <- paste0("DESCRIBE TABLE ", clean_name)
@@ -721,9 +907,7 @@ setMethod(
   "dbListFields",
   signature = c(conn = "DatabricksConnection", name = "AsIs"),
   function(conn, name, ...) {
-    if (!dbIsValid(conn)) {
-      cli::cli_abort("Connection is not valid")
-    }
+    db_assert_valid_conn(conn)
 
     # Convert AsIs to character and use the character method
     char_name <- as.character(name)
@@ -761,6 +945,28 @@ setMethod("dbRollback", "DatabricksConnection", function(conn, ...) {
 
 # Additional utility methods
 
+#' Assert that a connection is valid
+#' @keywords internal
+db_assert_valid_conn <- function(conn) {
+  if (!dbIsValid(conn)) {
+    cli::cli_abort("Connection is not valid")
+  }
+}
+
+#' Assert that a statement is provided
+#' @keywords internal
+db_assert_statement <- function(statement) {
+  if (missing(statement) || is.null(statement) || nchar(trimws(statement)) == 0) {
+    cli::cli_abort("statement must be provided and non-empty")
+  }
+}
+
+#' Clean table name input
+#' @keywords internal
+db_clean_table_name <- function(name) {
+  gsub('^\"|\"$', '', name)
+}
+
 #' Map R data types to Databricks SQL types
 #' @param dbObj A DatabricksConnection object
 #' @param obj R object(s) to get SQL types for
@@ -785,6 +991,42 @@ setMethod("dbDataType", "DatabricksConnection", function(dbObj, obj, ...) {
     }
   )
 })
+
+#' Prepare fields for CREATE TABLE
+#' @keywords internal
+db_prepare_create_table_fields <- function(fields) {
+  if (missing(fields) || is.null(fields)) {
+    cli::cli_abort("fields must be provided")
+  }
+
+  if (is.data.frame(fields)) {
+    if (ncol(fields) == 0) {
+      cli::cli_abort("fields must contain at least one column")
+    }
+    list(value = fields, field_types = NULL)
+  } else if (is.character(fields)) {
+    if (length(fields) == 0) {
+      cli::cli_abort("fields must contain at least one column")
+    }
+    field_names <- names(fields)
+    if (
+      is.null(field_names) ||
+        any(is.na(field_names) | field_names == "")
+    ) {
+      cli::cli_abort(
+        "fields must be a named character vector when provided as character"
+      )
+    }
+    empty_cols <- setNames(
+      replicate(length(fields), logical(0), simplify = FALSE),
+      field_names
+    )
+    value <- as.data.frame(empty_cols, stringsAsFactors = FALSE)
+    list(value = value, field_types = fields)
+  } else {
+    cli::cli_abort("fields must be a data frame or named character vector")
+  }
+}
 
 # Identifier Quoting Methods ----------------------------------------------------
 
@@ -1194,39 +1436,16 @@ db_create_table_from_data <- function(
   # Generate column definitions
   if (is.null(field.types)) {
     # Use automatic type mapping for each column
-    col_types <- purrr::map_chr(value, function(col) {
-      switch(
-        class(col)[1],
-        logical = "BOOLEAN",
-        integer = "INT",
-        numeric = "DOUBLE",
-        character = "STRING",
-        Date = "DATE",
-        POSIXct = "TIMESTAMP",
-        "STRING"
-      )
-    })
+    col_types <- dbDataType(conn, value)
   } else {
     # Use provided types
     col_types <- field.types[names(value)]
     # Fill missing types with automatic mapping
     missing_types <- is.na(col_types) |
       names(value) %in% names(field.types) == FALSE
-    col_types[missing_types] <- purrr::map_chr(
-      value[missing_types],
-      function(col) {
-        switch(
-          class(col)[1],
-          logical = "BOOLEAN",
-          integer = "INT",
-          numeric = "DOUBLE",
-          character = "STRING",
-          Date = "DATE",
-          POSIXct = "TIMESTAMP",
-          "STRING"
-        )
-      }
-    )
+    if (any(missing_types)) {
+      col_types[missing_types] <- dbDataType(conn, value[missing_types])
+    }
   }
 
   # Build column definitions
