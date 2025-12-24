@@ -2,8 +2,8 @@
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/databrickslabs/brickster/workflows/R-CMD-check/badge.svg)](https://github.com/databrickslabs/brickster/actions) [![Codecov test coverage](https://codecov.io/gh/databrickslabs/brickster/branch/main/graph/badge.svg)](https://app.codecov.io/gh/databrickslabs/brickster?branch=main)
-
+[![R-CMD-check](https://github.com/databrickslabs/brickster/workflows/R-CMD-check/badge.svg)](https://github.com/databrickslabs/brickster/actions) 
+[![Codecov test coverage](https://codecov.io/gh/databrickslabs/brickster/graph/badge.svg)](https://app.codecov.io/gh/databrickslabs/brickster)
 <!-- badges: end -->
 
 ## Overview
