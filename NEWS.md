@@ -1,3 +1,6 @@
+# brickster 0.2.12
+-   Added DBI helpers for `dbCreateTable()`, `dbReadTable()`, and `dbRemoveTable()` with `Id`/`AsIs` support, plus offline tests for DBI table helpers.
+
 # brickster 0.2.11
 -   Added Lakebase workspace database helpers (`db_lakebase_*`) including
     credential generation, instance listing, instance lookup by name or UID,
