@@ -37,14 +37,12 @@ jobs:
           extra-packages: any::covr, any::xml2
           needs: coverage
 
-      - name: Create and populate .Renviron file
-        run: |
-          echo DATABRICKS_HOST="$DATABRICKS_HOST" >> ~/.Renviron
-          echo DATABRICKS_TOKEN="$DATABRICKS_TOKEN" >> ~/.Renviron
-          echo DATABRICKS_WSID="$DATABRICKS_WSID" >> ~/.Renviron
-        shell: bash
-
       - name: Test coverage
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          DATABRICKS_WSID: ${{ secrets.DATABRICKS_WSID }}
+          NOT_CRAN: true
         run: |
           cov <- covr::package_coverage(
             quiet = FALSE,
