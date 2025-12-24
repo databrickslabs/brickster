@@ -500,6 +500,12 @@ Standard DBI interface for Databricks SQL warehouses
   : Begin transaction (not supported)
 - [`dbCommit(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/dbCommit-DatabricksConnection-method.md)
   : Commit transaction (not supported)
+- [`dbCreateTable(`*`<DatabricksConnection>`*`,`*`<AsIs>`*`)`](https://databrickslabs.github.io/brickster/reference/dbCreateTable-DatabricksConnection-AsIs-method.md)
+  : Create an empty Databricks table (AsIs method)
+- [`dbCreateTable(`*`<DatabricksConnection>`*`,`*`<Id>`*`)`](https://databrickslabs.github.io/brickster/reference/dbCreateTable-DatabricksConnection-Id-method.md)
+  : Create an empty Databricks table (Id method)
+- [`dbCreateTable(`*`<DatabricksConnection>`*`,`*`<character>`*`)`](https://databrickslabs.github.io/brickster/reference/dbCreateTable-DatabricksConnection-character-method.md)
+  : Create an empty Databricks table
 - [`dbDataType(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/dbDataType-DatabricksConnection-method.md)
   : Map R data types to Databricks SQL types
 - [`dbDisconnect(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/dbDisconnect-DatabricksConnection-method.md)
@@ -530,6 +536,18 @@ Standard DBI interface for Databricks SQL warehouses
   : Quote SQL objects (passthrough)
 - [`dbQuoteIdentifier(`*`<DatabricksConnection>`*`,`*`<character>`*`)`](https://databrickslabs.github.io/brickster/reference/dbQuoteIdentifier-DatabricksConnection-character-method.md)
   : Quote identifiers for Databricks SQL
+- [`dbReadTable(`*`<DatabricksConnection>`*`,`*`<AsIs>`*`)`](https://databrickslabs.github.io/brickster/reference/dbReadTable-DatabricksConnection-AsIs-method.md)
+  : Read a Databricks table (AsIs method)
+- [`dbReadTable(`*`<DatabricksConnection>`*`,`*`<Id>`*`)`](https://databrickslabs.github.io/brickster/reference/dbReadTable-DatabricksConnection-Id-method.md)
+  : Read a Databricks table (Id method)
+- [`dbReadTable(`*`<DatabricksConnection>`*`,`*`<character>`*`)`](https://databrickslabs.github.io/brickster/reference/dbReadTable-DatabricksConnection-character-method.md)
+  : Read a Databricks table
+- [`dbRemoveTable(`*`<DatabricksConnection>`*`,`*`<AsIs>`*`)`](https://databrickslabs.github.io/brickster/reference/dbRemoveTable-DatabricksConnection-AsIs-method.md)
+  : Remove a Databricks table (AsIs method)
+- [`dbRemoveTable(`*`<DatabricksConnection>`*`,`*`<Id>`*`)`](https://databrickslabs.github.io/brickster/reference/dbRemoveTable-DatabricksConnection-Id-method.md)
+  : Remove a Databricks table (Id method)
+- [`dbRemoveTable(`*`<DatabricksConnection>`*`,`*`<character>`*`)`](https://databrickslabs.github.io/brickster/reference/dbRemoveTable-DatabricksConnection-character-method.md)
+  : Remove a Databricks table
 - [`dbRollback(`*`<DatabricksConnection>`*`)`](https://databrickslabs.github.io/brickster/reference/dbRollback-DatabricksConnection-method.md)
   : Rollback transaction (not supported)
 - [`dbSendQuery(`*`<DatabricksConnection>`*`,`*`<character>`*`)`](https://databrickslabs.github.io/brickster/reference/dbSendQuery-DatabricksConnection-character-method.md)

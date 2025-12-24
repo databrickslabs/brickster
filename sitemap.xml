@@ -35,6 +35,9 @@
 <url><loc>https://databrickslabs.github.io/brickster/reference/dbColumnInfo-DatabricksResult-method.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/dbCommit-DatabricksConnection-method.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/dbConnect-DatabricksDriver-method.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/dbCreateTable-DatabricksConnection-AsIs-method.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/dbCreateTable-DatabricksConnection-Id-method.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/dbCreateTable-DatabricksConnection-character-method.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/dbDataType-DatabricksConnection-method.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/dbDisconnect-DatabricksConnection-method.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/dbExecute-DatabricksConnection-character-method.html</loc></url>
@@ -55,6 +58,12 @@
 <url><loc>https://databrickslabs.github.io/brickster/reference/dbQuoteIdentifier-DatabricksConnection-Id-method.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/dbQuoteIdentifier-DatabricksConnection-SQL-method.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/dbQuoteIdentifier-DatabricksConnection-character-method.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/dbReadTable-DatabricksConnection-AsIs-method.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/dbReadTable-DatabricksConnection-Id-method.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/dbReadTable-DatabricksConnection-character-method.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/dbRemoveTable-DatabricksConnection-AsIs-method.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/dbRemoveTable-DatabricksConnection-Id-method.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/dbRemoveTable-DatabricksConnection-character-method.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/dbRollback-DatabricksConnection-method.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/dbSendQuery-DatabricksConnection-character-method.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/dbSendStatement-DatabricksConnection-character-method.html</loc></url>
@@ -62,6 +71,9 @@
 <url><loc>https://databrickslabs.github.io/brickster/reference/dbWriteTable-DatabricksConnection-Id-data.frame-method.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/dbWriteTable-DatabricksConnection-character-data.frame-method.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_append_with_select_values.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/db_assert_statement.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/db_assert_valid_conn.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/db_clean_table_name.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_cluster_action.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_cluster_create.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_cluster_delete.html</loc></url>
@@ -144,6 +156,7 @@
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_mlflow_registered_model_details.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_oauth_client.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_perform_request.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/db_prepare_create_table_fields.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_query_create.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_query_delete.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_query_get.html</loc></url>

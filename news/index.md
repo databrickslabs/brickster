@@ -1,5 +1,14 @@
 # Changelog
 
+## brickster 0.2.12
+
+- Added DBI helpers for
+  [`dbCreateTable()`](https://dbi.r-dbi.org/reference/dbCreateTable.html),
+  [`dbReadTable()`](https://dbi.r-dbi.org/reference/dbReadTable.html),
+  and
+  [`dbRemoveTable()`](https://dbi.r-dbi.org/reference/dbRemoveTable.html)
+  with `Id`/`AsIs` support, plus offline tests for DBI table helpers.
+
 ## brickster 0.2.11
 
 CRAN release: 2025-12-13
