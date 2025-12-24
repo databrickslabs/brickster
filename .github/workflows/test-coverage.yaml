@@ -53,13 +53,6 @@ jobs:
           covr::to_cobertura(cov)
         shell: Rscript {0}
 
-      - name: Inspect cobertura paths
-        run: |
-          echo "=== first 80 lines ==="
-          head -n 80 cobertura.xml
-          echo "=== file entries (sample) ==="
-          grep -Eo 'filename="[^"]+"' cobertura.xml | head -n 40
-
       - uses: codecov/codecov-action@v5
         with:
           # Fail if error if not on PR, or if on PR and token is given
@@ -68,7 +61,6 @@ jobs:
           plugins: noop
           disable_search: true
           use_oidc: true
-          verbose: true
 
       - name: Show testthat output
         if: always()
