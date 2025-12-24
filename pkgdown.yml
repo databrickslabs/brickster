@@ -7,7 +7,7 @@ articles:
   remote-repl: remote-repl.html
   setup-auth: setup-auth.html
   sql-backend: sql-backend.html
-last_built: 2025-12-24T06:31Z
+last_built: 2025-12-24T07:02Z
 urls:
   reference: https://databrickslabs.github.io/brickster/reference
   article: https://databrickslabs.github.io/brickster/articles
