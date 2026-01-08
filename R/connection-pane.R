@@ -521,9 +521,9 @@ get_cluster <- function(id, host, token) {
     "driver node type" = x$driver_node_type_id,
     "autotermination minutes" = x$autotermination_minutes,
     "start time" = readable_time(x$start_time),
-    "# workers" = ifelse(is.null(x$num_workers), 0L, x$num_workers),
-    "cores" = ifelse(is.null(x$cluster_cores), 0L, x$cluster_cores),
-    "memory (mb)" = ifelse(is.null(x$cluster_memory_mb), 0L, x$cluster_memory_mb)
+    "# workers" = x$num_workers %||% 0L,
+    "cores" = x$cluster_cores %||% 0L,
+    "memory (mb)" = x$cluster_memory_mb %||% 0L
   )
   data.frame(
     name = names(info),

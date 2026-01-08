@@ -148,9 +148,9 @@ setMethod(
       warehouse_id = warehouse_id,
       host = host,
       token = token,
-      catalog = if (is.null(catalog)) "" else catalog,
-      schema = if (is.null(schema)) "" else schema,
-      staging_volume = if (is.null(staging_volume)) "" else staging_volume,
+      catalog = catalog %||% "",
+      schema = schema %||% "",
+      staging_volume = staging_volume %||% "",
       max_active_connections = max_active_connections,
       fetch_timeout = fetch_timeout
     )
