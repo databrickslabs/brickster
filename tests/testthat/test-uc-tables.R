@@ -59,7 +59,7 @@ test_that("Unity Catalog: Tables API", {
   })
   expect_type(resp_table_summaries, "list")
 
-  table_name <- strsplit(resp_table_summaries[[1]][[1]]$full_name, "\\.")[[1]]
+  table_name <- strsplit(resp_table_summaries[[1]][[1]]$full_name, ".", fixed = TRUE)[[1]]
   expect_length(table_name, 3L)
 
   expect_no_error({

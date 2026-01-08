@@ -133,7 +133,7 @@ db_wsid <- function(profile = default_config_profile()) {
 db_read_netrc <- function(path = "~/.netrc") {
   # nocov start
   params <- readLines(path, warn = FALSE)
-  params <- lapply(strsplit(params, " "), `[`, 2)
+  params <- lapply(strsplit(params, " ", fixed = TRUE), `[`, 2)
   setNames(params, c("machine", "login", "password"))
   # nocov end
 }
