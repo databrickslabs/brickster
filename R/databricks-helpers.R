@@ -1,6 +1,6 @@
 on_databricks <- function() {
   dbr <- Sys.getenv("DATABRICKS_RUNTIME_VERSION")
-  dbr != ""
+  nzchar(dbr)
 }
 
 #' Determine brickster virtualenv
