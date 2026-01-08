@@ -106,7 +106,7 @@ setMethod(
   ) {
     # Validate required parameters
     if (
-      missing(warehouse_id) || is.null(warehouse_id) || nchar(warehouse_id) == 0
+      missing(warehouse_id) || is.null(warehouse_id) || !nzchar(warehouse_id)
     ) {
       cli::cli_abort("warehouse_id must be provided and non-empty")
     }
@@ -175,9 +175,9 @@ setMethod("dbDisconnect", "DatabricksConnection", function(conn, ...) {
 setMethod("dbIsValid", "DatabricksConnection", function(dbObj, ...) {
   # Check if connection has required fields
   !is.null(dbObj@warehouse_id) &&
-    nchar(dbObj@warehouse_id) > 0 &&
+    nzchar(dbObj@warehouse_id) &&
     !is.null(dbObj@host) &&
-    nchar(dbObj@host) > 0
+    nzchar(dbObj@host)
 })
 
 
@@ -188,13 +188,13 @@ setMethod("show", "DatabricksConnection", function(object) {
   cat("<DatabricksConnection>\n")
   cat("  Warehouse ID:", object@warehouse_id, "\n")
   cat("  Host:", object@host, "\n")
-  if (nchar(object@catalog) > 0) {
+  if (nzchar(object@catalog)) {
     cat("  Catalog:", object@catalog, "\n")
   }
-  if (nchar(object@schema) > 0) {
+  if (nzchar(object@schema)) {
     cat("  Schema:", object@schema, "\n")
   }
-  if (!is.null(object@staging_volume) && nchar(object@staging_volume) > 0) {
+  if (!is.null(object@staging_volume) && nzchar(object@staging_volume)) {
     cat("  Staging Volume:", object@staging_volume, "\n")
   }
   cat("  Max Active Connections:", object@max_active_connections, "\n")
@@ -219,8 +219,8 @@ setMethod(
     resp <- db_sql_exec_query(
       warehouse_id = conn@warehouse_id,
       statement = statement,
-      catalog = if (nchar(conn@catalog) > 0) conn@catalog else NULL,
-      schema = if (nchar(conn@schema) > 0) conn@schema else NULL,
+      catalog = if (nzchar(conn@catalog)) conn@catalog else NULL,
+      schema = if (nzchar(conn@schema)) conn@schema else NULL,
       disposition = "EXTERNAL_LINKS",
       format = "ARROW_STREAM",
       wait_timeout = "0s", # Async execution
@@ -271,8 +271,8 @@ setMethod(
     db_sql_query(
       warehouse_id = conn@warehouse_id,
       statement = statement,
-      catalog = if (nchar(conn@catalog) > 0) conn@catalog else NULL,
-      schema = if (nchar(conn@schema) > 0) conn@schema else NULL,
+      catalog = if (nzchar(conn@catalog)) conn@catalog else NULL,
+      schema = if (nzchar(conn@schema)) conn@schema else NULL,
       return_arrow = FALSE,
       disposition = disposition,
       max_active_connections = conn@max_active_connections,
@@ -301,8 +301,8 @@ setMethod(
     resp <- db_sql_exec_query(
       warehouse_id = conn@warehouse_id,
       statement = statement,
-      catalog = if (nchar(conn@catalog) > 0) conn@catalog else NULL,
-      schema = if (nchar(conn@schema) > 0) conn@schema else NULL,
+      catalog = if (nzchar(conn@catalog)) conn@catalog else NULL,
+      schema = if (nzchar(conn@schema)) conn@schema else NULL,
       disposition = "EXTERNAL_LINKS",
       format = "ARROW_STREAM",
       wait_timeout = "0s", # Async execution
@@ -338,8 +338,8 @@ setMethod(
     status <- db_sql_exec_and_wait(
       warehouse_id = conn@warehouse_id,
       statement = statement,
-      catalog = if (nchar(conn@catalog) > 0) conn@catalog else NULL,
-      schema = if (nchar(conn@schema) > 0) conn@schema else NULL,
+      catalog = if (nzchar(conn@catalog)) conn@catalog else NULL,
+      schema = if (nzchar(conn@schema)) conn@schema else NULL,
       disposition = "EXTERNAL_LINKS",
       format = "ARROW_STREAM",
       wait_timeout = "10s",
@@ -525,9 +525,9 @@ setMethod("dbListTables", "DatabricksConnection", function(conn, ...) {
   db_assert_valid_conn(conn)
 
   # Use SQL query approach (standard for DBI drivers)
-  sql <- if (nchar(conn@catalog) > 0 && nchar(conn@schema) > 0) {
+  sql <- if (nzchar(conn@catalog) && nzchar(conn@schema)) {
     paste0("SHOW TABLES IN ", conn@catalog, ".", conn@schema)
-  } else if (nchar(conn@schema) > 0) {
+  } else if (nzchar(conn@schema)) {
     paste0("SHOW TABLES IN ", conn@schema)
   } else {
     "SHOW TABLES"
@@ -843,7 +843,7 @@ setMethod("dbGetInfo", "DatabricksConnection", function(dbObj, ...) {
     db.version = "Databricks SQL",
     dbname = paste0(
       dbObj@catalog,
-      if (nchar(dbObj@catalog) > 0 && nchar(dbObj@schema) > 0) "." else "",
+      if (nzchar(dbObj@catalog) && nzchar(dbObj@schema)) "." else "",
       dbObj@schema
     ),
     username = NA_character_,
@@ -873,8 +873,8 @@ setMethod(
     result <- db_sql_query(
       warehouse_id = conn@warehouse_id,
       statement = sql,
-      catalog = if (nchar(conn@catalog) > 0) conn@catalog else NULL,
-      schema = if (nchar(conn@schema) > 0) conn@schema else NULL,
+      catalog = if (nzchar(conn@catalog)) conn@catalog else NULL,
+      schema = if (nzchar(conn@schema)) conn@schema else NULL,
       return_arrow = FALSE,
       disposition = "INLINE",
       max_active_connections = conn@max_active_connections,
@@ -955,7 +955,7 @@ db_assert_valid_conn <- function(conn) {
 #' Assert that a statement is provided
 #' @keywords internal
 db_assert_statement <- function(statement) {
-  if (missing(statement) || is.null(statement) || nchar(trimws(statement)) == 0) {
+  if (missing(statement) || is.null(statement) || !nzchar(trimws(statement))) {
     cli::cli_abort("statement must be provided and non-empty")
   }
 }
@@ -1159,7 +1159,7 @@ setMethod(
     # Use staging_volume from connection if not provided
     if (!is.null(staging_volume)) {
       effective_staging_volume <- staging_volume
-    } else if (nchar(conn@staging_volume) > 0) {
+    } else if (nzchar(conn@staging_volume)) {
       effective_staging_volume <- conn@staging_volume
     } else {
       effective_staging_volume <- NULL
@@ -1270,7 +1270,7 @@ setMethod(
 
     # Determine staging volume to use
     effective_staging_volume <- staging_volume
-    if (is.null(effective_staging_volume) && nchar(conn@staging_volume) > 0) {
+    if (is.null(effective_staging_volume) && nzchar(conn@staging_volume)) {
       effective_staging_volume <- conn@staging_volume
     }
 
@@ -1590,8 +1590,8 @@ db_append_with_select_values <- function(conn, quoted_name, value) {
   db_sql_exec_and_wait(
     warehouse_id = conn@warehouse_id,
     statement = insert_sql,
-    catalog = if (nchar(conn@catalog) > 0) conn@catalog else NULL,
-    schema = if (nchar(conn@schema) > 0) conn@schema else NULL,
+    catalog = if (nzchar(conn@catalog)) conn@catalog else NULL,
+    schema = if (nzchar(conn@schema)) conn@schema else NULL,
     disposition = "INLINE",
     format = "JSON_ARRAY",
     wait_timeout = "10s",
@@ -1609,7 +1609,7 @@ db_should_use_volume_method <- function(
   temporary = FALSE
 ) {
   n_rows <- nrow(value)
-  has_volume <- !is.null(staging_volume) && nchar(staging_volume) > 0
+  has_volume <- !is.null(staging_volume) && nzchar(staging_volume)
 
   # Always use a staging volume if its specified, regardless of size
   if (has_volume) {
@@ -1789,8 +1789,8 @@ db_write_table_volume <- function(
   db_sql_exec_and_wait(
     warehouse_id = conn@warehouse_id,
     statement = copy_sql,
-    catalog = if (nchar(conn@catalog) > 0) conn@catalog else NULL,
-    schema = if (nchar(conn@schema) > 0) conn@schema else NULL,
+    catalog = if (nzchar(conn@catalog)) conn@catalog else NULL,
+    schema = if (nzchar(conn@schema)) conn@schema else NULL,
     disposition = "INLINE",
     format = "JSON_ARRAY",
     wait_timeout = "10s",

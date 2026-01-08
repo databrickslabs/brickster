@@ -42,7 +42,7 @@ skip_unless_warehouse_available <- function() {
   skip_unless_authenticated()
 
   warehouse_id <- Sys.getenv("DATABRICKS_WAREHOUSE_ID")
-  if (nchar(warehouse_id) == 0) {
+  if (!nzchar(warehouse_id)) {
     skip("Test only runs when DATABRICKS_WAREHOUSE_ID is available")
   }
 }
@@ -73,7 +73,7 @@ create_test_warehouse <- function() {
 }
 
 cleanup_test_warehouse <- function(warehouse_id) {
-  if (!is.null(warehouse_id) && nchar(warehouse_id) > 0) {
+  if (!is.null(warehouse_id) && nzchar(warehouse_id)) {
     tryCatch(
       {
         db_sql_warehouse_delete(warehouse_id)

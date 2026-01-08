@@ -172,7 +172,7 @@ read_databrickscfg <- function(
 
   # use the .databrickscfg location specified in DATABRICKS_CONFIG_FILE
   databricks_config_file <- Sys.getenv("DATABRICKS_CONFIG_FILE")
-  if (nchar(databricks_config_file) == 0) {
+  if (!nzchar(databricks_config_file)) {
     config_path <- fs::path(home_dir, ".databrickscfg")
   } else {
     config_path <- databricks_config_file
@@ -280,7 +280,7 @@ db_oauth_client <- function(host = db_host()) {
 #' @keywords internal
 default_config_profile <- function() {
   profile <- Sys.getenv("DATABRICKS_CONFIG_PROFILE")
-  if (nchar(profile) != 0) {
+  if (nzchar(profile)) {
     profile
   } else {
     getOption("db_profile")
