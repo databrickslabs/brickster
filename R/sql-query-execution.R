@@ -385,11 +385,11 @@ db_sql_type_to_empty_vector <- function(sql_type) {
     integer(0)
   } else if (sql_type %in% c("FLOAT", "DOUBLE", "DECIMAL")) {
     numeric(0)
-  } else if (sql_type %in% c("BOOLEAN")) {
+  } else if (sql_type == "BOOLEAN") {
     logical(0)
-  } else if (sql_type %in% c("DATE")) {
+  } else if (sql_type == "DATE") {
     as.Date(character(0))
-  } else if (sql_type %in% c("TIMESTAMP")) {
+  } else if (sql_type == "TIMESTAMP") {
     as.POSIXct(character(0))
   } else if (sql_type %in% c("STRING", "BINARY", "CHAR")) {
     character(0)

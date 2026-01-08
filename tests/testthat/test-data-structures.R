@@ -11,7 +11,7 @@ test_that("job tasks object behaviour", {
     task_key = "mock_task_b",
     existing_cluster_id = "mock_cluster",
     task = spark_jar_task(main_class_name = "MockClass"),
-    depends_on = c("mock_task_a")
+    depends_on = "mock_task_a"
   )
 
   expect_s3_class(mock_task_a, c("JobTaskSettings", "list"))
@@ -24,7 +24,7 @@ test_that("job tasks object behaviour", {
       task_key = "mock_task_b",
       existing_cluster_id = "mock_cluster",
       task = "MockTask",
-      depends_on = c("mock_task_a")
+      depends_on = "mock_task_a"
     )
   )
 

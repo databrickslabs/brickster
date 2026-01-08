@@ -14,7 +14,7 @@ test_that("Lakebase APIs - don't perform", {
 
   req_cred <- db_lakebase_creds_generate(
     permission_set = "READ_ONLY",
-    tables = c("main.default.sample_table"),
+    tables = "main.default.sample_table",
     instance_names = c("sample-instance-a", "sample-instance-b"),
     perform_request = FALSE
   )

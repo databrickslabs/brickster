@@ -28,7 +28,7 @@ test_that("Query History API", {
 
   expect_no_error(
     resp_history2 <- db_sql_query_history(
-      statuses = c("FINISHED"),
+      statuses = "FINISHED",
       max_results = 1,
       include_metrics = FALSE,
       end_time_ms = as.integer(Sys.time()) * 1000

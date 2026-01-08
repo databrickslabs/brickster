@@ -510,7 +510,7 @@ new_cluster <- function(
   enable_elastic_disk = TRUE,
   driver_instance_pool_id = NULL,
   instance_pool_id = NULL,
-  kind = c("CLASSIC_PREVIEW"),
+  kind = "CLASSIC_PREVIEW",
   data_security_mode = c(
     "NONE",
     "SINGLE_USER",

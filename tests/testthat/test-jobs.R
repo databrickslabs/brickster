@@ -188,7 +188,7 @@ test_that("Jobs API - don't perform", {
   # Test with performance target
   resp_repair_perf <- db_jobs_repair_run(
     run_id = "some_run_id",
-    rerun_tasks = c("task1"),
+    rerun_tasks = "task1",
     performance_target = "PERFORMANCE_OPTIMIZED",
     pipeline_full_refresh = TRUE,
     latest_repair_id = "repair_123",
@@ -200,7 +200,7 @@ test_that("Jobs API - don't perform", {
   expect_error({
     db_jobs_repair_run(
       run_id = "some_run_id",
-      rerun_tasks = c("task1"),
+      rerun_tasks = "task1",
       rerun_all_failed_tasks = TRUE,
       perform_request = FALSE
     )
@@ -210,7 +210,7 @@ test_that("Jobs API - don't perform", {
   expect_error({
     db_jobs_repair_run(
       run_id = "some_run_id",
-      rerun_tasks = c("task1"),
+      rerun_tasks = "task1",
       performance_target = "INVALID_TARGET",
       perform_request = FALSE
     )

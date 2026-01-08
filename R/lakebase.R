@@ -20,7 +20,7 @@
 db_lakebase_creds_generate <- function(
   instance_names,
   tables = NULL,
-  permission_set = c("READ_ONLY"),
+  permission_set = "READ_ONLY",
   host = db_host(),
   token = db_token(),
   perform_request = TRUE

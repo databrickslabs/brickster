@@ -20,7 +20,7 @@ new_cluster(
   enable_elastic_disk = TRUE,
   driver_instance_pool_id = NULL,
   instance_pool_id = NULL,
-  kind = c("CLASSIC_PREVIEW"),
+  kind = "CLASSIC_PREVIEW",
   data_security_mode = c("NONE", "SINGLE_USER", "USER_ISOLATION", "LEGACY_TABLE_ACL",
     "LEGACY_PASSTHROUGH", "LEGACY_SINGLE_USER", "LEGACY_SINGLE_USER_STANDARD",
     "DATA_SECURITY_MODE_STANDARD", "DATA_SECURITY_MODE_DEDICATED",

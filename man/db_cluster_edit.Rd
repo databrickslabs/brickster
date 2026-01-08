@@ -28,7 +28,7 @@ db_cluster_edit(
   enable_local_disk_encryption = NULL,
   docker_image = NULL,
   policy_id = NULL,
-  kind = c("CLASSIC_PREVIEW"),
+  kind = "CLASSIC_PREVIEW",
   data_security_mode = c("NONE", "SINGLE_USER", "USER_ISOLATION", "LEGACY_TABLE_ACL",
     "LEGACY_PASSTHROUGH", "LEGACY_SINGLE_USER", "LEGACY_SINGLE_USER_STANDARD",
     "DATA_SECURITY_MODE_STANDARD", "DATA_SECURITY_MODE_DEDICATED",

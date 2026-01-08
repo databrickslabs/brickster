@@ -117,7 +117,7 @@ db_cluster_create <- function(
   enable_local_disk_encryption = TRUE,
   docker_image = NULL,
   policy_id = NULL,
-  kind = c("CLASSIC_PREVIEW"),
+  kind = "CLASSIC_PREVIEW",
   data_security_mode = c(
     "NONE",
     "SINGLE_USER",
@@ -251,7 +251,7 @@ db_cluster_edit <- function(
   enable_local_disk_encryption = NULL,
   docker_image = NULL,
   policy_id = NULL,
-  kind = c("CLASSIC_PREVIEW"),
+  kind = "CLASSIC_PREVIEW",
   data_security_mode = c(
     "NONE",
     "SINGLE_USER",
