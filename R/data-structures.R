@@ -555,7 +555,7 @@ new_cluster <- function(
     obj[["gcp_attributes"]] <- unclass(cloud_attrs)
   } else {
     cli::cli_abort(
-      "Please use `aws_attributes()`, `azure_attributes()`, or `gcp_attributes()` to specify `cloud_attr`"
+      "Please use {.fn aws_attributes()}, {.fn azure_attributes()}, or {.fn gcp_attributes()} to specify {.arg cloud_attrs}"
     )
   }
 
@@ -1732,7 +1732,7 @@ delta_sync_index_spec <- function(
       )
       if (!all(valid_columns)) {
         cli::cli_abort(
-          "{.arg embedding_vector_columns} must all be defined by `embedding_vector_column` function"
+          "{.arg embedding_vector_columns} must all be defined by {.fn embedding_vector_column} function"
         )
       }
     } else {
@@ -1828,7 +1828,7 @@ direct_access_index_spec <- function(
       )
       if (!all(valid_columns)) {
         cli::cli_abort(
-          "`embedding_vector_columns` must all be defined by `embedding_vector_column` function"
+          "{.arg embedding_vector_columns} must all be defined by {.fn embedding_vector_column} function"
         )
       }
     } else {
