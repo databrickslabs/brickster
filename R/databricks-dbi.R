@@ -1044,7 +1044,7 @@ setMethod(
       # Check if this is a three-part name (catalog.schema.table)
       if (grepl("^[^.]+\\.[^.]+\\.[^.]+$", single_x)) {
         # Split into parts and quote each separately
-        parts <- strsplit(single_x, "\\.")[[1]]
+        parts <- strsplit(single_x, ".", fixed = TRUE)[[1]]
         if (length(parts) == 3) {
           quoted_parts <- paste0("`", parts, "`")
           paste(quoted_parts, collapse = ".")

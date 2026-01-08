@@ -66,7 +66,7 @@ db_current_cloud <- function(host = db_host(), token = db_token(),
 
   nodes <- db_cluster_list_node_types(host = host, token = token)
   family <- nodes[[1]][[1]]$node_instance_type$instance_family
-  family_prefix <- strsplit(family, " ")[[1]][1]
+  family_prefix <- strsplit(family, " ", fixed = TRUE)[[1]][1]
 
   if (family_prefix == "EC2") {
     return("aws")
