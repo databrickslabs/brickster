@@ -466,7 +466,7 @@ init_script_info <- function(...) {
   valid_storage <- vapply(
     obj,
     function(x) {
-      is.s3_storage_info(x) | is.file_storage_info(x) | is.dbfs_storage_info(x)
+      is.s3_storage_info(x) || is.file_storage_info(x) || is.dbfs_storage_info(x)
     },
     logical(1)
   )
@@ -926,7 +926,7 @@ access_control_request <- function(...) {
   valid_control <- vapply(
     obj,
     function(x) {
-      is.access_control_req_user(x) | is.access_control_req_group(x)
+      is.access_control_req_user(x) || is.access_control_req_group(x)
     },
     logical(1)
   )
