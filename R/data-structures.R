@@ -555,7 +555,7 @@ new_cluster <- function(
     obj[["gcp_attributes"]] <- unclass(cloud_attrs)
   } else {
     cli::cli_abort(
-      "Please use {.fn aws_attributes()}, {.fn azure_attributes()}, or {.fn gcp_attributes()} to specify {.arg cloud_attrs}"
+      "Please use {.fn aws_attributes}, {.fn azure_attributes}, or {.fn gcp_attributes} to specify {.arg cloud_attrs}"
     )
   }
 
