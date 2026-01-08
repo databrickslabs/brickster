@@ -2,6 +2,7 @@
 
 <!-- badges: start -->
 
+[![CRAN status](https://www.r-pkg.org/badges/version/brickster)](https://CRAN.R-project.org/package=brickster)
 [![R-CMD-check](https://github.com/databrickslabs/brickster/workflows/R-CMD-check/badge.svg)](https://github.com/databrickslabs/brickster/actions) 
 [![Codecov test coverage](https://codecov.io/gh/databrickslabs/brickster/graph/badge.svg)](https://app.codecov.io/gh/databrickslabs/brickster)
 <!-- badges: end -->
