@@ -1,11 +1,12 @@
 url: https://databrickslabs.github.io/brickster/
 template:
   bootstrap: 5
+  light-switch: true
   title: brickster
 navbar:
   structure:
     left: [intro, reference, articles]
-    right: [search, github]
+    right: [search, github, lightswitch]
 authors:
   Zac Davies:
     href: https://github.com/zacdav-db
