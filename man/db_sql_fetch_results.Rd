@@ -5,8 +5,7 @@
 \title{Fetch SQL Query Results from Completed Query}
 \usage{
 db_sql_fetch_results(
-  statement_id,
-  manifest,
+  resp,
   return_arrow = FALSE,
   max_active_connections = 30,
   fetch_timeout = 300,
@@ -17,9 +16,7 @@ db_sql_fetch_results(
 )
 }
 \arguments{
-\item{statement_id}{Query statement ID}
-
-\item{manifest}{Query result manifest from status response}
+\item{resp}{Query status response from SQL execution}
 
 \item{return_arrow}{Boolean, return arrow Table instead of tibble}
 
