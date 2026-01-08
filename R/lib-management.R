@@ -14,7 +14,7 @@
 #' This functions primary use is when using Databricks notebooks or hosted
 #' RStudio, however, it works anywhere.
 #'
-#' @seealso [base::.libPaths()], [remove_lib_path()]
+#' @seealso [.libPaths()], [remove_lib_path()]
 #'
 #' @export
 add_lib_path <- function(path, after, version = FALSE) {
@@ -42,7 +42,7 @@ add_lib_path <- function(path, after, version = FALSE) {
 #' @param version If `TRUE` will add the R version string to the end
 #' of `path` before removal.
 #'
-#' @seealso [base::.libPaths()], [remove_lib_path()]
+#' @seealso [.libPaths()], [remove_lib_path()]
 #' @export
 remove_lib_path <- function(path, version = FALSE) {
   if (version) {

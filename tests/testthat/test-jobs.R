@@ -225,7 +225,7 @@ test_that("Jobs API", {
   # define a job task
   resp_list_dbrv <- db_cluster_runtime_versions()
   # use a standard runtime
-  runtimes <- base::sort(
+  runtimes <- sort(
     purrr::map_chr(resp_list_dbrv$versions, "key"),
     decreasing = TRUE
   )
