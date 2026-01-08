@@ -174,7 +174,7 @@ db_repl <- function(
 
       if (inherits(parsed, "try-error")) {
         # incomplete R block? keep reading
-        if (grepl("unexpected end of input", parsed[1])) {
+        if (grepl("unexpected end of input", parsed[1], fixed = TRUE)) {
           next
         }
         # real syntax error: show it, reset buffer

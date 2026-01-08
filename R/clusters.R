@@ -994,10 +994,10 @@ get_latest_dbr <- function(
     }) |>
     dplyr::mutate(
       version = as.numeric(gsub("^(\\d+\\.\\d)\\..*", "\\1", .data$key)),
-      lts = grepl("LTS", .data$name),
-      ml = grepl("ml", .data$key),
-      gpu = grepl("gpu", .data$key),
-      photon = grepl("photon", .data$key),
+      lts = grepl("LTS", .data$name, fixed = TRUE),
+      ml = grepl("ml", .data$key, fixed = TRUE),
+      gpu = grepl("gpu", .data$key, fixed = TRUE),
+      photon = grepl("photon", .data$key, fixed = TRUE),
     ) |>
     dplyr::arrange(dplyr::desc(version))
 

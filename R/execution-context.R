@@ -396,7 +396,7 @@ handle_cmd_error <- function(x, language) {
   }
 
   if (language == "r") {
-    if (grepl("DATABRICKS_CURRENT_TEMP_CMD__", cause)) {
+    if (grepl("DATABRICKS_CURRENT_TEMP_CMD__", cause, fixed = TRUE)) {
       msg <- substring(cause, 62)
     } else {
       msg <- cause
