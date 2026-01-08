@@ -554,7 +554,7 @@ new_cluster <- function(
   } else if (is.gcp_attributes(cloud_attrs)) {
     obj[["gcp_attributes"]] <- unclass(cloud_attrs)
   } else {
-    stop(
+    cli::cli_abort(
       "Please use `aws_attributes()`, `azure_attributes()`, or `gcp_attributes()` to specify `cloud_attr`"
     )
   }
@@ -1709,8 +1709,8 @@ delta_sync_index_spec <- function(
         logical(1)
       )
       if (!all(valid_columns)) {
-        stop(
-          "`embedding_source_columns` must all be defined by `embedding_source_column` function"
+        cli::cli_abort(
+          "{.arg embedding_source_columns} must all be defined by {.fn embedding_source_column} function"
         )
       }
     } else {
@@ -1731,8 +1731,8 @@ delta_sync_index_spec <- function(
         logical(1)
       )
       if (!all(valid_columns)) {
-        stop(
-          "`embedding_vector_columns` must all be defined by `embedding_vector_column` function"
+        cli::cli_abort(
+          "{.arg embedding_vector_columns} must all be defined by `embedding_vector_column` function"
         )
       }
     } else {
@@ -1805,8 +1805,8 @@ direct_access_index_spec <- function(
         logical(1)
       )
       if (!all(valid_columns)) {
-        stop(
-          "`embedding_source_columns` must all be defined by `embedding_source_column` function"
+        cli::cli_abort(
+          "{.arg embedding_source_columns} must all be defined by {.fn embedding_source_column} function"
         )
       }
     } else {
@@ -1827,7 +1827,7 @@ direct_access_index_spec <- function(
         logical(1)
       )
       if (!all(valid_columns)) {
-        stop(
+        cli::cli_abort(
           "`embedding_vector_columns` must all be defined by `embedding_vector_column` function"
         )
       }

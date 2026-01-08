@@ -108,10 +108,10 @@ db_dbfs_add_block <- function(
   obj_size <- round(as.integer(object.size(encoded_data)) / 1024^2, 4)
 
   if (obj_size > 1L) {
-    stop(cli::format_error(c(
+    cli::cli_abort(c(
       "Max Block Size Exceeded:",
       "x" = "Maximum block size is 1MB, block was {obj_size}MB."
-    )))
+    ))
   }
 
   body <- list(
@@ -457,10 +457,10 @@ db_dbfs_put <- function(
   } else if (!is.null(file)) {
     body$contents <- curl::form_file(path = file)
   } else {
-    stop(cli::format_error(c(
+    cli::cli_abort(c(
       "Nothing to upload:",
-      "x" = "Either `file` or `contents` must be specified."
-    )))
+      "x" = "Either {.arg file} or {.arg contents} must be specified."
+    ))
   }
 
   req <- db_request(

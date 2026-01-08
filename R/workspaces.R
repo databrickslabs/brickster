@@ -217,10 +217,10 @@ db_workspace_import <- function(
   } else if (!is.null(file)) {
     body$content <- curl::form_file(path = file)
   } else {
-    stop(cli::format_error(c(
+    cli::cli_abort(c(
       "Nothing to upload:",
-      "x" = "Either `file` or `contents` must be specified."
-    )))
+      "x" = "Either {.arg file} or {.arg contents} must be specified."
+    ))
   }
 
   req <- db_request(
