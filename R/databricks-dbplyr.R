@@ -86,17 +86,17 @@ sql_query_save.DatabricksConnection <- function(
     cli::cli_abort("Connection is not valid")
   }
   
-  if (missing(name) || is.null(name) || nchar(trimws(name)) == 0) {
+  if (missing(name) || is.null(name) || !nzchar(trimws(name))) {
     cli::cli_abort("Table/view name must be provided and non-empty")
   }
   
-  if (missing(sql) || is.null(sql) || nchar(trimws(as.character(sql))) == 0) {
+  if (missing(sql) || is.null(sql) || !nzchar(trimws(as.character(sql)))) {
     cli::cli_abort("SQL query must be provided and non-empty")
   }
   
   # For user-provided names, ensure uniqueness to avoid conflicts
   # Don't modify dbplyr-generated names (they start with dbplyr_)
-  if (temporary && is.character(name) && !grepl("^dbplyr_", name) && nchar(trimws(name)) > 0) {
+  if (temporary && is.character(name) && !grepl("^dbplyr_", name) && nzchar(trimws(name))) {
     name <- generate_temp_name(name)
   }
   
