@@ -396,8 +396,7 @@ setMethod("dbFetch", "DatabricksResult", function(res, n = -1, ...) {
   } else {
     # Use helper function to fetch results with progress
     results <- db_sql_fetch_results(
-      statement_id = res@statement_id,
-      manifest = status$manifest,
+      resp = status,
       return_arrow = FALSE,
       max_active_connections = res@connection@max_active_connections,
       fetch_timeout = res@connection@fetch_timeout,
