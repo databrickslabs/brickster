@@ -228,7 +228,7 @@ read_env_var <- function(
 
   value <- Sys.getenv(key_name)
 
-  if (value == "") {
+  if (!nzchar(value)) {
     if (error) {
       stop(cli::format_error(c(
         "Environment variable {.var {key_name}} not found:",

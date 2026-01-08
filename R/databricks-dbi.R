@@ -1010,7 +1010,7 @@ db_prepare_create_table_fields <- function(fields) {
     field_names <- names(fields)
     if (
       is.null(field_names) ||
-        any(is.na(field_names) | field_names == "")
+        any(is.na(field_names) | !nzchar(field_names))
     ) {
       cli::cli_abort(
         "fields must be a named character vector when provided as character"
