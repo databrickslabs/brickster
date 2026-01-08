@@ -111,13 +111,13 @@ db_repl(cluster_id = "<interactive_cluster_id>")
 
 ## Installation
 
-```         
+``` r       
 install.packages("brickster")
 ```
 
 ### Development Version
 
-```         
+``` r
 # install.packages("pak")
 pak::pak("databrickslabs/brickster")
 ```
