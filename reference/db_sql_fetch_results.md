@@ -7,8 +7,7 @@ query. Handles Arrow stream processing and data conversion.
 
 ``` r
 db_sql_fetch_results(
-  statement_id,
-  manifest,
+  resp,
   return_arrow = FALSE,
   max_active_connections = 30,
   fetch_timeout = 300,
@@ -21,13 +20,9 @@ db_sql_fetch_results(
 
 ## Arguments
 
-- statement_id:
+- resp:
 
-  Query statement ID
-
-- manifest:
-
-  Query result manifest from status response
+  Query status response from SQL execution
 
 - return_arrow:
 

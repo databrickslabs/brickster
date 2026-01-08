@@ -191,6 +191,8 @@
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_sql_exec_result.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_sql_exec_status.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_sql_fetch_results.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/db_sql_fetch_results_fast.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/db_sql_fetch_results_parallel.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_sql_global_warehouse_get.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_sql_process_inline.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_sql_query.html</loc></url>

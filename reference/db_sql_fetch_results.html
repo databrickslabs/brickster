@@ -49,8 +49,7 @@ Handles Arrow stream processing and data conversion.</p>
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">db_sql_fetch_results</span><span class="op">(</span></span>
-<span>  <span class="va">statement_id</span>,</span>
-<span>  <span class="va">manifest</span>,</span>
+<span>  <span class="va">resp</span>,</span>
 <span>  return_arrow <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  max_active_connections <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  fetch_timeout <span class="op">=</span> <span class="fl">300</span>,</span>
@@ -65,12 +64,8 @@ Handles Arrow stream processing and data conversion.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-statement-id">statement_id<a class="anchor" aria-label="anchor" href="#arg-statement-id"></a></dt>
-<dd><p>Query statement ID</p></dd>
-
-
-<dt id="arg-manifest">manifest<a class="anchor" aria-label="anchor" href="#arg-manifest"></a></dt>
-<dd><p>Query result manifest from status response</p></dd>
+<dl><dt id="arg-resp">resp<a class="anchor" aria-label="anchor" href="#arg-resp"></a></dt>
+<dd><p>Query status response from SQL execution</p></dd>
 
 
 <dt id="arg-return-arrow">return_arrow<a class="anchor" aria-label="anchor" href="#arg-return-arrow"></a></dt>

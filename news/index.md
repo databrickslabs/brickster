@@ -8,6 +8,8 @@
   and
   [`dbRemoveTable()`](https://dbi.r-dbi.org/reference/dbRemoveTable.html)
   with `Id`/`AsIs` support, plus offline tests for DBI table helpers.
+- Optimized SQL result fetching for single-chunk external links by using
+  the inline link from the initial response when available.
 
 ## brickster 0.2.11
 

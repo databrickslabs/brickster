@@ -447,6 +447,10 @@
   : Get SQL Query Status
 - [`db_sql_fetch_results()`](https://databrickslabs.github.io/brickster/reference/db_sql_fetch_results.md)
   : Fetch SQL Query Results from Completed Query
+- [`db_sql_fetch_results_fast()`](https://databrickslabs.github.io/brickster/reference/db_sql_fetch_results_fast.md)
+  : Fetch SQL Query Results (Fast Path)
+- [`db_sql_fetch_results_parallel()`](https://databrickslabs.github.io/brickster/reference/db_sql_fetch_results_parallel.md)
+  : Fetch SQL Query Results (Parallel Path)
 - [`db_sql_global_warehouse_get()`](https://databrickslabs.github.io/brickster/reference/db_sql_global_warehouse_get.md)
   : Get Global Warehouse Config
 - [`db_sql_process_inline()`](https://databrickslabs.github.io/brickster/reference/db_sql_process_inline.md)
