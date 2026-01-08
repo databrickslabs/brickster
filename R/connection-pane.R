@@ -843,18 +843,18 @@ preview_object <- function(host, token, rowLimit,
 
   if (!is.null(catalog)) {
 
-    if (!is.null(catalog) & !is.null(schema) & !is.null(func)) {
+    if (!is.null(catalog) && !is.null(schema) && !is.null(func)) {
       path <- paste0(c("functions", catalog, schema, func), collapse = "/")
-    } else if (!is.null(catalog) & !is.null(schema) & !is.null(model) & !is.null(version)) {
+    } else if (!is.null(catalog) && !is.null(schema) && !is.null(model) && !is.null(version)) {
       version <- get_model_version_from_string(version)
       path <- paste0(c("models", catalog, schema, model, "version", version), collapse = "/")
-    } else if (!is.null(catalog) & !is.null(schema) & !is.null(model)) {
+    } else if (!is.null(catalog) && !is.null(schema) && !is.null(model)) {
       path <- paste0(c("models", catalog, schema, model), collapse = "/")
-    } else if (!is.null(catalog) & !is.null(schema) & !is.null(volume)) {
+    } else if (!is.null(catalog) && !is.null(schema) && !is.null(volume)) {
       path <- paste0(c("volumes", catalog, schema, volume), collapse = "/")
-    } else if (!is.null(catalog) & !is.null(schema) & !is.null(table)) {
+    } else if (!is.null(catalog) && !is.null(schema) && !is.null(table)) {
       path <- paste0(c(catalog, schema, table), collapse = "/")
-    } else if (!is.null(catalog) & !is.null(schema)) {
+    } else if (!is.null(catalog) && !is.null(schema)) {
       path <- paste0(c(catalog, schema), collapse = "/")
     } else {
       path <- catalog
