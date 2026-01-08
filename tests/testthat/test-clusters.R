@@ -147,7 +147,7 @@ test_that("Clusters API", {
 
   # creating cluster (AWS specific)
   # use a standard runtime
-  runtimes <- base::sort(
+  runtimes <- sort(
     purrr::map_chr(resp_list_dbrv$versions, "key"),
     decreasing = TRUE
   )

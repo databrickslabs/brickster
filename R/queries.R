@@ -187,7 +187,7 @@ db_query_update <- function(
     tags = tags
   )
   # keep non-null values
-  body$query <- base::Filter(length, query)
+  body$query <- Filter(length, query)
   # dynamically generate update mask
   body$update_mask <- paste(names(body$query), collapse = ",")
 

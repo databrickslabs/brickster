@@ -110,7 +110,7 @@ db_workspace_export <- function(
       req |>
         httr2::req_perform() |>
         httr2::resp_body_raw() |>
-        base::writeBin(con = output_path)
+        writeBin(con = output_path)
     } else {
       db_perform_request(req)
     }
@@ -213,7 +213,7 @@ db_workspace_import <- function(
   # file takes priority, so don't bother if file is also specified
   if (!is.null(content) && is.null(file)) {
     # contents must be base64 encoded string
-    body$content <- base64enc::base64encode(base::charToRaw(content))
+    body$content <- base64enc::base64encode(charToRaw(content))
   } else if (!is.null(file)) {
     body$content <- curl::form_file(path = file)
   } else {

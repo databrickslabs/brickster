@@ -66,7 +66,7 @@ db_request <- function(
   }
 
   if (!is.null(body)) {
-    body <- base::Filter(length, body)
+    body <- Filter(length, body)
     req <- req |>
       httr2::req_body_json(body, ...)
   }
