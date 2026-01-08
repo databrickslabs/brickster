@@ -115,12 +115,16 @@ db_repl(cluster_id = "<interactive_cluster_id>")
 
 ## Installation
 
-    install.packages("brickster")
+``` r
+install.packages("brickster")
+```
 
 ### Development Version
 
-    # install.packages("pak")
-    pak::pak("databrickslabs/brickster")
+``` r
+# install.packages("pak")
+pak::pak("databrickslabs/brickster")
+```
 
 ## API Coverage
 
