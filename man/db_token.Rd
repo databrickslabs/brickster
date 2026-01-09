@@ -17,8 +17,8 @@ databricks token
 The function will check for a token in the \code{DATABRICKS_HOST} environment variable.
 \code{.databrickscfg} will be searched if \code{db_profile} and \code{use_databrickscfg} are set or
 if Posit Workbench managed OAuth credentials are detected.
-If none of the above are found then \code{db_token()} returns \code{NULL} when
-reading environment variables and errors when using \code{.databrickscfg}.
+If none of the above are found then \code{db_token()} returns \code{NULL} when reading
+environment variables and errors when using \code{.databrickscfg}.
 
 Refer to \href{https://docs.databricks.com/aws/en/dev-tools/auth}{api authentication docs}
 }

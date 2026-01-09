@@ -43,6 +43,7 @@ test_that("request helpers - m2m auth flow", {
     DATABRICKS_CLIENT_ID = "client-id",
     DATABRICKS_CLIENT_SECRET = "client-secret"
   )
+  withr::local_options(brickster_oauth_client = NULL)
 
   req <- db_request(
     endpoint = endpoint,

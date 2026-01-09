@@ -4,10 +4,15 @@
 \alias{read_env_var}
 \title{Reads Environment Variables}
 \usage{
-read_env_var(key = c("token", "host", "wsid"), profile = NULL, error = TRUE)
+read_env_var(
+  key = c("token", "host", "wsid", "client_id", "client_secret"),
+  profile = NULL,
+  error = TRUE
+)
 }
 \arguments{
-\item{key}{The value to fetch from profile. One of \code{token}, \code{host}, or \code{wsid}}
+\item{key}{The value to fetch from profile. One of \code{token}, \code{host}, \code{wsid},
+\code{client_id}, or \code{client_secret}}
 
 \item{profile}{Character, the name of the profile to retrieve values}
 

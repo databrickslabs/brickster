@@ -1,5 +1,4 @@
 test_that("auth functions - baseline behaviour", {
-
   host <- "http://some_url"
   token <- "dapi123"
   wsid <- "123"
@@ -38,29 +37,34 @@ test_that("auth functions - baseline behaviour", {
   )
 
   # oauth functions require host to be specified and valid
-  expect_error(db_oauth_client(host = NULL))
+  expect_error(db_oauth_client(
+    host = NULL,
+    client_id = NULL,
+    client_secret = NULL
+  ))
   expect_identical(
-    db_oauth_client(host = "")$auth_url,
+    db_oauth_client(host = "", client_id = NULL, client_secret = NULL)$auth_url,
     "https:///oidc/v1/authorize"
   )
   expect_identical(
-    db_oauth_client(host = "")$auth_type,
-    "u2m"
+    db_oauth_client(host = "", client_id = NULL, client_secret = NULL)$is_m2m,
+    FALSE
   )
   expect_identical(
-    db_oauth_client(host = "")$client$token_url,
+    db_oauth_client(
+      host = "",
+      client_id = NULL,
+      client_secret = NULL
+    )$client$token_url,
     "https:///oidc/v1/token"
   )
   expect_s3_class(
-    db_oauth_client(host = "")$client,
+    db_oauth_client(host = "", client_id = NULL, client_secret = NULL)$client,
     "httr2_oauth_client"
   )
-
-
 })
 
 test_that("auth functions - switching profile", {
-
   host <- "http://some_url"
   token <- "dapi123"
   wsid <- "123"
@@ -113,11 +117,9 @@ test_that("auth functions - switching profile", {
   expect_identical(db_host(), "some_url")
   expect_identical(db_token(), token)
   expect_identical(db_wsid(), wsid)
-
 })
 
 test_that("auth functions - reading .databrickscfg", {
-
   withr::local_options(use_databrickscfg = TRUE)
   withr::local_envvar(DATABRICKS_CONFIG_FILE = "databricks.cfg")
   withr::local_file("databricks.cfg", {
@@ -163,11 +165,9 @@ test_that("auth functions - reading .databrickscfg", {
   expect_identical(token, token_w)
   expect_identical("some-host", host_w)
   expect_identical(wsid, wsid_w)
-
 })
 
 test_that("auth functions - m2m credentials from env", {
-
   withr::local_envvar(
     DATABRICKS_CLIENT_ID = "client-id",
     DATABRICKS_CLIENT_SECRET = "client-secret"
@@ -175,20 +175,17 @@ test_that("auth functions - m2m credentials from env", {
 
   expect_identical(db_client_id(), "client-id")
   expect_identical(db_client_secret(), "client-secret")
-  expect_true(has_m2m_credentials())
   expect_identical(
     db_oauth_client(
       host = "some-host",
       client_id = db_client_id(),
       client_secret = db_client_secret()
-    )$auth_type,
-    "m2m"
+    )$is_m2m,
+    TRUE
   )
-
 })
 
 test_that("auth functions - m2m credentials from .databrickscfg", {
-
   withr::local_options(use_databrickscfg = TRUE)
   withr::local_envvar(DATABRICKS_CONFIG_FILE = "databricks.cfg")
   withr::local_file("databricks.cfg", {
@@ -205,21 +202,18 @@ test_that("auth functions - m2m credentials from .databrickscfg", {
 
   expect_identical(db_client_id(), "client-id")
   expect_identical(db_client_secret(), "client-secret")
-  expect_true(has_m2m_credentials())
   expect_identical(
     db_oauth_client(
       host = "some-host",
       client_id = db_client_id(),
       client_secret = db_client_secret()
-    )$auth_type,
-    "m2m"
+    )$is_m2m,
+    TRUE
   )
-
 })
 
 
 test_that("auth functions - host handling", {
-
   expect_identical(
     db_host(id = "mock", prefix = "dev-"),
     "dev-mock.cloud.databricks.com"
@@ -237,9 +231,9 @@ test_that("auth functions - host handling", {
 
   # input and output pairs to check
   hostname_mapping <- list(
-    "https://mock.cloud.databricks.com"  = "mock.cloud.databricks.com",
+    "https://mock.cloud.databricks.com" = "mock.cloud.databricks.com",
     "https://mock.cloud.databricks.com/" = "mock.cloud.databricks.com",
-    "http://mock.cloud.databricks.com"   = "mock.cloud.databricks.com"
+    "http://mock.cloud.databricks.com" = "mock.cloud.databricks.com"
     # "mock.cloud.databricks.com"          = "mock.cloud.databricks.com",
     # "mock.cloud.databricks.com/"         = "mock.cloud.databricks.com",
     # "mock.cloud.databricks.com//"        = "mock.cloud.databricks.com",
@@ -257,28 +251,22 @@ test_that("auth functions - host handling", {
       }
     )
   })
-
 })
 
 
 test_that("auth functions - workbench managed credentials detection", {
-
   db_home <- withr::local_tempdir("posit-workbench")
 
-  withr::local_file(
-    .file = "databricks.cfg",
-    code = {
-     writeLines(
-       c(
-         '[workbench]',
-         'host = http://some-host',
-         'token = some-token'
-       ),
-       file.path(db_home, "databricks.cfg")
-     )
-    }
-  )
-
+  withr::local_file(.file = "databricks.cfg", code = {
+    writeLines(
+      c(
+        '[workbench]',
+        'host = http://some-host',
+        'token = some-token'
+      ),
+      file.path(db_home, "databricks.cfg")
+    )
+  })
 
   # Two env variables need to be set on Workbench for detection to succeed
   # DATABRICKS_CONFIG_FILE with the path to the databricks.cfg file
@@ -297,28 +285,22 @@ test_that("auth functions - workbench managed credentials detection", {
       expect_identical("some-token", token_w)
     }
   )
-
-
 })
 
 
 test_that("auth functions - workbench managed credentials override env var", {
-
   db_home <- withr::local_tempdir("posit-workbench")
 
-  withr::local_file(
-    .file = "databricks.cfg",
-    code = {
-      writeLines(
-        c(
-          '[workbench]',
-          'host = http://some-host',
-          'token = some-token'
-        ),
-        file.path(db_home, "databricks.cfg")
-      )
-    }
-  )
+  withr::local_file(.file = "databricks.cfg", code = {
+    writeLines(
+      c(
+        '[workbench]',
+        'host = http://some-host',
+        'token = some-token'
+      ),
+      file.path(db_home, "databricks.cfg")
+    )
+  })
 
   # Two env variables need to be set on Workbench for detection to succeed
   # DATABRICKS_CONFIG_FILE with the path to the databricks.cfg file
@@ -340,5 +322,4 @@ test_that("auth functions - workbench managed credentials override env var", {
 
   expect_identical("some-host", host_w)
   expect_identical("some-token", token_w)
-
 })

@@ -83,14 +83,13 @@ db_host <- function(
 #' @inherit db_host details
 #' @inheritParams db_host
 #' @return databricks token
-#' @import cli
 #' @export
 db_token <- function(profile = default_config_profile()) {
   # if `use_databricks_cfg()` returns `TRUE` then fetch the associated env.
   # env is specified via `db_env` option, if missing use default.
   # this behaviour can only be changed via setting of config
   if (use_databricks_cfg()) {
-    token <- read_databrickscfg(key = "token", profile = profile)
+    token <- read_databrickscfg(key = "token", profile = profile, error = FALSE)
     return(token)
   }
 
@@ -112,7 +111,6 @@ db_token <- function(profile = default_config_profile()) {
 #' @inherit db_host details
 #' @inheritParams db_host
 #' @return databricks workspace ID
-#' @import cli
 #' @export
 db_wsid <- function(profile = default_config_profile()) {
   if (use_databricks_cfg()) {
@@ -158,11 +156,11 @@ NULL
 #' @param profile Character, the name of the profile to retrieve values
 #'
 #' @return named list of values associated with profile
-#' @import cli
 #' @keywords internal
 read_databrickscfg <- function(
   key = c("token", "host", "wsid", "client_id", "client_secret"),
-  profile = NULL
+  profile = NULL,
+  error = TRUE
 ) {
   key <- match.arg(key)
 
@@ -196,10 +194,14 @@ read_databrickscfg <- function(
   # error if key isn't found
   value <- vars[[key]]
   if (is.null(value)) {
-    cli::cli_abort(c(
-      "Parameter {.var {key}} not found in {.envvar {profile}} profile of {.file {config_path}}:",
-      "x" = "Need to specify {.envvar {key}} in {.envvar {profile}} profile."
-    ))
+    if (error) {
+      cli::cli_abort(c(
+        "Parameter {.var {key}} not found in {.envvar {profile}} profile of {.file {config_path}}:",
+        "x" = "Need to specify {.envvar {key}} in {.envvar {profile}} profile."
+      ))
+    } else {
+      value <- NULL
+    }
   }
 
   value
@@ -247,58 +249,32 @@ read_env_var <- function(
 
 db_client_id <- function(profile = default_config_profile()) {
   if (use_databricks_cfg()) {
-    return(read_databrickscfg(
+    client_id <- read_databrickscfg(
       key = "client_id",
-      profile = profile
-    ))
+      profile = profile,
+      error = FALSE
+    )
+    return(client_id)
   }
 
-  read_env_var(key = "client_id", profile = profile)
+  read_env_var(key = "client_id", profile = profile, error = FALSE)
 }
 
 db_client_secret <- function(profile = default_config_profile()) {
   if (use_databricks_cfg()) {
-    return(read_databrickscfg(
-      key = "client_secret",
-      profile = profile
-    ))
-  }
-
-  read_env_var(key = "client_secret", profile = profile)
-}
-
-get_m2m_credentials <- function(profile = default_config_profile()) {
-  if (use_databricks_cfg()) {
-    client_id <- tryCatch(
-      read_databrickscfg(key = "client_id", profile = profile),
-      error = function(e) NULL
-    )
-    client_secret <- tryCatch(
-      read_databrickscfg(key = "client_secret", profile = profile),
-      error = function(e) NULL
-    )
-  } else {
-    client_id <- read_env_var(key = "client_id", profile = profile, error = FALSE)
-    client_secret <- read_env_var(
+    client_secret <- read_databrickscfg(
       key = "client_secret",
       profile = profile,
       error = FALSE
     )
+    return(client_secret)
   }
 
-  list(
-    client_id = client_id,
-    client_secret = client_secret
+  read_env_var(
+    key = "client_secret",
+    profile = profile,
+    error = FALSE
   )
-}
-
-has_m2m_credentials <- function(profile = default_config_profile()) {
-  creds <- get_m2m_credentials(profile = profile)
-  client_id <- creds$client_id
-  client_secret <- creds$client_secret
-
-  !is.null(client_id) && nzchar(client_id) &&
-    !is.null(client_secret) && nzchar(client_secret)
 }
 
 #' Create OAuth 2.0 Client
@@ -310,42 +286,40 @@ has_m2m_credentials <- function(profile = default_config_profile()) {
 #' client will use M2M auth.
 #' @param client_secret OAuth M2M client secret.
 #'
-#' @return List that contains httr2_oauth_client, relevant auth url, and auth type
+#' @return List that contains [httr::2oauth_client()], relevant `auth_url`, and `is_m2m`
 #' @keywords internal
 db_oauth_client <- function(
   host = db_host(),
-  client_id = NULL,
-  client_secret = NULL
+  client_id = db_client_id(),
+  client_secret = db_client_secret()
 ) {
-  is_m2m <- !is.null(client_id) && nzchar(client_id) &&
-    !is.null(client_secret) && nzchar(client_secret)
+  is_m2m <- !is.null(client_id) &&
+    nzchar(client_id) &&
+    !is.null(client_secret) &&
+    nzchar(client_secret)
 
   ws_token_url = glue::glue("https://{host}/oidc/v1/token", host = host)
-  ws_auth_url <- NULL
+  ws_auth_url = glue::glue("https://{host}/oidc/v1/authorize", host = host)
 
   if (is_m2m) {
     client <- httr2::oauth_client(
       id = client_id,
       secret = client_secret,
       token_url = ws_token_url,
-      auth = "header",
       name = "brickster"
     )
-    auth_type <- "m2m"
   } else {
-    ws_auth_url = glue::glue("https://{host}/oidc/v1/authorize", host = host)
     client <- httr2::oauth_client(
       id = "databricks-cli",
       token_url = ws_token_url,
       name = "brickster"
     )
-    auth_type <- "u2m"
   }
 
   client_and_auth <- list(
     client = client,
     auth_url = ws_auth_url,
-    auth_type = auth_type
+    is_m2m = is_m2m
   )
 
   # add option for client to be fetched via request helpers

@@ -43,51 +43,24 @@ db_request <- function(
     httr2::req_retry(max_tries = 3, backoff = ~2)
 
   # if token is present use directly
-  # otherwise initiate OAuth 2.0 M2M or U2M Workspace flow
+  # otherwise initiate OAuth 2.0 U2M or M2M Workspace flow
   if (!is.null(token)) {
     req <- httr2::req_auth_bearer_token(req = req, token = token)
   } else {
-    creds <- get_m2m_credentials()
-    client_id <- creds$client_id
-    client_secret <- creds$client_secret
-    is_m2m <- !is.null(client_id) && nzchar(client_id) &&
-      !is.null(client_secret) && nzchar(client_secret)
-    oauth_client <- getOption("brickster_oauth_client")
-    if (
-      is.null(oauth_client) ||
-        is.null(oauth_client$client) ||
-        is.null(oauth_client$auth_type)
-    ) {
-      oauth_client <- NULL
-    }
+    # fetch client
+    oauth_client <- getOption(
+      x = "brickster_oauth_client",
+      db_oauth_client(host = host)
+    )
 
-    if (is_m2m) {
-      if (
-        is.null(oauth_client) ||
-          !identical(oauth_client$auth_type, "m2m") ||
-          !identical(oauth_client$client$id, client_id) ||
-          !identical(oauth_client$client$secret, client_secret)
-      ) {
-        oauth_client <- db_oauth_client(
-          host = host,
-          client_id = db_client_id(),
-          client_secret = db_client_secret()
-        )
-      }
+    if (oauth_client$is_m2m) {
       req <- httr2::req_oauth_client_credentials(
         req,
         client = oauth_client$client,
         scope = "all-apis"
       )
     } else if (!is_hosted_session() && rlang::is_interactive()) {
-      if (
-        is.null(oauth_client) ||
-          !identical(oauth_client$auth_type, "u2m") ||
-          is.null(oauth_client$auth_url)
-      ) {
-        oauth_client <- db_oauth_client(host = host)
-      }
-
+      # use client to auth
       req <- httr2::req_oauth_auth_code(
         req,
         client = oauth_client$client,

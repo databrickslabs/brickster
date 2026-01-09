@@ -12,6 +12,7 @@ db_sql_query(
   parameters = NULL,
   row_limit = NULL,
   byte_limit = NULL,
+  wait_timeout = "5s",
   return_arrow = FALSE,
   max_active_connections = 30,
   fetch_timeout = 300,
@@ -54,6 +55,22 @@ might not match the final size in the requested format. If the result was
 truncated due to the byte limit, then \code{truncated} in the response is set to
 true. When using \code{EXTERNAL_LINKS} disposition, a default byte_limit of
 100 GiB is applied if \code{byte_limit} is not explicitly set.}
+
+\item{wait_timeout}{String, default is \code{"10s"}. The time in seconds the call
+will wait for the statement's result set as \code{Ns}, where \code{N} can be set to
+\code{0} or to a value between \code{5} and \code{50}.
+When set to \verb{0s}, the statement will execute in asynchronous mode and the
+call will not wait for the execution to finish. In this case, the call
+returns directly with \code{PENDING} state and a statement ID which can be used
+for polling with \code{\link[=db_sql_exec_status]{db_sql_exec_status()}}.
+
+When set between \code{5} and \code{50} seconds, the call will behave synchronously up
+to this timeout and wait for the statement execution to finish. If the
+execution finishes within this time, the call returns immediately with a
+manifest and result data (or a \code{FAILED} state in case of an execution error).
+
+If the statement takes longer to execute, \code{on_wait_timeout} determines what
+should happen after the timeout is reached.}
 
 \item{return_arrow}{Boolean, determine if result is \link[tibble:tibble]{tibble::tibble} or
 \link[arrow:Table-class]{arrow::Table}.}
