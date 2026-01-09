@@ -5,7 +5,7 @@
 #' @param path Absolute path of the file in the Files API, omitting the initial
 #' slash.
 #' @param destination Path to write downloaded file to.
-#' @param progress If TRUE, show progress bar for file operations (default: TRUE for uploads/downloads, FALSE for other operations)
+#' @param progress If `TRUE`, show progress bar for file operations (default: `TRUE` for uploads/downloads, `FALSE` for other operations)
 #' @inheritParams db_dbfs_create
 #' @inheritParams db_sql_warehouse_create
 #'
@@ -188,8 +188,8 @@ db_volume_dir_create <- function(
 
 #' Volume FileSystem Delete Directory
 #'
-#' @param recursive If TRUE, recursively delete directory contents (default: FALSE)
-#' @param verbose If TRUE, announce each file/directory deletion (default: FALSE)
+#' @param recursive If `TRUE`, recursively delete directory contents (default: `FALSE`)
+#' @param verbose If `TRUE`, announce each file/directory deletion (default: `FALSE`)
 #' @inheritParams auth_params
 #' @inheritParams db_volume_read
 #' @inheritParams db_sql_warehouse_create
@@ -396,8 +396,8 @@ db_volume_action <- function(
 #'
 #' @param local_dir Path to local directory containing files to upload
 #' @param volume_dir Volume directory path (must start with /Volumes/)
-#' @param overwrite Flag to overwrite existing files (default: TRUE)
-#' @param preserve_structure If TRUE, preserve subdirectory structure (default: TRUE)
+#' @param overwrite Flag to overwrite existing files (default: `TRUE`)
+#' @param preserve_structure If `TRUE`, preserve subdirectory structure (default: `TRUE`)
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create
 #'

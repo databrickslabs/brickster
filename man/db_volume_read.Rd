@@ -26,7 +26,7 @@ slash.}
 \item{perform_request}{If \code{TRUE} (default) the request is performed, if
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 
-\item{progress}{If TRUE, show progress bar for file operations (default: TRUE for uploads/downloads, FALSE for other operations)}
+\item{progress}{If \code{TRUE}, show progress bar for file operations (default: \code{TRUE} for uploads/downloads, \code{FALSE} for other operations)}
 }
 \description{
 Return the contents of a file within a volume (up to 5GiB).

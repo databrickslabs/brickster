@@ -68,7 +68,7 @@ true. When using \code{EXTERNAL_LINKS} disposition, a default byte_limit of
 
 \item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}
 
-\item{show_progress}{If TRUE, show progress updates during query execution (default: TRUE)}
+\item{show_progress}{If \code{TRUE}, show progress updates during query execution (default: \code{TRUE})}
 }
 \value{
 \link[tibble:tibble]{tibble::tibble} or \link[arrow:Table-class]{arrow::Table}.

@@ -12,7 +12,7 @@
 \item{...}{Additional arguments (ignored)}
 }
 \value{
-TRUE (invisibly)
+\code{TRUE} (invisibly)
 }
 \description{
 Clear result set
