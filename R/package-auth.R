@@ -252,8 +252,8 @@ read_env_var <- function(
 #' @return List that contains httr2_oauth_client and relevant auth url
 #' @keywords internal
 db_oauth_client <- function(host = db_host()) {
-  ws_token_url = glue::glue("https://{host}/oidc/v1/token", host = host)
-  ws_auth_url = glue::glue("https://{host}/oidc/v1/authorize", host = host)
+  ws_token_url <- glue::glue("https://{host}/oidc/v1/token", host = host)
+  ws_auth_url <- glue::glue("https://{host}/oidc/v1/authorize", host = host)
 
   client <- httr2::oauth_client(
     id = "databricks-cli",
