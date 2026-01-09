@@ -25,4 +25,4 @@ dbExistsTable(conn, name, ...)
 
 ## Value
 
-TRUE if table exists, FALSE otherwise
+`TRUE` if table exists, `FALSE` otherwise

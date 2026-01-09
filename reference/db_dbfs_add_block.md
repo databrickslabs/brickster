@@ -29,7 +29,7 @@ db_dbfs_add_block(
 - convert_to_raw:
 
   Boolean (Default: `FALSE`), if `TRUE` will convert character vector to
-  raw via [`base::as.raw()`](https://rdrr.io/r/base/raw.html).
+  raw via [`as.raw()`](https://rdrr.io/r/base/raw.html).
 
 - host:
 

@@ -43,8 +43,8 @@ db_volume_read(
 
 - progress:
 
-  If TRUE, show progress bar for file operations (default: TRUE for
-  uploads/downloads, FALSE for other operations)
+  If `TRUE`, show progress bar for file operations (default: `TRUE` for
+  uploads/downloads, `FALSE` for other operations)
 
 ## See also
 

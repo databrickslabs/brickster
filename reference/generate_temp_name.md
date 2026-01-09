@@ -12,7 +12,7 @@ generate_temp_name(prefix = "dbplyr_temp")
 
 - prefix:
 
-  Base name prefix (default: "dbplyr_temp")
+  Base name prefix (default: `"dbplyr_temp"`)
 
 ## Value
 

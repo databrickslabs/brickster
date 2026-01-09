@@ -36,7 +36,7 @@ copy_to(
 
 - temporary:
 
-  Whether to create as temporary view (default: TRUE, but NOT
+  Whether to create as temporary view (default: `TRUE`, but NOT
   SUPPORTED - will error)
 
 - ...:

@@ -29,8 +29,8 @@ dbAppendTable(conn, name, value, ..., row.names = FALSE)
 
 - row.names:
 
-  If TRUE, preserve row names as a column
+  If `TRUE`, preserve row names as a column
 
 ## Value
 
-TRUE invisibly on success
+`TRUE` invisibly on success

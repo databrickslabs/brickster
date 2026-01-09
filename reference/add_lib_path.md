@@ -33,5 +33,5 @@ RStudio, however, it works anywhere.
 
 ## See also
 
-[`base::.libPaths()`](https://rdrr.io/r/base/libPaths.html),
+[`.libPaths()`](https://rdrr.io/r/base/libPaths.html),
 [`remove_lib_path()`](https://databrickslabs.github.io/brickster/reference/remove_lib_path.md)

@@ -33,8 +33,8 @@ dbCreateTable(conn, name, fields, ..., row.names = NULL, temporary = FALSE)
 
 - temporary:
 
-  If TRUE, create temporary table (NOT SUPPORTED - will error)
+  If `TRUE`, create temporary table (NOT SUPPORTED - will error)
 
 ## Value
 
-TRUE invisibly on success
+`TRUE` invisibly on success

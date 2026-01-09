@@ -33,7 +33,8 @@ dbGetQuery(
 
 - show_progress:
 
-  If TRUE, show progress updates during query execution (default: TRUE)
+  If `TRUE`, show progress updates during query execution (default:
+  `TRUE`)
 
 - ...:
 

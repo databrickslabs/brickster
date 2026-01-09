@@ -49,8 +49,8 @@ db_volume_write(
 
 - progress:
 
-  If TRUE, show progress bar for file operations (default: TRUE for
-  uploads/downloads, FALSE for other operations)
+  If `TRUE`, show progress bar for file operations (default: `TRUE` for
+  uploads/downloads, `FALSE` for other operations)
 
 ## Details
 

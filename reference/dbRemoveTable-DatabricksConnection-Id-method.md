@@ -25,4 +25,4 @@ dbRemoveTable(conn, name, ...)
 
 ## Value
 
-TRUE invisibly on success
+`TRUE` invisibly on success

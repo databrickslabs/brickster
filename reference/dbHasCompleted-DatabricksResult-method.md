@@ -21,4 +21,4 @@ dbHasCompleted(res, ...)
 
 ## Value
 
-TRUE if query is complete, FALSE otherwise
+`TRUE` if query is complete, `FALSE` otherwise

@@ -21,4 +21,4 @@ dbDisconnect(conn, ...)
 
 ## Value
 
-TRUE (invisibly)
+`TRUE` (invisibly)

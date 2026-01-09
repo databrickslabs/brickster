@@ -24,11 +24,11 @@ db_volume_dir_delete(
 
 - recursive:
 
-  If TRUE, recursively delete directory contents (default: FALSE)
+  If `TRUE`, recursively delete directory contents (default: `FALSE`)
 
 - verbose:
 
-  If TRUE, announce each file/directory deletion (default: FALSE)
+  If `TRUE`, announce each file/directory deletion (default: `FALSE`)
 
 - host:
 

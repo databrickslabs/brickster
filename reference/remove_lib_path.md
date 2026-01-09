@@ -22,5 +22,5 @@ remove_lib_path(path, version = FALSE)
 
 ## See also
 
-[`base::.libPaths()`](https://rdrr.io/r/base/libPaths.html),
+[`.libPaths()`](https://rdrr.io/r/base/libPaths.html),
 `remove_lib_path()`

@@ -21,4 +21,4 @@ dbIsValid(dbObj, ...)
 
 ## Value
 
-TRUE if connection is valid, FALSE otherwise
+`TRUE` if connection is valid, `FALSE` otherwise

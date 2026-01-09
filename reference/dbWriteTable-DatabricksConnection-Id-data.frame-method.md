@@ -37,19 +37,19 @@ dbWriteTable(
 
 - overwrite:
 
-  If TRUE, overwrite existing table
+  If `TRUE`, overwrite existing table
 
 - append:
 
-  If TRUE, append to existing table
+  If `TRUE`, append to existing table
 
 - row.names:
 
-  If TRUE, preserve row names as a column
+  If `TRUE`, preserve row names as a column
 
 - temporary:
 
-  If TRUE, create temporary table (NOT SUPPORTED - will error)
+  If `TRUE`, create temporary table (NOT SUPPORTED - will error)
 
 - field.types:
 
@@ -61,7 +61,7 @@ dbWriteTable(
 
 - progress:
 
-  If TRUE, show progress bar for file uploads (default: TRUE)
+  If `TRUE`, show progress bar for file uploads (default: `TRUE`)
 
 - ...:
 
@@ -69,4 +69,4 @@ dbWriteTable(
 
 ## Value
 
-TRUE invisibly on success
+`TRUE` invisibly on success

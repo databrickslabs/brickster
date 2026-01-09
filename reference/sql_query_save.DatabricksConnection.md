@@ -25,7 +25,7 @@ sql_query_save(con, sql, name, temporary = TRUE, ...)
 
 - temporary:
 
-  Whether the object should be temporary (default: TRUE)
+  Whether the object should be temporary (default: `TRUE`)
 
 - ...:
 

@@ -50,7 +50,8 @@ db_sql_fetch_results(
 
 - show_progress:
 
-  If TRUE, show progress updates during result fetching (default: TRUE)
+  If `TRUE`, show progress updates during result fetching (default:
+  `TRUE`)
 
 ## Value
 

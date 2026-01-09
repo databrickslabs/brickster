@@ -26,7 +26,7 @@ db_sql_exec_poll_for_success(
 
 - show_progress:
 
-  If TRUE, show progress updates during polling (default: TRUE)
+  If `TRUE`, show progress updates during polling (default: `TRUE`)
 
 - host:
 

@@ -28,11 +28,11 @@ db_volume_upload_dir(
 
 - overwrite:
 
-  Flag to overwrite existing files (default: TRUE)
+  Flag to overwrite existing files (default: `TRUE`)
 
 - preserve_structure:
 
-  If TRUE, preserve subdirectory structure (default: TRUE)
+  If `TRUE`, preserve subdirectory structure (default: `TRUE`)
 
 - host:
 

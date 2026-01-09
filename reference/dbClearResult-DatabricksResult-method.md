@@ -21,4 +21,4 @@ dbClearResult(res, ...)
 
 ## Value
 
-TRUE (invisibly)
+`TRUE` (invisibly)
