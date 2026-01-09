@@ -82,7 +82,6 @@ db_host <- function(
 #' @inherit db_host details
 #' @inheritParams db_host
 #' @return databricks token
-#' @import cli
 #' @export
 db_token <- function(profile = default_config_profile()) {
   # if `use_databricks_cfg()` returns `TRUE` then fetch the associated env.
@@ -111,7 +110,6 @@ db_token <- function(profile = default_config_profile()) {
 #' @inherit db_host details
 #' @inheritParams db_host
 #' @return databricks workspace ID
-#' @import cli
 #' @export
 db_wsid <- function(profile = default_config_profile()) {
   if (use_databricks_cfg()) {
@@ -156,7 +154,6 @@ NULL
 #' @param profile Character, the name of the profile to retrieve values
 #'
 #' @return named list of values associated with profile
-#' @import cli
 #' @keywords internal
 read_databrickscfg <- function(
   key = c("token", "host", "wsid"),
