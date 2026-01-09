@@ -18,9 +18,9 @@ db_volume_upload_dir(
 
 \item{volume_dir}{Volume directory path (must start with /Volumes/)}
 
-\item{overwrite}{Flag to overwrite existing files (default: TRUE)}
+\item{overwrite}{Flag to overwrite existing files (default: \code{TRUE})}
 
-\item{preserve_structure}{If TRUE, preserve subdirectory structure (default: TRUE)}
+\item{preserve_structure}{If \code{TRUE}, preserve subdirectory structure (default: \code{TRUE})}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 

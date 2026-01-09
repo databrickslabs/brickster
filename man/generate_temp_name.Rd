@@ -7,7 +7,7 @@
 generate_temp_name(prefix = "dbplyr_temp")
 }
 \arguments{
-\item{prefix}{Base name prefix (default: "dbplyr_temp")}
+\item{prefix}{Base name prefix (default: \code{"dbplyr_temp"})}
 }
 \value{
 Unique temporary name

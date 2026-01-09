@@ -17,10 +17,10 @@
 
 \item{row.names}{Ignored (included for DBI compatibility)}
 
-\item{temporary}{If TRUE, create temporary table (NOT SUPPORTED - will error)}
+\item{temporary}{If \code{TRUE}, create temporary table (NOT SUPPORTED - will error)}
 }
 \value{
-TRUE invisibly on success
+\code{TRUE} invisibly on success
 }
 \description{
 Create an empty Databricks table (Id method)

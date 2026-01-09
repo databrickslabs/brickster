@@ -17,9 +17,9 @@ db_volume_dir_delete(
 \item{path}{Absolute path of the file in the Files API, omitting the initial
 slash.}
 
-\item{recursive}{If TRUE, recursively delete directory contents (default: FALSE)}
+\item{recursive}{If \code{TRUE}, recursively delete directory contents (default: \code{FALSE})}
 
-\item{verbose}{If TRUE, announce each file/directory deletion (default: FALSE)}
+\item{verbose}{If \code{TRUE}, announce each file/directory deletion (default: \code{FALSE})}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 

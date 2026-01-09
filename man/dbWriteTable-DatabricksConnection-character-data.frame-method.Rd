@@ -25,24 +25,24 @@
 
 \item{value}{Data frame to write}
 
-\item{overwrite}{If TRUE, overwrite existing table}
+\item{overwrite}{If \code{TRUE}, overwrite existing table}
 
-\item{append}{If TRUE, append to existing table}
+\item{append}{If \code{TRUE}, append to existing table}
 
-\item{row.names}{If TRUE, preserve row names as a column}
+\item{row.names}{If \code{TRUE}, preserve row names as a column}
 
-\item{temporary}{If TRUE, create temporary table (NOT SUPPORTED - will error)}
+\item{temporary}{If \code{TRUE}, create temporary table (NOT SUPPORTED - will error)}
 
 \item{field.types}{Named character vector of SQL types for columns}
 
 \item{staging_volume}{Optional volume path for large dataset staging}
 
-\item{progress}{If TRUE, show progress bar for file uploads (default: TRUE)}
+\item{progress}{If \code{TRUE}, show progress bar for file uploads (default: \code{TRUE})}
 
 \item{...}{Additional arguments}
 }
 \value{
-TRUE invisibly on success
+\code{TRUE} invisibly on success
 }
 \description{
 Write a data frame to Databricks table

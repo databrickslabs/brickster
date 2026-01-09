@@ -53,7 +53,7 @@ sql_table_analyze.DatabricksConnection <- function(con, table, ...) {
 # Table Operations ---------------------------------------------------------------
 
 #' Generate unique temporary table/view name
-#' @param prefix Base name prefix (default: "dbplyr_temp")
+#' @param prefix Base name prefix (default: `"dbplyr_temp"`)
 #' @return Unique temporary name
 #' @keywords internal
 generate_temp_name <- function(prefix = "dbplyr_temp") {
@@ -69,7 +69,7 @@ generate_temp_name <- function(prefix = "dbplyr_temp") {
 #' @param con A DatabricksConnection object
 #' @param sql SQL query to save as table/view
 #' @param name Name for the temporary view or table
-#' @param temporary Whether the object should be temporary (default: TRUE)
+#' @param temporary Whether the object should be temporary (default: `TRUE`)
 #' @param ... Additional arguments (ignored)
 #' @return The table/view name (invisibly)
 #' @export
@@ -164,7 +164,7 @@ sql_query_fields.DatabricksConnection <- function(con, sql, ...) {
 #' @param df Data frame to copy
 #' @param name Name for the table/view
 #' @param overwrite Whether to overwrite existing table/view
-#' @param temporary Whether to create as temporary view (default: TRUE, but NOT SUPPORTED - will error)
+#' @param temporary Whether to create as temporary view (default: `TRUE`, but NOT SUPPORTED - will error)
 #' @param ... Additional arguments passed to dbWriteTable
 #' @return dbplyr table reference
 #' @details Note: temporary=TRUE will result in an error as temporary tables are not

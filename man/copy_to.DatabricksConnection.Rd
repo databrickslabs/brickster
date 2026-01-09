@@ -22,7 +22,7 @@
 
 \item{overwrite}{Whether to overwrite existing table/view}
 
-\item{temporary}{Whether to create as temporary view (default: TRUE, but NOT SUPPORTED - will error)}
+\item{temporary}{Whether to create as temporary view (default: \code{TRUE}, but NOT SUPPORTED - will error)}
 
 \item{...}{Additional arguments passed to dbWriteTable}
 }

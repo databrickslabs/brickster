@@ -260,7 +260,7 @@ db_sql_exec_result <- function(
 #'
 #' @inheritParams db_sql_exec_cancel
 #' @param interval Number of seconds between status checks.
-#' @param show_progress If TRUE, show progress updates during polling (default: TRUE)
+#' @param show_progress If `TRUE`, show progress updates during polling (default: `TRUE`)
 db_sql_exec_poll_for_success <- function(
   statement_id,
   interval = 1,
@@ -470,7 +470,7 @@ db_sql_create_empty_result <- function(manifest) {
 #' @param row_limit Integer, limit number of rows returned (applied after fetch)
 #' @param host Databricks host
 #' @param token Databricks token
-#' @param show_progress If TRUE, show progress updates during result fetching (default: TRUE)
+#' @param show_progress If `TRUE`, show progress updates during result fetching (default: `TRUE`)
 #' @returns tibble or arrow Table with query results
 #' @keywords internal
 db_sql_fetch_results <- function(
@@ -679,7 +679,7 @@ db_sql_fetch_results_parallel <- function(
 #' @param max_active_connections Integer to decide on concurrent downloads.
 #' @param fetch_timeout Integer, timeout in seconds for downloading each result chunk
 #' @param disposition Disposition mode ("INLINE" or "EXTERNAL_LINKS")
-#' @param show_progress If TRUE, show progress updates during query execution (default: TRUE)
+#' @param show_progress If `TRUE`, show progress updates during query execution (default: `TRUE`)
 #' @returns [tibble::tibble] or [arrow::Table].
 #' @export
 db_sql_query <- function(

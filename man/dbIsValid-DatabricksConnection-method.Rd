@@ -12,7 +12,7 @@
 \item{...}{Additional arguments (ignored)}
 }
 \value{
-TRUE if connection is valid, FALSE otherwise
+\code{TRUE} if connection is valid, \code{FALSE} otherwise
 }
 \description{
 Check if connection is valid

@@ -12,7 +12,7 @@
 \item{...}{Additional arguments (ignored)}
 }
 \value{
-TRUE if query is complete, FALSE otherwise
+\code{TRUE} if query is complete, \code{FALSE} otherwise
 }
 \description{
 Check if query has completed

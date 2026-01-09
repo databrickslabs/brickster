@@ -17,7 +17,7 @@ db_sql_exec_poll_for_success(
 
 \item{interval}{Number of seconds between status checks.}
 
-\item{show_progress}{If TRUE, show progress updates during polling (default: TRUE)}
+\item{show_progress}{If \code{TRUE}, show progress updates during polling (default: \code{TRUE})}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
