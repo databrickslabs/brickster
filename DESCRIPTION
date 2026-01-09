@@ -1,27 +1,20 @@
 Package: brickster
 Title: R Toolkit for 'Databricks'
 Version: 0.2.12
-Authors@R: 
-  c(
-    person(given = "Zac",
-           family = "Davies",
-           role = c("aut", "cre"),
-           email = "zac@databricks.com"),
-    person(given = "Rafi",
-           family = "Kurlansik",
-           role = c("aut"),
-           email = "rafi.kurlansik@databricks.com"),
+Authors@R: c(
+    person("Zac", "Davies", , "zac@databricks.com", role = c("aut", "cre")),
+    person("Rafi", "Kurlansik", , "rafi.kurlansik@databricks.com", role = "aut"),
     person("Databricks", role = c("cph", "fnd"))
   )
-Description: Collection of utilities that improve using 'Databricks' from R. 
-  Primarily functions that wrap specific 'Databricks' APIs
-  (<https://docs.databricks.com/api>), 'RStudio' connection pane support, quality
-  of life functions to make 'Databricks' simpler to use.
+Description: Collection of utilities that improve using 'Databricks' from
+    R.  Primarily functions that wrap specific 'Databricks' APIs
+    (<https://docs.databricks.com/api>), 'RStudio' connection pane
+    support, quality of life functions to make 'Databricks' simpler to
+    use.
 License: Apache License (>= 2)
-Encoding: UTF-8
-LazyData: true
+URL: https://github.com/databrickslabs/brickster
 Depends:
-  R (>= 4.1.0)
+    R (>= 4.1.0)
 Imports:
     base64enc,
     cli,
@@ -29,8 +22,8 @@ Imports:
     DBI,
     dbplyr,
     dplyr,
-    glue,
     fs,
+    glue,
     httr2 (>= 1.1.1),
     ini,
     jsonlite,
@@ -43,16 +36,18 @@ Imports:
     utils
 Suggests:
     arrow,
-    testthat (>= 3.3.0),
     grid,
-    huxtable,
     htmltools,
+    huxtable,
     knitr,
     magick,
     rmarkdown,
+    testthat (>= 3.3.0),
     withr
+VignetteBuilder: 
+    knitr
+Config/testthat/edition: 3
+Encoding: UTF-8
+LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-VignetteBuilder: knitr
-URL: https://github.com/databrickslabs/brickster
-Config/testthat/edition: 3
