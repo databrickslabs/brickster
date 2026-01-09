@@ -271,7 +271,6 @@ db_sql_exec_poll_for_success <- function(
   is_query_running <- TRUE
 
   while (is_query_running) {
-    Sys.sleep(interval)
     status <- db_sql_exec_status(
       statement_id = statement_id,
       host = host,
@@ -288,6 +287,8 @@ db_sql_exec_poll_for_success <- function(
         error_msg <- paste("Query failed with status:", status$status$state)
       }
       cli::cli_abort(error_msg)
+    } else {
+      Sys.sleep(interval)
     }
   }
 
