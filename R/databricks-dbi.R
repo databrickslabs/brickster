@@ -1439,8 +1439,7 @@ db_create_table_from_data <- function(
     # Use provided types
     col_types <- field.types[names(value)]
     # Fill missing types with automatic mapping
-    missing_types <- is.na(col_types) |
-      names(value) %in% names(field.types) == FALSE
+    missing_types <- is.na(col_types) | !names(value) %in% names(field.types)
     if (any(missing_types)) {
       col_types[missing_types] <- dbDataType(conn, value[missing_types])
     }
