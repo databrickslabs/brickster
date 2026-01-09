@@ -20,7 +20,7 @@ db_dbfs_add_block(
 vector that will be base64-encoded. This has a limit of 1 MB.}
 
 \item{convert_to_raw}{Boolean (Default: \code{FALSE}), if \code{TRUE} will convert
-character vector to raw via \code{\link[base:raw]{base::as.raw()}}.}
+character vector to raw via \code{\link[=as.raw]{as.raw()}}.}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 

@@ -159,7 +159,7 @@ setMethod(
 #' Disconnect from Databricks
 #' @param conn A DatabricksConnection object
 #' @param ... Additional arguments (ignored)
-#' @return TRUE (invisibly)
+#' @return `TRUE` (invisibly)
 #' @export
 setMethod("dbDisconnect", "DatabricksConnection", function(conn, ...) {
   # Databricks connections are stateless, so just return TRUE
@@ -169,7 +169,7 @@ setMethod("dbDisconnect", "DatabricksConnection", function(conn, ...) {
 #' Check if connection is valid
 #' @param dbObj A DatabricksConnection object
 #' @param ... Additional arguments (ignored)
-#' @return TRUE if connection is valid, FALSE otherwise
+#' @return `TRUE` if connection is valid, `FALSE` otherwise
 #' @export
 setMethod("dbIsValid", "DatabricksConnection", function(dbObj, ...) {
   # Check if connection has required fields
@@ -245,7 +245,7 @@ setMethod(
 #' @param statement SQL statement to execute
 #' @param disposition Query disposition mode: "EXTERNAL_LINKS" (default) for large results,
 #'   "INLINE" for small metadata queries (automatically chooses appropriate format)
-#' @param show_progress If TRUE, show progress updates during query execution (default: TRUE)
+#' @param show_progress If `TRUE`, show progress updates during query execution (default: `TRUE`)
 #' @param ... Additional arguments passed to underlying query execution
 #' @return A data.frame with query results
 #' @export
@@ -417,7 +417,7 @@ setMethod("dbFetch", "DatabricksResult", function(res, n = -1, ...) {
 #' Check if query has completed
 #' @param res A DatabricksResult object
 #' @param ... Additional arguments (ignored)
-#' @return TRUE if query is complete, FALSE otherwise
+#' @return `TRUE` if query is complete, `FALSE` otherwise
 #' @export
 setMethod("dbHasCompleted", "DatabricksResult", function(res, ...) {
   if (res@completed) {
@@ -437,7 +437,7 @@ setMethod("dbHasCompleted", "DatabricksResult", function(res, ...) {
 #' Clear result set
 #' @param res A DatabricksResult object
 #' @param ... Additional arguments (ignored)
-#' @return TRUE (invisibly)
+#' @return `TRUE` (invisibly)
 #' @export
 setMethod("dbClearResult", "DatabricksResult", function(res, ...) {
   # Databricks automatically cleans up after a period of time
@@ -550,7 +550,7 @@ setMethod("dbListTables", "DatabricksConnection", function(conn, ...) {
 #' @param conn A DatabricksConnection object
 #' @param name Table name to check
 #' @param ... Additional arguments (ignored)
-#' @return TRUE if table exists, FALSE otherwise
+#' @return `TRUE` if table exists, `FALSE` otherwise
 #' @export
 setMethod(
   "dbExistsTable",
@@ -579,7 +579,7 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param name Table name as Id object
 #' @param ... Additional arguments (ignored)
-#' @return TRUE if table exists, FALSE otherwise
+#' @return `TRUE` if table exists, `FALSE` otherwise
 #' @export
 setMethod(
   "dbExistsTable",
@@ -608,7 +608,7 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param name Table name as AsIs object (from I())
 #' @param ... Additional arguments (ignored)
-#' @return TRUE if table exists, FALSE otherwise
+#' @return `TRUE` if table exists, `FALSE` otherwise
 #' @export
 setMethod(
   "dbExistsTable",
@@ -626,7 +626,7 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param name Table name to remove
 #' @param ... Additional arguments (ignored)
-#' @return TRUE invisibly on success
+#' @return `TRUE` invisibly on success
 #' @export
 setMethod(
   "dbRemoveTable",
@@ -647,7 +647,7 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param name Table name as Id object
 #' @param ... Additional arguments (ignored)
-#' @return TRUE invisibly on success
+#' @return `TRUE` invisibly on success
 #' @export
 setMethod(
   "dbRemoveTable",
@@ -668,7 +668,7 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param name Table name as AsIs object (from I())
 #' @param ... Additional arguments (ignored)
-#' @return TRUE invisibly on success
+#' @return `TRUE` invisibly on success
 #' @export
 setMethod(
   "dbRemoveTable",
@@ -745,9 +745,9 @@ setMethod(
 #' @param name Table name to create
 #' @param fields Either a named character vector of types or a data frame
 #' @param row.names Ignored (included for DBI compatibility)
-#' @param temporary If TRUE, create temporary table (NOT SUPPORTED - will error)
+#' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
 #' @param ... Additional arguments (ignored)
-#' @return TRUE invisibly on success
+#' @return `TRUE` invisibly on success
 #' @export
 setMethod(
   "dbCreateTable",
@@ -781,9 +781,9 @@ setMethod(
 #' @param name Table name as Id object
 #' @param fields Either a named character vector of types or a data frame
 #' @param row.names Ignored (included for DBI compatibility)
-#' @param temporary If TRUE, create temporary table (NOT SUPPORTED - will error)
+#' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
 #' @param ... Additional arguments (ignored)
-#' @return TRUE invisibly on success
+#' @return `TRUE` invisibly on success
 #' @export
 setMethod(
   "dbCreateTable",
@@ -817,9 +817,9 @@ setMethod(
 #' @param name Table name as AsIs object (from I())
 #' @param fields Either a named character vector of types or a data frame
 #' @param row.names Ignored (included for DBI compatibility)
-#' @param temporary If TRUE, create temporary table (NOT SUPPORTED - will error)
+#' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
 #' @param ... Additional arguments (ignored)
-#' @return TRUE invisibly on success
+#' @return `TRUE` invisibly on success
 #' @export
 setMethod(
   "dbCreateTable",
@@ -1098,15 +1098,15 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param name Table name (character, Id, or SQL)
 #' @param value Data frame to write
-#' @param overwrite If TRUE, overwrite existing table
-#' @param append If TRUE, append to existing table
-#' @param row.names If TRUE, preserve row names as a column
-#' @param temporary If TRUE, create temporary table (NOT SUPPORTED - will error)
+#' @param overwrite If `TRUE`, overwrite existing table
+#' @param append If `TRUE`, append to existing table
+#' @param row.names If `TRUE`, preserve row names as a column
+#' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
 #' @param field.types Named character vector of SQL types for columns
 #' @param staging_volume Optional volume path for large dataset staging
-#' @param progress If TRUE, show progress bar for file uploads (default: TRUE)
+#' @param progress If `TRUE`, show progress bar for file uploads (default: `TRUE`)
 #' @param ... Additional arguments
-#' @return TRUE invisibly on success
+#' @return `TRUE` invisibly on success
 #' @export
 setMethod(
   "dbWriteTable",
@@ -1212,15 +1212,15 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param name Table name as Id object
 #' @param value Data frame to write
-#' @param overwrite If TRUE, overwrite existing table
-#' @param append If TRUE, append to existing table
-#' @param row.names If TRUE, preserve row names as a column
-#' @param temporary If TRUE, create temporary table (NOT SUPPORTED - will error)
+#' @param overwrite If `TRUE`, overwrite existing table
+#' @param append If `TRUE`, append to existing table
+#' @param row.names If `TRUE`, preserve row names as a column
+#' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
 #' @param field.types Named character vector of SQL types for columns
 #' @param staging_volume Optional volume path for large dataset staging
-#' @param progress If TRUE, show progress bar for file uploads (default: TRUE)
+#' @param progress If `TRUE`, show progress bar for file uploads (default: `TRUE`)
 #' @param ... Additional arguments
-#' @return TRUE invisibly on success
+#' @return `TRUE` invisibly on success
 #' @export
 setMethod(
   "dbWriteTable",
@@ -1331,15 +1331,15 @@ setMethod(
 #' @param conn DatabricksConnection object
 #' @param name Table name as AsIs object (from I())
 #' @param value Data frame to write
-#' @param overwrite If TRUE, overwrite existing table
-#' @param append If TRUE, append to existing table
-#' @param row.names If TRUE, preserve row names as a column
-#' @param temporary If TRUE, create temporary table (NOT SUPPORTED - will error)
+#' @param overwrite If `TRUE`, overwrite existing table
+#' @param append If `TRUE`, append to existing table
+#' @param row.names If `TRUE`, preserve row names as a column
+#' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
 #' @param field.types Named character vector of SQL types for columns
 #' @param staging_volume Optional volume path for large dataset staging
-#' @param progress If TRUE, show progress bar for file uploads (default: TRUE)
+#' @param progress If `TRUE`, show progress bar for file uploads (default: `TRUE`)
 #' @param ... Additional arguments
-#' @return TRUE invisibly on success
+#' @return `TRUE` invisibly on success
 #' @export
 setMethod(
   "dbWriteTable",
@@ -1440,8 +1440,7 @@ db_create_table_from_data <- function(
     # Use provided types
     col_types <- field.types[names(value)]
     # Fill missing types with automatic mapping
-    missing_types <- is.na(col_types) |
-      names(value) %in% names(field.types) == FALSE
+    missing_types <- is.na(col_types) | !names(value) %in% names(field.types)
     if (any(missing_types)) {
       col_types[missing_types] <- dbDataType(conn, value[missing_types])
     }
@@ -1807,8 +1806,8 @@ db_write_table_volume <- function(
 #' @param name Table name (character, Id, or SQL)
 #' @param value Data frame to append
 #' @param ... Additional arguments
-#' @param row.names If TRUE, preserve row names as a column
-#' @return TRUE invisibly on success
+#' @param row.names If `TRUE`, preserve row names as a column
+#' @return `TRUE` invisibly on success
 #' @export
 setMethod(
   "dbAppendTable",
@@ -1836,8 +1835,8 @@ setMethod(
 #' @param name Table name as Id object
 #' @param value Data frame to append
 #' @param ... Additional arguments
-#' @param row.names If TRUE, preserve row names as a column
-#' @return TRUE invisibly on success
+#' @param row.names If `TRUE`, preserve row names as a column
+#' @return `TRUE` invisibly on success
 #' @export
 setMethod(
   "dbAppendTable",

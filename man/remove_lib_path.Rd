@@ -16,5 +16,5 @@ of \code{path} before removal.}
 Remove Library Path
 }
 \seealso{
-\code{\link[base:libPaths]{base::.libPaths()}}, \code{\link[=remove_lib_path]{remove_lib_path()}}
+\code{\link[=.libPaths]{.libPaths()}}, \code{\link[=remove_lib_path]{remove_lib_path()}}
 }

@@ -30,7 +30,7 @@ db_sql_fetch_results(
 
 \item{token}{Databricks token}
 
-\item{show_progress}{If TRUE, show progress updates during result fetching (default: TRUE)}
+\item{show_progress}{If \code{TRUE}, show progress updates during result fetching (default: \code{TRUE})}
 }
 \value{
 tibble or arrow Table with query results

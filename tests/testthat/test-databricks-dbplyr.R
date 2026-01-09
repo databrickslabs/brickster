@@ -32,11 +32,11 @@ test_that("String function translations work offline", {
   )
 
   # Test basic string translations without executing
-  expect_true(grepl(
-    "concat",
+  expect_match(
     as.character(dbplyr::translate_sql(paste("a", "b"), con = con)),
+    "concat",
     ignore.case = TRUE
-  ))
+  )
 })
 
 test_that("Aggregation function translations work offline", {
@@ -51,20 +51,20 @@ test_that("Aggregation function translations work offline", {
   )
 
   # Test aggregation translations without executing
-  expect_true(grepl(
-    "count\\(\\*\\)",
+  expect_match(
     as.character(dbplyr::translate_sql(dplyr::n(), con = con, window = FALSE)),
+    "count\\(\\*\\)",
     ignore.case = TRUE
-  ))
-  expect_true(grepl(
-    "avg",
+  )
+  expect_match(
     as.character(dbplyr::translate_sql(
       mean(x, na.rm = TRUE),
       con = con,
       window = FALSE
     )),
+    "avg",
     ignore.case = TRUE
-  ))
+  )
 })
 
 test_that("Identifier escaping uses backticks", {
@@ -80,8 +80,8 @@ test_that("Identifier escaping uses backticks", {
 
   # Test identifier escaping
   escaped <- DBI::dbQuoteIdentifier(con, "my_table")
-  expect_true(grepl("`", as.character(escaped)))
-  expect_true(grepl("my_table", as.character(escaped)))
+  expect_match(as.character(escaped), "`")
+  expect_match(as.character(escaped), "my_table")
 
   # Test SQL object passthrough
   sql_obj <- DBI::SQL("already_quoted")
@@ -102,8 +102,8 @@ test_that("String escaping uses single quotes", {
 
   # Test string escaping
   escaped <- DBI::dbQuoteString(con, "test string")
-  expect_true(grepl("'", as.character(escaped)))
-  expect_true(grepl("test string", as.character(escaped)))
+  expect_match(as.character(escaped), "'")
+  expect_match(as.character(escaped), "test string")
 })
 
 test_that("sql_query_save validates inputs offline", {
@@ -158,13 +158,13 @@ test_that("Temporary name generation works correctly", {
   name1 <- generate_temp_name()
   name2 <- generate_temp_name()
 
-  expect_true(grepl("^dbplyr_temp_", name1))
-  expect_true(grepl("^dbplyr_temp_", name2))
+  expect_match(name1, "^dbplyr_temp_")
+  expect_match(name2, "^dbplyr_temp_")
   expect_false(name1 == name2) # Should be unique
 
   # Test custom prefix
   custom_name <- generate_temp_name("custom_prefix")
-  expect_true(grepl("^custom_prefix_", custom_name))
+  expect_match(custom_name, "^custom_prefix_")
 })
 
 
@@ -180,9 +180,9 @@ test_that("SQL table analyze generates correct SQL", {
   )
 
   sql <- dbplyr::sql_table_analyze(con, "test_table")
-  expect_true(grepl("ANALYZE TABLE", as.character(sql)))
-  expect_true(grepl("test_table", as.character(sql)))
-  expect_true(grepl("COMPUTE STATISTICS", as.character(sql)))
+  expect_match(as.character(sql), "ANALYZE TABLE")
+  expect_match(as.character(sql), "test_table")
+  expect_match(as.character(sql), "COMPUTE STATISTICS")
 })
 
 # Online Tests (require warehouse connection) --------------------------------
@@ -228,11 +228,11 @@ test_that("String function translations work with live connection", {
   con <- DBI::dbConnect(drv, warehouse_id = test_warehouse_id_dbplyr)
 
   # Test basic string translations
-  expect_true(grepl(
-    "concat",
+  expect_match(
     as.character(dbplyr::translate_sql(paste("a", "b"), con = con)),
+    "concat",
     ignore.case = TRUE
-  ))
+  )
 
   DBI::dbDisconnect(con)
 })
@@ -243,20 +243,20 @@ test_that("Aggregation function translations work with live connection", {
   con <- DBI::dbConnect(drv, warehouse_id = test_warehouse_id_dbplyr)
 
   # Test aggregation translations
-  expect_true(grepl(
-    "count\\(\\*\\)",
+  expect_match(
     as.character(dbplyr::translate_sql(dplyr::n(), con = con, window = FALSE)),
+    "count\\(\\*\\)",
     ignore.case = TRUE
-  ))
-  expect_true(grepl(
-    "avg",
+  )
+  expect_match(
     as.character(dbplyr::translate_sql(
       mean(x, na.rm = TRUE),
       con = con,
       window = FALSE
     )),
+    "avg",
     ignore.case = TRUE
-  ))
+  )
 
   DBI::dbDisconnect(con)
 })
@@ -268,8 +268,8 @@ test_that("Identifier escaping works with live connection", {
 
   # Test identifier escaping
   escaped <- DBI::dbQuoteIdentifier(con, "my_table")
-  expect_true(grepl("`", as.character(escaped)))
-  expect_true(grepl("my_table", as.character(escaped)))
+  expect_match(as.character(escaped), "`")
+  expect_match(as.character(escaped), "my_table")
 
   DBI::dbDisconnect(con)
 })
@@ -281,8 +281,8 @@ test_that("String escaping works with live connection", {
 
   # Test string escaping
   escaped <- DBI::dbQuoteString(con, "test string")
-  expect_true(grepl("'", as.character(escaped)))
-  expect_true(grepl("test string", as.character(escaped)))
+  expect_match(as.character(escaped), "'")
+  expect_match(as.character(escaped), "test string")
 
   DBI::dbDisconnect(con)
 })
@@ -338,7 +338,7 @@ test_that("sql_query_save creates temporary views with live connection", {
     "SELECT 1 as test_col",
     "test_temp_view"
   )
-  expect_true(is.character(temp_name))
+  expect_type(temp_name, "character")
   expect_true(nzchar(temp_name))
 
   DBI::dbDisconnect(con)
@@ -361,36 +361,36 @@ test_that("Complex dbplyr translations work correctly", {
   con <- DBI::dbConnect(drv, warehouse_id = test_warehouse_id_dbplyr)
 
   # Test window functions
-  expect_true(grepl(
-    "row_number",
+  expect_match(
     as.character(dbplyr::translate_sql(
       dplyr::row_number(),
       con = con,
       window = TRUE
     )),
+    "row_number",
     ignore.case = TRUE
-  ))
-  expect_true(grepl(
-    "rank",
+  )
+  expect_match(
     as.character(dbplyr::translate_sql(
       dplyr::min_rank(),
       con = con,
       window = TRUE
     )),
+    "rank",
     ignore.case = TRUE
-  ))
+  )
 
   # Test mathematical functions
-  expect_true(grepl(
-    "round",
+  expect_match(
     as.character(dbplyr::translate_sql(round(x), con = con)),
+    "round",
     ignore.case = TRUE
-  ))
-  expect_true(grepl(
-    "ceil",
+  )
+  expect_match(
     as.character(dbplyr::translate_sql(ceiling(x), con = con)),
+    "ceil",
     ignore.case = TRUE
-  ))
+  )
 
   DBI::dbDisconnect(con)
 })
@@ -407,9 +407,9 @@ test_that("dbQuoteIdentifier handles complex identifiers", {
     table = "test_table"
   )
   escaped_id <- DBI::dbQuoteIdentifier(con, id_obj)
-  expect_true(grepl("`test_catalog`", as.character(escaped_id)))
-  expect_true(grepl("`test_schema`", as.character(escaped_id)))
-  expect_true(grepl("`test_table`", as.character(escaped_id)))
+  expect_match(as.character(escaped_id), "`test_catalog`")
+  expect_match(as.character(escaped_id), "`test_schema`")
+  expect_match(as.character(escaped_id), "`test_table`")
 
   DBI::dbDisconnect(con)
 })

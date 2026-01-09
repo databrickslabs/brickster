@@ -25,5 +25,5 @@ This functions primary use is when using Databricks notebooks or hosted
 RStudio, however, it works anywhere.
 }
 \seealso{
-\code{\link[base:libPaths]{base::.libPaths()}}, \code{\link[=remove_lib_path]{remove_lib_path()}}
+\code{\link[=.libPaths]{.libPaths()}}, \code{\link[=remove_lib_path]{remove_lib_path()}}
 }

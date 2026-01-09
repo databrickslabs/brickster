@@ -13,7 +13,7 @@
 
 \item{name}{Name for the temporary view or table}
 
-\item{temporary}{Whether the object should be temporary (default: TRUE)}
+\item{temporary}{Whether the object should be temporary (default: \code{TRUE})}
 
 \item{...}{Additional arguments (ignored)}
 }

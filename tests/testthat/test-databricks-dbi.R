@@ -6,7 +6,7 @@ library(brickster)
 test_that("DatabricksSQL driver can be created", {
   drv <- DatabricksSQL()
   expect_s4_class(drv, "DatabricksDriver")
-  expect_true(is(drv, "DBIDriver"))
+  expect_s4_class(drv, "DBIDriver")
 })
 
 test_that("DatabricksSQL driver show method works", {
@@ -144,8 +144,8 @@ test_that("db_prepare_create_table_fields handles inputs", {
   result <- brickster:::db_prepare_create_table_fields(fields)
 
   expect_s3_class(result$value, "data.frame")
-  expect_equal(names(result$value), names(fields))
-  expect_equal(nrow(result$value), 0)
+  expect_named(result$value, names(fields))
+  expect_shape(result$value, nrow = 0)
   expect_equal(result$field_types, fields)
 
   df_fields <- data.frame(id = integer(), name = character())
@@ -275,7 +275,7 @@ test_that("DatabricksResult edge cases work offline", {
   # Fetch on completed result should return empty data frame
   empty_result <- dbFetch(res)
   expect_s3_class(empty_result, "data.frame")
-  expect_equal(nrow(empty_result), 0)
+  expect_shape(empty_result, nrow = 0)
 })
 
 # Online Tests (require warehouse connection) --------------------------------
@@ -310,7 +310,7 @@ test_that("DBI connection can be created with valid warehouse_id", {
 
   con <- dbConnect(drv, warehouse_id = test_warehouse_id)
   expect_s4_class(con, "DatabricksConnection")
-  expect_true(is(con, "DBIConnection"))
+  expect_s4_class(con, "DBIConnection")
   expect_true(dbIsValid(con))
 
   # Clean up
@@ -326,7 +326,7 @@ test_that("DBI connection info is correct", {
   expect_type(info, "list")
   expect_equal(info$warehouse_id, test_warehouse_id)
   expect_equal(info$db.version, "Databricks SQL")
-  expect_true(is.character(info$host))
+  expect_type(info$host, "character")
 
   dbDisconnect(con)
 })
@@ -358,7 +358,7 @@ test_that("dbGetQuery works for simple queries", {
   # Test simple query
   result <- dbGetQuery(con, "SELECT 1 as test_col", show_progress = FALSE)
   expect_s3_class(result, "data.frame")
-  expect_equal(nrow(result), 1)
+  expect_shape(result, nrow = 1)
   expect_equal(result$test_col, 1)
 
   # Test more complex query
@@ -367,8 +367,8 @@ test_that("dbGetQuery works for simple queries", {
     "SELECT 1 as a, 'test' as b, 3.14 as c",
     show_progress = FALSE
   )
-  expect_equal(nrow(result), 1)
-  expect_equal(ncol(result), 3)
+  expect_shape(result, nrow = 1)
+  expect_shape(result, ncol = 3)
   expect_equal(result$a, 1)
   expect_equal(result$b, "test")
   expect_equal(result$c, 3.14)
@@ -384,7 +384,7 @@ test_that("dbSendQuery and dbFetch work correctly", {
   # Test async query execution
   res <- dbSendQuery(con, "SELECT 1 as test_col")
   expect_s4_class(res, "DatabricksResult")
-  expect_true(is(res, "DBIResult"))
+  expect_s4_class(res, "DBIResult")
 
   # Initially not completed (async)
   expect_false(res@completed)
@@ -392,7 +392,7 @@ test_that("dbSendQuery and dbFetch work correctly", {
   # Fetch results
   result <- dbFetch(res)
   expect_s3_class(result, "data.frame")
-  expect_equal(nrow(result), 1)
+  expect_shape(result, nrow = 1)
   expect_equal(result$test_col, 1)
 
   # Should be completed after fetch
@@ -545,7 +545,7 @@ test_that("DatabricksResult methods work with empty results", {
   result <- dbFetch(res)
 
   expect_s3_class(result, "data.frame")
-  expect_equal(nrow(result), 0)
+  expect_shape(result, nrow = 0)
 
   dbClearResult(res)
   dbDisconnect(con)
@@ -561,7 +561,7 @@ test_that("Field discovery works with information_schema tables", {
   # Test field discovery on information_schema.tables
   expect_no_error({
     fields <- dbListFields(con, "information_schema.tables")
-    expect_true(is.character(fields))
+    expect_type(fields, "character")
     expect_true(length(fields) > 0)
     expect_true("table_name" %in% tolower(fields) || "tableName" %in% fields)
   })
@@ -583,9 +583,9 @@ test_that("Field discovery query returns correct structure", {
   )
 
   expect_s3_class(result, "data.frame")
-  expect_equal(nrow(result), 0) # Should have no rows
-  expect_equal(ncol(result), 3) # Should have 3 columns
-  expect_equal(names(result), c("col1", "col2", "col3"))
+  expect_shape(result, nrow = 0) # Should have no rows
+  expect_shape(result, ncol = 3) # Should have 3 columns
+  expect_named(result, c("col1", "col2", "col3"))
 
   dbDisconnect(con)
 })

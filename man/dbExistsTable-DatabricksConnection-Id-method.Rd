@@ -14,7 +14,7 @@
 \item{...}{Additional arguments (ignored)}
 }
 \value{
-TRUE if table exists, FALSE otherwise
+\code{TRUE} if table exists, \code{FALSE} otherwise
 }
 \description{
 Check if table exists (Id method)

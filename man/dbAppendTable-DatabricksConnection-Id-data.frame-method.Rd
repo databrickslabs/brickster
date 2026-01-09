@@ -15,10 +15,10 @@
 
 \item{...}{Additional arguments}
 
-\item{row.names}{If TRUE, preserve row names as a column}
+\item{row.names}{If \code{TRUE}, preserve row names as a column}
 }
 \value{
-TRUE invisibly on success
+\code{TRUE} invisibly on success
 }
 \description{
 Append rows to an existing Databricks table (Id method)

@@ -14,7 +14,7 @@
 \item{...}{Additional arguments (ignored)}
 }
 \value{
-TRUE invisibly on success
+\code{TRUE} invisibly on success
 }
 \description{
 Remove a Databricks table

@@ -82,7 +82,6 @@ db_host <- function(
 #' @inherit db_host details
 #' @inheritParams db_host
 #' @return databricks token
-#' @import cli
 #' @export
 db_token <- function(profile = default_config_profile()) {
   # if `use_databricks_cfg()` returns `TRUE` then fetch the associated env.
@@ -111,7 +110,6 @@ db_token <- function(profile = default_config_profile()) {
 #' @inherit db_host details
 #' @inheritParams db_host
 #' @return databricks workspace ID
-#' @import cli
 #' @export
 db_wsid <- function(profile = default_config_profile()) {
   if (use_databricks_cfg()) {
@@ -156,7 +154,6 @@ NULL
 #' @param profile Character, the name of the profile to retrieve values
 #'
 #' @return named list of values associated with profile
-#' @import cli
 #' @keywords internal
 read_databrickscfg <- function(
   key = c("token", "host", "wsid"),
@@ -252,8 +249,8 @@ read_env_var <- function(
 #' @return List that contains httr2_oauth_client and relevant auth url
 #' @keywords internal
 db_oauth_client <- function(host = db_host()) {
-  ws_token_url = glue::glue("https://{host}/oidc/v1/token", host = host)
-  ws_auth_url = glue::glue("https://{host}/oidc/v1/authorize", host = host)
+  ws_token_url <- glue::glue("https://{host}/oidc/v1/token", host = host)
+  ws_auth_url <- glue::glue("https://{host}/oidc/v1/authorize", host = host)
 
   client <- httr2::oauth_client(
     id = "databricks-cli",

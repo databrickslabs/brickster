@@ -25,7 +25,7 @@ get_model_version_from_string <- function(x) {
 
 readable_time <- function(x) {
   time <- as.POSIXct(
-    x = x/1000,
+    x = x / 1000,
     origin = "1970-01-01",
     tz = "UTC"
   )
@@ -315,7 +315,7 @@ get_table_data <- function(catalog, schema, table, host, token, metadata = TRUE)
     omit_properties = FALSE,
     omit_username = FALSE,
     host = host,
-    token = token,
+    token = token
   )
   # TODO: handle edge case errors?
   if (metadata) {
