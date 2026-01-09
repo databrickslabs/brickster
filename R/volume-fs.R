@@ -113,10 +113,10 @@ db_volume_write <- function(
   progress = TRUE
 ) {
   if (is.null(file)) {
-    stop(cli::format_error(c(
+    cli::cli_abort(c(
       "Nothing to upload:",
-      "x" = "`file` must be specified."
-    )))
+      "x" = "{.arg file} must be specified."
+    ))
   }
 
   db_volume_action(

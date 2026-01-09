@@ -557,8 +557,7 @@ db_collect.DatabricksConnection <- function(con, sql, n = -1, warn_incomplete = 
   if (n > 0 && nrow(out) > n) {
     out <- out[1:n, ]
     if (warn_incomplete) {
-      warning("Only first ", n, " results retrieved. Use n = -1 to retrieve all.",
-              call. = FALSE)
+      cli::cli_warn("Only first {n} results retrieved. Use {.code n = -1} to retrieve all.")
     }
   }
   

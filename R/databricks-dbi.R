@@ -5,7 +5,6 @@
 #' built on top of the existing `db_sql_query()` infrastructure.
 #'
 #' @importFrom methods new setClass setMethod
-#' @importFrom cli cli_abort
 #' @import DBI
 #' @name databricks-dbi
 NULL

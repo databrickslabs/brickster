@@ -184,20 +184,20 @@ read_databrickscfg <- function(
 
   # return error in case of empty profile
   if (is.null(vars)) {
-    stop(cli::format_error(c(
+    cli::cli_abort(c(
       "Specified {.var profile} not found in {.file `{config_path}`}:",
       "x" = "Need to specify {.envvar {profile}} profile within {.file {config_path}} file."
-    )))
+    ))
   }
 
   # attempt to fetch required key & value pair from profile
   # error if key isn't found
   value <- vars[[key]]
   if (is.null(value)) {
-    stop(cli::format_error(c(
+    cli::cli_abort(c(
       "Parameter {.var {key}} not found in {.envvar {profile}} profile of {.file {config_path}}:",
       "x" = "Need to specify {.envvar {key}} in {.envvar {profile}} profile."
-    )))
+    ))
   }
 
   value
@@ -230,10 +230,10 @@ read_env_var <- function(
 
   if (!nzchar(value)) {
     if (error) {
-      stop(cli::format_error(c(
+      cli::cli_abort(c(
         "Environment variable {.var {key_name}} not found:",
         "x" = "Need to specify {.var {key_name}} environment variable."
-      )))
+      ))
     } else {
       value <- NULL
     }
