@@ -41,9 +41,9 @@ Imports:
     rlang,
     tibble,
     utils
-Suggests: 
+Suggests:
     arrow,
-    testthat (>= 3.0.0),
+    testthat (>= 3.3.0),
     grid,
     huxtable,
     htmltools,

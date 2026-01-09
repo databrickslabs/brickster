@@ -145,7 +145,7 @@ test_that("db_sql_query works as expected", {
   # Test basic query using the core function
   result <- db_sql_query(test_warehouse_id_sql, "SELECT 1 as test_col", show_progress = FALSE)
   expect_s3_class(result, "data.frame")
-  expect_equal(nrow(result), 1)
+  expect_shape(result, nrow = 1)
   expect_equal(result$test_col, 1)
 })
 
@@ -153,8 +153,8 @@ test_that("db_sql_query handles complex queries", {
   # Test more complex query
   result <- db_sql_query(test_warehouse_id_sql, "SELECT 1 as a, 'test' as b, 3.14 as c", show_progress = FALSE)
   expect_s3_class(result, "data.frame")
-  expect_equal(nrow(result), 1)
-  expect_equal(ncol(result), 3)
+  expect_shape(result, nrow = 1)
+  expect_shape(result, ncol = 3)
   expect_equal(result$a, 1)
   expect_equal(result$b, "test")
   expect_equal(result$c, 3.14)
