@@ -10,6 +10,7 @@
   with `Id`/`AsIs` support, plus offline tests for DBI table helpers.
 - Optimized SQL result fetching for single-chunk external links by using
   the inline link from the initial response when available.
+- Increment version of testthat required (\>= 3.3.0)
 
 ## brickster 0.2.11
 
