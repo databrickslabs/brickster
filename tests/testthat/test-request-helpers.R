@@ -31,3 +31,38 @@ test_that("request helpers - building requests", {
   expect_s3_class(req_json, "json")
   expect_null(db_request_json(NULL))
 })
+
+test_that("request helpers - m2m auth flow", {
+  host <- "some_url"
+  endpoint <- "clusters/create"
+  endpoint_version <- "2.0"
+  method <- "POST"
+  body <- list(a = 1, b = 2)
+
+  withr::local_envvar(
+    DATABRICKS_CLIENT_ID = "client-id",
+    DATABRICKS_CLIENT_SECRET = "client-secret"
+  )
+
+  req <- db_request(
+    endpoint = endpoint,
+    method = method,
+    version = endpoint_version,
+    body = body,
+    host = host,
+    token = NULL
+  )
+
+  expect_identical(
+    req$policies$auth_sign$params$flow,
+    "oauth_flow_client_credentials"
+  )
+  expect_identical(
+    req$policies$auth_sign$params$flow_params$scope,
+    "all-apis"
+  )
+  expect_identical(
+    req$policies$auth_sign$params$flow_params$client$id,
+    "client-id"
+  )
+})

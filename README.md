@@ -25,7 +25,8 @@
 library(brickster)
 
 # only requires `DATABRICKS_HOST` if using OAuth U2M
-# first request will open browser window to login
+# for OAuth M2M set `DATABRICKS_CLIENT_ID` and `DATABRICKS_CLIENT_SECRET`
+# first request will open browser window to login for U2M
 Sys.setenv(DATABRICKS_HOST = "https://<workspace-prefix>.cloud.databricks.com")
 
 # open RStudio/Positron connection pane to view Databricks resources

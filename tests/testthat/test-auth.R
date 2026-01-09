@@ -44,6 +44,10 @@ test_that("auth functions - baseline behaviour", {
     "https:///oidc/v1/authorize"
   )
   expect_identical(
+    db_oauth_client(host = "")$auth_type,
+    "u2m"
+  )
+  expect_identical(
     db_oauth_client(host = "")$client$token_url,
     "https:///oidc/v1/token"
   )
@@ -159,6 +163,57 @@ test_that("auth functions - reading .databrickscfg", {
   expect_identical(token, token_w)
   expect_identical("some-host", host_w)
   expect_identical(wsid, wsid_w)
+
+})
+
+test_that("auth functions - m2m credentials from env", {
+
+  withr::local_envvar(
+    DATABRICKS_CLIENT_ID = "client-id",
+    DATABRICKS_CLIENT_SECRET = "client-secret"
+  )
+
+  expect_identical(db_client_id(), "client-id")
+  expect_identical(db_client_secret(), "client-secret")
+  expect_true(has_m2m_credentials())
+  expect_identical(
+    db_oauth_client(
+      host = "some-host",
+      client_id = db_client_id(),
+      client_secret = db_client_secret()
+    )$auth_type,
+    "m2m"
+  )
+
+})
+
+test_that("auth functions - m2m credentials from .databrickscfg", {
+
+  withr::local_options(use_databrickscfg = TRUE)
+  withr::local_envvar(DATABRICKS_CONFIG_FILE = "databricks.cfg")
+  withr::local_file("databricks.cfg", {
+    writeLines(
+      c(
+        '[DEFAULT]',
+        'host = http://some-host',
+        'client_id = client-id',
+        'client_secret = client-secret'
+      ),
+      "databricks.cfg"
+    )
+  })
+
+  expect_identical(db_client_id(), "client-id")
+  expect_identical(db_client_secret(), "client-secret")
+  expect_true(has_m2m_credentials())
+  expect_identical(
+    db_oauth_client(
+      host = "some-host",
+      client_id = db_client_id(),
+      client_secret = db_client_secret()
+    )$auth_type,
+    "m2m"
+  )
 
 })
 
