@@ -338,7 +338,7 @@ test_that("sql_query_save creates temporary views with live connection", {
     "SELECT 1 as test_col",
     "test_temp_view"
   )
-  expect_true(is.character(temp_name))
+  expect_type(temp_name, "character")
   expect_true(nzchar(temp_name))
 
   DBI::dbDisconnect(con)

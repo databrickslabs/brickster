@@ -326,7 +326,7 @@ test_that("DBI connection info is correct", {
   expect_type(info, "list")
   expect_equal(info$warehouse_id, test_warehouse_id)
   expect_equal(info$db.version, "Databricks SQL")
-  expect_true(is.character(info$host))
+  expect_type(info$host, "character")
 
   dbDisconnect(con)
 })
@@ -561,7 +561,7 @@ test_that("Field discovery works with information_schema tables", {
   # Test field discovery on information_schema.tables
   expect_no_error({
     fields <- dbListFields(con, "information_schema.tables")
-    expect_true(is.character(fields))
+    expect_type(fields, "character")
     expect_true(length(fields) > 0)
     expect_true("table_name" %in% tolower(fields) || "tableName" %in% fields)
   })

@@ -132,17 +132,17 @@ test_that("auth functions - reading .databrickscfg", {
   token <- expect_no_condition(read_databrickscfg("token", profile = NULL))
   host <- expect_no_condition(read_databrickscfg("host", profile = NULL))
   wsid <- expect_no_condition(read_databrickscfg("wsid", profile = NULL))
-  expect_true(is.character(token))
-  expect_true(is.character(host))
-  expect_true(is.character(wsid))
+  expect_type(token, "character")
+  expect_type(host, "character")
+  expect_type(wsid, "character")
 
   # using read_databrickscfg directly
   token <- expect_no_condition(read_databrickscfg("token", profile = "DEFAULT"))
   host <- expect_no_condition(read_databrickscfg("host", profile = "DEFAULT"))
   wsid <- expect_no_condition(read_databrickscfg("wsid", profile = "DEFAULT"))
-  expect_true(is.character(token))
-  expect_true(is.character(host))
-  expect_true(is.character(wsid))
+  expect_type(token, "character")
+  expect_type(host, "character")
+  expect_type(wsid, "character")
 
   # via wrappers
   token_w <- db_token(profile = "DEFAULT")
@@ -236,8 +236,8 @@ test_that("auth functions - workbench managed credentials detection", {
     code = {
       token_w <- db_token()
       host_w <- db_host()
-      expect_true(is.character(token_w))
-      expect_true(is.character(host_w))
+      expect_type(token_w, "character")
+      expect_type(host_w, "character")
       expect_identical("some-host", host_w)
       expect_identical("some-token", token_w)
     }
@@ -280,8 +280,8 @@ test_that("auth functions - workbench managed credentials override env var", {
   token_w <- db_token()
   host_w <- db_host()
 
-  expect_true(is.character(token_w))
-  expect_true(is.character(host_w))
+  expect_type(token_w, "character")
+  expect_type(host_w, "character")
 
   expect_identical("some-host", host_w)
   expect_identical("some-token", token_w)
