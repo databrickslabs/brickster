@@ -13,18 +13,20 @@ db_oauth_client(
 \arguments{
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
-\item{client_id}{OAuth M2M client id. When set with \code{client_secret} the
-client will use M2M auth.}
+\item{client_id}{OAuth M2M client id.}
 
 \item{client_secret}{OAuth M2M client secret.}
 }
 \value{
-List that contains httr2_oauth_client, relevant auth url, and \code{is_m2m}
+List that contains \code{\link[httr2:oauth_client]{httr2::oauth_client()}}, relevant \code{auth_url}, and \code{is_m2m}
 }
 \description{
 Create OAuth 2.0 Client
 }
 \details{
 Creates an OAuth 2.0 Client for U2M or M2M flows.
+
+If \code{client_id} and \code{client_secret} are detected then an M2M auth flow will occur.
+Otherwise it falls back to U2M.
 }
 \keyword{internal}

@@ -72,9 +72,8 @@ db_host <- function(
 #' @description
 #' The function will check for a token in the `DATABRICKS_HOST` environment variable.
 #' `.databrickscfg` will be searched if `db_profile` and `use_databrickscfg` are set or
-#' if Posit Workbench managed OAuth credentials are detected.
-#' If none of the above are found then `db_token()` returns `NULL` when reading
-#' environment variables and errors when using `.databrickscfg`.
+#' if Posit Workbench managed OAuth credentials are detected. If none of the above are
+#' found then `db_token()` returns `NULL`.
 #'
 #' Refer to [api authentication docs](https://docs.databricks.com/aws/en/dev-tools/auth)
 #'
@@ -282,11 +281,14 @@ db_client_secret <- function(profile = default_config_profile()) {
 #'
 #' @inheritParams auth_params
 #'
-#' @param client_id OAuth M2M client id. When set with `client_secret` the
-#' client will use M2M auth.
+#' @param client_id OAuth M2M client id.
 #' @param client_secret OAuth M2M client secret.
 #'
-#' @return List that contains [httr::2oauth_client()], relevant `auth_url`, and `is_m2m`
+#' @details
+#' If `client_id` and `client_secret` are detected then an M2M auth flow will occur.
+#' Otherwise it falls back to U2M.
+#'
+#' @return List that contains [httr2::oauth_client()], relevant `auth_url`, and `is_m2m`
 #' @keywords internal
 db_oauth_client <- function(
   host = db_host(),

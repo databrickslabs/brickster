@@ -6,7 +6,8 @@
 \usage{
 read_databrickscfg(
   key = c("token", "host", "wsid", "client_id", "client_secret"),
-  profile = NULL
+  profile = NULL,
+  error = TRUE
 )
 }
 \arguments{

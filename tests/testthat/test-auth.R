@@ -175,13 +175,12 @@ test_that("auth functions - m2m credentials from env", {
 
   expect_identical(db_client_id(), "client-id")
   expect_identical(db_client_secret(), "client-secret")
-  expect_identical(
+  expect_true(
     db_oauth_client(
       host = "some-host",
       client_id = db_client_id(),
       client_secret = db_client_secret()
-    )$is_m2m,
-    TRUE
+    )$is_m2m
   )
 })
 
@@ -202,13 +201,12 @@ test_that("auth functions - m2m credentials from .databrickscfg", {
 
   expect_identical(db_client_id(), "client-id")
   expect_identical(db_client_secret(), "client-secret")
-  expect_identical(
+  expect_true(
     db_oauth_client(
       host = "some-host",
       client_id = db_client_id(),
       client_secret = db_client_secret()
-    )$is_m2m,
-    TRUE
+    )$is_m2m
   )
 })
 
