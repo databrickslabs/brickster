@@ -463,12 +463,11 @@ init_script_info <- function(...) {
   obj <- list(...)
 
   # all must be one of `s3_storage_info`, `file_storage_info`, `dbfs_storage_info`
-  valid_storage <- vapply(
+  valid_storage <- purrr::map_lgl(
     obj,
     function(x) {
       is.s3_storage_info(x) || is.file_storage_info(x) || is.dbfs_storage_info(x)
-    },
-    logical(1)
+    }
   )
 
   stopifnot(all(valid_storage))
@@ -593,10 +592,10 @@ libraries <- function(...) {
 
   # all must be one of:
   # `lib_jar`, `lib_cran`, `lib_maven`, `lib_pypi`, `lib_whl`, `lib_egg`
-  valid_lib_type <- vapply(obj, is.library, logical(1))
+  valid_lib_type <- purrr::map_lgl(obj, is.library)
   stopifnot(all(valid_lib_type))
 
-  lib_type <- vapply(
+  lib_type <- purrr::map_chr(
     obj,
     function(x) {
       switch(
@@ -608,8 +607,7 @@ libraries <- function(...) {
         "MavenLibrary" = "maven",
         "CranLibrary" = "cran"
       )
-    },
-    character(1)
+    }
   )
 
   lib_objs <- list()
@@ -923,12 +921,11 @@ access_control_request <- function(...) {
   obj <- list(...)
 
   # all must be `access_control_req_user` or `access_control_req_group`
-  valid_control <- vapply(
+  valid_control <- purrr::map_lgl(
     obj,
     function(x) {
       is.access_control_req_user(x) || is.access_control_req_group(x)
-    },
-    logical(1)
+    }
   )
 
   stopifnot(all(valid_control))
@@ -1475,7 +1472,7 @@ job_tasks <- function(...) {
   }
 
   # check that all inputs are job tasks
-  task_check <- vapply(obj, is.job_task, logical(1))
+  task_check <- purrr::map_lgl(obj, is.job_task)
   stopifnot(all(task_check))
 
   class(obj) <- c("JobTasks", "list")
@@ -1701,12 +1698,8 @@ delta_sync_index_spec <- function(
       is.list(embedding_source_columns) &&
         !is.embedding_source_column(embedding_source_columns)
     ) {
-      valid_columns <- vapply(
-        embedding_source_columns,
-        function(x) {
-          is.embedding_source_column(x)
-        },
-        logical(1)
+      valid_columns <- purrr::map_lgl(
+        embedding_source_columns, is.embedding_source_column
       )
       if (!all(valid_columns)) {
         cli::cli_abort(
@@ -1723,12 +1716,8 @@ delta_sync_index_spec <- function(
       is.list(embedding_vector_columns) &&
         !is.embedding_vector_column(embedding_vector_columns)
     ) {
-      valid_columns <- vapply(
-        embedding_vector_columns,
-        function(x) {
-          is.embedding_vector_column(x)
-        },
-        logical(1)
+      valid_columns <- purrr::map_lgl(
+        embedding_vector_columns, is.embedding_vector_column
       )
       if (!all(valid_columns)) {
         cli::cli_abort(
@@ -1797,12 +1786,8 @@ direct_access_index_spec <- function(
       is.list(embedding_source_columns) &&
         !is.embedding_source_column(embedding_source_columns)
     ) {
-      valid_columns <- vapply(
-        embedding_source_columns,
-        function(x) {
-          is.embedding_source_column(x)
-        },
-        logical(1)
+      valid_columns <- purrr::map_lgl(
+        embedding_source_columns, is.embedding_source_column
       )
       if (!all(valid_columns)) {
         cli::cli_abort(
@@ -1819,12 +1804,8 @@ direct_access_index_spec <- function(
       is.list(embedding_vector_columns) &&
         !is.embedding_vector_column(embedding_vector_columns)
     ) {
-      valid_columns <- vapply(
-        embedding_vector_columns,
-        function(x) {
-          is.embedding_vector_column(x)
-        },
-        logical(1)
+      valid_columns <- purrr::map_lgl(
+        embedding_vector_columns, is.embedding_vector_column
       )
       if (!all(valid_columns)) {
         cli::cli_abort(
