@@ -1,7 +1,7 @@
 db_feature_tables_search <- function(filter = NULL,
                                      max_results = 100,
                                      page_token = NULL,
-                                     catalog_names = c(),
+                                     catalog_names = NULL,
                                      is_multi_catalog = TRUE,
                                      host = db_host(), token = db_token(),
                                      perform_request = TRUE) {

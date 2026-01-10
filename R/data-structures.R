@@ -1525,7 +1525,7 @@ job_tasks <- function(...) {
 job_task <- function(
   task_key,
   description = NULL,
-  depends_on = c(),
+  depends_on = NULL,
   existing_cluster_id = NULL,
   new_cluster = NULL,
   job_cluster_key = NULL,
