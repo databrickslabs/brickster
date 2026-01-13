@@ -59,6 +59,7 @@
 <span>  parameters <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  row_limit <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  byte_limit <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  wait_timeout <span class="op">=</span> <span class="st">"5s"</span>,</span>
 <span>  return_arrow <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  max_active_connections <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  fetch_timeout <span class="op">=</span> <span class="fl">300</span>,</span>
@@ -116,6 +117,22 @@ might not match the final size in the requested format. If the result was
 truncated due to the byte limit, then <code>truncated</code> in the response is set to
 true. When using <code>EXTERNAL_LINKS</code> disposition, a default byte_limit of
 100 GiB is applied if <code>byte_limit</code> is not explicitly set.</p></dd>
+
+
+<dt id="arg-wait-timeout">wait_timeout<a class="anchor" aria-label="anchor" href="#arg-wait-timeout"></a></dt>
+<dd><p>String, default is <code>"10s"</code>. The time in seconds the call
+will wait for the statement's result set as <code>Ns</code>, where <code>N</code> can be set to
+<code>0</code> or to a value between <code>5</code> and <code>50</code>.
+When set to <code>0s</code>, the statement will execute in asynchronous mode and the
+call will not wait for the execution to finish. In this case, the call
+returns directly with <code>PENDING</code> state and a statement ID which can be used
+for polling with <code><a href="db_sql_exec_status.html">db_sql_exec_status()</a></code>.</p>
+<p>When set between <code>5</code> and <code>50</code> seconds, the call will behave synchronously up
+to this timeout and wait for the statement execution to finish. If the
+execution finishes within this time, the call returns immediately with a
+manifest and result data (or a <code>FAILED</code> state in case of an execution error).</p>
+<p>If the statement takes longer to execute, <code>on_wait_timeout</code> determines what
+should happen after the timeout is reached.</p></dd>
 
 
 <dt id="arg-return-arrow">return_arrow<a class="anchor" aria-label="anchor" href="#arg-return-arrow"></a></dt>

@@ -23,8 +23,7 @@ toolkit for Databricks, it includes:
 ``` r
 library(brickster)
 
-# only requires `DATABRICKS_HOST` if using OAuth U2M
-# first request will open browser window to login
+# first request will open browser window to login for U2M
 Sys.setenv(DATABRICKS_HOST = "https://<workspace-prefix>.cloud.databricks.com")
 
 # open RStudio/Positron connection pane to view Databricks resources

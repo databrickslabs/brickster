@@ -2,6 +2,10 @@
 
 ## brickster 0.2.12
 
+- Added OAuth M2M support for workspace-level service principal
+  authentication
+  ([\#173](https://github.com/databrickslabs/brickster/issues/173),
+  [\#103](https://github.com/databrickslabs/brickster/issues/103))
 - Added DBI helpers for
   [`dbCreateTable()`](https://dbi.r-dbi.org/reference/dbCreateTable.html),
   [`dbReadTable()`](https://dbi.r-dbi.org/reference/dbReadTable.html),

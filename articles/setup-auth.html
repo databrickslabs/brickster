@@ -84,16 +84,18 @@
 <h2 id="defining-credentials">Defining Credentials<a class="anchor" aria-label="anchor" href="#defining-credentials"></a>
 </h2>
 <p>The <a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> package connects to a Databricks
-workspace is two ways:</p>
+workspace in three ways:</p>
 <ol style="list-style-type: decimal">
 <li><a href="https://docs.databricks.com/en/dev-tools/auth/oauth-u2m.html#oauth-user-to-machine-u2m-authentication" class="external-link">OAuth
 user-to-machine (U2M) authentication</a></li>
+<li><a href="https://docs.databricks.com/en/dev-tools/auth/oauth-m2m.html" class="external-link">OAuth
+machine-to-machine (M2M) authentication</a></li>
 <li><a href="https://docs.databricks.com/en/dev-tools/auth/pat.html" class="external-link">Personal
 Access Tokens (PAT)</a></li>
 </ol>
 <p>It’s recommended to use option (1) when using
-<a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> interactively, if you need to run code via an
-automated process the only option currently is (2).</p>
+<a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> interactively. If you need to run code via an
+automated process, use option (2) or (3).</p>
 <p><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> will automatically detect when a session has
 <a href="https://docs.posit.co/ide/server-pro/integration/databricks.html" class="external-link">Posit
 Workbench managed Databricks OAuth credentials</a> enabled. For more
@@ -112,7 +114,11 @@ reading</a>.</p>
 <ul>
 <li><p><code>DATABRICKS_HOST</code>: The workspace URL</p></li>
 <li><p><code>DATABRICKS_TOKEN</code>: Personal access token (<em>not
-required if using OAuth U2M</em>)</p></li>
+required if using OAuth U2M or M2M</em>)</p></li>
+<li><p><code>DATABRICKS_CLIENT_ID</code>: OAuth M2M client id (<em>only
+required for OAuth M2M</em>)</p></li>
+<li><p><code>DATABRICKS_CLIENT_SECRET</code>: OAuth M2M client secret
+(<em>only required for OAuth M2M</em>)</p></li>
 <li><p><code>DATABRICKS_WSID</code>: The workspace ID (<a href="https://docs.databricks.com/workspace/workspace-details.html#workspace-instance-names-urls-and-ids" class="external-link">docs</a>)</p></li>
 </ul>
 <p><code>DATABRICKS_WSID</code> is only required for the RStudio IDE
@@ -120,6 +126,11 @@ integration with the connection pane.</p>
 <p>Example of entries in <code>.Renviron</code>:</p>
 <pre><code><span><span class="va">DATABRICKS_HOST</span><span class="op">=</span><span class="va">xxxxxxx.cloud.databricks.com</span></span>
 <span><span class="va">DATABRICKS_TOKEN</span><span class="op">=</span><span class="va">dapi123456789012345678a9bc01234defg5</span></span>
+<span><span class="va">DATABRICKS_WSID</span><span class="op">=</span><span class="fl">123123123123123</span></span></code></pre>
+<p>For OAuth M2M:</p>
+<pre><code><span><span class="va">DATABRICKS_HOST</span><span class="op">=</span><span class="va">xxxxxxx.cloud.databricks.com</span></span>
+<span><span class="va">DATABRICKS_CLIENT_ID</span><span class="op">=</span><span class="fl">11111111</span><span class="op">-</span><span class="fl">2222</span><span class="op">-</span><span class="fl">3333</span><span class="op">-</span><span class="fl">4444</span><span class="op">-</span><span class="fl">555555555555</span></span>
+<span><span class="va">DATABRICKS_CLIENT_SECRET</span><span class="op">=</span><span class="va">abcdefg1234567890</span></span>
 <span><span class="va">DATABRICKS_WSID</span><span class="op">=</span><span class="fl">123123123123123</span></span></code></pre>
 <p><strong>Note</strong>: Recommend creating an <code>.Renviron</code>
 for each project. You can create <code>.Renviron</code> within your user
@@ -135,7 +146,7 @@ credentials in your R code. You can load <a href="https://github.com/databricksl
 list the clusters within the workspace using
 <code><a href="../reference/db_cluster_list.html">db_cluster_list()</a></code>, to access the host/token use
 <code><a href="../reference/db_host.html">db_host()</a></code>/<code><a href="../reference/db_token.html">db_token()</a></code> respectively.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># using db_host() and db_token() to get credentials</span></span>
@@ -144,12 +155,12 @@ list the clusters within the workspace using
 parameters default to calling
 <code><a href="../reference/db_host.html">db_host()</a></code>/<code><a href="../reference/db_token.html">db_token()</a></code> therefore we can omit
 explicit calls to the functions.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># all host/token parameters default to db_host()/db_token()</span></span>
 <span><span class="va">clusters</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_cluster_list.html">db_cluster_list</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>When using OAuth U2M authentication you don’t define a token in
-<code>.Renviron</code> and therefore <code><a href="../reference/db_token.html">db_token()</a></code> will return
-<code>NULL</code>.</p>
+<p>When using OAuth U2M or OAuth M2M authentication you don’t define a
+token in <code>.Renviron</code> and therefore <code><a href="../reference/db_token.html">db_token()</a></code>
+will return <code>NULL</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="managing-multiple-credentials">Managing Multiple Credentials<a class="anchor" aria-label="anchor" href="#managing-multiple-credentials"></a>
@@ -166,7 +177,7 @@ CLI</a>)</li>
 <p>To differentiate between (1) and (2) the option
 <code>use_databrickscfg</code> is used, the following example shows how
 to switch the session to use <code>.databrickscfg</code>.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># will use the `DEFAULT` profile in `.databrickscfg`</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>use_databrickscfg <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
@@ -190,7 +201,7 @@ credentials are returned by
 </ul>
 <p>This behaviour works when using credentials specified in either
 <code>.Renviron</code> or <code>.databrickscfg</code>:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># using .Renviron</span></span>
 <span><span class="fu"><a href="../reference/db_host.html">db_host</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># returns `DB_HOST` (.Renviron)</span></span>
 <span></span>
@@ -246,7 +257,7 @@ managed Databricks OAuth credentials selected, <a href="https://github.com/datab
 functions using <code><a href="../reference/db_host.html">db_host()</a></code>/<code><a href="../reference/db_token.html">db_token()</a></code>
 respectively should just work without needing to specify any credentials
 in your R code. See the code below as an example.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/db_cluster_list.html">db_cluster_list</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> will automatically detect when a session has

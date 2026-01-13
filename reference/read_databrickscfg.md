@@ -5,14 +5,19 @@ Reads Databricks CLI Config
 ## Usage
 
 ``` r
-read_databrickscfg(key = c("token", "host", "wsid"), profile = NULL)
+read_databrickscfg(
+  key = c("token", "host", "wsid", "client_id", "client_secret"),
+  profile = NULL,
+  error = TRUE
+)
 ```
 
 ## Arguments
 
 - key:
 
-  The value to fetch from profile. One of `token`, `host`, or `wsid`
+  The value to fetch from profile. One of `token`, `host`, `wsid`,
+  `client_id`, or `client_secret`
 
 - profile:
 

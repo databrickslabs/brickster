@@ -3,17 +3,18 @@
 ## Defining Credentials
 
 The [brickster](https://github.com/databrickslabs/brickster) package
-connects to a Databricks workspace is two ways:
+connects to a Databricks workspace in three ways:
 
 1.  [OAuth user-to-machine (U2M)
     authentication](https://docs.databricks.com/en/dev-tools/auth/oauth-u2m.html#oauth-user-to-machine-u2m-authentication)
-2.  [Personal Access Tokens
+2.  [OAuth machine-to-machine (M2M)
+    authentication](https://docs.databricks.com/en/dev-tools/auth/oauth-m2m.html)
+3.  [Personal Access Tokens
     (PAT)](https://docs.databricks.com/en/dev-tools/auth/pat.html)
 
 It’s recommended to use option (1) when using
-[brickster](https://github.com/databrickslabs/brickster) interactively,
-if you need to run code via an automated process the only option
-currently is (2).
+[brickster](https://github.com/databrickslabs/brickster) interactively.
+If you need to run code via an automated process, use option (2) or (3).
 
 [brickster](https://github.com/databrickslabs/brickster) will
 automatically detect when a session has [Posit Workbench managed
@@ -38,7 +39,13 @@ To get started add the following to your `.Renviron`:
 - `DATABRICKS_HOST`: The workspace URL
 
 - `DATABRICKS_TOKEN`: Personal access token (*not required if using
-  OAuth U2M*)
+  OAuth U2M or M2M*)
+
+- `DATABRICKS_CLIENT_ID`: OAuth M2M client id (*only required for OAuth
+  M2M*)
+
+- `DATABRICKS_CLIENT_SECRET`: OAuth M2M client secret (*only required
+  for OAuth M2M*)
 
 - `DATABRICKS_WSID`: The workspace ID
   ([docs](https://docs.databricks.com/workspace/workspace-details.html#workspace-instance-names-urls-and-ids))
@@ -50,6 +57,13 @@ Example of entries in `.Renviron`:
 
     DATABRICKS_HOST=xxxxxxx.cloud.databricks.com
     DATABRICKS_TOKEN=dapi123456789012345678a9bc01234defg5
+    DATABRICKS_WSID=123123123123123
+
+For OAuth M2M:
+
+    DATABRICKS_HOST=xxxxxxx.cloud.databricks.com
+    DATABRICKS_CLIENT_ID=11111111-2222-3333-4444-555555555555
+    DATABRICKS_CLIENT_SECRET=abcdefg1234567890
     DATABRICKS_WSID=123123123123123
 
 **Note**: Recommend creating an `.Renviron` for each project. You can
@@ -86,8 +100,8 @@ therefore we can omit explicit calls to the functions.
 clusters <- db_cluster_list()
 ```
 
-When using OAuth U2M authentication you don’t define a token in
-`.Renviron` and therefore
+When using OAuth U2M or OAuth M2M authentication you don’t define a
+token in `.Renviron` and therefore
 [`db_token()`](https://databrickslabs.github.io/brickster/reference/db_token.md)
 will return `NULL`.
 

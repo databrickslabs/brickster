@@ -3,8 +3,8 @@
 The function will check for a token in the `DATABRICKS_HOST` environment
 variable. `.databrickscfg` will be searched if `db_profile` and
 `use_databrickscfg` are set or if Posit Workbench managed OAuth
-credentials are detected. If none of the above are found then will
-default to using OAuth U2M flow.
+credentials are detected. If none of the above are found then
+`db_token()` returns `NULL`.
 
 Refer to [api authentication
 docs](https://docs.databricks.com/aws/en/dev-tools/auth)

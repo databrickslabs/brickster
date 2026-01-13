@@ -77,6 +77,7 @@
 </div>
 <!-- badges: start -->
 
+<!-- badges: end -->
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
@@ -94,8 +95,7 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># only requires `DATABRICKS_HOST` if using OAuth U2M</span></span>
-<span><span class="co"># first request will open browser window to login</span></span>
+<span><span class="co"># first request will open browser window to login for U2M</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>DATABRICKS_HOST <span class="op">=</span> <span class="st">"https://&lt;workspace-prefix&gt;.cloud.databricks.com"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># open RStudio/Positron connection pane to view Databricks resources</span></span>
