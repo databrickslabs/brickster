@@ -1,17 +1,19 @@
 # brickster 0.2.12
+
+-   Added OAuth M2M support for workspace-level service principal authentication (#173, #103)
 -   Added DBI helpers for `dbCreateTable()`, `dbReadTable()`, and `dbRemoveTable()` with `Id`/`AsIs` support, plus offline tests for DBI table helpers.
 -   Optimized SQL result fetching for single-chunk external links by using the inline link from the initial response when available.
 -   Increment version of testthat required (\>= 3.3.0)
 
 # brickster 0.2.11
--   Added Lakebase workspace database helpers (`db_lakebase_*`) including
-    credential generation, instance listing, instance lookup by name or UID,
-    and catalog retrieval (#113)
+
+-   Added Lakebase workspace database helpers (`db_lakebase_*`) including credential generation, instance listing, instance lookup by name or UID, and catalog retrieval (#113)
 -   Moving all filesystem related calls to {fs} (#140)
 -   The DBI backend now always respects a staging volume when specified, even for small data (#143)
 -   `schemaEvolutionMode` is now always `none` when writing to tables with DBI backend and staging volumes (#147)
 
 # brickster 0.2.10
+
 -   Increment version of httr2 required (\>= 1.1.1)
 -   DBI connections expose `max_active_connections` and `fetch_timeout` to control result download concurrency and timeouts
 -   DBI/dbplyr write table methods now make two transactions (create empty table --\> insert into) to ensure type correctness

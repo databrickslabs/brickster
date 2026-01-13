@@ -278,7 +278,8 @@ setMethod(
       fetch_timeout = conn@fetch_timeout,
       host = conn@host,
       token = conn@token,
-      show_progress = show_progress
+      show_progress = show_progress,
+      ...
     )
   }
 )

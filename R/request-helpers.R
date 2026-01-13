@@ -43,26 +43,34 @@ db_request <- function(
     httr2::req_retry(max_tries = 3, backoff = ~2)
 
   # if token is present use directly
-  # otherwise initiate OAuth 2.0 U2M Workspace flow
+  # otherwise initiate OAuth 2.0 U2M or M2M Workspace flow
   if (!is.null(token)) {
     req <- httr2::req_auth_bearer_token(req = req, token = token)
-  } else if (!is_hosted_session() && rlang::is_interactive()) {
+  } else {
     # fetch client
     oauth_client <- getOption(
       x = "brickster_oauth_client",
       db_oauth_client(host = host)
     )
 
-    # use client to auth
-    req <- httr2::req_oauth_auth_code(
-      req,
-      client = oauth_client$client,
-      scope = "all-apis",
-      auth_url = oauth_client$auth_url,
-      redirect_uri = "http://localhost:8020"
-    )
-  } else {
-    cli::cli_abort("cannot find token or initiate OAuth U2M flow")
+    if (oauth_client$is_m2m) {
+      req <- httr2::req_oauth_client_credentials(
+        req,
+        client = oauth_client$client,
+        scope = "all-apis"
+      )
+    } else if (!is_hosted_session() && rlang::is_interactive()) {
+      # use client to auth
+      req <- httr2::req_oauth_auth_code(
+        req,
+        client = oauth_client$client,
+        scope = "all-apis",
+        auth_url = oauth_client$auth_url,
+        redirect_uri = "http://localhost:8020"
+      )
+    } else {
+      cli::cli_abort("cannot find token or initiate OAuth flow")
+    }
   }
 
   if (!is.null(body)) {

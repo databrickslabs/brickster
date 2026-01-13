@@ -17,12 +17,13 @@ knitr::opts_chunk$set(
 
 ## Defining Credentials
 
-The `{brickster}` package connects to a Databricks workspace is two ways:
+The `{brickster}` package connects to a Databricks workspace in three ways:
 
 1.  [OAuth user-to-machine (U2M) authentication](https://docs.databricks.com/en/dev-tools/auth/oauth-u2m.html#oauth-user-to-machine-u2m-authentication)
-2.  [Personal Access Tokens (PAT)](https://docs.databricks.com/en/dev-tools/auth/pat.html)
+2.  [OAuth machine-to-machine (M2M) authentication](https://docs.databricks.com/en/dev-tools/auth/oauth-m2m.html)
+3.  [Personal Access Tokens (PAT)](https://docs.databricks.com/en/dev-tools/auth/pat.html)
 
-It's recommended to use option (1) when using `{brickster}` interactively, if you need to run code via an automated process the only option currently is (2).
+It's recommended to use option (1) when using `{brickster}` interactively. If you need to run code via an automated process, use option (2) or (3).
 
 `{brickster}` will automatically detect when a session has [Posit Workbench managed Databricks OAuth credentials](https://docs.posit.co/ide/server-pro/integration/databricks.html) enabled. For more information about this authentication flow see the section [Posit Workbench Managed Databricks OAuth Credentials](#posit-workbench-managed-databricks-oauth-credentials).
 
@@ -34,7 +35,11 @@ To get started add the following to your `.Renviron`:
 
 -   `DATABRICKS_HOST`: The workspace URL
 
--   `DATABRICKS_TOKEN`: Personal access token (*not required if using OAuth U2M*)
+-   `DATABRICKS_TOKEN`: Personal access token (*not required if using OAuth U2M or M2M*)
+
+-   `DATABRICKS_CLIENT_ID`: OAuth M2M client id (*only required for OAuth M2M*)
+
+-   `DATABRICKS_CLIENT_SECRET`: OAuth M2M client secret (*only required for OAuth M2M*)
 
 -   `DATABRICKS_WSID`: The workspace ID ([docs](https://docs.databricks.com/workspace/workspace-details.html#workspace-instance-names-urls-and-ids))
 
@@ -45,6 +50,15 @@ Example of entries in `.Renviron`:
 ```         
 DATABRICKS_HOST=xxxxxxx.cloud.databricks.com
 DATABRICKS_TOKEN=dapi123456789012345678a9bc01234defg5
+DATABRICKS_WSID=123123123123123
+```
+
+For OAuth M2M:
+
+```
+DATABRICKS_HOST=xxxxxxx.cloud.databricks.com
+DATABRICKS_CLIENT_ID=11111111-2222-3333-4444-555555555555
+DATABRICKS_CLIENT_SECRET=abcdefg1234567890
 DATABRICKS_WSID=123123123123123
 ```
 
@@ -70,7 +84,7 @@ All `{brickster}` functions have their host/token parameters default to calling 
 clusters <- db_cluster_list()
 ```
 
-When using OAuth U2M authentication you don't define a token in `.Renviron` and therefore `db_token()` will return `NULL`.
+When using OAuth U2M or OAuth M2M authentication you don't define a token in `.Renviron` and therefore `db_token()` will return `NULL`.
 
 ## Managing Multiple Credentials
 
@@ -161,4 +175,3 @@ db_cluster_list()
 `{brickster}` will automatically detect when a session has Workbench managed OAuth credentials and then use the `workbench` profile defined in a `.databrickscfg` file at the `DATABRICKS_CONFIG_FILE` specified location. Workbench generates this `.databrickscfg` file in a temporary directory and should not be modified directly.
 
 To use an alternative `.databrickscfg` file, a different `profile`, an alternative env variable `DATABRICKS_HOST` or set an env variable `DATABRICKS_TOKEN`, launch an RStudio Pro session without the Databricks managed credentials box selected.
-

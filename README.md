@@ -2,9 +2,8 @@
 
 <!-- badges: start -->
 
-[![CRAN status](https://www.r-pkg.org/badges/version/brickster)](https://CRAN.R-project.org/package=brickster)
-[![R-CMD-check](https://github.com/databrickslabs/brickster/workflows/R-CMD-check/badge.svg)](https://github.com/databrickslabs/brickster/actions) 
-[![Codecov test coverage](https://codecov.io/gh/databrickslabs/brickster/graph/badge.svg)](https://app.codecov.io/gh/databrickslabs/brickster)
+[![CRAN status](https://www.r-pkg.org/badges/version/brickster)](https://CRAN.R-project.org/package=brickster) [![R-CMD-check](https://github.com/databrickslabs/brickster/workflows/R-CMD-check/badge.svg)](https://github.com/databrickslabs/brickster/actions) [![Codecov test coverage](https://codecov.io/gh/databrickslabs/brickster/graph/badge.svg)](https://app.codecov.io/gh/databrickslabs/brickster)
+
 <!-- badges: end -->
 
 ## Overview
@@ -24,8 +23,7 @@
 ``` r
 library(brickster)
 
-# only requires `DATABRICKS_HOST` if using OAuth U2M
-# first request will open browser window to login
+# first request will open browser window to login for U2M
 Sys.setenv(DATABRICKS_HOST = "https://<workspace-prefix>.cloud.databricks.com")
 
 # open RStudio/Positron connection pane to view Databricks resources
@@ -111,7 +109,7 @@ db_repl(cluster_id = "<interactive_cluster_id>")
 
 ## Installation
 
-``` r       
+``` r
 install.packages("brickster")
 ```
 

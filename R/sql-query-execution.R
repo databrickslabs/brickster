@@ -271,7 +271,6 @@ db_sql_exec_poll_for_success <- function(
   is_query_running <- TRUE
 
   while (is_query_running) {
-    Sys.sleep(interval)
     status <- db_sql_exec_status(
       statement_id = statement_id,
       host = host,
@@ -288,6 +287,8 @@ db_sql_exec_poll_for_success <- function(
         error_msg <- paste("Query failed with status:", status$status$state)
       }
       cli::cli_abort(error_msg)
+    } else {
+      Sys.sleep(interval)
     }
   }
 
@@ -690,6 +691,7 @@ db_sql_query <- function(
   parameters = NULL,
   row_limit = NULL,
   byte_limit = NULL,
+  wait_timeout = "5s",
   return_arrow = FALSE,
   max_active_connections = 30,
   fetch_timeout = 300,
@@ -710,7 +712,7 @@ db_sql_query <- function(
     parameters = parameters,
     row_limit = row_limit,
     byte_limit = byte_limit,
-    wait_timeout = "0s",
+    wait_timeout = wait_timeout,
     disposition = disposition,
     format = format,
     host = host,
