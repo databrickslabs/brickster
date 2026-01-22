@@ -74,8 +74,12 @@ setMethod("show", "DatabricksDriver", function(object) {
 
 #' Connect to Databricks SQL Warehouse
 #'
+#' @details Provide either `warehouse_id` or `http_path`. When `http_path` is
+#'   supplied, the warehouse ID is extracted from the `/warehouses/<id>` segment.
 #' @param drv A DatabricksDriver object
-#' @param warehouse_id ID of the SQL warehouse to connect to
+#' @param warehouse_id Optional ID of the SQL warehouse to connect to
+#' @param http_path Optional HTTP path for the SQL warehouse; if provided,
+#'   the warehouse ID is extracted from this path
 #' @param catalog Optional catalog name to use as default
 #' @param schema Optional schema name to use as default
 #' @param staging_volume Optional volume path for large dataset staging
@@ -93,7 +97,8 @@ setMethod(
   "DatabricksDriver",
   function(
     drv,
-    warehouse_id,
+    warehouse_id = NULL,
+    http_path = NULL,
     catalog = NULL,
     schema = NULL,
     staging_volume = NULL,
@@ -105,9 +110,22 @@ setMethod(
   ) {
     # Validate required parameters
     if (
-      missing(warehouse_id) || is.null(warehouse_id) || !nzchar(warehouse_id)
+      !is.null(warehouse_id) &&
+        nzchar(warehouse_id) &&
+        !is.null(http_path) &&
+        nzchar(http_path)
     ) {
-      cli::cli_abort("warehouse_id must be provided and non-empty")
+      cli::cli_abort("Specify only one of warehouse_id or http_path")
+    }
+
+    if (is.null(warehouse_id) || !nzchar(warehouse_id)) {
+      if (!is.null(http_path) && nzchar(http_path)) {
+        warehouse_id <- warehouse_id_from_http_path(http_path)
+      } else {
+        cli::cli_abort(
+          "warehouse_id or http_path must be provided and non-empty"
+        )
+      }
     }
 
     if (!is.numeric(max_active_connections) || max_active_connections <= 0) {
@@ -142,7 +160,7 @@ setMethod(
     )
 
     # Create connection object
-    new(
+    con <- new(
       "DatabricksConnection",
       warehouse_id = warehouse_id,
       host = host,
@@ -153,6 +171,10 @@ setMethod(
       max_active_connections = max_active_connections,
       fetch_timeout = fetch_timeout
     )
+
+    dbi_connection_opened(con)
+
+    con
   }
 )
 
@@ -958,6 +980,16 @@ db_assert_statement <- function(statement) {
   if (missing(statement) || is.null(statement) || !nzchar(trimws(statement))) {
     cli::cli_abort("statement must be provided and non-empty")
   }
+}
+
+#' Extract warehouse ID from an http_path
+#' @keywords internal
+warehouse_id_from_http_path <- function(http_path) {
+  if (is.null(http_path) || !nzchar(http_path)) {
+    cli::cli_abort("http_path must be provided and non-empty")
+  }
+
+  sub("^/sql/1\\.0/warehouses/", "", http_path)
 }
 
 #' Clean table name input

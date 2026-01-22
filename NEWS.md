@@ -1,6 +1,8 @@
 # brickster 0.2.12
 
 -   Added OAuth M2M support for workspace-level service principal authentication (#173, #103)
+-   DBI connections accept `http_path` as an alternative to `warehouse_id` and extract the warehouse ID from `/sql/1.0/warehouses/<id>`.
+-   Added RStudio/Positron Connections Pane support for the DBI backend.
 -   Added DBI helpers for `dbCreateTable()`, `dbReadTable()`, and `dbRemoveTable()` with `Id`/`AsIs` support, plus offline tests for DBI table helpers.
 -   Optimized SQL result fetching for single-chunk external links by using the inline link from the initial response when available.
 -   Increment version of testthat required (\>= 3.3.0)

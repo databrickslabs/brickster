@@ -6,7 +6,8 @@
 \usage{
 \S4method{dbConnect}{DatabricksDriver}(
   drv,
-  warehouse_id,
+  warehouse_id = NULL,
+  http_path = NULL,
   catalog = NULL,
   schema = NULL,
   staging_volume = NULL,
@@ -20,7 +21,10 @@
 \arguments{
 \item{drv}{A DatabricksDriver object}
 
-\item{warehouse_id}{ID of the SQL warehouse to connect to}
+\item{warehouse_id}{Optional ID of the SQL warehouse to connect to}
+
+\item{http_path}{Optional HTTP path for the SQL warehouse; if provided,
+the warehouse ID is extracted from this path}
 
 \item{catalog}{Optional catalog name to use as default}
 
@@ -45,4 +49,8 @@ A DatabricksConnection object
 }
 \description{
 Connect to Databricks SQL Warehouse
+}
+\details{
+Provide either \code{warehouse_id} or \code{http_path}. When \code{http_path} is
+supplied, the warehouse ID is extracted from the \verb{/warehouses/<id>} segment.
 }

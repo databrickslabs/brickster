@@ -18,14 +18,27 @@ test_that("Connection parameter validation works offline", {
   drv <- DatabricksSQL()
 
   # Test missing warehouse_id
-  expect_error(dbConnect(drv), "warehouse_id must be provided")
+  expect_error(
+    dbConnect(drv),
+    "warehouse_id or http_path must be provided"
+  )
   expect_error(
     dbConnect(drv, warehouse_id = ""),
-    "warehouse_id must be provided"
+    "warehouse_id or http_path must be provided"
   )
   expect_error(
     dbConnect(drv, warehouse_id = NULL),
-    "warehouse_id must be provided"
+    "warehouse_id or http_path must be provided"
+  )
+
+  # Test conflicting warehouse_id and http_path
+  expect_error(
+    dbConnect(
+      drv,
+      warehouse_id = "fake_id",
+      http_path = "/sql/warehouses/fake_id"
+    ),
+    "Specify only one of warehouse_id or http_path"
   )
 
   # Test with invalid credentials (should fail at connection test)
@@ -66,6 +79,17 @@ test_that("DatabricksConnection validation methods work", {
   expect_equal(info$warehouse_id, "test_warehouse")
   expect_equal(info$db.version, "Databricks SQL")
   expect_equal(info$host, "test_host")
+})
+
+test_that("Warehouse ID can be parsed from http_path", {
+  expect_equal(
+    warehouse_id_from_http_path("/sql/1.0/warehouses/30d6e63b35f828c5"),
+    "30d6e63b35f828c5"
+  )
+  expect_error(
+    warehouse_id_from_http_path(NULL),
+    "http_path must be provided and non-empty"
+  )
 })
 
 test_that("DatabricksConnection with invalid parameters fails validation", {
