@@ -142,7 +142,7 @@ setMethod(
     )
 
     # Create connection object
-    new(
+    con <- new(
       "DatabricksConnection",
       warehouse_id = warehouse_id,
       host = host,
@@ -153,6 +153,10 @@ setMethod(
       max_active_connections = max_active_connections,
       fetch_timeout = fetch_timeout
     )
+
+    dbi_connection_opened(con)
+
+    con
   }
 )
 
