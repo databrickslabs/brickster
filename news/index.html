@@ -47,6 +47,8 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.12" id="brickster-0212">brickster 0.2.12<a class="anchor" aria-label="anchor" href="#brickster-0212"></a></h2>
 <ul><li>Added OAuth M2M support for workspace-level service principal authentication (<a href="https://github.com/databrickslabs/brickster/issues/173" class="external-link">#173</a>, <a href="https://github.com/databrickslabs/brickster/issues/103" class="external-link">#103</a>)</li>
+<li>DBI connections accept <code>http_path</code> as an alternative to <code>warehouse_id</code> and extract the warehouse ID from <code>/sql/1.0/warehouses/&lt;id&gt;</code>.</li>
+<li>Added RStudio/Positron Connections Pane support for the DBI backend.</li>
 <li>Added DBI helpers for <code><a href="https://dbi.r-dbi.org/reference/dbCreateTable.html" class="external-link">dbCreateTable()</a></code>, <code><a href="https://dbi.r-dbi.org/reference/dbReadTable.html" class="external-link">dbReadTable()</a></code>, and <code><a href="https://dbi.r-dbi.org/reference/dbRemoveTable.html" class="external-link">dbRemoveTable()</a></code> with <code>Id</code>/<code>AsIs</code> support, plus offline tests for DBI table helpers.</li>
 <li>Optimized SQL result fetching for single-chunk external links by using the inline link from the initial response when available.</li>
 <li>Increment version of testthat required (&gt;= 3.3.0)</li>

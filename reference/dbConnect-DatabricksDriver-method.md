@@ -8,7 +8,8 @@ Connect to Databricks SQL Warehouse
 # S4 method for class 'DatabricksDriver'
 dbConnect(
   drv,
-  warehouse_id,
+  warehouse_id = NULL,
+  http_path = NULL,
   catalog = NULL,
   schema = NULL,
   staging_volume = NULL,
@@ -28,7 +29,12 @@ dbConnect(
 
 - warehouse_id:
 
-  ID of the SQL warehouse to connect to
+  Optional ID of the SQL warehouse to connect to
+
+- http_path:
+
+  Optional HTTP path for the SQL warehouse; if provided, the warehouse
+  ID is extracted from this path
 
 - catalog:
 
@@ -66,3 +72,9 @@ dbConnect(
 ## Value
 
 A DatabricksConnection object
+
+## Details
+
+Provide either `warehouse_id` or `http_path`. When `http_path` is
+supplied, the warehouse ID is extracted from the `/warehouses/<id>`
+segment.

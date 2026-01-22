@@ -6,6 +6,9 @@
   authentication
   ([\#173](https://github.com/databrickslabs/brickster/issues/173),
   [\#103](https://github.com/databrickslabs/brickster/issues/103))
+- DBI connections accept `http_path` as an alternative to `warehouse_id`
+  and extract the warehouse ID from `/sql/1.0/warehouses/<id>`.
+- Added RStudio/Positron Connections Pane support for the DBI backend.
 - Added DBI helpers for
   [`dbCreateTable()`](https://dbi.r-dbi.org/reference/dbCreateTable.html),
   [`dbReadTable()`](https://dbi.r-dbi.org/reference/dbReadTable.html),

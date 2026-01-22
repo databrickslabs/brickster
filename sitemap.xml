@@ -350,5 +350,6 @@
 <url><loc>https://databrickslabs.github.io/brickster/reference/sql_translation.DatabricksConnection.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/use_databricks_cfg.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/wait_for_lib_installs.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/warehouse_id_from_http_path.html</loc></url>
 </urlset>
 

@@ -54,7 +54,8 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S4 method for class 'DatabricksDriver'</span></span>
 <span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span></span>
 <span>  <span class="va">drv</span>,</span>
-<span>  <span class="va">warehouse_id</span>,</span>
+<span>  warehouse_id <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  http_path <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  catalog <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  schema <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  staging_volume <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -75,7 +76,12 @@
 
 
 <dt id="arg-warehouse-id">warehouse_id<a class="anchor" aria-label="anchor" href="#arg-warehouse-id"></a></dt>
-<dd><p>ID of the SQL warehouse to connect to</p></dd>
+<dd><p>Optional ID of the SQL warehouse to connect to</p></dd>
+
+
+<dt id="arg-http-path">http_path<a class="anchor" aria-label="anchor" href="#arg-http-path"></a></dt>
+<dd><p>Optional HTTP path for the SQL warehouse; if provided,
+the warehouse ID is extracted from this path</p></dd>
 
 
 <dt id="arg-catalog">catalog<a class="anchor" aria-label="anchor" href="#arg-catalog"></a></dt>
@@ -115,6 +121,11 @@ connections when fetching query results (default: 30)</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A DatabricksConnection object</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Provide either <code>warehouse_id</code> or <code>http_path</code>. When <code>http_path</code> is
+supplied, the warehouse ID is extracted from the <code>/warehouses/&lt;id&gt;</code> segment.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
