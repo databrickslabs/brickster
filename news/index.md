@@ -2,6 +2,8 @@
 
 ## brickster 0.2.12
 
+- Fixed `dbplyr::compute` interaction for DBI backend
+  ([\#184](https://github.com/databrickslabs/brickster/issues/184))
 - Added OAuth M2M support for workspace-level service principal
   authentication
   ([\#173](https://github.com/databrickslabs/brickster/issues/173),
