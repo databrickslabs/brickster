@@ -85,54 +85,52 @@ sql_query_save.DatabricksConnection <- function(
   if (!DBI::dbIsValid(con)) {
     cli::cli_abort("Connection is not valid")
   }
-  
+
   if (missing(name) || is.null(name) || !nzchar(trimws(name))) {
     cli::cli_abort("Table/view name must be provided and non-empty")
   }
-  
+
   if (missing(sql) || is.null(sql) || !nzchar(trimws(as.character(sql)))) {
     cli::cli_abort("SQL query must be provided and non-empty")
   }
-  
+
   # For user-provided names, ensure uniqueness to avoid conflicts
   # Don't modify dbplyr-generated names (they start with dbplyr_)
   if (temporary && is.character(name) && !grepl("^dbplyr_", name) && nzchar(trimws(name))) {
     name <- generate_temp_name(name)
   }
-  
+
   # Create appropriate SQL based on temporary flag
   if (temporary) {
     # Use TEMPORARY VIEW for session-scoped objects
-    if (is.character(name) && grepl("^`.*`$", name)) {
-      quoted_name <- name  # Already quoted
+    if (inherits(name, "SQL") || (is.character(name) && grepl("^`.*`$", name))) {
+      quoted_name <- name  # Already quoted / literal
     } else {
       quoted_name <- DBI::dbQuoteIdentifier(con, name)
     }
     create_sql <- paste0(
-      "CREATE OR REPLACE TEMPORARY VIEW ", 
-      quoted_name, 
-      " AS ", 
+      "CREATE OR REPLACE TEMPORARY VIEW ",
+      quoted_name,
+      " AS ",
       as.character(sql)
     )
   } else {
     # Use regular table for persistent objects
-    if (is.character(name) && grepl("^`.*`$", name)) {
-      quoted_name <- name  # Already quoted
+    if (inherits(name, "SQL") || (is.character(name) && grepl("^`.*`$", name))) {
+      quoted_name <- name  # Already quoted / literal
     } else {
       quoted_name <- DBI::dbQuoteIdentifier(con, name)
     }
     create_sql <- paste0(
-      "CREATE OR REPLACE TABLE ", 
-      quoted_name, 
-      " AS ", 
+      "CREATE OR REPLACE TABLE ",
+      quoted_name,
+      " AS ",
       as.character(sql)
     )
   }
-  
-  # Execute the creation SQL
-  DBI::dbExecute(con, create_sql)
-  
-  invisible(name)
+
+  # Return SQL only; dbplyr handles execution.
+  create_sql
 }
 
 

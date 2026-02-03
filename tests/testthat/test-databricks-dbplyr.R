@@ -327,19 +327,21 @@ test_that("Basic dplyr operations translate correctly", {
   DBI::dbDisconnect(con)
 })
 
-test_that("sql_query_save creates temporary views with live connection", {
+test_that("sql_query_save returns SQL for temporary views with live connection", {
   drv <- DatabricksSQL()
 
   con <- DBI::dbConnect(drv, warehouse_id = test_warehouse_id_dbplyr)
 
-  # Test temporary view creation returns name
-  temp_name <- dbplyr::sql_query_save(
+  # Test temporary view creation returns SQL
+  temp_sql <- dbplyr::sql_query_save(
     con,
     "SELECT 1 as test_col",
     "test_temp_view"
   )
-  expect_type(temp_name, "character")
-  expect_true(nzchar(temp_name))
+  expect_type(temp_sql, "character")
+  expect_true(nzchar(temp_sql))
+  expect_match(temp_sql, "CREATE OR REPLACE TEMPORARY VIEW", ignore.case = TRUE)
+  expect_match(temp_sql, "SELECT 1", ignore.case = TRUE)
 
   DBI::dbDisconnect(con)
 })

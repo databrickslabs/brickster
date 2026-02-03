@@ -1,5 +1,6 @@
 # brickster 0.2.12
 
+-   Fixed `dbplyr::compute` interaction for DBI backend (#184)
 -   Added OAuth M2M support for workspace-level service principal authentication (#173, #103)
 -   DBI connections accept `http_path` as an alternative to `warehouse_id` and extract the warehouse ID from `/sql/1.0/warehouses/<id>`.
 -   Added RStudio/Positron Connections Pane support for the DBI backend.
