@@ -57,14 +57,15 @@ db_request <- function(
       req <- httr2::req_oauth_client_credentials(
         req,
         client = oauth_client$client,
-        scope = "all-apis"
+        scope = oauth_client$scope,
+        token_params = oauth_client$token_params
       )
     } else if (!is_hosted_session() && rlang::is_interactive()) {
       # use client to auth
       req <- httr2::req_oauth_auth_code(
         req,
         client = oauth_client$client,
-        scope = "all-apis",
+        scope = oauth_client$scope,
         auth_url = oauth_client$auth_url,
         redirect_uri = "http://localhost:8020"
       )

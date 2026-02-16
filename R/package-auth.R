@@ -151,13 +151,24 @@ NULL
 #' An alternate location will be used if the environment variable `DATABRICKS_CONFIG_FILE` is set.
 #'
 #' @param key The value to fetch from profile. One of `token`, `host`, `wsid`,
-#' `client_id`, or `client_secret`
+#' `client_id`, `client_secret`, `azure_client_id`, `azure_client_secret`,
+#' `azure_tenant_id`, or `auth_type`
 #' @param profile Character, the name of the profile to retrieve values
 #'
 #' @return named list of values associated with profile
 #' @keywords internal
 read_databrickscfg <- function(
-  key = c("token", "host", "wsid", "client_id", "client_secret"),
+  key = c(
+    "token",
+    "host",
+    "wsid",
+    "client_id",
+    "client_secret",
+    "azure_client_id",
+    "azure_client_secret",
+    "azure_tenant_id",
+    "auth_type"
+  ),
   profile = NULL,
   error = TRUE
 ) {
@@ -206,28 +217,68 @@ read_databrickscfg <- function(
   value
 }
 
+# internal helper to map auth keys to canonical env var names
+auth_env_key <- function(
+  key = c(
+    "token",
+    "host",
+    "wsid",
+    "client_id",
+    "client_secret",
+    "azure_client_id",
+    "azure_client_secret",
+    "azure_tenant_id",
+    "auth_type"
+  )
+) {
+  key <- match.arg(key)
+
+  switch(
+    key,
+    token = "DATABRICKS_TOKEN",
+    host = "DATABRICKS_HOST",
+    wsid = "DATABRICKS_WSID",
+    client_id = "DATABRICKS_CLIENT_ID",
+    client_secret = "DATABRICKS_CLIENT_SECRET",
+    azure_client_id = "ARM_CLIENT_ID",
+    azure_client_secret = "ARM_CLIENT_SECRET",
+    azure_tenant_id = "ARM_TENANT_ID",
+    auth_type = "DATABRICKS_AUTH_TYPE"
+  )
+}
+
 #' Reads Environment Variables
 #' @details Fetches relevant environment variables based on profile
 #'
 #' @param key The value to fetch from profile. One of `token`, `host`, `wsid`,
-#' `client_id`, or `client_secret`
+#' `client_id`, `client_secret`, `azure_client_id`, `azure_client_secret`,
+#' `azure_tenant_id`, or `auth_type`
 #' @param profile Character, the name of the profile to retrieve values
 #' @param error Boolean, when key isn't found should error be raised
 #'
 #' @return named list of values associated with profile
 #' @keywords internal
 read_env_var <- function(
-  key = c("token", "host", "wsid", "client_id", "client_secret"),
+  key = c(
+    "token",
+    "host",
+    "wsid",
+    "client_id",
+    "client_secret",
+    "azure_client_id",
+    "azure_client_secret",
+    "azure_tenant_id",
+    "auth_type"
+  ),
   profile = NULL,
   error = TRUE
 ) {
   key <- match.arg(key)
 
   # fetch value based on profile
-  if (is.null(profile)) {
-    key_name <- paste("DATABRICKS", toupper(key), sep = "_")
-  } else {
-    key_name <- paste("DATABRICKS", toupper(key), toupper(profile), sep = "_")
+  key_name <- auth_env_key(key)
+  if (!is.null(profile)) {
+    key_name <- paste(key_name, toupper(profile), sep = "_")
   }
 
   value <- Sys.getenv(key_name)
@@ -276,6 +327,202 @@ db_client_secret <- function(profile = default_config_profile()) {
   )
 }
 
+db_azure_client_id <- function(profile = default_config_profile()) {
+  if (use_databricks_cfg()) {
+    azure_client_id <- read_databrickscfg(
+      key = "azure_client_id",
+      profile = profile,
+      error = FALSE
+    )
+    return(azure_client_id)
+  }
+
+  read_env_var(key = "azure_client_id", profile = profile, error = FALSE)
+}
+
+db_azure_client_secret <- function(profile = default_config_profile()) {
+  if (use_databricks_cfg()) {
+    azure_client_secret <- read_databrickscfg(
+      key = "azure_client_secret",
+      profile = profile,
+      error = FALSE
+    )
+    return(azure_client_secret)
+  }
+
+  read_env_var(
+    key = "azure_client_secret",
+    profile = profile,
+    error = FALSE
+  )
+}
+
+db_azure_tenant_id <- function(profile = default_config_profile()) {
+  if (use_databricks_cfg()) {
+    azure_tenant_id <- read_databrickscfg(
+      key = "azure_tenant_id",
+      profile = profile,
+      error = FALSE
+    )
+    if (!is.null(azure_tenant_id) && nzchar(azure_tenant_id)) {
+      return(azure_tenant_id)
+    }
+  }
+
+  read_env_var(
+    key = "azure_tenant_id",
+    profile = profile,
+    error = FALSE
+  )
+}
+
+db_auth_type <- function(profile = default_config_profile()) {
+  auth_type <- read_env_var(
+    key = "auth_type",
+    profile = profile,
+    error = FALSE
+  )
+
+  if ((is.null(auth_type) || !nzchar(auth_type)) && use_databricks_cfg()) {
+    auth_type <- read_databrickscfg(
+      key = "auth_type",
+      profile = profile,
+      error = FALSE
+    )
+  }
+
+  if (is.null(auth_type) || !nzchar(auth_type)) {
+    return(NULL)
+  }
+
+  tolower(auth_type)
+}
+
+normalize_oauth_auth_type <- function(auth_type = NULL) {
+  if (is.null(auth_type) || !nzchar(auth_type)) {
+    return(NULL)
+  }
+
+  normalized <- tolower(gsub("_", "-", auth_type, fixed = TRUE))
+
+  if (normalized %in% c("oauth-m2m", "azure-client-secret", "oauth-u2m")) {
+    return(normalized)
+  }
+
+  cli::cli_abort(c(
+    "Invalid {.var DATABRICKS_AUTH_TYPE} value {.val {auth_type}}:",
+    "x" = "Supported values are {.val oauth-m2m}, {.val azure-client-secret}, or {.val oauth-u2m}."
+  ))
+}
+
+resolve_oauth_auth_mode <- function(
+  auth_type,
+  has_db_m2m,
+  has_azure_m2m
+) {
+  # explicit override is checked first
+  if (!is.null(auth_type)) {
+    if (identical(auth_type, "oauth-m2m")) {
+      if (!has_db_m2m) {
+        cli::cli_abort(c(
+          "{.var DATABRICKS_AUTH_TYPE} was set to {.val oauth-m2m} but Databricks M2M credentials are incomplete:",
+          "x" = "Need both {.var DATABRICKS_CLIENT_ID} and {.var DATABRICKS_CLIENT_SECRET}."
+        ))
+      }
+      return("oauth-m2m")
+    }
+
+    if (identical(auth_type, "azure-client-secret")) {
+      if (!has_azure_m2m) {
+        cli::cli_abort(c(
+          "{.var DATABRICKS_AUTH_TYPE} was set to {.val azure-client-secret} but Azure service principal credentials are incomplete:",
+          "x" = "Need {.var ARM_CLIENT_ID}, {.var ARM_CLIENT_SECRET}, and {.var ARM_TENANT_ID}."
+        ))
+      }
+      return("azure-client-secret")
+    }
+
+    return("oauth-u2m")
+  }
+
+  # default auth order when override is not set
+  if (has_db_m2m) {
+    return("oauth-m2m")
+  }
+  if (has_azure_m2m) {
+    return("azure-client-secret")
+  }
+
+  # fallback when no M2M credentials are available
+  "oauth-u2m"
+}
+
+build_databricks_m2m_oauth_client <- function(host, client_id, client_secret) {
+  endpoints <- databricks_workspace_oauth_endpoints(host)
+
+  list(
+    client = httr2::oauth_client(
+      id = client_id,
+      secret = client_secret,
+      token_url = endpoints$token_url,
+      name = "brickster"
+    ),
+    auth_url = endpoints$auth_url,
+    auth_mode = "oauth-m2m",
+    is_m2m = TRUE,
+    scope = "all-apis",
+    token_params = list()
+  )
+}
+
+databricks_workspace_oauth_endpoints <- function(host) {
+  list(
+    token_url = glue::glue("https://{host}/oidc/v1/token", host = host),
+    auth_url = glue::glue("https://{host}/oidc/v1/authorize", host = host)
+  )
+}
+
+build_azure_m2m_oauth_client <- function(
+  azure_client_id,
+  azure_client_secret,
+  azure_tenant_id
+) {
+  list(
+    client = httr2::oauth_client(
+      id = azure_client_id,
+      secret = azure_client_secret,
+      token_url = glue::glue(
+        "https://login.microsoftonline.com/{azure_tenant_id}/oauth2/token"
+      ),
+      name = "brickster"
+    ),
+    auth_url = NULL,
+    auth_mode = "azure-client-secret",
+    is_m2m = TRUE,
+    scope = NULL,
+    token_params = list(
+      resource = "2ff814a6-3304-4ab8-85cb-cd0e6f879c1d"
+    )
+  )
+}
+
+build_databricks_u2m_oauth_client <- function(host) {
+  endpoints <- databricks_workspace_oauth_endpoints(host)
+
+  list(
+    client = httr2::oauth_client(
+      id = "databricks-cli",
+      token_url = endpoints$token_url,
+      name = "brickster"
+    ),
+    auth_url = endpoints$auth_url,
+    auth_mode = "oauth-u2m",
+    is_m2m = FALSE,
+    scope = "all-apis",
+    token_params = list()
+  )
+}
+
 #' Create OAuth 2.0 Client
 #' @details Creates an OAuth 2.0 Client for U2M or M2M flows.
 #'
@@ -283,46 +530,60 @@ db_client_secret <- function(profile = default_config_profile()) {
 #'
 #' @param client_id OAuth M2M client id.
 #' @param client_secret OAuth M2M client secret.
+#' @param azure_client_id Azure AD service principal application id.
+#' @param azure_client_secret Azure AD service principal client secret.
+#' @param azure_tenant_id Azure AD tenant id.
+#' @param auth_type Optional explicit auth mode override from `DATABRICKS_AUTH_TYPE`.
 #'
 #' @details
-#' If `client_id` and `client_secret` are detected then an M2M auth flow will occur.
-#' Otherwise it falls back to U2M.
+#' With no explicit `auth_type`, the default order is Databricks OAuth M2M, then
+#' Azure service principal M2M, then OAuth U2M.
+#' Set `auth_type = "azure-client-secret"` to force Azure service principal M2M.
 #'
 #' @return List that contains [httr2::oauth_client()], relevant `auth_url`, and `is_m2m`
 #' @keywords internal
 db_oauth_client <- function(
   host = db_host(),
   client_id = db_client_id(),
-  client_secret = db_client_secret()
+  client_secret = db_client_secret(),
+  azure_client_id = db_azure_client_id(),
+  azure_client_secret = db_azure_client_secret(),
+  azure_tenant_id = db_azure_tenant_id(),
+  auth_type = db_auth_type()
 ) {
-  is_m2m <- !is.null(client_id) &&
+  has_db_m2m <- !is.null(client_id) &&
     nzchar(client_id) &&
     !is.null(client_secret) &&
     nzchar(client_secret)
 
-  ws_token_url = glue::glue("https://{host}/oidc/v1/token", host = host)
-  ws_auth_url = glue::glue("https://{host}/oidc/v1/authorize", host = host)
+  has_azure_m2m <- !is.null(azure_client_id) &&
+    nzchar(azure_client_id) &&
+    !is.null(azure_client_secret) &&
+    nzchar(azure_client_secret) &&
+    !is.null(azure_tenant_id) &&
+    nzchar(azure_tenant_id)
 
-  if (is_m2m) {
-    client <- httr2::oauth_client(
-      id = client_id,
-      secret = client_secret,
-      token_url = ws_token_url,
-      name = "brickster"
+  auth_mode <- resolve_oauth_auth_mode(
+    auth_type = normalize_oauth_auth_type(auth_type),
+    has_db_m2m = has_db_m2m,
+    has_azure_m2m = has_azure_m2m
+  )
+
+  if (identical(auth_mode, "oauth-m2m")) {
+    client_and_auth <- build_databricks_m2m_oauth_client(
+      host,
+      client_id,
+      client_secret
+    )
+  } else if (identical(auth_mode, "azure-client-secret")) {
+    client_and_auth <- build_azure_m2m_oauth_client(
+      azure_client_id,
+      azure_client_secret,
+      azure_tenant_id
     )
   } else {
-    client <- httr2::oauth_client(
-      id = "databricks-cli",
-      token_url = ws_token_url,
-      name = "brickster"
-    )
+    client_and_auth <- build_databricks_u2m_oauth_client(host)
   }
-
-  client_and_auth <- list(
-    client = client,
-    auth_url = ws_auth_url,
-    is_m2m = is_m2m
-  )
 
   # add option for client to be fetched via request helpers
   options(brickster_oauth_client = client_and_auth)

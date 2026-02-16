@@ -1,6 +1,6 @@
 Package: brickster
 Title: R Toolkit for 'Databricks'
-Version: 0.2.12
+Version: 0.2.13
 Authors@R: c(
     person("Zac", "Davies", , "zac@databricks.com", role = c("aut", "cre")),
     person("Rafi", "Kurlansik", , "rafi.kurlansik@databricks.com", role = "aut"),

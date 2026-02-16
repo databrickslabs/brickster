@@ -1,3 +1,10 @@
+Sys.unsetenv(c(
+  "DATABRICKS_AUTH_TYPE",
+  "ARM_CLIENT_ID",
+  "ARM_CLIENT_SECRET",
+  "ARM_TENANT_ID"
+))
+
 test_that("request helpers - building requests", {
   host <- "some_url"
   token <- "some_token"
@@ -65,5 +72,45 @@ test_that("request helpers - m2m auth flow", {
   expect_identical(
     req$policies$auth_sign$params$flow_params$client$id,
     "client-id"
+  )
+})
+
+test_that("request helpers - azure m2m auth flow", {
+  host <- "some_url"
+  endpoint <- "clusters/create"
+  endpoint_version <- "2.0"
+  method <- "POST"
+  body <- list(a = 1, b = 2)
+
+  withr::local_envvar(
+    ARM_CLIENT_ID = "azure-client-id",
+    ARM_CLIENT_SECRET = "azure-client-secret",
+    ARM_TENANT_ID = "azure-tenant-id"
+  )
+  withr::local_options(brickster_oauth_client = NULL)
+
+  req <- db_request(
+    endpoint = endpoint,
+    method = method,
+    version = endpoint_version,
+    body = body,
+    host = host,
+    token = NULL
+  )
+
+  expect_identical(
+    req$policies$auth_sign$params$flow,
+    "oauth_flow_client_credentials"
+  )
+  expect_null(
+    req$policies$auth_sign$params$flow_params$scope
+  )
+  expect_identical(
+    req$policies$auth_sign$params$flow_params$token_params$resource,
+    "2ff814a6-3304-4ab8-85cb-cd0e6f879c1d"
+  )
+  expect_identical(
+    req$policies$auth_sign$params$flow_params$client$token_url,
+    "https://login.microsoftonline.com/azure-tenant-id/oauth2/token"
   )
 })
