@@ -112,25 +112,25 @@
 ## DBFS
 
 - [`db_dbfs_add_block()`](https://databrickslabs.github.io/brickster/reference/db_dbfs_add_block.md)
-  : DBFS Add Block
+  **\[deprecated\]** : DBFS Add Block
 - [`db_dbfs_close()`](https://databrickslabs.github.io/brickster/reference/db_dbfs_close.md)
-  : DBFS Close
+  **\[deprecated\]** : DBFS Close
 - [`db_dbfs_create()`](https://databrickslabs.github.io/brickster/reference/db_dbfs_create.md)
-  : DBFS Create
+  **\[deprecated\]** : DBFS Create
 - [`db_dbfs_delete()`](https://databrickslabs.github.io/brickster/reference/db_dbfs_delete.md)
-  : DBFS Delete
+  **\[deprecated\]** : DBFS Delete
 - [`db_dbfs_get_status()`](https://databrickslabs.github.io/brickster/reference/db_dbfs_get_status.md)
-  : DBFS Get Status
+  **\[deprecated\]** : DBFS Get Status
 - [`db_dbfs_list()`](https://databrickslabs.github.io/brickster/reference/db_dbfs_list.md)
-  : DBFS List
+  **\[deprecated\]** : DBFS List
 - [`db_dbfs_mkdirs()`](https://databrickslabs.github.io/brickster/reference/db_dbfs_mkdirs.md)
-  : DBFS mkdirs
+  **\[deprecated\]** : DBFS mkdirs
 - [`db_dbfs_move()`](https://databrickslabs.github.io/brickster/reference/db_dbfs_move.md)
-  : DBFS Move
+  **\[deprecated\]** : DBFS Move
 - [`db_dbfs_put()`](https://databrickslabs.github.io/brickster/reference/db_dbfs_put.md)
-  : DBFS Put
+  **\[deprecated\]** : DBFS Put
 - [`db_dbfs_read()`](https://databrickslabs.github.io/brickster/reference/db_dbfs_read.md)
-  : DBFS Read
+  **\[deprecated\]** : DBFS Read
 
 ## Volume FileSystem
 

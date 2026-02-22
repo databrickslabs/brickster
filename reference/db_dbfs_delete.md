@@ -1,6 +1,6 @@
 # DBFS Delete
 
-DBFS Delete
+**\[deprecated\]**
 
 ## Usage
 

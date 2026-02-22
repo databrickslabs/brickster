@@ -1,6 +1,6 @@
 # DBFS Move
 
-Move a file from one location to another location within DBFS.
+**\[deprecated\]**
 
 ## Usage
 
@@ -42,6 +42,8 @@ db_dbfs_move(
   request is returned *without* being performed.
 
 ## Details
+
+Move a file from one location to another location within DBFS.
 
 If the given source path is a directory, this call always recursively
 moves all files.

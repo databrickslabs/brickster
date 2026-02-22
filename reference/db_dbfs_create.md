@@ -1,6 +1,6 @@
 # DBFS Create
 
-Open a stream to write to a file and returns a handle to this stream.
+**\[deprecated\]**
 
 ## Usage
 
@@ -49,6 +49,8 @@ and
 when writing to a file through a stream.
 
 ## Details
+
+Open a stream to write to a file and returns a handle to this stream.
 
 There is a 10 minute idle timeout on this handle. If a file or directory
 already exists on the given path and overwrite is set to `FALSE`, this

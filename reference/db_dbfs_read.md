@@ -1,6 +1,6 @@
 # DBFS Read
 
-Return the contents of a file.
+**\[deprecated\]**
 
 ## Usage
 
@@ -47,6 +47,8 @@ db_dbfs_read(
   request is returned *without* being performed.
 
 ## Details
+
+Return the contents of a file.
 
 If offset + length exceeds the number of bytes in a file, reads contents
 until the end of file.

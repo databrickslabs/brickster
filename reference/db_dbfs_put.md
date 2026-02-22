@@ -1,6 +1,6 @@
 # DBFS Put
 
-Upload a file through the use of multipart form post.
+**\[deprecated\]**
 
 ## Usage
 
@@ -52,6 +52,8 @@ db_dbfs_put(
   request is returned *without* being performed.
 
 ## Details
+
+Upload a file through the use of multipart form post.
 
 Either `contents` or `file` must be specified. `file` takes precedent
 over `contents` if both are specified.

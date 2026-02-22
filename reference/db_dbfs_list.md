@@ -1,6 +1,6 @@
 # DBFS List
 
-List the contents of a directory, or details of the file.
+**\[deprecated\]**
 
 ## Usage
 
@@ -40,6 +40,8 @@ db_dbfs_list(
 data.frame
 
 ## Details
+
+List the contents of a directory, or details of the file.
 
 When calling list on a large directory, the list operation will time out
 after approximately 60 seconds.

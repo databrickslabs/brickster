@@ -1,6 +1,6 @@
 # DBFS Close
 
-Close the stream specified by the input handle.
+**\[deprecated\]**
 
 ## Usage
 
@@ -39,6 +39,8 @@ db_dbfs_close(
 HTTP Response
 
 ## Details
+
+Close the stream specified by the input handle.
 
 If the handle does not exist, this call throws an exception with
 `RESOURCE_DOES_NOT_EXIST.`

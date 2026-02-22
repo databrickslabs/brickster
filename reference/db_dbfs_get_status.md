@@ -1,6 +1,6 @@
 # DBFS Get Status
 
-Get the file information of a file or directory.
+**\[deprecated\]**
 
 ## Usage
 
@@ -36,6 +36,8 @@ db_dbfs_get_status(
   request is returned *without* being performed.
 
 ## Details
+
+Get the file information of a file or directory.
 
 - If the file or directory does not exist, this call throws an exception
   with `RESOURCE_DOES_NOT_EXIST.`

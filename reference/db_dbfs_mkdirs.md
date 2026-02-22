@@ -1,7 +1,6 @@
 # DBFS mkdirs
 
-Create the given directory and necessary parent directories if they do
-not exist.
+**\[deprecated\]**
 
 ## Usage
 
@@ -37,6 +36,9 @@ db_dbfs_mkdirs(
   request is returned *without* being performed.
 
 ## Details
+
+Create the given directory and necessary parent directories if they do
+not exist.
 
 - If there exists a file (not a directory) at any prefix of the input
   path, this call throws an exception with `RESOURCE_ALREADY_EXISTS.`

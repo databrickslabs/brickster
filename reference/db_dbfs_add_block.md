@@ -1,6 +1,6 @@
 # DBFS Add Block
 
-Append a block of data to the stream specified by the input handle.
+**\[deprecated\]**
 
 ## Usage
 
@@ -47,6 +47,8 @@ db_dbfs_add_block(
   request is returned *without* being performed.
 
 ## Details
+
+Append a block of data to the stream specified by the input handle.
 
 - If the handle does not exist, this call will throw an exception with
   `RESOURCE_DOES_NOT_EXIST.`

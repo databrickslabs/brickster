@@ -8,6 +8,8 @@
   `oauth-u2m`); default auth resolution now prefers Azure M2M over U2M
   when ARM credentials are present
   ([\#185](https://github.com/databrickslabs/brickster/issues/185))
+- Marked DBFS REST wrappers (`db_dbfs_*`) as deprecated and moved them
+  to internal-only, guiding users towards using volumes (`db_volume_*`)
 
 ## brickster 0.2.12
 
