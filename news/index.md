@@ -1,6 +1,17 @@
 # Changelog
 
+## brickster 0.2.13
+
+- Added Azure AD service principal OAuth M2M support (`ARM_CLIENT_ID`,
+  `ARM_CLIENT_SECRET`, `ARM_TENANT_ID`) with optional
+  `DATABRICKS_AUTH_TYPE` override (`oauth-m2m`, `azure-client-secret`,
+  `oauth-u2m`); default auth resolution now prefers Azure M2M over U2M
+  when ARM credentials are present
+  ([\#185](https://github.com/databrickslabs/brickster/issues/185))
+
 ## brickster 0.2.12
+
+CRAN release: 2026-02-04
 
 - Fixed `dbplyr::compute` interaction for DBI backend
   ([\#184](https://github.com/databrickslabs/brickster/issues/184))

@@ -13,15 +13,15 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/databrickslabs/brickster/blob/v0.2.12/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/databrickslabs/brickster/blob/main/DESCRIPTION)
 
 Davies Z, Kurlansik R (2026). *brickster: R Toolkit for 'Databricks'*. R
-package version 0.2.12, <https://github.com/databrickslabs/brickster>.
+package version 0.2.13, <https://github.com/databrickslabs/brickster>.
 
     @Manual{,
       title = {brickster: R Toolkit for 'Databricks'},
       author = {Zac Davies and Rafi Kurlansik},
       year = {2026},
-      note = {R package version 0.2.12},
+      note = {R package version 0.2.13},
       url = {https://github.com/databrickslabs/brickster},
     }

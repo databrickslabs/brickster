@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">brickster</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.13</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,7 +41,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Create OAuth 2.0 Client</h1>
-      <small class="dont-index">Source: <a href="https://github.com/databrickslabs/brickster/blob/v0.2.12/R/package-auth.R" class="external-link"><code>R/package-auth.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/databrickslabs/brickster/blob/main/R/package-auth.R" class="external-link"><code>R/package-auth.R</code></a></small>
       <div class="d-none name"><code>db_oauth_client.Rd</code></div>
     </div>
 
@@ -54,7 +54,11 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">db_oauth_client</span><span class="op">(</span></span>
 <span>  host <span class="op">=</span> <span class="fu"><a href="db_host.html">db_host</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  client_id <span class="op">=</span> <span class="fu">db_client_id</span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  client_secret <span class="op">=</span> <span class="fu">db_client_secret</span><span class="op">(</span><span class="op">)</span></span>
+<span>  client_secret <span class="op">=</span> <span class="fu">db_client_secret</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  azure_client_id <span class="op">=</span> <span class="fu">db_azure_client_id</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  azure_client_secret <span class="op">=</span> <span class="fu">db_azure_client_secret</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  azure_tenant_id <span class="op">=</span> <span class="fu">db_azure_tenant_id</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  auth_type <span class="op">=</span> <span class="fu">db_auth_type</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -73,16 +77,34 @@
 <dt id="arg-client-secret">client_secret<a class="anchor" aria-label="anchor" href="#arg-client-secret"></a></dt>
 <dd><p>OAuth M2M client secret.</p></dd>
 
+
+<dt id="arg-azure-client-id">azure_client_id<a class="anchor" aria-label="anchor" href="#arg-azure-client-id"></a></dt>
+<dd><p>Azure AD service principal application id.</p></dd>
+
+
+<dt id="arg-azure-client-secret">azure_client_secret<a class="anchor" aria-label="anchor" href="#arg-azure-client-secret"></a></dt>
+<dd><p>Azure AD service principal client secret.</p></dd>
+
+
+<dt id="arg-azure-tenant-id">azure_tenant_id<a class="anchor" aria-label="anchor" href="#arg-azure-tenant-id"></a></dt>
+<dd><p>Azure AD tenant id.</p></dd>
+
+
+<dt id="arg-auth-type">auth_type<a class="anchor" aria-label="anchor" href="#arg-auth-type"></a></dt>
+<dd><p>Optional explicit auth mode override from <code>DATABRICKS_AUTH_TYPE</code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>List that contains <code><a href="https://httr2.r-lib.org/reference/oauth_client.html" class="external-link">httr2::oauth_client()</a></code>, relevant <code>auth_url</code>, and <code>is_m2m</code></p>
+    <p>List containing <code>client</code> (<code><a href="https://httr2.r-lib.org/reference/oauth_client.html" class="external-link">httr2::oauth_client()</a></code>), <code>auth_url</code>,
+<code>auth_mode</code>, <code>is_m2m</code>, <code>scope</code>, and <code>token_params</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Creates an OAuth 2.0 Client for U2M or M2M flows.</p>
-<p>If <code>client_id</code> and <code>client_secret</code> are detected then an M2M auth flow will occur.
-Otherwise it falls back to U2M.</p>
+<p>With no explicit <code>auth_type</code>, the default order is Databricks OAuth M2M, then
+Azure service principal M2M, then OAuth U2M.
+Set <code>auth_type = "azure-client-secret"</code> to force Azure service principal M2M.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

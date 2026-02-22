@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">brickster</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.13</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,11 +41,15 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/databrickslabs/brickster/blob/v0.2.12/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/databrickslabs/brickster/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.12" id="brickster-0212">brickster 0.2.12<a class="anchor" aria-label="anchor" href="#brickster-0212"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.2.13" id="brickster-0213">brickster 0.2.13<a class="anchor" aria-label="anchor" href="#brickster-0213"></a></h2>
+<ul><li>Added Azure AD service principal OAuth M2M support (<code>ARM_CLIENT_ID</code>, <code>ARM_CLIENT_SECRET</code>, <code>ARM_TENANT_ID</code>) with optional <code>DATABRICKS_AUTH_TYPE</code> override (<code>oauth-m2m</code>, <code>azure-client-secret</code>, <code>oauth-u2m</code>); default auth resolution now prefers Azure M2M over U2M when ARM credentials are present (<a href="https://github.com/databrickslabs/brickster/issues/185" class="external-link">#185</a>)</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.12" id="brickster-0212">brickster 0.2.12<a class="anchor" aria-label="anchor" href="#brickster-0212"></a></h2><p class="text-muted">CRAN release: 2026-02-04</p>
 <ul><li>Fixed <code>dbplyr::compute</code> interaction for DBI backend (<a href="https://github.com/databrickslabs/brickster/issues/184" class="external-link">#184</a>)</li>
 <li>Added OAuth M2M support for workspace-level service principal authentication (<a href="https://github.com/databrickslabs/brickster/issues/173" class="external-link">#173</a>, <a href="https://github.com/databrickslabs/brickster/issues/103" class="external-link">#103</a>)</li>
 <li>DBI connections accept <code>http_path</code> as an alternative to <code>warehouse_id</code> and extract the warehouse ID from <code>/sql/1.0/warehouses/&lt;id&gt;</code>.</li>

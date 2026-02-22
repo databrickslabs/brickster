@@ -6,7 +6,8 @@ Reads Databricks CLI Config
 
 ``` r
 read_databrickscfg(
-  key = c("token", "host", "wsid", "client_id", "client_secret"),
+  key = c("token", "host", "wsid", "client_id", "client_secret", "azure_client_id",
+    "azure_client_secret", "azure_tenant_id", "auth_type"),
   profile = NULL,
   error = TRUE
 )
@@ -17,7 +18,8 @@ read_databrickscfg(
 - key:
 
   The value to fetch from profile. One of `token`, `host`, `wsid`,
-  `client_id`, or `client_secret`
+  `client_id`, `client_secret`, `azure_client_id`,
+  `azure_client_secret`, `azure_tenant_id`, or `auth_type`
 
 - profile:
 

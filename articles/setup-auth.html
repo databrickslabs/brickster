@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">brickster</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.13</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,7 +74,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Connect to a Databricks Workspace</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/databrickslabs/brickster/blob/v0.2.12/vignettes/setup-auth.Rmd" class="external-link"><code>vignettes/setup-auth.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/databrickslabs/brickster/blob/main/vignettes/setup-auth.Rmd" class="external-link"><code>vignettes/setup-auth.Rmd</code></a></small>
       <div class="d-none name"><code>setup-auth.Rmd</code></div>
     </div>
 
@@ -119,6 +119,17 @@ required if using OAuth U2M or M2M</em>)</p></li>
 required for OAuth M2M</em>)</p></li>
 <li><p><code>DATABRICKS_CLIENT_SECRET</code>: OAuth M2M client secret
 (<em>only required for OAuth M2M</em>)</p></li>
+<li><p><code>ARM_CLIENT_ID</code>: Azure AD service principal
+application id (<em>only required for Azure service principal OAuth
+M2M</em>)</p></li>
+<li><p><code>ARM_CLIENT_SECRET</code>: Azure AD service principal client
+secret (<em>only required for Azure service principal OAuth
+M2M</em>)</p></li>
+<li><p><code>ARM_TENANT_ID</code>: Azure AD tenant id (<em>only required
+for Azure service principal OAuth M2M</em>)</p></li>
+<li><p><code>DATABRICKS_AUTH_TYPE</code>: Optional auth mode override
+(<code>oauth-m2m</code>, <code>azure-client-secret</code>,
+<code>oauth-u2m</code>)</p></li>
 <li><p><code>DATABRICKS_WSID</code>: The workspace ID (<a href="https://docs.databricks.com/workspace/workspace-details.html#workspace-instance-names-urls-and-ids" class="external-link">docs</a>)</p></li>
 </ul>
 <p><code>DATABRICKS_WSID</code> is only required for the RStudio IDE
@@ -132,6 +143,16 @@ integration with the connection pane.</p>
 <span><span class="va">DATABRICKS_CLIENT_ID</span><span class="op">=</span><span class="fl">11111111</span><span class="op">-</span><span class="fl">2222</span><span class="op">-</span><span class="fl">3333</span><span class="op">-</span><span class="fl">4444</span><span class="op">-</span><span class="fl">555555555555</span></span>
 <span><span class="va">DATABRICKS_CLIENT_SECRET</span><span class="op">=</span><span class="va">abcdefg1234567890</span></span>
 <span><span class="va">DATABRICKS_WSID</span><span class="op">=</span><span class="fl">123123123123123</span></span></code></pre>
+<p>For Azure service principal OAuth M2M:</p>
+<pre><code><span><span class="va">DATABRICKS_HOST</span><span class="op">=</span><span class="va">adb</span><span class="op">-</span><span class="va">xxxxxx.xx.azuredatabricks.net</span></span>
+<span><span class="va">ARM_CLIENT_ID</span><span class="op">=</span><span class="fl">11111111</span><span class="op">-</span><span class="fl">2222</span><span class="op">-</span><span class="fl">3333</span><span class="op">-</span><span class="fl">4444</span><span class="op">-</span><span class="fl">555555555555</span></span>
+<span><span class="va">ARM_CLIENT_SECRET</span><span class="op">=</span><span class="va">abcdefg1234567890</span></span>
+<span><span class="va">ARM_TENANT_ID</span><span class="op">=</span><span class="va">aaaaaaaa</span><span class="op">-</span><span class="va">bbbb</span><span class="op">-</span><span class="va">cccc</span><span class="op">-</span><span class="va">dddd</span><span class="op">-</span><span class="va">eeeeeeeeeeee</span></span></code></pre>
+<p>With no explicit auth override, <a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> attempts
+Databricks OAuth M2M (<code>DATABRICKS_CLIENT_*</code>), then Azure
+service principal OAuth M2M (<code>ARM_*</code>), then OAuth U2M. Set
+<code>DATABRICKS_AUTH_TYPE=azure-client-secret</code> to force Azure
+service principal authentication.</p>
 <p><strong>Note</strong>: Recommend creating an <code>.Renviron</code>
 for each project. You can create <code>.Renviron</code> within your user
 home directory if required.</p>
@@ -146,7 +167,7 @@ credentials in your R code. You can load <a href="https://github.com/databricksl
 list the clusters within the workspace using
 <code><a href="../reference/db_cluster_list.html">db_cluster_list()</a></code>, to access the host/token use
 <code><a href="../reference/db_host.html">db_host()</a></code>/<code><a href="../reference/db_token.html">db_token()</a></code> respectively.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># using db_host() and db_token() to get credentials</span></span>
@@ -155,7 +176,7 @@ list the clusters within the workspace using
 parameters default to calling
 <code><a href="../reference/db_host.html">db_host()</a></code>/<code><a href="../reference/db_token.html">db_token()</a></code> therefore we can omit
 explicit calls to the functions.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># all host/token parameters default to db_host()/db_token()</span></span>
 <span><span class="va">clusters</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_cluster_list.html">db_cluster_list</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>When using OAuth U2M or OAuth M2M authentication you don’t define a
@@ -177,7 +198,7 @@ CLI</a>)</li>
 <p>To differentiate between (1) and (2) the option
 <code>use_databrickscfg</code> is used, the following example shows how
 to switch the session to use <code>.databrickscfg</code>.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># will use the `DEFAULT` profile in `.databrickscfg`</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>use_databrickscfg <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
@@ -201,7 +222,7 @@ credentials are returned by
 </ul>
 <p>This behaviour works when using credentials specified in either
 <code>.Renviron</code> or <code>.databrickscfg</code>:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># using .Renviron</span></span>
 <span><span class="fu"><a href="../reference/db_host.html">db_host</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># returns `DB_HOST` (.Renviron)</span></span>
 <span></span>
@@ -242,6 +263,21 @@ from Databricks CLI</a>.</p>
 <p>There is only one <a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> specific feature and it is
 the inclusion of <code>wsid</code> alongside
 <code>host</code>/<code>token</code>.</p>
+<p>When using OAuth M2M with a <code>.databrickscfg</code> profile:</p>
+<ul>
+<li>Databricks service principal fields: <code>client_id</code>,
+<code>client_secret</code>
+</li>
+<li>Azure service principal fields: <code>azure_client_id</code>,
+<code>azure_client_secret</code>, <code>azure_tenant_id</code>
+</li>
+<li>Optional auth mode override: <code>auth_type</code>
+(<code>oauth-m2m</code>, <code>azure-client-secret</code>,
+<code>oauth-u2m</code>)</li>
+</ul>
+<p>If both <code>DATABRICKS_AUTH_TYPE</code> (environment variable) and
+<code>auth_type</code> (<code>.databrickscfg</code>) are set,
+<code>DATABRICKS_AUTH_TYPE</code> takes precedence.</p>
 <p><code>wsid</code> is used by the connections pane integration in
 RStudio as the underlying API’s require it.</p>
 </div>
@@ -257,7 +293,7 @@ managed Databricks OAuth credentials selected, <a href="https://github.com/datab
 functions using <code><a href="../reference/db_host.html">db_host()</a></code>/<code><a href="../reference/db_token.html">db_token()</a></code>
 respectively should just work without needing to specify any credentials
 in your R code. See the code below as an example.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/db_cluster_list.html">db_cluster_list</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> will automatically detect when a session has
