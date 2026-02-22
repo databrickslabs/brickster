@@ -34,11 +34,6 @@ readable_time <- function(x) {
 
 get_catalogs <- function(host, token) {
   catalogs <- db_uc_catalogs_list(host = host, token = token)
-  data.frame(
-    name = purrr::map_chr(catalogs, "name"),
-    type = "catalog",
-    check.names = FALSE
-  )
   if (length(catalogs) > 0) {
     data.frame(
       name = purrr::map_chr(catalogs, "name"),
