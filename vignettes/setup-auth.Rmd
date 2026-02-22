@@ -41,6 +41,14 @@ To get started add the following to your `.Renviron`:
 
 -   `DATABRICKS_CLIENT_SECRET`: OAuth M2M client secret (*only required for OAuth M2M*)
 
+-   `ARM_CLIENT_ID`: Azure AD service principal application id (*only required for Azure service principal OAuth M2M*)
+
+-   `ARM_CLIENT_SECRET`: Azure AD service principal client secret (*only required for Azure service principal OAuth M2M*)
+
+-   `ARM_TENANT_ID`: Azure AD tenant id (*only required for Azure service principal OAuth M2M*)
+
+-   `DATABRICKS_AUTH_TYPE`: Optional auth mode override (`oauth-m2m`, `azure-client-secret`, `oauth-u2m`)
+
 -   `DATABRICKS_WSID`: The workspace ID ([docs](https://docs.databricks.com/workspace/workspace-details.html#workspace-instance-names-urls-and-ids))
 
 `DATABRICKS_WSID` is only required for the RStudio IDE integration with the connection pane.
@@ -61,6 +69,17 @@ DATABRICKS_CLIENT_ID=11111111-2222-3333-4444-555555555555
 DATABRICKS_CLIENT_SECRET=abcdefg1234567890
 DATABRICKS_WSID=123123123123123
 ```
+
+For Azure service principal OAuth M2M:
+
+```
+DATABRICKS_HOST=adb-xxxxxx.xx.azuredatabricks.net
+ARM_CLIENT_ID=11111111-2222-3333-4444-555555555555
+ARM_CLIENT_SECRET=abcdefg1234567890
+ARM_TENANT_ID=aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee
+```
+
+With no explicit auth override, `{brickster}` attempts Databricks OAuth M2M (`DATABRICKS_CLIENT_*`), then Azure service principal OAuth M2M (`ARM_*`), then OAuth U2M. Set `DATABRICKS_AUTH_TYPE=azure-client-secret` to force Azure service principal authentication.
 
 **Note**: Recommend creating an `.Renviron` for each project. You can create `.Renviron` within your user home directory if required.
 
@@ -160,6 +179,14 @@ DATABRICKS_WSID_PROD=123123123123125
 For details on configuring please refer to [documentation from Databricks CLI](https://docs.databricks.com/dev-tools/cli/index.html#connection-profiles).
 
 There is only one `{brickster}` specific feature and it is the inclusion of `wsid` alongside `host`/`token`.
+
+When using OAuth M2M with a `.databrickscfg` profile:
+
+- Databricks service principal fields: `client_id`, `client_secret`
+- Azure service principal fields: `azure_client_id`, `azure_client_secret`, `azure_tenant_id`
+- Optional auth mode override: `auth_type` (`oauth-m2m`, `azure-client-secret`, `oauth-u2m`)
+
+If both `DATABRICKS_AUTH_TYPE` (environment variable) and `auth_type` (`.databrickscfg`) are set, `DATABRICKS_AUTH_TYPE` takes precedence.
 
 `wsid` is used by the connections pane integration in RStudio as the underlying API's require it.
 

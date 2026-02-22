@@ -5,14 +5,16 @@
 \title{Reads Environment Variables}
 \usage{
 read_env_var(
-  key = c("token", "host", "wsid", "client_id", "client_secret"),
+  key = c("token", "host", "wsid", "client_id", "client_secret", "azure_client_id",
+    "azure_client_secret", "azure_tenant_id", "auth_type"),
   profile = NULL,
   error = TRUE
 )
 }
 \arguments{
 \item{key}{The value to fetch from profile. One of \code{token}, \code{host}, \code{wsid},
-\code{client_id}, or \code{client_secret}}
+\code{client_id}, \code{client_secret}, \code{azure_client_id}, \code{azure_client_secret},
+\code{azure_tenant_id}, or \code{auth_type}}
 
 \item{profile}{Character, the name of the profile to retrieve values}
 
