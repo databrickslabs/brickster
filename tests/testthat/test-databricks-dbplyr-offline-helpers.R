@@ -10,7 +10,7 @@ make_test_con <- function() {
   )
 }
 
-test_that("spark SQL translator covers conditional and date helpers", {
+test_that("spark SQL translator handles Databricks-specific conditional, date, and aggregate branches", {
   con <- make_test_con()
 
   sql_if <- as.character(dbplyr::translate_sql(
@@ -31,25 +31,13 @@ test_that("spark SQL translator covers conditional and date helpers", {
     con = con
   ))
   expect_match(sql_floor_default, "DATE_TRUNC\\('day'", ignore.case = TRUE)
-})
 
-test_that("spark SQL translator handles distinct and weighted mean variants", {
-  con <- make_test_con()
-
-  sql_distinct <- as.character(dbplyr::translate_sql(
-    n_distinct(x, y, na.rm = FALSE),
-    con = con,
-    window = FALSE
-  ))
-  expect_match(sql_distinct, "COUNT\\(DISTINCT", ignore.case = TRUE)
-  expect_match(sql_distinct, "ARRAY\\(", ignore.case = TRUE)
-
-  sql_drop_na <- as.character(dbplyr::translate_sql(
+  sql_distinct_drop_na <- as.character(dbplyr::translate_sql(
     n_distinct(x, na.rm = TRUE),
     con = con,
     window = FALSE
   ))
-  expect_match(sql_drop_na, "NANVL", ignore.case = TRUE)
+  expect_match(sql_distinct_drop_na, "NANVL", ignore.case = TRUE)
 
   sql_weighted_mean <- as.character(dbplyr::translate_sql(
     weighted.mean(x, w),

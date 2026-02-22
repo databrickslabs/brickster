@@ -114,6 +114,35 @@ test_that("db_volume_upload_dir uploads only top-level files when preserve_struc
   expect_false(any(grepl("upload_flat/nested/inner.txt$", state$upload_paths)))
 })
 
+test_that("db_volume_dir_delete recursive mode tolerates listing errors", {
+  state <- new.env(parent = emptyenv())
+  state$action_perform <- NULL
+
+  local_mocked_bindings(
+    db_volume_list = function(...) {
+      stop("list failed")
+    },
+    db_volume_action = function(perform_request = TRUE, ...) {
+      state$action_perform <- perform_request
+      TRUE
+    },
+    .package = "brickster"
+  )
+
+  expect_no_error(
+    out <- db_volume_dir_delete(
+      path = "/Volumes/c/s/v/path",
+      recursive = TRUE,
+      perform_request = FALSE,
+      host = "mock_host",
+      token = "mock_token"
+    )
+  )
+
+  expect_true(out)
+  expect_true(state$action_perform)
+})
+
 test_that("db_volume_upload_dir warns and short-circuits for empty directories", {
   local_dir <- withr::local_tempdir()
   state <- new.env(parent = emptyenv())
