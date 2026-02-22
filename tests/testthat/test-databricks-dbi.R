@@ -153,7 +153,7 @@ test_that("Transaction restrictions work offline", {
 })
 
 test_that("Quote handling utility functions work", {
-  clean_quoted <- brickster:::db_clean_table_name
+  clean_quoted <- db_clean_table_name
 
   expect_equal(clean_quoted("table_name"), "table_name")
   expect_equal(clean_quoted('"table_name"'), "table_name")
@@ -165,7 +165,7 @@ test_that("Quote handling utility functions work", {
 
 test_that("db_prepare_create_table_fields handles inputs", {
   fields <- c(id = "INT", name = "STRING")
-  result <- brickster:::db_prepare_create_table_fields(fields)
+  result <- db_prepare_create_table_fields(fields)
 
   expect_s3_class(result$value, "data.frame")
   expect_named(result$value, names(fields))
@@ -173,20 +173,20 @@ test_that("db_prepare_create_table_fields handles inputs", {
   expect_equal(result$field_types, fields)
 
   df_fields <- data.frame(id = integer(), name = character())
-  result <- brickster:::db_prepare_create_table_fields(df_fields)
+  result <- db_prepare_create_table_fields(df_fields)
   expect_equal(result$value, df_fields)
   expect_null(result$field_types)
 
   expect_error(
-    brickster:::db_prepare_create_table_fields(NULL),
+    db_prepare_create_table_fields(NULL),
     "fields must be provided"
   )
   expect_error(
-    brickster:::db_prepare_create_table_fields(character()),
+    db_prepare_create_table_fields(character()),
     "fields must contain at least one column"
   )
   expect_error(
-    brickster:::db_prepare_create_table_fields(c("INT", "STRING")),
+    db_prepare_create_table_fields(c("INT", "STRING")),
     "named character vector"
   )
 })
@@ -204,14 +204,14 @@ test_that("db_generate_typed_values_sql preserves single quotes", {
 
   test_value <- "O'Connor & D'Angelo's data"
 
-  values_sql <- brickster:::db_generate_typed_values_sql(
+  values_sql <- db_generate_typed_values_sql(
     con,
     data.frame(test = test_value, stringsAsFactors = FALSE)
   )
 
   expect_equal(values_sql, "('O\\'Connor & D\\'Angelo\\'s data')")
 
-  view_values_sql <- brickster:::db_generate_typed_values_sql_for_view(
+  view_values_sql <- db_generate_typed_values_sql_for_view(
     con,
     data.frame(test = test_value, stringsAsFactors = FALSE)
   )
