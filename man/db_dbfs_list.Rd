@@ -26,9 +26,11 @@ path (for example \verb{/mnt/my-file.txt}).}
 data.frame
 }
 \description{
-List the contents of a directory, or details of the file.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }
 \details{
+List the contents of a directory, or details of the file.
+
 When calling list on a large directory, the list operation will time out
 after approximately 60 seconds.
 
@@ -56,3 +58,4 @@ Other DBFS API:
 \code{\link{db_dbfs_read}()}
 }
 \concept{DBFS API}
+\keyword{internal}

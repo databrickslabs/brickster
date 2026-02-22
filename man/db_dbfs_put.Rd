@@ -33,9 +33,11 @@ existing files.}
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \description{
-Upload a file through the use of multipart form post.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }
 \details{
+Upload a file through the use of multipart form post.
+
 Either \code{contents} or \code{file} must be specified. \code{file} takes precedent over
 \code{contents} if both are specified.
 
@@ -59,3 +61,4 @@ Other DBFS API:
 \code{\link{db_dbfs_read}()}
 }
 \concept{DBFS API}
+\keyword{internal}

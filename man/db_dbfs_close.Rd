@@ -25,9 +25,11 @@ db_dbfs_close(
 HTTP Response
 }
 \description{
-Close the stream specified by the input handle.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }
 \details{
+Close the stream specified by the input handle.
+
 If the handle does not exist, this call throws an exception with
 \code{RESOURCE_DOES_NOT_EXIST.}
 }
@@ -53,3 +55,4 @@ Other DBFS API:
 \code{\link{db_dbfs_read}()}
 }
 \concept{DBFS API}
+\keyword{internal}

@@ -30,9 +30,10 @@ character vector to raw via \code{\link[=as.raw]{as.raw()}}.}
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \description{
-Append a block of data to the stream specified by the input handle.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }
 \details{
+Append a block of data to the stream specified by the input handle.
 \itemize{
 \item If the handle does not exist, this call will throw an exception with
 \code{RESOURCE_DOES_NOT_EXIST.}
@@ -62,3 +63,4 @@ Other DBFS API:
 \code{\link{db_dbfs_read}()}
 }
 \concept{DBFS API}
+\keyword{internal}

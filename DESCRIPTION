@@ -27,6 +27,7 @@ Imports:
     httr2 (>= 1.1.1),
     ini,
     jsonlite,
+    lifecycle,
     methods,
     nanoarrow,
     purrr,
