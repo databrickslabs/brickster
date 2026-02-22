@@ -23,9 +23,10 @@ path (for example \verb{/mnt/my-file.txt}).}
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \description{
-Get the file information of a file or directory.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }
 \details{
+Get the file information of a file or directory.
 \itemize{
 \item If the file or directory does not exist, this call throws an exception with
 \code{RESOURCE_DOES_NOT_EXIST.}
@@ -44,3 +45,4 @@ Other DBFS API:
 \code{\link{db_dbfs_read}()}
 }
 \concept{DBFS API}
+\keyword{internal}

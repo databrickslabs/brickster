@@ -23,10 +23,11 @@ path (for example \verb{/mnt/my-file.txt}).}
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \description{
-Create the given directory and necessary parent directories if they do not
-exist.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }
 \details{
+Create the given directory and necessary parent directories if they do not
+exist.
 \itemize{
 \item If there exists a file (not a directory) at any prefix of the input path,
 this call throws an exception with \code{RESOURCE_ALREADY_EXISTS.}
@@ -47,3 +48,4 @@ Other DBFS API:
 \code{\link{db_dbfs_read}()}
 }
 \concept{DBFS API}
+\keyword{internal}

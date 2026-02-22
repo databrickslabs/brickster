@@ -2,6 +2,8 @@
 
 #' DBFS Create
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
 #' Open a stream to write to a file and returns a handle to this stream.
 #'
 #' @param path The path of the new file. The path should be the absolute DBFS
@@ -25,7 +27,7 @@
 #'
 #' @return Handle which should subsequently be passed into [db_dbfs_add_block()]
 #' and [db_dbfs_close()] when writing to a file through a stream.
-#' @export
+#' @keywords internal
 db_dbfs_create <- function(
   path,
   overwrite = FALSE,
@@ -33,6 +35,13 @@ db_dbfs_create <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
+  lifecycle::deprecate_soft(
+    when = "0.2.13",
+    what = "db_dbfs_create()",
+    with = "db_volume_write()",
+    details = "DBFS is no longer best practice; use Unity Catalog volumes instead."
+  )
+
   body <- list(
     path = path,
     overwrite = overwrite
@@ -59,6 +68,8 @@ db_dbfs_create <- function(
 
 #' DBFS Add Block
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
 #' Append a block of data to the stream specified by the input handle.
 #'
 #' @param handle Handle on an open stream.
@@ -79,7 +90,7 @@ db_dbfs_create <- function(
 #'
 #' @family DBFS API
 #'
-#' @export
+#' @keywords internal
 #' @importFrom stats setNames
 #' @importFrom utils object.size
 db_dbfs_add_block <- function(
@@ -90,6 +101,13 @@ db_dbfs_add_block <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
+  lifecycle::deprecate_soft(
+    when = "0.2.13",
+    what = "db_dbfs_add_block()",
+    with = "db_volume_write()",
+    details = "DBFS is no longer best practice; use Unity Catalog volumes instead."
+  )
+
   # `base64enc::base64encode()` can't accept strings
   # if `convert_to_raw` is TRUE then convert so that the string is encoded
   # otherwise it will assume it's a file path on the local system
@@ -138,6 +156,8 @@ db_dbfs_add_block <- function(
 
 #' DBFS Close
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
 #' Close the stream specified by the input handle.
 #'
 #' @param handle The handle on an open stream. This field is required.
@@ -153,13 +173,20 @@ db_dbfs_add_block <- function(
 #' @family DBFS API
 #'
 #' @return HTTP Response
-#' @export
+#' @keywords internal
 db_dbfs_close <- function(
   handle,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
 ) {
+  lifecycle::deprecate_soft(
+    when = "0.2.13",
+    what = "db_dbfs_close()",
+    with = "db_volume_write()",
+    details = "DBFS is no longer best practice; use Unity Catalog volumes instead."
+  )
+
   body <- list(handle = handle)
 
   req <- db_request(
@@ -181,6 +208,8 @@ db_dbfs_close <- function(
 
 #' DBFS Get Status
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
 #' Get the file information of a file or directory.
 #'
 #' @inheritParams auth_params
@@ -193,13 +222,20 @@ db_dbfs_close <- function(
 #'
 #' @family DBFS API
 #'
-#' @export
+#' @keywords internal
 db_dbfs_get_status <- function(
   path,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
 ) {
+  lifecycle::deprecate_soft(
+    when = "0.2.13",
+    what = "db_dbfs_get_status()",
+    with = "db_volume_file_exists()",
+    details = "DBFS is no longer best practice; use Unity Catalog volumes instead."
+  )
+
   body <- list(path = path)
 
   req <- db_request(
@@ -219,6 +255,8 @@ db_dbfs_get_status <- function(
 }
 
 #' DBFS List
+#'
+#' `r lifecycle::badge("deprecated")`
 #'
 #' List the contents of a directory, or details of the file.
 #'
@@ -243,13 +281,20 @@ db_dbfs_get_status <- function(
 #' @family DBFS API
 #'
 #' @return data.frame
-#' @export
+#' @keywords internal
 db_dbfs_list <- function(
   path,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
 ) {
+  lifecycle::deprecate_soft(
+    when = "0.2.13",
+    what = "db_dbfs_list()",
+    with = "db_volume_list()",
+    details = "DBFS is no longer best practice; use Unity Catalog volumes instead."
+  )
+
   body <- list(path = path)
 
   req <- db_request(
@@ -270,6 +315,8 @@ db_dbfs_list <- function(
 
 #' DBFS mkdirs
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
 #' Create the given directory and necessary parent directories if they do not
 #' exist.
 #'
@@ -285,13 +332,20 @@ db_dbfs_list <- function(
 #'
 #' @family DBFS API
 #'
-#' @export
+#' @keywords internal
 db_dbfs_mkdirs <- function(
   path,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
 ) {
+  lifecycle::deprecate_soft(
+    when = "0.2.13",
+    what = "db_dbfs_mkdirs()",
+    with = "db_volume_dir_create()",
+    details = "DBFS is no longer best practice; use Unity Catalog volumes instead."
+  )
+
   body <- list(
     path = path
   )
@@ -313,6 +367,8 @@ db_dbfs_mkdirs <- function(
 }
 
 #' DBFS Move
+#'
+#' `r lifecycle::badge("deprecated")`
 #'
 #' Move a file from one location to another location within DBFS.
 #'
@@ -343,7 +399,7 @@ db_dbfs_mkdirs <- function(
 #'
 #' @family DBFS API
 #'
-#' @export
+#' @keywords internal
 db_dbfs_move <- function(
   source_path,
   destination_path,
@@ -351,6 +407,13 @@ db_dbfs_move <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
+  lifecycle::deprecate_soft(
+    when = "0.2.13",
+    what = "db_dbfs_move()",
+    with = "db_volume_write()",
+    details = "DBFS is no longer best practice; use Unity Catalog volumes instead."
+  )
+
   body <- list(
     source_path = source_path,
     destination_path = destination_path
@@ -374,6 +437,8 @@ db_dbfs_move <- function(
 
 #' DBFS Delete
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
 #' @param recursive Whether or not to recursively delete the directory’s
 #' contents. Deleting empty directories can be done without providing the recursive flag.
 #' @inheritParams auth_params
@@ -382,7 +447,7 @@ db_dbfs_move <- function(
 #'
 #' @family DBFS API
 #'
-#' @export
+#' @keywords internal
 db_dbfs_delete <- function(
   path,
   recursive = FALSE,
@@ -390,6 +455,13 @@ db_dbfs_delete <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
+  lifecycle::deprecate_soft(
+    when = "0.2.13",
+    what = "db_dbfs_delete()",
+    with = "db_volume_delete()",
+    details = "DBFS is no longer best practice; use Unity Catalog volumes instead."
+  )
+
   body <- list(
     path = path,
     recursive = recursive
@@ -413,6 +485,8 @@ db_dbfs_delete <- function(
 
 #' DBFS Put
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
 #' Upload a file through the use of multipart form post.
 #'
 #' @param file Path to a file on local system, takes precedent over `path`.
@@ -435,7 +509,7 @@ db_dbfs_delete <- function(
 #'
 #' @family DBFS API
 #'
-#' @export
+#' @keywords internal
 db_dbfs_put <- function(
   path,
   file = NULL,
@@ -445,6 +519,13 @@ db_dbfs_put <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
+  lifecycle::deprecate_soft(
+    when = "0.2.13",
+    what = "db_dbfs_put()",
+    with = "db_volume_write()",
+    details = "DBFS is no longer best practice; use Unity Catalog volumes instead."
+  )
+
   body <- list(
     path = path,
     overwrite = from_logical(overwrite)
@@ -485,6 +566,8 @@ db_dbfs_put <- function(
 
 #' DBFS Read
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
 #' Return the contents of a file.
 #'
 #' @param offset Offset to read from in bytes.
@@ -507,7 +590,7 @@ db_dbfs_put <- function(
 #'
 #' @family DBFS API
 #'
-#' @export
+#' @keywords internal
 db_dbfs_read <- function(
   path,
   offset = 0,
@@ -516,6 +599,13 @@ db_dbfs_read <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
+  lifecycle::deprecate_soft(
+    when = "0.2.13",
+    what = "db_dbfs_read()",
+    with = "db_volume_read()",
+    details = "DBFS is no longer best practice; use Unity Catalog volumes instead."
+  )
+
   body <- list(
     path = path,
     offset = offset,

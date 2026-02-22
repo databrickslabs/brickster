@@ -28,9 +28,11 @@ path should be the absolute DBFS path (for example,
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \description{
-Move a file from one location to another location within DBFS.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }
 \details{
+Move a file from one location to another location within DBFS.
+
 If the given source path is a directory, this call always recursively moves
 all files.
 
@@ -61,3 +63,4 @@ Other DBFS API:
 \code{\link{db_dbfs_read}()}
 }
 \concept{DBFS API}
+\keyword{internal}

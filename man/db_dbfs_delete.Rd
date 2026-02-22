@@ -27,7 +27,7 @@ contents. Deleting empty directories can be done without providing the recursive
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \description{
-DBFS Delete
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }
 \seealso{
 Other DBFS API: 
@@ -42,3 +42,4 @@ Other DBFS API:
 \code{\link{db_dbfs_read}()}
 }
 \concept{DBFS API}
+\keyword{internal}

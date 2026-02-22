@@ -30,9 +30,11 @@ limit of 1 MB, and a default value of 0.5 MB.}
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \description{
-Return the contents of a file.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }
 \details{
+Return the contents of a file.
+
 If offset + length exceeds the number of bytes in a file, reads contents
 until the end of file.
 \itemize{
@@ -57,3 +59,4 @@ Other DBFS API:
 \code{\link{db_dbfs_put}()}
 }
 \concept{DBFS API}
+\keyword{internal}

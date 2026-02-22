@@ -31,9 +31,11 @@ Handle which should subsequently be passed into \code{\link[=db_dbfs_add_block]{
 and \code{\link[=db_dbfs_close]{db_dbfs_close()}} when writing to a file through a stream.
 }
 \description{
-Open a stream to write to a file and returns a handle to this stream.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }
 \details{
+Open a stream to write to a file and returns a handle to this stream.
+
 There is a 10 minute idle timeout on this handle. If a file or directory
 already exists on the given path and overwrite is set to \code{FALSE}, this call
 throws an exception with \code{RESOURCE_ALREADY_EXISTS.}
@@ -60,3 +62,4 @@ Other DBFS API:
 \code{\link{db_dbfs_read}()}
 }
 \concept{DBFS API}
+\keyword{internal}
