@@ -1,11 +1,23 @@
-Sys.unsetenv(c(
-  "DATABRICKS_AUTH_TYPE",
-  "ARM_CLIENT_ID",
-  "ARM_CLIENT_SECRET",
-  "ARM_TENANT_ID"
-))
+local_clear_auth_env <- function() {
+  withr::local_envvar(c(
+    DATABRICKS_AUTH_TYPE = NA_character_,
+    DATABRICKS_CONFIG_FILE = NA_character_,
+    DATABRICKS_CONFIG_PROFILE = NA_character_,
+    ARM_CLIENT_ID = NA_character_,
+    ARM_CLIENT_SECRET = NA_character_,
+    ARM_TENANT_ID = NA_character_
+  ), .local_envir = parent.frame())
+  withr::local_options(
+    use_databrickscfg = FALSE,
+    db_profile = NULL,
+    brickster_oauth_client = NULL,
+    .local_envir = parent.frame()
+  )
+}
 
 test_that("request helpers - building requests", {
+  local_clear_auth_env()
+
   host <- "some_url"
   token <- "some_token"
   endpoint <- "clusters/create"
@@ -40,6 +52,8 @@ test_that("request helpers - building requests", {
 })
 
 test_that("request helpers - m2m auth flow", {
+  local_clear_auth_env()
+
   host <- "some_url"
   endpoint <- "clusters/create"
   endpoint_version <- "2.0"
@@ -76,6 +90,8 @@ test_that("request helpers - m2m auth flow", {
 })
 
 test_that("request helpers - azure m2m auth flow", {
+  local_clear_auth_env()
+
   host <- "some_url"
   endpoint <- "clusters/create"
   endpoint_version <- "2.0"
@@ -102,15 +118,16 @@ test_that("request helpers - azure m2m auth flow", {
     req$policies$auth_sign$params$flow,
     "oauth_flow_client_credentials"
   )
-  expect_null(
-    req$policies$auth_sign$params$flow_params$scope
+  expect_identical(
+    req$policies$auth_sign$params$flow_params$scope,
+    "2ff814a6-3304-4ab8-85cb-cd0e6f879c1d/.default"
   )
   expect_identical(
-    req$policies$auth_sign$params$flow_params$token_params$resource,
-    "2ff814a6-3304-4ab8-85cb-cd0e6f879c1d"
+    req$policies$auth_sign$params$flow_params$token_params,
+    list()
   )
   expect_identical(
     req$policies$auth_sign$params$flow_params$client$token_url,
-    "https://login.microsoftonline.com/azure-tenant-id/oauth2/token"
+    "https://login.microsoftonline.com/azure-tenant-id/oauth2/v2.0/token"
   )
 })

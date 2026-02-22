@@ -30,7 +30,8 @@ db_oauth_client(
 \item{auth_type}{Optional explicit auth mode override from \code{DATABRICKS_AUTH_TYPE}.}
 }
 \value{
-List that contains \code{\link[httr2:oauth_client]{httr2::oauth_client()}}, relevant \code{auth_url}, and \code{is_m2m}
+List containing \code{client} (\code{\link[httr2:oauth_client]{httr2::oauth_client()}}), \code{auth_url},
+\code{auth_mode}, \code{is_m2m}, \code{scope}, and \code{token_params}.
 }
 \description{
 Create OAuth 2.0 Client

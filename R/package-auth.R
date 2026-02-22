@@ -492,17 +492,15 @@ build_azure_m2m_oauth_client <- function(
       id = azure_client_id,
       secret = azure_client_secret,
       token_url = glue::glue(
-        "https://login.microsoftonline.com/{azure_tenant_id}/oauth2/token"
+        "https://login.microsoftonline.com/{azure_tenant_id}/oauth2/v2.0/token"
       ),
       name = "brickster"
     ),
     auth_url = NULL,
     auth_mode = "azure-client-secret",
     is_m2m = TRUE,
-    scope = NULL,
-    token_params = list(
-      resource = "2ff814a6-3304-4ab8-85cb-cd0e6f879c1d"
-    )
+    scope = "2ff814a6-3304-4ab8-85cb-cd0e6f879c1d/.default",
+    token_params = list()
   )
 }
 
@@ -540,7 +538,8 @@ build_databricks_u2m_oauth_client <- function(host) {
 #' Azure service principal M2M, then OAuth U2M.
 #' Set `auth_type = "azure-client-secret"` to force Azure service principal M2M.
 #'
-#' @return List that contains [httr2::oauth_client()], relevant `auth_url`, and `is_m2m`
+#' @return List containing `client` ([httr2::oauth_client()]), `auth_url`,
+#'   `auth_mode`, `is_m2m`, `scope`, and `token_params`.
 #' @keywords internal
 db_oauth_client <- function(
   host = db_host(),
