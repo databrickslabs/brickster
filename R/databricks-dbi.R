@@ -1776,7 +1776,7 @@ db_write_table_volume <- function(
     local_dir = local_temp_dir,
     volume_dir = volume_dataset_path,
     overwrite = TRUE,
-    preserve_structure = TRUE,
+    recursive = TRUE,
     host = conn@host,
     token = conn@token
   )

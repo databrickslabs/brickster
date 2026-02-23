@@ -30,6 +30,7 @@ Other Volumes FileSystem API:
 \code{\link{db_volume_delete}()},
 \code{\link{db_volume_dir_create}()},
 \code{\link{db_volume_dir_delete}()},
+\code{\link{db_volume_download_dir}()},
 \code{\link{db_volume_file_exists}()},
 \code{\link{db_volume_list}()},
 \code{\link{db_volume_read}()},

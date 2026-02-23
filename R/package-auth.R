@@ -136,7 +136,12 @@ db_read_netrc <- function(path = "~/.netrc") {
   # nocov end
 }
 
+#' Authentication Parameters
+#'
+#' Shared host/token parameters inherited by brickster API wrappers.
+#'
 #' @name auth_params
+#' @keywords internal
 #' @param host Databricks workspace URL, defaults to calling [db_host()].
 #' @param token Databricks workspace token, defaults to calling [db_token()].
 #'
