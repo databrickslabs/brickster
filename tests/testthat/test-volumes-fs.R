@@ -127,3 +127,41 @@ test_that("db_volume_upload_dir - don't perform", {
   )
   
 })
+
+test_that("db_volume_download_dir - don't perform", {
+  
+  withr::local_envvar(c(
+    "DATABRICKS_HOST" = "http://mock_host",
+    "DATABRICKS_TOKEN" = "mock_token"
+  ))
+  
+  local_download_dir <- withr::local_tempdir()
+  valid_volume_path <- "/Volumes/catalog/schema/volume/"
+  
+  # Test that function executes without error (will fail at HTTP request stage in test environment)
+  expect_error(
+    db_volume_download_dir(
+      volume_dir = valid_volume_path,
+      local_dir = local_download_dir
+    )
+  )
+  
+  # Test with invalid volume path
+  expect_error(
+    db_volume_download_dir(
+      volume_dir = "/invalid/path",
+      local_dir = local_download_dir
+    )
+  )
+  
+  # Test with local path that is a file
+  local_file <- withr::local_tempfile(lines = "x")
+  expect_error(
+    db_volume_download_dir(
+      volume_dir = valid_volume_path,
+      local_dir = local_file
+    ),
+    "is not a directory"
+  )
+  
+})

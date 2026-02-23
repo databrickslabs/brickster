@@ -252,7 +252,7 @@ db_volume_recursive_delete_contents <- function(
         for (item in contents) {
           item_path <- fs::path(path, item$name)
 
-          if (item$is_directory) {
+          if (isTRUE(item$is_directory)) {
             # Recursively delete subdirectory and all its contents
             db_volume_dir_delete(
               item_path,
@@ -397,7 +397,8 @@ db_volume_action <- function(
 #' @param local_dir Path to local directory containing files to upload
 #' @param volume_dir Volume directory path (must start with /Volumes/)
 #' @param overwrite Flag to overwrite existing files (default: `TRUE`)
-#' @param preserve_structure If `TRUE`, preserve subdirectory structure (default: `TRUE`)
+#' @param recursive If `TRUE`, recursively include subdirectories (default: `TRUE`).
+#' If `FALSE`, only top-level files are transferred.
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create
 #'
@@ -409,7 +410,7 @@ db_volume_upload_dir <- function(
   local_dir,
   volume_dir,
   overwrite = TRUE,
-  preserve_structure = TRUE,
+  recursive = TRUE,
   host = db_host(),
   token = db_token()
 ) {
@@ -426,10 +427,10 @@ db_volume_upload_dir <- function(
   # map files and generate requests
   requests <- fs::dir_map(
     local_dir,
-    recurse = preserve_structure,
+    recurse = recursive,
     type = "file",
     fun = function(local_file) {
-      if (preserve_structure) {
+      if (recursive) {
         # Preserve relative path structure
         rel_path <- fs::path_rel(local_file, start = local_dir)
         volume_file <- fs::path(volume_dir, rel_path)
@@ -478,4 +479,138 @@ db_volume_upload_dir <- function(
   )
 
   TRUE
+}
+
+#' Download Directory from Volume in Parallel
+#'
+#' Download files from a volume directory to a local directory using parallel requests.
+#'
+#' @param volume_dir Volume directory path (must start with /Volumes/)
+#' @param local_dir Path to local directory where files will be downloaded
+#' @param overwrite Flag to overwrite existing local files (default: `TRUE`)
+#' @param recursive If `TRUE`, recursively include subdirectories (default: `TRUE`).
+#' If `FALSE`, only top-level files are transferred.
+#' @inheritParams auth_params
+#' @inheritParams db_sql_warehouse_create
+#'
+#' @return TRUE if all downloads successful
+#' @family Volumes FileSystem API
+#'
+#' @export
+db_volume_download_dir <- function(
+  volume_dir,
+  local_dir,
+  overwrite = TRUE,
+  recursive = TRUE,
+  host = db_host(),
+  token = db_token()
+) {
+  volume_dir <- is_valid_volume_path(volume_dir)
+
+  if (fs::file_exists(local_dir) && !fs::dir_exists(local_dir)) {
+    cli::cli_abort("{.arg local_dir} exists and is not a directory: {.path {local_dir}}")
+  }
+
+  fs::dir_create(local_dir, recurse = TRUE)
+
+  volume_files <- db_volume_list_files_recursive(
+    path = volume_dir,
+    recurse = recursive,
+    host = host,
+    token = token
+  )
+
+  if (length(volume_files) == 0) {
+    cli::cli_warn("No files found in volume directory: {volume_dir}")
+    return(TRUE)
+  }
+
+  local_files <- purrr::map_chr(volume_files, function(volume_file) {
+    if (recursive) {
+      relative_path <- fs::path_rel(volume_file, start = volume_dir)
+      fs::path(local_dir, relative_path)
+    } else {
+      fs::path(local_dir, fs::path_file(volume_file))
+    }
+  })
+
+  # Ensure target directories exist before download.
+  local_dirs <- unique(fs::path_dir(local_files))
+  purrr::walk(local_dirs, fs::dir_create, recurse = TRUE)
+
+  if (!overwrite) {
+    existing_files <- local_files[fs::file_exists(local_files)]
+    if (length(existing_files) > 0) {
+      cli::cli_abort(c(
+        "Local files already exist:",
+        "x" = "{length(existing_files)} file(s) already exist. Set {.arg overwrite = TRUE} to replace them.",
+        "i" = "Example existing file: {.path {existing_files[[1]]}}"
+      ))
+    }
+  }
+
+  requests <- purrr::map(
+    volume_files,
+    db_volume_action,
+    action = "GET",
+    type = "files",
+    host = host,
+    token = token,
+    perform_request = FALSE,
+    progress = FALSE
+  )
+
+  httr2::req_perform_parallel(
+    requests,
+    paths = local_files,
+    on_error = "stop",
+    progress = list(
+      clear = FALSE,
+      type = "iterator",
+      format = "Downloading {cli::pb_bar} {cli::pb_percent} [{cli::pb_elapsed}]",
+      format_done = "{cli::col_green('\\u2714')} Data downloaded [{cli::pb_elapsed}]",
+      format_failed = "Data download failed [{cli::pb_elapsed}]"
+    )
+  )
+
+  TRUE
+}
+
+#' Recursively collect file paths from a volume directory
+#' @keywords internal
+db_volume_list_files_recursive <- function(
+  path,
+  recurse = TRUE,
+  host,
+  token
+) {
+  contents <- db_volume_list(path = path, host = host, token = token)$contents
+
+  if (is.null(contents) || length(contents) == 0) {
+    return(character(0))
+  }
+
+  files <- character(0)
+
+  for (item in contents) {
+    item_path <- fs::path(path, item$name)
+
+    if (isTRUE(item$is_directory)) {
+      if (recurse) {
+        files <- c(
+          files,
+          db_volume_list_files_recursive(
+            path = item_path,
+            recurse = recurse,
+            host = host,
+            token = token
+          )
+        )
+      }
+    } else {
+      files <- c(files, item_path)
+    }
+  }
+
+  files
 }
