@@ -7,31 +7,31 @@ test_that("Workspace API - don't perform", {
 
   resp_list <- db_workspace_list(
     path = "some_path",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_list, "httr2_request")
 
   resp_mkdirs <- db_workspace_mkdirs(
     path = "some_path",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_mkdirs, "httr2_request")
 
   resp_get_status <- db_workspace_get_status(
     path = "some_path",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_get_status, "httr2_request")
 
   resp_delete <- db_workspace_delete(
     path = "some_path",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_delete, "httr2_request")
 
   resp_export <- db_workspace_export(
     path = "some_path",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_export, "httr2_request")
 
@@ -39,7 +39,7 @@ test_that("Workspace API - don't perform", {
     path = "some_path",
     content = "some_content",
     language = "PYTHON",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_import, "httr2_request")
 
@@ -48,7 +48,7 @@ test_that("Workspace API - don't perform", {
       path = "some_path",
       file = "some_file",
       language = "some_langauge", # must be a valid language
-      perform_request = F
+      perform_request = FALSE
     )
   })
 
@@ -59,7 +59,7 @@ test_that("Workspace API - don't perform", {
       file = NULL,
       content = NULL,
       language = "PYTHON",
-      perform_request = F
+      perform_request = FALSE
     )
   })
 

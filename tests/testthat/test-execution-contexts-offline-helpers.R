@@ -153,13 +153,6 @@ test_that("db_context_command_run_and_wait polls until done and supports parsed/
   expect_identical(parsed, "parsed python Finished")
   expect_true(state$status_calls >= 2L)
 
-  local_mocked_bindings(
-    db_context_command_status = function(...) {
-      list(status = "Finished", results = list(resultType = "text", data = "done"))
-    },
-    .package = "brickster"
-  )
-
   raw_status <- db_context_command_run_and_wait(
     cluster_id = "c-1",
     context_id = "ctx-1",

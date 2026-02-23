@@ -18,6 +18,7 @@
 #' @family Workspace API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_workspace_delete <- function(
   path,
   recursive = FALSE,
@@ -72,7 +73,7 @@ db_workspace_delete <- function(
 #'
 #' @family Workspace API
 #'
-#' @return base64 encoded string
+#' @returns base64 encoded string
 #' @export
 db_workspace_export <- function(
   path,
@@ -107,8 +108,7 @@ db_workspace_export <- function(
 
   if (perform_request) {
     if (direct_download) {
-      req |>
-        httr2::req_perform() |>
+      db_perform_response(req) |>
         httr2::resp_body_raw() |>
         writeBin(con = output_path)
     } else {
@@ -133,6 +133,7 @@ db_workspace_export <- function(
 #' @family Workspace API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_workspace_get_status <- function(
   path,
   host = db_host(),
@@ -186,6 +187,7 @@ db_workspace_get_status <- function(
 #' @family Workspace API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_workspace_import <- function(
   path,
   file = NULL,
@@ -254,6 +256,7 @@ db_workspace_import <- function(
 #' @family Workspace API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_workspace_list <- function(
   path,
   host = db_host(),
@@ -296,6 +299,7 @@ db_workspace_list <- function(
 #' @family Workspace API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_workspace_mkdirs <- function(
   path,
   host = db_host(),

@@ -22,6 +22,7 @@
 #' @family SQL Query History API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_sql_query_history <- function(
   statuses = NULL,
   user_ids = NULL,

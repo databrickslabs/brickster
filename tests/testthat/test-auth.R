@@ -128,13 +128,13 @@ test_that("auth functions - switching profile", {
   expect_identical(db_wsid(), wsid)
 
   # prod test
-  options(db_profile = "prod")
+  withr::local_options(list(db_profile = "prod"))
   expect_identical(db_host(), "some_url_two")
   expect_identical(db_token(), token_prod)
   expect_identical(db_wsid(), wsid_prod)
 
   # back to default
-  options(db_profile = NULL)
+  withr::local_options(list(db_profile = NULL))
   expect_identical(db_host(), "some_url")
   expect_identical(db_token(), token)
   expect_identical(db_wsid(), wsid)

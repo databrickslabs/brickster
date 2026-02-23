@@ -5,12 +5,12 @@ test_that("Unity Catalog: Catalogs API - don't perform", {
     "DATABRICKS_TOKEN" = "mock_token"
   ))
 
-  resp_catalog_list <- db_uc_catalogs_list(perform_request = F)
+  resp_catalog_list <- db_uc_catalogs_list(perform_request = FALSE)
   expect_s3_class(resp_catalog_list, "httr2_request")
 
   resp_catalog_get <- db_uc_catalogs_get(
     catalog = "some_catalog",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_catalog_get, "httr2_request")
 

@@ -113,7 +113,7 @@ aws_attributes <- function(
 #' Test if object is of class AwsAttributes
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `AwsAttributes` class.
+#' @returns `TRUE` if the object inherits from the `AwsAttributes` class.
 #' @export
 is.aws_attributes <- function(x) {
   inherits(x, "AwsAttributes")
@@ -153,7 +153,7 @@ gcp_attributes <- function(
 #' Test if object is of class GcpAttributes
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `GcpAttributes` class.
+#' @returns `TRUE` if the object inherits from the `GcpAttributes` class.
 #' @export
 is.gcp_attributes <- function(x) {
   inherits(x, "GcpAttributes")
@@ -196,7 +196,7 @@ azure_attributes <- function(
 #' Test if object is of class AzureAttributes
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `AzureAttributes` class.
+#' @returns `TRUE` if the object inherits from the `AzureAttributes` class.
 #' @export
 is.azure_attributes <- function(x) {
   inherits(x, "AzureAttributes")
@@ -234,7 +234,7 @@ cluster_autoscale <- function(min_workers, max_workers) {
 #' Test if object is of class AutoScale
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `AutoScale` class.
+#' @returns `TRUE` if the object inherits from the `AutoScale` class.
 #' @export
 is.cluster_autoscale <- function(x) {
   inherits(x, "AutoScale")
@@ -260,7 +260,7 @@ dbfs_storage_info <- function(destination) {
 #' Test if object is of class DbfsStorageInfo
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `DbfsStorageInfo` class.
+#' @returns `TRUE` if the object inherits from the `DbfsStorageInfo` class.
 #' @export
 is.dbfs_storage_info <- function(x) {
   inherits(x, "DbfsStorageInfo")
@@ -289,7 +289,7 @@ file_storage_info <- function(destination) {
 #' Test if object is of class FileStorageInfo
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `FileStorageInfo` class.
+#' @returns `TRUE` if the object inherits from the `FileStorageInfo` class.
 #' @export
 is.file_storage_info <- function(x) {
   inherits(x, "FileStorageInfo")
@@ -355,7 +355,7 @@ s3_storage_info <- function(
 #' Test if object is of class S3StorageInfo
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `S3StorageInfo` class.
+#' @returns `TRUE` if the object inherits from the `S3StorageInfo` class.
 #' @export
 is.s3_storage_info <- function(x) {
   inherits(x, "S3StorageInfo")
@@ -399,7 +399,7 @@ cluster_log_conf <- function(dbfs = NULL, s3 = NULL) {
 #' Test if object is of class ClusterLogConf
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `ClusterLogConf` class.
+#' @returns `TRUE` if the object inherits from the `ClusterLogConf` class.
 #' @export
 is.cluster_log_conf <- function(x) {
   inherits(x, "ClusterLogConf")
@@ -437,7 +437,7 @@ docker_image <- function(url, username, password) {
 #' Test if object is of class DockerImage
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `DockerImage` class.
+#' @returns `TRUE` if the object inherits from the `DockerImage` class.
 #' @export
 is.docker_image <- function(x) {
   inherits(x, "DockerImage")
@@ -479,7 +479,7 @@ init_script_info <- function(...) {
 #' Test if object is of class InitScriptInfo
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `InitScriptInfo` class.
+#' @returns `TRUE` if the object inherits from the `InitScriptInfo` class.
 #' @export
 is.init_script_info <- function(x) {
   inherits(x, "InitScriptInfo")
@@ -566,7 +566,7 @@ new_cluster <- function(
 #' Test if object is of class NewCluster
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `NewCluster` class.
+#' @returns `TRUE` if the object inherits from the `NewCluster` class.
 #' @export
 is.new_cluster <- function(x) {
   inherits(x, "NewCluster")
@@ -622,7 +622,7 @@ libraries <- function(...) {
 #' Test if object is of class Libraries
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `Libraries` class.
+#' @returns `TRUE` if the object inherits from the `Libraries` class.
 #' @export
 is.libraries <- function(x) {
   inherits(x, "Libraries")
@@ -650,7 +650,7 @@ lib_jar <- function(jar) {
 #' Test if object is of class JarLibrary
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `JarLibrary` class.
+#' @returns `TRUE` if the object inherits from the `JarLibrary` class.
 #' @export
 is.lib_jar <- function(x) {
   inherits(x, "JarLibrary")
@@ -676,7 +676,7 @@ lib_egg <- function(egg) {
 #' Test if object is of class EggLibrary
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `EggLibrary` class.
+#' @returns `TRUE` if the object inherits from the `EggLibrary` class.
 #' @export
 is.lib_egg <- function(x) {
   inherits(x, "EggLibrary")
@@ -705,7 +705,7 @@ lib_whl <- function(whl) {
 #' Test if object is of class WhlLibrary
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `WhlLibrary` class.
+#' @returns `TRUE` if the object inherits from the `WhlLibrary` class.
 #' @export
 is.lib_whl <- function(x) {
   inherits(x, "WhlLibrary")
@@ -735,7 +735,7 @@ lib_pypi <- function(package, repo = NULL) {
 #' Test if object is of class PyPiLibrary
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `PyPiLibrary` class.
+#' @returns `TRUE` if the object inherits from the `PyPiLibrary` class.
 #' @export
 is.lib_pypi <- function(x) {
   inherits(x, "PyPiLibrary")
@@ -768,7 +768,7 @@ lib_maven <- function(coordinates, repo = NULL, exclusions = NULL) {
 #' Test if object is of class MavenLibrary
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `MavenLibrary` class.
+#' @returns `TRUE` if the object inherits from the `MavenLibrary` class.
 #' @export
 is.lib_maven <- function(x) {
   inherits(x, "MavenLibrary")
@@ -796,7 +796,7 @@ lib_cran <- function(package, repo = NULL) {
 #' Test if object is of class CranLibrary
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `CranLibrary` class.
+#' @returns `TRUE` if the object inherits from the `CranLibrary` class.
 #' @export
 is.lib_cran <- function(x) {
   inherits(x, "CranLibrary")
@@ -805,7 +805,7 @@ is.lib_cran <- function(x) {
 #' Test if object is of class Library
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `Library` class.
+#' @returns `TRUE` if the object inherits from the `Library` class.
 #' @export
 is.library <- function(x) {
   inherits(x, "Library")
@@ -859,7 +859,7 @@ email_notifications <- function(
 #' Test if object is of class JobEmailNotifications
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `JobEmailNotifications` class.
+#' @returns `TRUE` if the object inherits from the `JobEmailNotifications` class.
 #' @export
 is.email_notifications <- function(x) {
   inherits(x, "JobEmailNotifications")
@@ -902,7 +902,7 @@ cron_schedule <- function(
 #' Test if object is of class CronSchedule
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `CronSchedule` class.
+#' @returns `TRUE` if the object inherits from the `CronSchedule` class.
 #' @export
 is.cron_schedule <- function(x) {
   inherits(x, "CronSchedule")
@@ -937,7 +937,7 @@ access_control_request <- function(...) {
 #' Test if object is of class AccessControlRequest
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `AccessControlRequest` class.
+#' @returns `TRUE` if the object inherits from the `AccessControlRequest` class.
 #' @export
 is.access_control_request <- function(x) {
   inherits(x, "AccessControlRequest")
@@ -972,7 +972,7 @@ access_control_req_user <- function(
 #' Test if object is of class AccessControlRequestForUser
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `AccessControlRequestForUser`
+#' @returns `TRUE` if the object inherits from the `AccessControlRequestForUser`
 #' class.
 #' @export
 is.access_control_req_user <- function(x) {
@@ -1009,7 +1009,7 @@ access_control_req_group <- function(
 #' Test if object is of class AccessControlRequestForGroup
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `AccessControlRequestForGroup`
+#' @returns `TRUE` if the object inherits from the `AccessControlRequestForGroup`
 #' class.
 #' @export
 is.access_control_req_group <- function(x) {
@@ -1062,7 +1062,7 @@ git_source <- function(
 #' Test if object is of class GitSource
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `GitSource`
+#' @returns `TRUE` if the object inherits from the `GitSource`
 #' class.
 #' @export
 is.git_source <- function(x) {
@@ -1106,7 +1106,7 @@ notebook_task <- function(notebook_path, base_parameters = NULL) {
 #' Test if object is of class NotebookTask
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `NotebookTask` class.
+#' @returns `TRUE` if the object inherits from the `NotebookTask` class.
 #' @export
 is.notebook_task <- function(x) {
   inherits(x, "NotebookTask")
@@ -1138,7 +1138,7 @@ spark_jar_task <- function(main_class_name, parameters = list()) {
 #' Test if object is of class SparkJarTask
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `SparkJarTask` class.
+#' @returns `TRUE` if the object inherits from the `SparkJarTask` class.
 #' @export
 is.spark_jar_task <- function(x) {
   inherits(x, "SparkJarTask")
@@ -1169,7 +1169,7 @@ spark_python_task <- function(python_file, parameters = list()) {
 #' Test if object is of class SparkPythonTask
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `SparkPythonTask` class.
+#' @returns `TRUE` if the object inherits from the `SparkPythonTask` class.
 #' @export
 is.spark_python_task <- function(x) {
   inherits(x, "SparkPythonTask")
@@ -1196,7 +1196,7 @@ spark_submit_task <- function(parameters) {
 #' Test if object is of class SparkSubmitTask
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `SparkSubmitTask` class.
+#' @returns `TRUE` if the object inherits from the `SparkSubmitTask` class.
 #' @export
 is.spark_submit_task <- function(x) {
   inherits(x, "SparkSubmitTask")
@@ -1222,7 +1222,7 @@ pipeline_task <- function(pipeline_id) {
 #' Test if object is of class PipelineTask
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `PipelineTask` class.
+#' @returns `TRUE` if the object inherits from the `PipelineTask` class.
 #' @export
 is.pipeline_task <- function(x) {
   inherits(x, "PipelineTask")
@@ -1258,7 +1258,7 @@ python_wheel_task <- function(
 #' Test if object is of class PythonWheelTask
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `PythonWheelTask` class.
+#' @returns `TRUE` if the object inherits from the `PythonWheelTask` class.
 #' @export
 is.python_wheel_task <- function(x) {
   inherits(x, "PythonWheelTask")
@@ -1289,7 +1289,7 @@ for_each_task <- function(inputs, task, concurrency = 1) {
 #' Test if object is of class ForEachTask
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `ForEachTask` class.
+#' @returns `TRUE` if the object inherits from the `ForEachTask` class.
 #' @export
 is.for_each_task <- function(x) {
   inherits(x, "ForEachTask")
@@ -1339,7 +1339,7 @@ condition_task <- function(
 #' Test if object is of class ConditionTask
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `ConditionTask` class.
+#' @returns `TRUE` if the object inherits from the `ConditionTask` class.
 #' @export
 is.condition_task <- function(x) {
   inherits(x, "ConditionTask")
@@ -1368,7 +1368,7 @@ sql_query_task <- function(query_id, warehouse_id, parameters = NULL) {
 #' Test if object is of class SqlQueryTask
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `SqlQueryTask` class.
+#' @returns `TRUE` if the object inherits from the `SqlQueryTask` class.
 #' @export
 is.sql_query_task <- function(x) {
   inherits(x, "SqlQueryTask")
@@ -1410,7 +1410,7 @@ sql_file_task <- function(
 #' Test if object is of class SqlFileTask
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `SqlFileTask` class.
+#' @returns `TRUE` if the object inherits from the `SqlFileTask` class.
 #' @export
 is.sql_file_task <- function(x) {
   inherits(x, "SqlFileTask")
@@ -1440,7 +1440,7 @@ run_job_task <- function(job_id, job_parameters, full_refresh = FALSE) {
 #' Test if object is of class RunJobTask
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `RunJobTask` class.
+#' @returns `TRUE` if the object inherits from the `RunJobTask` class.
 #' @export
 is.run_job_task <- function(x) {
   inherits(x, "RunJobTask")
@@ -1450,7 +1450,7 @@ is.run_job_task <- function(x) {
 #' Test if object is of class JobTask
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `JobTask` class.
+#' @returns `TRUE` if the object inherits from the `JobTask` class.
 #' @export
 is.valid_task_type <- function(x) {
   inherits(x, "JobTask")
@@ -1591,7 +1591,7 @@ job_task <- function(
 #' Test if object is of class JobTaskSettings
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `JobTaskSettings` class.
+#' @returns `TRUE` if the object inherits from the `JobTaskSettings` class.
 #' @export
 is.job_task <- function(x) {
   inherits(x, "JobTaskSettings")
@@ -1619,7 +1619,7 @@ embedding_source_column <- function(name, model_endpoint_name) {
 #' Test if object is of class EmbeddingSourceColumn
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `EmbeddingSourceColumn` class.
+#' @returns `TRUE` if the object inherits from the `EmbeddingSourceColumn` class.
 #' @export
 is.embedding_source_column <- function(x) {
   inherits(x, "EmbeddingSourceColumn")
@@ -1648,7 +1648,7 @@ embedding_vector_column <- function(name, dimension) {
 #' Test if object is of class EmbeddingVectorColumn
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `EmbeddingVectorColumn` class.
+#' @returns `TRUE` if the object inherits from the `EmbeddingVectorColumn` class.
 #' @export
 is.embedding_vector_column <- function(x) {
   inherits(x, "EmbeddingVectorColumn")
@@ -1845,7 +1845,7 @@ direct_access_index_spec <- function(
 #' Test if object is of class VectorSearchIndexSpec
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `VectorSearchIndexSpec` class.
+#' @returns `TRUE` if the object inherits from the `VectorSearchIndexSpec` class.
 #' @export
 is.vector_search_index_spec <- function(x) {
   inherits(x, "VectorSearchIndexSpec")
@@ -1855,7 +1855,7 @@ is.vector_search_index_spec <- function(x) {
 #' Test if object is of class DirectAccessIndex
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `DirectAccessIndex` class.
+#' @returns `TRUE` if the object inherits from the `DirectAccessIndex` class.
 #' @export
 is.direct_access_index <- function(x) {
   inherits(x, "DirectAccessIndex")
@@ -1865,7 +1865,7 @@ is.direct_access_index <- function(x) {
 #' Test if object is of class DeltaSyncIndex
 #'
 #' @param x An object
-#' @return `TRUE` if the object inherits from the `DeltaSyncIndex` class.
+#' @returns `TRUE` if the object inherits from the `DeltaSyncIndex` class.
 #' @export
 is.delta_sync_index <- function(x) {
   inherits(x, "DeltaSyncIndex")

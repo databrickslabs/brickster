@@ -7,6 +7,7 @@
 #' @family Model Registry API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_mlflow_registered_model_details <- function(
   name,
   host = db_host(),
@@ -52,6 +53,7 @@ db_mlflow_registered_model_details <- function(
 #' @family Model Registry API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_mlflow_model_transition_stage <- function(
   name,
   version,
@@ -97,6 +99,7 @@ db_mlflow_model_transition_stage <- function(
 #' @family Model Registry API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_mlflow_model_transition_req <- function(
   name,
   version,
@@ -140,6 +143,7 @@ db_mlflow_model_transition_req <- function(
 #' @family Model Registry API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_mlflow_model_open_transition_reqs <- function(
   name,
   version,
@@ -177,6 +181,7 @@ db_mlflow_model_open_transition_reqs <- function(
 #' @family Model Registry API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_mlflow_model_approve_transition_req <- function(
   name,
   version,
@@ -222,6 +227,7 @@ db_mlflow_model_approve_transition_req <- function(
 #' @family Model Registry API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_mlflow_model_reject_transition_req <- function(
   name,
   version,
@@ -268,6 +274,7 @@ db_mlflow_model_reject_transition_req <- function(
 #' @family Model Registry API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_mlflow_model_delete_transition_req <- function(
   name,
   version,
@@ -313,6 +320,7 @@ db_mlflow_model_delete_transition_req <- function(
 #' @family Model Registry API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_mlflow_model_version_comment <- function(
   name,
   version,
@@ -353,6 +361,7 @@ db_mlflow_model_version_comment <- function(
 #' @family Model Registry API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_mlflow_model_version_comment_edit <- function(
   id,
   comment,
@@ -390,6 +399,7 @@ db_mlflow_model_version_comment_edit <- function(
 #' @family Model Registry API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_mlflow_model_version_comment_delete <- function(
   id,
   host = db_host(),

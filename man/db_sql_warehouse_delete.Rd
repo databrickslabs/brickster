@@ -21,6 +21,9 @@ db_sql_warehouse_delete(
 \item{perform_request}{If \code{TRUE} (default) the request is performed, if
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
+\value{
+If \code{perform_request = TRUE}, returns endpoint-specific API output. If \code{FALSE}, returns an \code{httr2_request}.
+}
 \description{
 Delete Warehouse
 }

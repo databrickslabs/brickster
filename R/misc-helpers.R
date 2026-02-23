@@ -3,7 +3,7 @@
 #' @inheritParams auth_params
 #' @inheritParams db_dbfs_create
 #'
-#' @return list of user metadata
+#' @returns list of user metadata
 #' @export
 db_current_user <- function(host = db_host(), token = db_token(),
                             perform_request = TRUE) {
@@ -27,7 +27,7 @@ db_current_user <- function(host = db_host(), token = db_token(),
 #' @inheritParams auth_params
 #' @inheritParams db_dbfs_create
 #'
-#' @return String
+#' @returns String
 #' @export
 db_current_workspace_id <- function(host = db_host(), token = db_token(),
                                     perform_request = TRUE) {
@@ -41,9 +41,7 @@ db_current_workspace_id <- function(host = db_host(), token = db_token(),
   )
 
   if (perform_request) {
-    resp <- req |>
-      httr2::req_error(body = db_req_error_body) |>
-      httr2::req_perform() |>
+    resp <- db_perform_response(req) |>
       httr2::resp_headers()
 
     # workspace id can be extracted from response headers
@@ -59,7 +57,7 @@ db_current_workspace_id <- function(host = db_host(), token = db_token(),
 #' @inheritParams auth_params
 #' @inheritParams db_dbfs_create
 #'
-#' @return String
+#' @returns String
 #' @export
 db_current_cloud <- function(host = db_host(), token = db_token(),
                                     perform_request = TRUE) {
@@ -77,7 +75,6 @@ db_current_cloud <- function(host = db_host(), token = db_token(),
   }
 
 }
-
 
 
 

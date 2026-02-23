@@ -5,16 +5,16 @@ test_that("Clusters API - don't perform", {
   ))
 
   # basic metadata functions
-  resp_list <- db_cluster_list(perform_request = F)
+  resp_list <- db_cluster_list(perform_request = FALSE)
   expect_s3_class(resp_list, "httr2_request")
 
-  resp_list_zones <- db_cluster_list_zones(perform_request = F)
+  resp_list_zones <- db_cluster_list_zones(perform_request = FALSE)
   expect_s3_class(resp_list_zones, "httr2_request")
 
-  resp_list_ntypes <- db_cluster_list_node_types(perform_request = F)
+  resp_list_ntypes <- db_cluster_list_node_types(perform_request = FALSE)
   expect_s3_class(resp_list_ntypes, "httr2_request")
 
-  resp_list_dbrv <- db_cluster_runtime_versions(perform_request = F)
+  resp_list_dbrv <- db_cluster_runtime_versions(perform_request = FALSE)
   expect_s3_class(resp_list_dbrv, "httr2_request")
 
   # creating cluster (AWS specific)
@@ -27,7 +27,7 @@ test_that("Clusters API - don't perform", {
       ebs_volume_size = 32
     ),
     autotermination_minutes = 15,
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_create, "httr2_request")
 
@@ -39,7 +39,7 @@ test_that("Clusters API - don't perform", {
     node_type_id = "some_node_type",
     cloud_attrs = azure_attributes(),
     autotermination_minutes = 15,
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_create, "httr2_request")
 
@@ -51,51 +51,51 @@ test_that("Clusters API - don't perform", {
     node_type_id = "some_node_type",
     cloud_attrs = gcp_attributes(),
     autotermination_minutes = 15,
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_create, "httr2_request")
 
-  resp_get <- db_cluster_get(resp_create$cluster_id, perform_request = F)
+  resp_get <- db_cluster_get(resp_create$cluster_id, perform_request = FALSE)
   expect_s3_class(resp_get, "httr2_request")
 
-  resp_pin <- db_cluster_pin(resp_create$cluster_id, perform_request = F)
+  resp_pin <- db_cluster_pin(resp_create$cluster_id, perform_request = FALSE)
   expect_s3_class(resp_pin, "httr2_request")
 
-  resp_unpin <- db_cluster_unpin(resp_create$cluster_id, perform_request = F)
+  resp_unpin <- db_cluster_unpin(resp_create$cluster_id, perform_request = FALSE)
   expect_s3_class(resp_unpin, "httr2_request")
 
-  resp_events <- db_cluster_events(resp_create$cluster_id, perform_request = F)
+  resp_events <- db_cluster_events(resp_create$cluster_id, perform_request = FALSE)
   expect_s3_class(resp_events, "httr2_request")
 
   resp_resize <- db_cluster_resize(
     cluster_id = resp_create$cluster_id,
     num_workers = 4,
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_resize, "httr2_request")
 
   resp_resize <- db_cluster_resize(
     cluster_id = resp_create$cluster_id,
     autoscale = cluster_autoscale(2, 4),
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_resize, "httr2_request")
 
   resp_terminate <- db_cluster_terminate(
     cluster_id = resp_create$cluster_id,
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_terminate, "httr2_request")
 
   resp_delete <- db_cluster_delete(
     cluster_id = resp_create$cluster_id,
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_delete, "httr2_request")
 
   resp_restart <- db_cluster_restart(
     cluster_id = resp_create$cluster_id,
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_restart, "httr2_request")
 
@@ -108,13 +108,13 @@ test_that("Clusters API - don't perform", {
     cloud_attrs = aws_attributes(
       ebs_volume_size = 32
     ),
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_edit, "httr2_request")
 
   resp_delete <- db_cluster_perm_delete(
     cluster_id = resp_create$cluster_id,
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_delete, "httr2_request")
 })

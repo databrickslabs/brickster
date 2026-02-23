@@ -28,6 +28,9 @@ slash.}
 
 \item{progress}{If \code{TRUE}, show progress bar for file operations (default: \code{TRUE} for uploads/downloads, \code{FALSE} for other operations)}
 }
+\value{
+If \code{perform_request = TRUE}, returns endpoint-specific API output. If \code{FALSE}, returns an \code{httr2_request}.
+}
 \description{
 Return the contents of a file within a volume (up to 5GiB).
 }

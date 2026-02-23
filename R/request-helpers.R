@@ -12,7 +12,7 @@
 #'
 #' @family Request Helpers
 #'
-#' @return request
+#' @returns request
 #' @import httr2
 db_request <- function(
   endpoint,
@@ -114,11 +114,23 @@ db_perform_request <- function(req, ...) {
     httr2::resp_body_json(...)
 }
 
+#' Perform Databricks API Request and Return Response
+#'
+#' @param req `{httr2}` request.
+#' @param ... Parameters passed to [httr2::req_perform()]
+#'
+#' @family Request Helpers
+db_perform_response <- function(req, ...) {
+  req |>
+    httr2::req_error(body = db_req_error_body) |>
+    httr2::req_perform(...)
+}
+
 #' Generate Request JSON
 #'
 #' @param req a httr2 request, ideally from [db_request()].
 #'
-#' @return JSON string
+#' @returns JSON string
 #'
 #' @family Request Helpers
 #' @export

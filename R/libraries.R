@@ -15,6 +15,7 @@
 #' @family Libraries API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_libs_all_cluster_statuses <- function(
   host = db_host(),
   token = db_token(),
@@ -47,6 +48,7 @@ db_libs_all_cluster_statuses <- function(
 #' @seealso [wait_for_lib_installs()]
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_libs_cluster_status <- function(
   cluster_id,
   host = db_host(),
@@ -104,6 +106,7 @@ db_libs_cluster_status <- function(
 #' @family Libraries API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_libs_install <- function(
   cluster_id,
   libraries,
@@ -149,6 +152,7 @@ db_libs_install <- function(
 #' @family Libraries API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_libs_uninstall <- function(
   cluster_id,
   libraries,

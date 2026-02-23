@@ -25,7 +25,7 @@
 #'
 #' @family DBFS API
 #'
-#' @return Handle which should subsequently be passed into [db_dbfs_add_block()]
+#' @returns Handle which should subsequently be passed into [db_dbfs_add_block()]
 #' and [db_dbfs_close()] when writing to a file through a stream.
 #' @keywords internal
 db_dbfs_create <- function(
@@ -172,7 +172,7 @@ db_dbfs_add_block <- function(
 #'
 #' @family DBFS API
 #'
-#' @return HTTP Response
+#' @returns HTTP Response
 #' @keywords internal
 db_dbfs_close <- function(
   handle,
@@ -280,7 +280,7 @@ db_dbfs_get_status <- function(
 #'
 #' @family DBFS API
 #'
-#' @return data.frame
+#' @returns data.frame
 #' @keywords internal
 db_dbfs_list <- function(
   path,
@@ -307,7 +307,7 @@ db_dbfs_list <- function(
   )
 
   if (perform_request) {
-    db_perform_request(req, simplifyDataFrame = T)$files
+    db_perform_request(req, simplifyDataFrame = TRUE)$files
   } else {
     req
   }
@@ -553,10 +553,8 @@ db_dbfs_put <- function(
   )
 
   if (perform_request) {
-    req |>
-      httr2::req_body_multipart(!!!body) |>
-      httr2::req_error(body = db_req_error_body) |>
-      httr2::req_perform() |>
+    req <- httr2::req_body_multipart(req, !!!body)
+    db_perform_response(req) |>
       httr2::resp_body_json()
   } else {
     req

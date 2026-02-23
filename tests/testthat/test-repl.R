@@ -43,7 +43,7 @@ test_that("REPL - helpers", {
   })
 
   # table output case
-  mock_tbl <- jsonlite::fromJSON(jsonlite::toJSON(iris), simplifyDataFrame = F)
+  mock_tbl <- jsonlite::fromJSON(jsonlite::toJSON(iris), simplifyDataFrame = FALSE)
   mock_schema <- list(
     list(names = "a"),
     list(names = "b"),

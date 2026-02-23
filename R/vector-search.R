@@ -7,6 +7,7 @@
 #' @family Vector Search API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_vs_endpoints_list <- function(page_token = NULL,
                                  host = db_host(), token = db_token(),
                                  perform_request = TRUE) {
@@ -41,6 +42,7 @@ db_vs_endpoints_list <- function(page_token = NULL,
 #' @family Vector Search API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_vs_endpoints_get <- function(endpoint,
                                 host = db_host(), token = db_token(),
                                 perform_request = TRUE) {
@@ -74,6 +76,7 @@ db_vs_endpoints_get <- function(endpoint,
 #' @family Vector Search API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_vs_endpoints_create <- function(name,
                                    host = db_host(), token = db_token(),
                                    perform_request = TRUE) {
@@ -109,6 +112,7 @@ db_vs_endpoints_create <- function(name,
 #' @family Vector Search API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_vs_endpoints_delete <- function(endpoint,
                                    host = db_host(), token = db_token(),
                                    perform_request = TRUE) {
@@ -140,6 +144,7 @@ db_vs_endpoints_delete <- function(endpoint,
 #' @family Vector Search API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_vs_indexes_list <- function(endpoint, page_token = NULL,
                                host = db_host(), token = db_token(),
                                perform_request = TRUE) {
@@ -176,6 +181,7 @@ db_vs_indexes_list <- function(endpoint, page_token = NULL,
 #' @family Vector Search API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_vs_indexes_get <- function(index,
                               host = db_host(), token = db_token(),
                               perform_request = TRUE) {
@@ -209,6 +215,7 @@ db_vs_indexes_get <- function(index,
 #' @family Vector Search API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_vs_indexes_create <- function(name, endpoint, primary_key, spec,
                                  host = db_host(), token = db_token(),
                                  perform_request = TRUE) {
@@ -264,6 +271,7 @@ db_vs_indexes_create <- function(name, endpoint, primary_key, spec,
 #' @family Vector Search API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_vs_indexes_delete <- function(index,
                                  host = db_host(), token = db_token(),
                                  perform_request = TRUE) {
@@ -329,6 +337,7 @@ db_vs_indexes_delete <- function(index,
 #' }
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_vs_indexes_query <- function(index, columns, filters_json,
                                 query_vector = NULL,
                                 query_text = NULL,
@@ -377,6 +386,7 @@ db_vs_indexes_query <- function(index, columns, filters_json,
 #' @family Vector Search API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_vs_indexes_query_next_page <- function(index, endpoint,
                                           page_token = NULL,
                                           host = db_host(), token = db_token(),
@@ -419,6 +429,7 @@ db_vs_indexes_query_next_page <- function(index, endpoint,
 #' @family Vector Search API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_vs_indexes_sync <- function(index,
                                host = db_host(), token = db_token(),
                                perform_request = TRUE) {
@@ -458,6 +469,7 @@ db_vs_indexes_sync <- function(index,
 #' @family Vector Search API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_vs_indexes_scan <- function(endpoint, index,
                                last_primary_key, num_results = 10,
                                host = db_host(), token = db_token(),
@@ -497,6 +509,7 @@ db_vs_indexes_scan <- function(endpoint, index,
 #' @family Vector Search API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_vs_indexes_upsert_data <- function(index, df,
                                       host = db_host(), token = db_token(),
                                       perform_request = TRUE) {
@@ -533,6 +546,7 @@ db_vs_indexes_upsert_data <- function(index, df,
 #' @family Vector Search API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_vs_indexes_delete_data <- function(index, primary_keys,
                                       host = db_host(), token = db_token(),
                                       perform_request = TRUE) {

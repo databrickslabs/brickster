@@ -17,7 +17,7 @@ NULL
 
 #' Declare dbplyr API version for Databricks connections
 #' @param con A DatabricksConnection object
-#' @return The dbplyr edition number (2L)
+#' @returns The dbplyr edition number (2L)
 #' @export
 #' @method dbplyr_edition DatabricksConnection
 dbplyr_edition.DatabricksConnection <- function(con) {
@@ -42,7 +42,7 @@ sql_translation.DatabricksConnection <- function(con) {
 #' @param con A DatabricksConnection object
 #' @param table Table name to analyze
 #' @param ... Additional arguments (ignored)
-#' @return SQL statement for table analysis
+#' @returns SQL statement for table analysis
 #' @export
 #' @method sql_table_analyze DatabricksConnection
 sql_table_analyze.DatabricksConnection <- function(con, table, ...) {
@@ -54,7 +54,7 @@ sql_table_analyze.DatabricksConnection <- function(con, table, ...) {
 
 #' Generate unique temporary table/view name
 #' @param prefix Base name prefix (default: `"dbplyr_temp"`)
-#' @return Unique temporary name
+#' @returns Unique temporary name
 #' @keywords internal
 generate_temp_name <- function(prefix = "dbplyr_temp") {
   paste0(
@@ -71,7 +71,7 @@ generate_temp_name <- function(prefix = "dbplyr_temp") {
 #' @param name Name for the temporary view or table
 #' @param temporary Whether the object should be temporary (default: `TRUE`)
 #' @param ... Additional arguments (ignored)
-#' @return The table/view name (invisibly)
+#' @returns The table/view name (invisibly)
 #' @export
 #' @method sql_query_save DatabricksConnection
 sql_query_save.DatabricksConnection <- function(
@@ -144,7 +144,7 @@ sql_query_save.DatabricksConnection <- function(
 #' @param con DatabricksConnection object
 #' @param sql SQL query to discover fields for
 #' @param ... Additional arguments passed to other methods
-#' @return SQL object for field discovery
+#' @returns SQL object for field discovery
 #' @export
 #' @method sql_query_fields DatabricksConnection
 sql_query_fields.DatabricksConnection <- function(con, sql, ...) {
@@ -164,7 +164,7 @@ sql_query_fields.DatabricksConnection <- function(con, sql, ...) {
 #' @param overwrite Whether to overwrite existing table/view
 #' @param temporary Whether to create as temporary view (default: `TRUE`, but NOT SUPPORTED - will error)
 #' @param ... Additional arguments passed to dbWriteTable
-#' @return dbplyr table reference
+#' @returns dbplyr table reference
 #' @details Note: temporary=TRUE will result in an error as temporary tables are not
 #'   supported with the SQL Statement Execution API. Use temporary=FALSE to create regular tables.
 #' @export
@@ -226,7 +226,7 @@ copy_to.DatabricksConnection <- function(
 #' Generate typed VALUES SQL for temporary views (helper)
 #' @param con DatabricksConnection object
 #' @param data Data frame
-#' @return SQL VALUES clause
+#' @returns SQL VALUES clause
 #' @keywords internal
 db_generate_typed_values_sql_for_view <- function(con, data) {
   # Convert each row to SQL values with proper typing
@@ -544,7 +544,7 @@ spark_sql_translation <- function(con) {
 #' @param n Maximum number of rows to collect (-1 for all)
 #' @param warn_incomplete Whether to warn if results were truncated
 #' @param ... Additional arguments
-#' @return A data frame with query results
+#' @returns A data frame with query results
 #' @export
 #' @method db_collect DatabricksConnection
 db_collect.DatabricksConnection <- function(con, sql, n = -1, warn_incomplete = TRUE, ...) {

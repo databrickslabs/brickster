@@ -35,6 +35,7 @@
 #' @family Secrets API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_secrets_scope_create <- function(
   scope,
   initial_manage_principal = NULL,
@@ -77,6 +78,7 @@ db_secrets_scope_create <- function(
 #' @family Secrets API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_secrets_scope_delete <- function(
   scope,
   host = db_host(),
@@ -115,6 +117,7 @@ db_secrets_scope_delete <- function(
 #' @family Secrets API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_secrets_scope_list_all <- function(
   host = db_host(),
   token = db_token(),
@@ -180,6 +183,7 @@ db_secrets_scope_list_all <- function(
 #' @family Secrets API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_secrets_put <- function(
   scope,
   key,
@@ -233,6 +237,7 @@ db_secrets_put <- function(
 #' @family Secrets API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_secrets_delete <- function(
   scope,
   key,
@@ -280,6 +285,7 @@ db_secrets_delete <- function(
 #' @family Secrets API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_secrets_list <- function(
   scope,
   host = db_host(),
@@ -341,6 +347,7 @@ db_secrets_list <- function(
 #' @family Secrets API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_secrets_scope_acl_put <- function(
   scope,
   principal,
@@ -393,6 +400,7 @@ db_secrets_scope_acl_put <- function(
 #' @family Secrets API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_secrets_scope_acl_delete <- function(
   scope,
   principal,
@@ -438,6 +446,7 @@ db_secrets_scope_acl_delete <- function(
 #' @family Secrets API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_secrets_scope_acl_get <- function(
   scope,
   principal,
@@ -483,6 +492,7 @@ db_secrets_scope_acl_get <- function(
 #' @family Secrets API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_secrets_scope_acl_list <- function(
   scope,
   host = db_host(),

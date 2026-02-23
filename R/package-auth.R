@@ -28,7 +28,7 @@
 #'
 #' @family Databricks Authentication Helpers
 #'
-#' @return workspace URL
+#' @returns workspace URL
 #' @export
 db_host <- function(
   id = NULL,
@@ -81,7 +81,7 @@ db_host <- function(
 #'
 #' @inherit db_host details
 #' @inheritParams db_host
-#' @return databricks token
+#' @returns databricks token
 #' @export
 db_token <- function(profile = default_config_profile()) {
   # if `use_databricks_cfg()` returns `TRUE` then fetch the associated env.
@@ -109,7 +109,7 @@ db_token <- function(profile = default_config_profile()) {
 #'
 #' @inherit db_host details
 #' @inheritParams db_host
-#' @return databricks workspace ID
+#' @returns databricks workspace ID
 #' @export
 db_wsid <- function(profile = default_config_profile()) {
   if (use_databricks_cfg()) {
@@ -126,7 +126,7 @@ db_wsid <- function(profile = default_config_profile()) {
 #'
 #' @family Databricks Authentication Helpers
 #'
-#' @return named list of `.netrc` entries
+#' @returns named list of `.netrc` entries
 #' @export
 db_read_netrc <- function(path = "~/.netrc") {
   # nocov start
@@ -160,7 +160,7 @@ NULL
 #' `azure_tenant_id`, or `auth_type`
 #' @param profile Character, the name of the profile to retrieve values
 #'
-#' @return named list of values associated with profile
+#' @returns named list of values associated with profile
 #' @keywords internal
 read_databrickscfg <- function(
   key = c(
@@ -261,7 +261,7 @@ auth_env_key <- function(
 #' @param profile Character, the name of the profile to retrieve values
 #' @param error Boolean, when key isn't found should error be raised
 #'
-#' @return named list of values associated with profile
+#' @returns named list of values associated with profile
 #' @keywords internal
 read_env_var <- function(
   key = c(
@@ -543,7 +543,7 @@ build_databricks_u2m_oauth_client <- function(host) {
 #' Azure service principal M2M, then OAuth U2M.
 #' Set `auth_type = "azure-client-secret"` to force Azure service principal M2M.
 #'
-#' @return List containing `client` ([httr2::oauth_client()]), `auth_url`,
+#' @returns List containing `client` ([httr2::oauth_client()]), `auth_url`,
 #'   `auth_mode`, `is_m2m`, `scope`, and `token_params`.
 #' @keywords internal
 db_oauth_client <- function(
@@ -599,7 +599,7 @@ db_oauth_client <- function(
 #' @details Returns the config profile first looking at `DATABRICKS_CONFIG_PROFILE`
 #' and then the `db_profile` option.
 #'
-#' @return profile name
+#' @returns profile name
 #' @keywords internal
 default_config_profile <- function() {
   profile <- Sys.getenv("DATABRICKS_CONFIG_PROFILE")
@@ -614,7 +614,7 @@ default_config_profile <- function() {
 #' @details Indicates `.databrickscfg` should be used instead of environment variables when
 #' either the `use_databrickscfg` option is set or Posit Workbench managed OAuth credentials are detected.
 #'
-#' @return boolean
+#' @returns boolean
 #' @keywords internal
 use_databricks_cfg <- function() {
   use_databricks_cfg <- getOption("use_databrickscfg", FALSE)

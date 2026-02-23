@@ -12,6 +12,7 @@
 #' @family Volumes FileSystem API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_volume_read <- function(
   path,
   destination,
@@ -41,6 +42,7 @@ db_volume_read <- function(
 #' @family Volumes FileSystem API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_volume_delete <- function(
   path,
   host = db_host(),
@@ -67,6 +69,7 @@ db_volume_delete <- function(
 #' @family Volumes FileSystem API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_volume_list <- function(
   path,
   host = db_host(),
@@ -103,6 +106,7 @@ db_volume_list <- function(
 #' @family Volumes FileSystem API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_volume_write <- function(
   path,
   file = NULL,
@@ -143,6 +147,7 @@ db_volume_write <- function(
 #' @family Volumes FileSystem API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_volume_file_exists <- function(
   path,
   host = db_host(),
@@ -169,6 +174,7 @@ db_volume_file_exists <- function(
 #' @family Volumes FileSystem API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_volume_dir_create <- function(
   path,
   host = db_host(),
@@ -197,6 +203,7 @@ db_volume_dir_create <- function(
 #' @family Volumes FileSystem API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_volume_dir_delete <- function(
   path,
   recursive = FALSE,
@@ -288,6 +295,7 @@ db_volume_recursive_delete_contents <- function(
 #' @family Volumes FileSystem API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_volume_dir_exists <- function(
   path,
   host = db_host(),
@@ -402,7 +410,7 @@ db_volume_action <- function(
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create
 #'
-#' @return TRUE if all uploads successful
+#' @returns TRUE if all uploads successful
 #' @family Volumes FileSystem API
 #'
 #' @export
@@ -493,7 +501,7 @@ db_volume_upload_dir <- function(
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create
 #'
-#' @return TRUE if all downloads successful
+#' @returns TRUE if all downloads successful
 #' @family Volumes FileSystem API
 #'
 #' @export

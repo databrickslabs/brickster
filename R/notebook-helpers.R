@@ -4,7 +4,7 @@
 #' R sessions on Databricks can be detected via various environment variables
 #' and directories.
 #'
-#' @return Boolean
+#' @returns Boolean
 #' @export
 in_databricks_nb <- function() {
   ("/databricks/spark/R/lib"  %in% .libPaths()) &&

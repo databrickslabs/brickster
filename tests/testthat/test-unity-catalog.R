@@ -5,48 +5,48 @@ test_that("Unity Catalog API - don't perform", {
     "DATABRICKS_TOKEN" = "mock_token"
   ))
 
-  resp_summary <- db_uc_metastore_summary(perform_request = F)
+  resp_summary <- db_uc_metastore_summary(perform_request = FALSE)
   expect_s3_class(resp_summary, "httr2_request")
 
-  resp_sc_list <- db_uc_storage_creds_list(perform_request = F)
+  resp_sc_list <- db_uc_storage_creds_list(perform_request = FALSE)
   expect_s3_class(resp_sc_list, "httr2_request")
 
   resp_sc_get <- db_uc_storage_creds_get(
     name = "some_name",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_sc_get, "httr2_request")
 
   resp_el_list <- db_uc_external_loc_list(
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_el_list, "httr2_request")
 
   resp_el_get <- db_uc_external_loc_get(
     name = "some_name",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_el_get, "httr2_request")
 
-  resp_catalog_list <- db_uc_catalogs_list(perform_request = F)
+  resp_catalog_list <- db_uc_catalogs_list(perform_request = FALSE)
   expect_s3_class(resp_catalog_list, "httr2_request")
 
   resp_catalog_get <- db_uc_catalogs_get(
     catalog = "some_catalog",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_catalog_get, "httr2_request")
 
   resp_schema_list <- db_uc_schemas_list(
     catalog = "some_catalog",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_schema_list, "httr2_request")
 
   resp_schema_get <- db_uc_schemas_get(
     catalog = "some_catalog",
     schema = "some_schema",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_schema_get, "httr2_request")
 
@@ -54,14 +54,14 @@ test_that("Unity Catalog API - don't perform", {
     catalog = "some_catalog",
     schema = "some_schema",
     model = "some_model",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_models_get, "httr2_request")
 
   resp_models_list <- db_uc_models_list(
     catalog = "some_catalog",
     schema = "some_schema",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_models_list, "httr2_request")
 
@@ -69,14 +69,14 @@ test_that("Unity Catalog API - don't perform", {
     catalog = "some_catalog",
     schema = "some_schema",
     func = "some_func",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_funcs_get, "httr2_request")
 
   resp_funcs_list <- db_uc_funcs_list(
     catalog = "some_catalog",
     schema = "some_schema",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_funcs_list, "httr2_request")
 

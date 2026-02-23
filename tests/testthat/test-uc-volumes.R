@@ -8,7 +8,7 @@ test_that("Unity Catalog: Volumes API - don't perform", {
   resp_volumes_list <- db_uc_volumes_list(
     catalog = "some_catalog",
     schema = "some_schema",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_volumes_list, "httr2_request")
 
@@ -16,7 +16,7 @@ test_that("Unity Catalog: Volumes API - don't perform", {
     catalog = "some_catalog",
     schema = "some_schema",
     volume = "some_volume",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_volumes_get, "httr2_request")
 
@@ -24,7 +24,7 @@ test_that("Unity Catalog: Volumes API - don't perform", {
     catalog = "some_catalog",
     schema = "some_schema",
     volume = "some_volume",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_volumes_delete, "httr2_request")
 
@@ -33,7 +33,7 @@ test_that("Unity Catalog: Volumes API - don't perform", {
     schema = "some_schema",
     volume = "some_volume",
     volume_type = "MANAGED",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_volumes_create, "httr2_request")
   expect_error({
@@ -43,7 +43,7 @@ test_that("Unity Catalog: Volumes API - don't perform", {
       volume = "some_volume",
       volume_type = "MANAGED",
       storage_location = "some_path",
-      perform_request = F
+      perform_request = FALSE
     )
   })
 
@@ -52,7 +52,7 @@ test_that("Unity Catalog: Volumes API - don't perform", {
     schema = "some_schema",
     volume = "some_volume",
     new_name = "some_new_name",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_volumes_update, "httr2_request")
 

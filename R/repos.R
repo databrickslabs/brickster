@@ -14,6 +14,7 @@
 #' @family Repos API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_repo_get_all <- function(
   path_prefix,
   next_page_token = NULL,
@@ -58,6 +59,7 @@ db_repo_get_all <- function(
 #' @family Repos API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_repo_create <- function(
   url,
   provider,
@@ -99,6 +101,7 @@ db_repo_create <- function(
 #' @family Repos API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_repo_get <- function(
   repo_id,
   host = db_host(),
@@ -141,6 +144,7 @@ db_repo_get <- function(
 #' @family Repos API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_repo_update <- function(
   repo_id,
   branch = NULL,
@@ -182,6 +186,7 @@ db_repo_update <- function(
 #' @family Repos API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_repo_delete <- function(
   repo_id,
   host = db_host(),
