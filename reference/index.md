@@ -142,10 +142,14 @@
   : Volume FileSystem Delete Directory
 - [`db_volume_dir_exists()`](https://databrickslabs.github.io/brickster/reference/db_volume_dir_exists.md)
   : Volume FileSystem Check Directory Exists
+- [`db_volume_download_dir()`](https://databrickslabs.github.io/brickster/reference/db_volume_download_dir.md)
+  : Download Directory from Volume in Parallel
 - [`db_volume_file_exists()`](https://databrickslabs.github.io/brickster/reference/db_volume_file_exists.md)
   : Volume FileSystem File Status
 - [`db_volume_list()`](https://databrickslabs.github.io/brickster/reference/db_volume_list.md)
   : Volume FileSystem List Directory Contents
+- [`db_volume_list_files_recursive()`](https://databrickslabs.github.io/brickster/reference/db_volume_list_files_recursive.md)
+  : Recursively collect file paths from a volume directory
 - [`db_volume_read()`](https://databrickslabs.github.io/brickster/reference/db_volume_read.md)
   : Volume FileSystem Read
 - [`db_volume_recursive_delete_contents()`](https://databrickslabs.github.io/brickster/reference/db_volume_recursive_delete_contents.md)

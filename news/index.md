@@ -10,6 +10,16 @@
   ([\#185](https://github.com/databrickslabs/brickster/issues/185))
 - Marked DBFS REST wrappers (`db_dbfs_*`) as deprecated and moved them
   to internal-only, guiding users towards using volumes (`db_volume_*`)
+- Added
+  [`db_volume_download_dir()`](https://databrickslabs.github.io/brickster/reference/db_volume_download_dir.md)
+  for parallel directory downloads from Unity Catalog volumes to local
+  directories
+- Renamed `preserve_structure` to `recursive` in
+  [`db_volume_upload_dir()`](https://databrickslabs.github.io/brickster/reference/db_volume_upload_dir.md)
+  and
+  [`db_volume_download_dir()`](https://databrickslabs.github.io/brickster/reference/db_volume_download_dir.md)
+  for consistent directory traversal semantics
+- Added a new vignette for working with volumes
 
 ## brickster 0.2.12
 

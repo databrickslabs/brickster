@@ -1,0 +1,167 @@
+# Working with Unity Catalog Volumes
+
+[brickster](https://github.com/databrickslabs/brickster) includes two
+groups of volume functions:
+
+- `db_uc_volumes_*`: manage volume objects in Unity Catalog (create,
+  list, update, delete)
+- `db_volume_*`: work with files and directories inside an existing
+  volume
+
+In most day-to-day workflows, you will spend most of your time with
+`db_volume_*` once a volume already exists.
+
+## Which Function to Use
+
+This table is focused on **filesystem operations inside an existing
+volume**:
+
+| Operation              | Scope         | Function                                                                                                     | Notes                                                         |
+|------------------------|---------------|--------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------|
+| Upload file            | Single file   | [`db_volume_write()`](https://databrickslabs.github.io/brickster/reference/db_volume_write.md)               | Upload one local file to a volume path                        |
+| Download file          | Single file   | [`db_volume_read()`](https://databrickslabs.github.io/brickster/reference/db_volume_read.md)                 | Download one volume file to local disk                        |
+| Delete file            | Single file   | [`db_volume_delete()`](https://databrickslabs.github.io/brickster/reference/db_volume_delete.md)             | Remove one file from a volume                                 |
+| Check file exists      | Single file   | [`db_volume_file_exists()`](https://databrickslabs.github.io/brickster/reference/db_volume_file_exists.md)   | Returns `TRUE`/`FALSE`                                        |
+| List contents          | Directory     | [`db_volume_list()`](https://databrickslabs.github.io/brickster/reference/db_volume_list.md)                 | Lists files/subdirectories for a directory                    |
+| Create directory       | Directory     | [`db_volume_dir_create()`](https://databrickslabs.github.io/brickster/reference/db_volume_dir_create.md)     | Creates target directory path                                 |
+| Check directory exists | Directory     | [`db_volume_dir_exists()`](https://databrickslabs.github.io/brickster/reference/db_volume_dir_exists.md)     | Returns `TRUE`/`FALSE`                                        |
+| Delete directory       | Directory     | [`db_volume_dir_delete()`](https://databrickslabs.github.io/brickster/reference/db_volume_dir_delete.md)     | Use `recursive = TRUE` for non-empty directories              |
+| Upload directory       | Bulk transfer | [`db_volume_upload_dir()`](https://databrickslabs.github.io/brickster/reference/db_volume_upload_dir.md)     | Parallel upload, `recursive = TRUE` includes subdirectories   |
+| Download directory     | Bulk transfer | [`db_volume_download_dir()`](https://databrickslabs.github.io/brickster/reference/db_volume_download_dir.md) | Parallel download, `recursive = TRUE` includes subdirectories |
+
+## Example Workflows
+
+### Single File Round-Trip
+
+If you just need to move one file in and out of a volume. This example
+goes beyond the minimum to showcase more than just upload/download.
+
+``` r
+library(brickster)
+
+volume_root <- "/Volumes/zacdav/default/data"
+incoming_dir <- file.path(volume_root, "incoming")
+incoming_file <- file.path(incoming_dir, "example.csv")
+
+# create local file
+local_file <- tempfile(fileext = ".csv")
+write.csv(mtcars, local_file, row.names = FALSE)
+
+# ensure target directory exists
+db_volume_dir_create(incoming_dir)
+
+# upload file
+db_volume_write(
+  path = incoming_file,
+  file = local_file,
+  overwrite = TRUE
+)
+
+# verify + inspect
+db_volume_file_exists(incoming_file)
+db_volume_list(incoming_dir)
+
+# download file back to local path
+downloaded_file <- tempfile(fileext = ".csv")
+db_volume_read(
+  path = incoming_file,
+  destination = downloaded_file
+)
+
+# verify that file can be read as csv
+read.csv(downloaded_file)
+
+# clean up (optional)
+db_volume_delete(incoming_file)
+db_volume_dir_delete(incoming_dir)
+```
+
+### Bulk Directory Transfer (Upload + Download)
+
+This is a compact pattern for a larger transfer: sample a local dataset
+to 100 million rows, write a 2-level partitioned Arrow dataset, upload
+it, then download it back.
+
+``` r
+library(brickster)
+library(arrow)
+library(dplyr)
+
+volume_root <- "/Volumes/zacdav/default/data"
+landing_dir <- file.path(volume_root, "sample_10m")
+local_dir <- tempfile("arrow_sample_")
+
+# sample to 10M rows
+# write partitioned Arrow dataset (2 levels deep: cyl/gear)
+mtcars |>
+  sample_n(size = 1e+07, replace = TRUE) |>
+  write_dataset(
+    path = local_dir,
+    format = "parquet",
+    partitioning = c("cyl", "gear")
+  )
+
+# bulk upload
+db_volume_upload_dir(
+  local_dir = local_dir,
+  volume_dir = landing_dir,
+  overwrite = TRUE,
+  recursive = TRUE
+)
+
+# bulk download
+local_download <- tempfile("arrow_download_")
+db_volume_download_dir(
+  volume_dir = landing_dir,
+  local_dir = local_download,
+  overwrite = TRUE,
+  recursive = TRUE
+)
+list.files(local_download, recursive = TRUE)
+
+# cleanup example directory recursively (optional)
+db_volume_dir_delete(
+  path = landing_dir,
+  recursive = TRUE
+)
+```
+
+Set `recursive = FALSE` for non-recursive transfer: only files directly
+under the source directory are transferred, and nested subdirectories
+are skipped.
+
+## Managing Volume Objects (Optional)
+
+Use `db_uc_volumes_*` when you need to create or manage the **volume
+object itself** (not files inside it).
+
+| Operation              | Function                                                                                                 | Notes                                      |
+|------------------------|----------------------------------------------------------------------------------------------------------|--------------------------------------------|
+| List volumes in schema | [`db_uc_volumes_list()`](https://databrickslabs.github.io/brickster/reference/db_uc_volumes_list.md)     | Returns volumes under `<catalog>.<schema>` |
+| Get one volume         | [`db_uc_volumes_get()`](https://databrickslabs.github.io/brickster/reference/db_uc_volumes_get.md)       | Returns metadata for one volume            |
+| Create volume          | [`db_uc_volumes_create()`](https://databrickslabs.github.io/brickster/reference/db_uc_volumes_create.md) | Supports `MANAGED` and `EXTERNAL`          |
+| Update volume metadata | [`db_uc_volumes_update()`](https://databrickslabs.github.io/brickster/reference/db_uc_volumes_update.md) | Rename/comment/owner updates               |
+| Delete volume          | [`db_uc_volumes_delete()`](https://databrickslabs.github.io/brickster/reference/db_uc_volumes_delete.md) | Removes the Unity Catalog volume object    |
+
+``` r
+# list volumes in a schema
+db_uc_volumes_list(catalog = "<catalog>", schema = "<schema>")
+
+# create a managed volume
+db_uc_volumes_create(
+  catalog = "<catalog>",
+  schema = "<schema>",
+  volume = "my_volume",
+  volume_type = "MANAGED"
+)
+
+# inspect one volume
+db_uc_volumes_get(
+  catalog = "<catalog>",
+  schema = "<schema>",
+  volume = "my_volume"
+)
+```
+
+After a volume exists, use `/Volumes/<catalog>/<schema>/<volume>/...`
+paths with `db_volume_*` for file operations.

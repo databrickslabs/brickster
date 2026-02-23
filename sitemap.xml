@@ -7,6 +7,7 @@
 <url><loc>https://databrickslabs.github.io/brickster/articles/remote-repl.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/articles/setup-auth.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/articles/sql-backend.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/articles/working-with-volumes.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/authors.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/index.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/news/index.html</loc></url>
@@ -18,6 +19,7 @@
 <url><loc>https://databrickslabs.github.io/brickster/reference/access_control_req_user.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/access_control_request.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/add_lib_path.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/auth_params.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/aws_attributes.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/azure_attributes.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/close_workspace.html</loc></url>
@@ -224,8 +226,10 @@
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_volume_dir_create.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_volume_dir_delete.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_volume_dir_exists.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/db_volume_download_dir.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_volume_file_exists.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_volume_list.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/db_volume_list_files_recursive.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_volume_read.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_volume_recursive_delete_contents.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_volume_upload_dir.html</loc></url>

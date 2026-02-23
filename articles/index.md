@@ -12,3 +12,5 @@
   Workspace](https://databrickslabs.github.io/brickster/articles/setup-auth.md):
 - [\`{DBI}\`/\`{dbplyr}\`
   backend](https://databrickslabs.github.io/brickster/articles/sql-backend.md):
+- [Working with Unity Catalog
+  Volumes](https://databrickslabs.github.io/brickster/articles/working-with-volumes.md):
