@@ -150,6 +150,7 @@ reference:
     contents:
       - db_request
       - db_perform_request
+      - db_perform_response
       - db_req_error_body
       - db_request_json
   - title: Low Level Helpers
