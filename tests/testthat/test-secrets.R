@@ -19,7 +19,7 @@ test_that("Secrets API - don't perform", {
   resp_delete <- db_secrets_delete(
     scope = "some_scope",
     key = "some_key",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_delete, "httr2_request")
 
@@ -27,27 +27,27 @@ test_that("Secrets API - don't perform", {
     scope = "some_scope",
     key = "some_key",
     value = "some_value",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_put, "httr2_request")
 
   resp_acl_del <- db_secrets_scope_acl_delete(
     scope = "some_scope",
     principal = "some_principal",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_acl_del, "httr2_request")
 
   resp_acl_get <- db_secrets_scope_acl_get(
     scope = "some_scope",
     principal = "some_principal",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_acl_get, "httr2_request")
 
   resp_acl_list <- db_secrets_scope_acl_list(
     scope = "some_scope",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_acl_list, "httr2_request")
 
@@ -55,23 +55,23 @@ test_that("Secrets API - don't perform", {
     scope = "some_scope",
     principal = "some_principal",
     permission = "READ",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_acl_put, "httr2_request")
 
   resp_scope_create <- db_secrets_scope_create(
     scope = "some_scope",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_scope_create, "httr2_request")
 
   resp_scope_del <- db_secrets_scope_delete(
     scope = "some_scope",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_scope_del, "httr2_request")
 
-  resp_scope_list_all <- db_secrets_scope_list_all(perform_request = F)
+  resp_scope_list_all <- db_secrets_scope_list_all(perform_request = FALSE)
   expect_s3_class(resp_scope_list_all, "httr2_request")
 
 })

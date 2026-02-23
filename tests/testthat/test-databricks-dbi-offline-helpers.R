@@ -64,11 +64,9 @@ test_that("dbConnect validates tuning inputs and persists connection settings", 
   )
 })
 
-test_that("dbWriteTable validates user input and routes standard vs volume paths", {
+test_that("dbWriteTable validates user input", {
   con <- make_dbi_test_con(staging_volume = "/Volumes/c/s/v")
   value <- data.frame(x = 1:3)
-  state <- new.env(parent = emptyenv())
-  state$path <- NULL
 
   expect_error(
     dbWriteTable(con, "tbl", value, overwrite = TRUE, append = TRUE),
@@ -82,6 +80,13 @@ test_that("dbWriteTable validates user input and routes standard vs volume paths
     dbWriteTable(con, "tbl", value[0, , drop = FALSE]),
     "Cannot write empty data frame"
   )
+})
+
+test_that("dbWriteTable routes to volume path when staging is preferred", {
+  con <- make_dbi_test_con(staging_volume = "/Volumes/c/s/v")
+  value <- data.frame(x = 1:3)
+  state <- new.env(parent = emptyenv())
+  state$path <- NULL
 
   local_mocked_bindings(
     dbExistsTable = function(...) FALSE,
@@ -99,6 +104,13 @@ test_that("dbWriteTable validates user input and routes standard vs volume paths
 
   expect_invisible(dbWriteTable(con, "tbl_volume", value, overwrite = TRUE))
   expect_identical(state$path, "volume")
+})
+
+test_that("dbWriteTable routes to standard path when volume staging is not preferred", {
+  con <- make_dbi_test_con(staging_volume = "/Volumes/c/s/v")
+  value <- data.frame(x = 1:3)
+  state <- new.env(parent = emptyenv())
+  state$path <- NULL
 
   local_mocked_bindings(
     dbExistsTable = function(...) FALSE,
@@ -338,7 +350,7 @@ test_that("volume-method selection warns/errors at size thresholds", {
   )
 })
 
-test_that("db_write_table_volume validates staging directory and executes create/append SQL", {
+test_that("db_write_table_volume errors when staging directory is missing", {
   testthat::skip_if_not_installed("arrow")
   con <- make_dbi_test_con()
 
@@ -359,65 +371,114 @@ test_that("db_write_table_volume validates staging directory and executes create
     ),
     "Staging volume directory does not exist"
   )
+})
 
-  run_flow <- function(append) {
-    state <- new.env(parent = emptyenv())
-    state$sql <- NULL
-    state$created <- NULL
-    state$uploaded <- NULL
-    state$deleted <- NULL
+test_that("db_write_table_volume executes create flow when append is FALSE", {
+  testthat::skip_if_not_installed("arrow")
+  con <- make_dbi_test_con()
+  state <- new.env(parent = emptyenv())
+  state$sql <- NULL
+  state$created <- NULL
+  state$uploaded <- NULL
+  state$deleted <- NULL
 
-    local_mocked_bindings(
-      is_valid_volume_path = function(path) path,
-      db_volume_dir_exists = function(...) TRUE,
-      db_volume_dir_create = function(path, ...) {
-        state$created <- path
-        invisible(TRUE)
-      },
-      db_volume_upload_dir = function(local_dir, volume_dir, ...) {
-        state$uploaded <- volume_dir
-        invisible(TRUE)
-      },
-      db_sql_exec_and_wait = function(statement, ...) {
-        state$sql <- statement
-        list(status = list(state = "SUCCEEDED"))
-      },
-      db_volume_dir_delete = function(path, recursive = FALSE, ...) {
-        state$deleted <- path
-        invisible(TRUE)
-      },
-      .package = "brickster"
+  local_mocked_bindings(
+    is_valid_volume_path = function(path) path,
+    db_volume_dir_exists = function(...) TRUE,
+    db_volume_dir_create = function(path, ...) {
+      state$created <- path
+      invisible(TRUE)
+    },
+    db_volume_upload_dir = function(local_dir, volume_dir, ...) {
+      state$uploaded <- volume_dir
+      invisible(TRUE)
+    },
+    db_sql_exec_and_wait = function(statement, ...) {
+      state$sql <- statement
+      list(status = list(state = "SUCCEEDED"))
+    },
+    db_volume_dir_delete = function(path, recursive = FALSE, ...) {
+      state$deleted <- path
+      invisible(TRUE)
+    },
+    .package = "brickster"
+  )
+  local_mocked_bindings(
+    write_dataset = function(dataset, path, ...) {
+      fs::dir_create(path)
+      writeLines("part", fs::path(path, "part-0.parquet"))
+      invisible(NULL)
+    },
+    .package = "arrow"
+  )
+
+  expect_no_error(
+    db_write_table_volume(
+      conn = con,
+      quoted_name = DBI::SQL("`tbl`"),
+      value = data.frame(x = c(1L, 2L)),
+      staging_volume = "/Volumes/c/s/v",
+      append = FALSE,
+      progress = FALSE
     )
-    local_mocked_bindings(
-      write_dataset = function(dataset, path, ...) {
-        fs::dir_create(path)
-        writeLines("part", fs::path(path, "part-0.parquet"))
-        invisible(NULL)
-      },
-      .package = "arrow"
+  )
+
+  expect_match(state$sql, "^CREATE OR REPLACE TABLE")
+  expect_identical(state$created, state$uploaded)
+  expect_identical(state$deleted, state$created)
+})
+
+test_that("db_write_table_volume executes append flow when append is TRUE", {
+  testthat::skip_if_not_installed("arrow")
+  con <- make_dbi_test_con()
+  state <- new.env(parent = emptyenv())
+  state$sql <- NULL
+  state$created <- NULL
+  state$uploaded <- NULL
+  state$deleted <- NULL
+
+  local_mocked_bindings(
+    is_valid_volume_path = function(path) path,
+    db_volume_dir_exists = function(...) TRUE,
+    db_volume_dir_create = function(path, ...) {
+      state$created <- path
+      invisible(TRUE)
+    },
+    db_volume_upload_dir = function(local_dir, volume_dir, ...) {
+      state$uploaded <- volume_dir
+      invisible(TRUE)
+    },
+    db_sql_exec_and_wait = function(statement, ...) {
+      state$sql <- statement
+      list(status = list(state = "SUCCEEDED"))
+    },
+    db_volume_dir_delete = function(path, recursive = FALSE, ...) {
+      state$deleted <- path
+      invisible(TRUE)
+    },
+    .package = "brickster"
+  )
+  local_mocked_bindings(
+    write_dataset = function(dataset, path, ...) {
+      fs::dir_create(path)
+      writeLines("part", fs::path(path, "part-0.parquet"))
+      invisible(NULL)
+    },
+    .package = "arrow"
+  )
+
+  expect_no_error(
+    db_write_table_volume(
+      conn = con,
+      quoted_name = DBI::SQL("`tbl`"),
+      value = data.frame(x = c(1L, 2L)),
+      staging_volume = "/Volumes/c/s/v",
+      append = TRUE,
+      progress = FALSE
     )
+  )
 
-    expect_no_error(
-      db_write_table_volume(
-        conn = con,
-        quoted_name = DBI::SQL("`tbl`"),
-        value = data.frame(x = c(1L, 2L)),
-        staging_volume = "/Volumes/c/s/v",
-        append = append,
-        progress = FALSE
-      )
-    )
-
-    state
-  }
-
-  created <- run_flow(append = FALSE)
-  expect_match(created$sql, "^CREATE OR REPLACE TABLE")
-  expect_identical(created$created, created$uploaded)
-  expect_identical(created$deleted, created$created)
-
-  appended <- run_flow(append = TRUE)
-  expect_match(appended$sql, "^COPY INTO")
-  expect_identical(appended$created, appended$uploaded)
-  expect_identical(appended$deleted, appended$created)
+  expect_match(state$sql, "^COPY INTO")
+  expect_identical(state$created, state$uploaded)
+  expect_identical(state$deleted, state$created)
 })

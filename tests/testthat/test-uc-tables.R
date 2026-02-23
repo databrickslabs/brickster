@@ -8,14 +8,14 @@ test_that("Unity Catalog: Tables API - don't perform", {
   resp_table_summaries <- db_uc_tables_summaries(
     catalog = "some_catalog",
     max_results = 10,
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_table_summaries, "httr2_request")
 
   resp_tables_list <- db_uc_tables_list(
     catalog = "some_catalog",
     schema = "some_schema",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_tables_list, "httr2_request")
 
@@ -23,7 +23,7 @@ test_that("Unity Catalog: Tables API - don't perform", {
     catalog = "some_catalog",
     schema = "some_schema",
     table = "some_table",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_table_get, "httr2_request")
 
@@ -31,7 +31,7 @@ test_that("Unity Catalog: Tables API - don't perform", {
     catalog = "some_catalog",
     schema = "some_schema",
     table = "some_table",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_table_delete, "httr2_request")
 
@@ -39,7 +39,7 @@ test_that("Unity Catalog: Tables API - don't perform", {
     catalog = "some_catalog",
     schema = "some_schema",
     table = "some_table",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_table_exists, "httr2_request")
 

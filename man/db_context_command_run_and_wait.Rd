@@ -37,6 +37,9 @@ db_context_command_run_and_wait(
 
 \item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}
 }
+\value{
+Endpoint-specific output.
+}
 \description{
 Run a Command and Wait For Results
 }

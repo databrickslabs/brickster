@@ -32,6 +32,9 @@ existing files.}
 
 \item{progress}{If \code{TRUE}, show progress bar for file operations (default: \code{TRUE} for uploads/downloads, \code{FALSE} for other operations)}
 }
+\value{
+If \code{perform_request = TRUE}, returns endpoint-specific API output. If \code{FALSE}, returns an \code{httr2_request}.
+}
 \description{
 Upload a file to volume filesystem.
 }

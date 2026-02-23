@@ -3,6 +3,11 @@
 \name{db_context_manager}
 \alias{db_context_manager}
 \title{Databricks Execution Context Manager (R6 Class)}
+\value{
+A new \code{databricks_context_manager} object.
+
+Command results
+}
 \description{
 Databricks Execution Context Manager (R6 Class)
 
@@ -48,9 +53,6 @@ Create a new context manager object.
 }
 \if{html}{\out{</div>}}
 }
-\subsection{Returns}{
-A new \code{databricks_context_manager} object.
-}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-databricks_context_manager-close"></a>}}
@@ -79,9 +81,6 @@ Execute a command against a Databricks cluster
 \item{\code{language}}{One of \code{r}, \code{py}, \code{scala}, \code{sql}, or \code{sh}.}
 }
 \if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Command results
 }
 }
 \if{html}{\out{<hr>}}

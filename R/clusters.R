@@ -94,6 +94,7 @@
 #' @family Clusters API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_cluster_create <- function(
   name,
   spark_version,
@@ -227,6 +228,7 @@ db_cluster_create <- function(
 #' @family Clusters API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_cluster_edit <- function(
   cluster_id,
   spark_version,
@@ -372,11 +374,8 @@ db_cluster_action <- function(
     token = token
   )
 
-  req <- req |>
-    httr2::req_body_json(body)
-
   if (perform_request) {
-    httr2::req_perform(req)
+    db_perform_response(req)
     NULL
   } else {
     req
@@ -403,6 +402,7 @@ db_cluster_action <- function(
 #' @family Clusters API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_cluster_start <- function(
   cluster_id,
   host = db_host(),
@@ -424,6 +424,7 @@ db_cluster_start <- function(
 #' @family Clusters API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_cluster_restart <- function(
   cluster_id,
   host = db_host(),
@@ -442,6 +443,7 @@ db_cluster_restart <- function(
 #' @inherit db_cluster_restart details
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_cluster_delete <- function(
   cluster_id,
   host = db_host(),
@@ -468,6 +470,7 @@ db_cluster_delete <- function(
 #' @family Clusters API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_cluster_terminate <- function(
   cluster_id,
   host = db_host(),
@@ -495,6 +498,7 @@ db_cluster_terminate <- function(
 #' @family Clusters API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_cluster_perm_delete <- function(
   cluster_id,
   host = db_host(),
@@ -525,6 +529,7 @@ db_cluster_perm_delete <- function(
 #' @family Clusters API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_cluster_pin <- function(
   cluster_id,
   host = db_host(),
@@ -547,6 +552,7 @@ db_cluster_pin <- function(
 #' @family Clusters API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_cluster_unpin <- function(
   cluster_id,
   host = db_host(),
@@ -567,6 +573,7 @@ db_cluster_unpin <- function(
 #' @family Clusters API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_cluster_resize <- function(
   cluster_id,
   num_workers = NULL,
@@ -621,6 +628,7 @@ db_cluster_resize <- function(
 #' @family Clusters API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_cluster_get <- function(
   cluster_id,
   host = db_host(),
@@ -640,12 +648,8 @@ db_cluster_get <- function(
     token = token
   )
 
-  req <- req |>
-    httr2::req_body_json(body)
-
   if (perform_request) {
-    req |>
-      httr2::req_perform() |>
+    db_perform_response(req) |>
       httr2::resp_body_json()
   } else {
     req
@@ -673,6 +677,7 @@ db_cluster_get <- function(
 #' @family Clusters API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_cluster_list <- function(
   host = db_host(),
   token = db_token(),
@@ -705,6 +710,7 @@ db_cluster_list <- function(
 #' @family Clusters API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_cluster_list_node_types <- function(
   host = db_host(),
   token = db_token(),
@@ -737,6 +743,7 @@ db_cluster_list_node_types <- function(
 #' @family Clusters API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_cluster_runtime_versions <- function(
   host = db_host(),
   token = db_token(),
@@ -770,6 +777,7 @@ db_cluster_runtime_versions <- function(
 #' (ex: us-west-2a). These zones can be used to launch a cluster.
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_cluster_list_zones <- function(
   host = db_host(),
   token = db_token(),
@@ -818,6 +826,7 @@ db_cluster_list_zones <- function(
 #' @family Clusters API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_cluster_events <- function(
   cluster_id,
   start_time = NULL,
@@ -879,7 +888,7 @@ db_cluster_events <- function(
 #' @family Clusters API
 #' @family Cluster Helpers
 #'
-#' @return `db_cluster_get()`
+#' @returns `db_cluster_get()`
 #' @export
 get_and_start_cluster <- function(
   cluster_id,
@@ -961,7 +970,7 @@ get_and_start_cluster <- function(
 #' @family Clusters API
 #' @family Cluster Helpers
 #'
-#' @return Named list
+#' @returns Named list
 #' @export
 #'
 #' @importFrom rlang .data

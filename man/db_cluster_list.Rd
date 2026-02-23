@@ -14,6 +14,9 @@ db_cluster_list(host = db_host(), token = db_token(), perform_request = TRUE)
 \item{perform_request}{If \code{TRUE} (default) the request is performed, if
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
+\value{
+If \code{perform_request = TRUE}, returns endpoint-specific API output. If \code{FALSE}, returns an \code{httr2_request}.
+}
 \description{
 List Clusters
 }

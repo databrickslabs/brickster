@@ -9,6 +9,7 @@
 #' @family Execution Context API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_context_create <- function(
   cluster_id,
   language = c("python", "sql", "scala", "r"),
@@ -49,6 +50,7 @@ db_context_create <- function(
 #' @family Execution Context API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_context_destroy <- function(
   cluster_id,
   context_id,
@@ -86,6 +88,7 @@ db_context_destroy <- function(
 #' @family Execution Context API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_context_status <- function(
   cluster_id,
   context_id,
@@ -128,6 +131,7 @@ db_context_status <- function(
 #' @family Execution Context API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_context_command_run <- function(
   cluster_id,
   context_id,
@@ -186,6 +190,7 @@ db_context_command_run <- function(
 #' @family Execution Context API
 #'
 #' @export
+#' @returns Endpoint-specific output.
 db_context_command_run_and_wait <- function(
   cluster_id,
   context_id,
@@ -246,6 +251,7 @@ db_context_command_run_and_wait <- function(
 #' @family Execution Context API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_context_command_status <- function(
   cluster_id,
   context_id,
@@ -285,6 +291,7 @@ db_context_command_status <- function(
 #' @family Execution Context API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_context_command_cancel <- function(
   cluster_id,
   context_id,
@@ -323,7 +330,7 @@ db_context_command_cancel <- function(
 #'
 #' @family Execution Context API
 #'
-#' @return command results
+#' @returns command results
 #' @keywords internal
 db_context_command_parse <- function(
   x,

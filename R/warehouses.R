@@ -38,6 +38,7 @@
 #' @family Warehouse API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_sql_warehouse_create <- function(
   name,
   cluster_size,
@@ -111,6 +112,7 @@ db_sql_warehouse_create <- function(
 #' @family Warehouse API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_sql_warehouse_delete <- function(
   id,
   host = db_host(),
@@ -144,6 +146,7 @@ db_sql_warehouse_delete <- function(
 #' @family Warehouse API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_sql_warehouse_edit <- function(
   id,
   name = NULL,
@@ -224,6 +227,7 @@ db_sql_warehouse_edit <- function(
 #' @family Warehouse API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_sql_warehouse_get <- function(
   id,
   host = db_host(),
@@ -253,6 +257,7 @@ db_sql_warehouse_get <- function(
 #' @family Warehouse API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_sql_warehouse_list <- function(
   host = db_host(),
   token = db_token(),
@@ -283,6 +288,7 @@ db_sql_warehouse_list <- function(
 #' @family Warehouse API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_sql_warehouse_start <- function(
   id,
   host = db_host(),
@@ -313,6 +319,7 @@ db_sql_warehouse_start <- function(
 #' @family Warehouse API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_sql_warehouse_stop <- function(
   id,
   host = db_host(),
@@ -342,6 +349,7 @@ db_sql_warehouse_stop <- function(
 #' @family Warehouse API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_sql_global_warehouse_get <- function(
   host = db_host(),
   token = db_token(),
@@ -378,7 +386,7 @@ db_sql_global_warehouse_get <- function(
 #' @family Warehouse API
 #' @family Warehouse Helpers
 #'
-#' @return `db_sql_warehouse_get()`
+#' @returns `db_sql_warehouse_get()`
 #' @export
 get_and_start_warehouse <- function(
   id,

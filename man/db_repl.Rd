@@ -21,6 +21,9 @@ supported.}
 
 \item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}
 }
+\value{
+Invisibly returns \code{NULL}.
+}
 \description{
 Remote REPL to Databricks Cluster
 }

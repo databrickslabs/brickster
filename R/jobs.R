@@ -34,6 +34,7 @@
 #' @family Jobs API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_jobs_create <- function(
   name,
   tasks,
@@ -119,6 +120,7 @@ db_jobs_create <- function(
 #' @family Jobs API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_jobs_list <- function(
   limit = 25,
   offset = 0,
@@ -159,6 +161,7 @@ db_jobs_list <- function(
 #' @family Jobs API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_jobs_delete <- function(
   job_id,
   host = db_host(),
@@ -194,6 +197,7 @@ db_jobs_delete <- function(
 #' @family Jobs API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_jobs_get <- function(
   job_id,
   host = db_host(),
@@ -229,6 +233,7 @@ db_jobs_get <- function(
 #' @family Jobs API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_jobs_reset <- function(
   job_id,
   name,
@@ -308,6 +313,7 @@ db_jobs_reset <- function(
 #' @family Jobs API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_jobs_update <- function(
   job_id,
   fields_to_remove = list(),
@@ -409,6 +415,7 @@ db_jobs_update <- function(
 #' @family Jobs API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_jobs_repair_run <- function(
   run_id,
   rerun_tasks = NULL,
@@ -491,6 +498,7 @@ db_jobs_repair_run <- function(
 #' @family Jobs API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_jobs_run_now <- function(
   job_id,
   parameters = list(),
@@ -536,6 +544,7 @@ db_jobs_run_now <- function(
 #' @family Jobs API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_jobs_runs_submit <- function(
   tasks,
   run_name,
@@ -600,6 +609,7 @@ db_jobs_runs_submit <- function(
 #' @family Jobs API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_jobs_runs_list <- function(
   job_id,
   active_only = FALSE,
@@ -658,6 +668,7 @@ db_jobs_runs_list <- function(
 #' @family Jobs API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_jobs_runs_get <- function(
   run_id,
   host = db_host(),
@@ -697,6 +708,7 @@ db_jobs_runs_get <- function(
 #' @family Jobs API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_jobs_runs_export <- function(
   run_id,
   views_to_export = c("CODE", "DASHBOARDS", "ALL"),
@@ -744,6 +756,7 @@ db_jobs_runs_export <- function(
 #' @family Jobs API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_jobs_runs_cancel <- function(
   run_id,
   host = db_host(),
@@ -779,6 +792,7 @@ db_jobs_runs_cancel <- function(
 #' @family Jobs API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_jobs_runs_get_output <- function(
   run_id,
   host = db_host(),
@@ -814,6 +828,7 @@ db_jobs_runs_get_output <- function(
 #' @family Jobs API
 #'
 #' @export
+#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
 db_jobs_runs_delete <- function(
   run_id,
   host = db_host(),

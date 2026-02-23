@@ -1,4 +1,4 @@
-test_that("get_and_start_warehouse starts stopped warehouses and skips running ones", {
+test_that("get_and_start_warehouse starts stopped warehouses", {
   state <- new.env(parent = emptyenv())
   state$idx <- 0L
   state$start_calls <- 0L
@@ -24,6 +24,11 @@ test_that("get_and_start_warehouse starts stopped warehouses and skips running o
   expect_identical(state$start_calls, 1L)
   expect_identical(state$idx, 3L)
   expect_identical(out$state, "RUNNING")
+})
+
+test_that("get_and_start_warehouse skips already running warehouses", {
+  state <- new.env(parent = emptyenv())
+  state$start_calls <- 0L
 
   local_mocked_bindings(
     db_sql_warehouse_get = function(...) list(state = "RUNNING"),
@@ -36,5 +41,5 @@ test_that("get_and_start_warehouse starts stopped warehouses and skips running o
 
   out_running <- get_and_start_warehouse(id = "wh-2", polling_interval = 0)
   expect_identical(out_running$state, "RUNNING")
-  expect_identical(state$start_calls, 1L)
+  expect_identical(state$start_calls, 0L)
 })

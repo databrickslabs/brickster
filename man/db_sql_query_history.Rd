@@ -43,6 +43,9 @@ db_sql_query_history(
 \item{perform_request}{If \code{TRUE} (default) the request is performed, if
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
+\value{
+If \code{perform_request = TRUE}, returns endpoint-specific API output. If \code{FALSE}, returns an \code{httr2_request}.
+}
 \description{
 For more details refer to the \href{https://docs.databricks.com/api/workspace/queryhistory/list}{query history documentation}.
 This function elevates the sub-components of \code{filter_by} parameter to the R

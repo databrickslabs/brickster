@@ -51,7 +51,7 @@ setClass(
 
 #' Create Databricks SQL Driver
 #'
-#' @return A DatabricksDriver object
+#' @returns A DatabricksDriver object
 #' @export
 #' @examples
 #' \dontrun{
@@ -90,7 +90,7 @@ setMethod("show", "DatabricksDriver", function(object) {
 #' @param token Authentication token (defaults to db_token())
 #' @param host Databricks workspace host (defaults to db_host())
 #' @param ... Additional arguments (ignored)
-#' @return A DatabricksConnection object
+#' @returns A DatabricksConnection object
 #' @export
 setMethod(
   "dbConnect",
@@ -181,7 +181,7 @@ setMethod(
 #' Disconnect from Databricks
 #' @param conn A DatabricksConnection object
 #' @param ... Additional arguments (ignored)
-#' @return `TRUE` (invisibly)
+#' @returns `TRUE` (invisibly)
 #' @export
 setMethod("dbDisconnect", "DatabricksConnection", function(conn, ...) {
   # Databricks connections are stateless, so just return TRUE
@@ -191,7 +191,7 @@ setMethod("dbDisconnect", "DatabricksConnection", function(conn, ...) {
 #' Check if connection is valid
 #' @param dbObj A DatabricksConnection object
 #' @param ... Additional arguments (ignored)
-#' @return `TRUE` if connection is valid, `FALSE` otherwise
+#' @returns `TRUE` if connection is valid, `FALSE` otherwise
 #' @export
 setMethod("dbIsValid", "DatabricksConnection", function(dbObj, ...) {
   # Check if connection has required fields
@@ -228,7 +228,7 @@ setMethod("show", "DatabricksConnection", function(object) {
 #' @param conn A DatabricksConnection object
 #' @param statement SQL statement to execute
 #' @param ... Additional arguments (ignored)
-#' @return A DatabricksResult object
+#' @returns A DatabricksResult object
 #' @export
 setMethod(
   "dbSendQuery",
@@ -269,7 +269,7 @@ setMethod(
 #'   "INLINE" for small metadata queries (automatically chooses appropriate format)
 #' @param show_progress If `TRUE`, show progress updates during query execution (default: `TRUE`)
 #' @param ... Additional arguments passed to underlying query execution
-#' @return A data.frame with query results
+#' @returns A data.frame with query results
 #' @export
 setMethod(
   "dbGetQuery",
@@ -311,7 +311,7 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param statement SQL statement
 #' @param ... Additional arguments (ignored)
-#' @return A DatabricksResult object
+#' @returns A DatabricksResult object
 #' @export
 setMethod(
   "dbSendStatement",
@@ -348,7 +348,7 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param statement SQL statement
 #' @param ... Additional arguments (ignored)
-#' @return Number of rows in result set (from metadata, without loading data)
+#' @returns Number of rows in result set (from metadata, without loading data)
 #' @export
 setMethod(
   "dbExecute",
@@ -388,7 +388,7 @@ setMethod(
 #' @param res A DatabricksResult object
 #' @param n Maximum number of rows to fetch (-1 for all rows)
 #' @param ... Additional arguments (ignored)
-#' @return A data.frame with query results
+#' @returns A data.frame with query results
 #' @export
 setMethod("dbFetch", "DatabricksResult", function(res, n = -1, ...) {
   if (res@completed) {
@@ -439,7 +439,7 @@ setMethod("dbFetch", "DatabricksResult", function(res, n = -1, ...) {
 #' Check if query has completed
 #' @param res A DatabricksResult object
 #' @param ... Additional arguments (ignored)
-#' @return `TRUE` if query is complete, `FALSE` otherwise
+#' @returns `TRUE` if query is complete, `FALSE` otherwise
 #' @export
 setMethod("dbHasCompleted", "DatabricksResult", function(res, ...) {
   if (res@completed) {
@@ -459,7 +459,7 @@ setMethod("dbHasCompleted", "DatabricksResult", function(res, ...) {
 #' Clear result set
 #' @param res A DatabricksResult object
 #' @param ... Additional arguments (ignored)
-#' @return `TRUE` (invisibly)
+#' @returns `TRUE` (invisibly)
 #' @export
 setMethod("dbClearResult", "DatabricksResult", function(res, ...) {
   # Databricks automatically cleans up after a period of time
@@ -471,7 +471,7 @@ setMethod("dbClearResult", "DatabricksResult", function(res, ...) {
 #' Get SQL statement from result
 #' @param res A DatabricksResult object
 #' @param ... Additional arguments (ignored)
-#' @return The SQL statement as character
+#' @returns The SQL statement as character
 #' @export
 setMethod("dbGetStatement", "DatabricksResult", function(res, ...) {
   res@statement
@@ -480,7 +480,7 @@ setMethod("dbGetStatement", "DatabricksResult", function(res, ...) {
 #' Get number of rows fetched
 #' @param res A DatabricksResult object
 #' @param ... Additional arguments (ignored)
-#' @return Number of rows fetched so far
+#' @returns Number of rows fetched so far
 #' @export
 setMethod("dbGetRowCount", "DatabricksResult", function(res, ...) {
   res@rows_fetched
@@ -489,7 +489,7 @@ setMethod("dbGetRowCount", "DatabricksResult", function(res, ...) {
 #' Get number of rows affected (not applicable for SELECT)
 #' @param res A DatabricksResult object
 #' @param ... Additional arguments (ignored)
-#' @return -1 (not applicable for SELECT queries)
+#' @returns -1 (not applicable for SELECT queries)
 #' @export
 setMethod("dbGetRowsAffected", "DatabricksResult", function(res, ...) {
   # For SELECT queries, return -1 (no rows affected)
@@ -499,7 +499,7 @@ setMethod("dbGetRowsAffected", "DatabricksResult", function(res, ...) {
 #' Get column information from result
 #' @param res A DatabricksResult object
 #' @param ... Additional arguments (ignored)
-#' @return A data.frame with column names and types
+#' @returns A data.frame with column names and types
 #' @export
 setMethod("dbColumnInfo", "DatabricksResult", function(res, ...) {
   # Get column info from the result metadata
@@ -541,7 +541,7 @@ setMethod("show", "DatabricksResult", function(object) {
 #' List tables in Databricks catalog/schema
 #' @param conn A DatabricksConnection object
 #' @param ... Additional arguments (ignored)
-#' @return Character vector of table names
+#' @returns Character vector of table names
 #' @export
 setMethod("dbListTables", "DatabricksConnection", function(conn, ...) {
   db_assert_valid_conn(conn)
@@ -572,7 +572,7 @@ setMethod("dbListTables", "DatabricksConnection", function(conn, ...) {
 #' @param conn A DatabricksConnection object
 #' @param name Table name to check
 #' @param ... Additional arguments (ignored)
-#' @return `TRUE` if table exists, `FALSE` otherwise
+#' @returns `TRUE` if table exists, `FALSE` otherwise
 #' @export
 setMethod(
   "dbExistsTable",
@@ -601,7 +601,7 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param name Table name as Id object
 #' @param ... Additional arguments (ignored)
-#' @return `TRUE` if table exists, `FALSE` otherwise
+#' @returns `TRUE` if table exists, `FALSE` otherwise
 #' @export
 setMethod(
   "dbExistsTable",
@@ -630,7 +630,7 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param name Table name as AsIs object (from I())
 #' @param ... Additional arguments (ignored)
-#' @return `TRUE` if table exists, `FALSE` otherwise
+#' @returns `TRUE` if table exists, `FALSE` otherwise
 #' @export
 setMethod(
   "dbExistsTable",
@@ -648,7 +648,7 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param name Table name to remove
 #' @param ... Additional arguments (ignored)
-#' @return `TRUE` invisibly on success
+#' @returns `TRUE` invisibly on success
 #' @export
 setMethod(
   "dbRemoveTable",
@@ -669,7 +669,7 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param name Table name as Id object
 #' @param ... Additional arguments (ignored)
-#' @return `TRUE` invisibly on success
+#' @returns `TRUE` invisibly on success
 #' @export
 setMethod(
   "dbRemoveTable",
@@ -690,7 +690,7 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param name Table name as AsIs object (from I())
 #' @param ... Additional arguments (ignored)
-#' @return `TRUE` invisibly on success
+#' @returns `TRUE` invisibly on success
 #' @export
 setMethod(
   "dbRemoveTable",
@@ -708,7 +708,7 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param name Table name to read
 #' @param ... Additional arguments passed to dbGetQuery
-#' @return A data.frame with table contents
+#' @returns A data.frame with table contents
 #' @export
 setMethod(
   "dbReadTable",
@@ -728,7 +728,7 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param name Table name as Id object
 #' @param ... Additional arguments passed to dbGetQuery
-#' @return A data.frame with table contents
+#' @returns A data.frame with table contents
 #' @export
 setMethod(
   "dbReadTable",
@@ -748,7 +748,7 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param name Table name as AsIs object (from I())
 #' @param ... Additional arguments passed to dbGetQuery
-#' @return A data.frame with table contents
+#' @returns A data.frame with table contents
 #' @export
 setMethod(
   "dbReadTable",
@@ -769,7 +769,7 @@ setMethod(
 #' @param row.names Ignored (included for DBI compatibility)
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
 #' @param ... Additional arguments (ignored)
-#' @return `TRUE` invisibly on success
+#' @returns `TRUE` invisibly on success
 #' @export
 setMethod(
   "dbCreateTable",
@@ -805,7 +805,7 @@ setMethod(
 #' @param row.names Ignored (included for DBI compatibility)
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
 #' @param ... Additional arguments (ignored)
-#' @return `TRUE` invisibly on success
+#' @returns `TRUE` invisibly on success
 #' @export
 setMethod(
   "dbCreateTable",
@@ -841,7 +841,7 @@ setMethod(
 #' @param row.names Ignored (included for DBI compatibility)
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
 #' @param ... Additional arguments (ignored)
-#' @return `TRUE` invisibly on success
+#' @returns `TRUE` invisibly on success
 #' @export
 setMethod(
   "dbCreateTable",
@@ -858,7 +858,7 @@ setMethod(
 #' Get connection information
 #' @param dbObj A DatabricksConnection object
 #' @param ... Additional arguments (ignored)
-#' @return A list with connection details
+#' @returns A list with connection details
 #' @export
 setMethod("dbGetInfo", "DatabricksConnection", function(dbObj, ...) {
   list(
@@ -879,7 +879,7 @@ setMethod("dbGetInfo", "DatabricksConnection", function(dbObj, ...) {
 #' @param conn A DatabricksConnection object
 #' @param name Table name to describe
 #' @param ... Additional arguments (ignored)
-#' @return Character vector of column names
+#' @returns Character vector of column names
 #' @export
 setMethod(
   "dbListFields",
@@ -922,7 +922,7 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param name Table name as AsIs object (from I())
 #' @param ... Additional arguments (ignored)
-#' @return Character vector of column names
+#' @returns Character vector of column names
 #' @export
 setMethod(
   "dbListFields",
@@ -940,7 +940,7 @@ setMethod(
 #' Begin transaction (not supported)
 #' @param conn A DatabricksConnection object
 #' @param ... Additional arguments (ignored)
-#' @return Always throws an error (transactions not supported)
+#' @returns Always throws an error (transactions not supported)
 #' @export
 setMethod("dbBegin", "DatabricksConnection", function(conn, ...) {
   cli::cli_abort("Transactions are not supported")
@@ -949,7 +949,7 @@ setMethod("dbBegin", "DatabricksConnection", function(conn, ...) {
 #' Commit transaction (not supported)
 #' @param conn A DatabricksConnection object
 #' @param ... Additional arguments (ignored)
-#' @return Always throws an error (transactions not supported)
+#' @returns Always throws an error (transactions not supported)
 #' @export
 setMethod("dbCommit", "DatabricksConnection", function(conn, ...) {
   cli::cli_abort("Transactions are not supported")
@@ -958,7 +958,7 @@ setMethod("dbCommit", "DatabricksConnection", function(conn, ...) {
 #' Rollback transaction (not supported)
 #' @param conn A DatabricksConnection object
 #' @param ... Additional arguments (ignored)
-#' @return Always throws an error (transactions not supported)
+#' @returns Always throws an error (transactions not supported)
 #' @export
 setMethod("dbRollback", "DatabricksConnection", function(conn, ...) {
   cli::cli_abort("Transactions are not supported")
@@ -1002,7 +1002,7 @@ db_clean_table_name <- function(name) {
 #' @param dbObj A DatabricksConnection object
 #' @param obj R object(s) to get SQL types for
 #' @param ... Additional arguments (ignored)
-#' @return Character vector of SQL type names
+#' @returns Character vector of SQL type names
 #' @export
 setMethod("dbDataType", "DatabricksConnection", function(dbObj, obj, ...) {
   # Map R types to Databricks SQL types
@@ -1065,7 +1065,7 @@ db_prepare_create_table_fields <- function(fields) {
 #' @param conn A DatabricksConnection object
 #' @param x Character vector of identifiers to quote
 #' @param ... Additional arguments (ignored)
-#' @return SQL object with quoted identifiers
+#' @returns SQL object with quoted identifiers
 #' @export
 setMethod(
   "dbQuoteIdentifier",
@@ -1097,7 +1097,7 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param x SQL object (already quoted)
 #' @param ... Additional arguments (ignored)
-#' @return The SQL object unchanged
+#' @returns The SQL object unchanged
 #' @export
 setMethod(
   "dbQuoteIdentifier",
@@ -1112,7 +1112,7 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param x Id object with catalog/schema/table components
 #' @param ... Additional arguments (ignored)
-#' @return SQL object with quoted identifier components
+#' @returns SQL object with quoted identifier components
 #' @export
 setMethod(
   "dbQuoteIdentifier",
@@ -1138,7 +1138,7 @@ setMethod(
 #' @param staging_volume Optional volume path for large dataset staging
 #' @param progress If `TRUE`, show progress bar for file uploads (default: `TRUE`)
 #' @param ... Additional arguments
-#' @return `TRUE` invisibly on success
+#' @returns `TRUE` invisibly on success
 #' @export
 setMethod(
   "dbWriteTable",
@@ -1252,7 +1252,7 @@ setMethod(
 #' @param staging_volume Optional volume path for large dataset staging
 #' @param progress If `TRUE`, show progress bar for file uploads (default: `TRUE`)
 #' @param ... Additional arguments
-#' @return `TRUE` invisibly on success
+#' @returns `TRUE` invisibly on success
 #' @export
 setMethod(
   "dbWriteTable",
@@ -1371,7 +1371,7 @@ setMethod(
 #' @param staging_volume Optional volume path for large dataset staging
 #' @param progress If `TRUE`, show progress bar for file uploads (default: `TRUE`)
 #' @param ... Additional arguments
-#' @return `TRUE` invisibly on success
+#' @returns `TRUE` invisibly on success
 #' @export
 setMethod(
   "dbWriteTable",
@@ -1839,7 +1839,7 @@ db_write_table_volume <- function(
 #' @param value Data frame to append
 #' @param ... Additional arguments
 #' @param row.names If `TRUE`, preserve row names as a column
-#' @return `TRUE` invisibly on success
+#' @returns `TRUE` invisibly on success
 #' @export
 setMethod(
   "dbAppendTable",
@@ -1868,7 +1868,7 @@ setMethod(
 #' @param value Data frame to append
 #' @param ... Additional arguments
 #' @param row.names If `TRUE`, preserve row names as a column
-#' @return `TRUE` invisibly on success
+#' @returns `TRUE` invisibly on success
 #' @export
 setMethod(
   "dbAppendTable",

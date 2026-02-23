@@ -93,7 +93,7 @@ test_that("db_sql_query uses external-links processor for EXTERNAL_LINKS disposi
   expect_identical(out$v, c(1L, 2L))
 })
 
-test_that("db_sql_exec_poll_for_success returns on success and surfaces failures", {
+test_that("db_sql_exec_poll_for_success returns on success", {
   state <- new.env(parent = emptyenv())
   state$idx <- 0L
   states <- c("PENDING", "RUNNING", "SUCCEEDED")
@@ -116,7 +116,9 @@ test_that("db_sql_exec_poll_for_success returns on success and surfaces failures
 
   expect_identical(out$status$state, "SUCCEEDED")
   expect_identical(state$idx, 3L)
+})
 
+test_that("db_sql_exec_poll_for_success surfaces failures", {
   local_mocked_bindings(
     db_sql_exec_status = function(...) {
       list(status = list(state = "FAILED", error = list(message = "detailed failure")))
@@ -134,7 +136,7 @@ test_that("db_sql_exec_poll_for_success returns on success and surfaces failures
   )
 })
 
-test_that("db_sql_fetch_results chooses fast or parallel paths by chunk count", {
+test_that("db_sql_fetch_results uses fast path for one chunk", {
   local_mocked_bindings(
     db_sql_fetch_results_fast = function(...) "fast-path",
     db_sql_fetch_results_parallel = function(...) stop("parallel path should not be used"),
@@ -146,7 +148,9 @@ test_that("db_sql_fetch_results chooses fast or parallel paths by chunk count", 
     show_progress = FALSE
   )
   expect_identical(out_fast, "fast-path")
+})
 
+test_that("db_sql_fetch_results uses parallel path for multiple chunks", {
   local_mocked_bindings(
     db_sql_fetch_results_fast = function(...) stop("fast path should not be used"),
     db_sql_fetch_results_parallel = function(...) "parallel-path",

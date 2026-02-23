@@ -5,10 +5,10 @@ test_that("Misc Helpers - don't perform", {
     "DATABRICKS_TOKEN" = "mock_token"
   ))
 
-  resp_wsid <- db_current_workspace_id(perform_request = F)
+  resp_wsid <- db_current_workspace_id(perform_request = FALSE)
   expect_s3_class(resp_wsid, "httr2_request")
 
-  resp_user <- db_current_user(perform_request = F)
+  resp_user <- db_current_user(perform_request = FALSE)
   expect_s3_class(resp_user, "httr2_request")
 
 })

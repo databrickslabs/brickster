@@ -34,7 +34,7 @@ db_context_manager <- R6::R6Class(
     #' @param language One of `r`, `py`, `scala`, `sql`, or `sh`.
     #' @param host Databricks workspace URL, defaults to calling [db_host()].
     #' @param token Databricks workspace token, defaults to calling [db_token()].
-    #' @return A new `databricks_context_manager` object.
+    #' @returns A new `databricks_context_manager` object.
     initialize = function(
       cluster_id,
       language = c("r", "py", "scala", "sql", "sh"),
@@ -78,7 +78,7 @@ db_context_manager <- R6::R6Class(
     #' @description Execute a command against a Databricks cluster
     #' @param cmd code to execute against Databricks cluster
     #' @param language One of `r`, `py`, `scala`, `sql`, or `sh`.
-    #' @return Command results
+    #' @returns Command results
     cmd_run = function(cmd, language = c("r", "py", "scala", "sql", "sh")) {
       language <- match.arg(language)
       code <- paste(cmd, collapse = "\n")
@@ -122,6 +122,7 @@ repl_prompt <- function(language) {
 #' @inheritParams auth_params
 #'
 #' @export
+#' @returns Invisibly returns `NULL`.
 db_repl <- function(
   cluster_id,
   language = c("r", "py", "scala", "sql", "sh"),

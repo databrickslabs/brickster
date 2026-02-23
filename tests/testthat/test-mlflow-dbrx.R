@@ -6,25 +6,25 @@ test_that("Unity Catalog API - don't perform", {
   ))
 
   resp_list <- db_mlflow_registered_models_list(
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_list, "httr2_request")
 
   resp_search <- db_mlflow_registered_models_search(
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_search, "httr2_request")
 
   resp_search_v <- db_mlflow_registered_models_search_versions(
     name = "some_name",
     max_results = 1,
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_search_v, "httr2_request")
 
   resp_details <- db_mlflow_registered_model_details(
     name = "some_name",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_details, "httr2_request")
 
@@ -32,7 +32,7 @@ test_that("Unity Catalog API - don't perform", {
     name = "some_name",
     version = 1,
     stage = "Production",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_tran_stg, "httr2_request")
 
@@ -40,14 +40,14 @@ test_that("Unity Catalog API - don't perform", {
     name = "some_name",
     version = 1,
     stage = "Production",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_tran_stg_req, "httr2_request")
 
   resp_tran_open_req <- db_mlflow_model_open_transition_reqs(
     name = "some_name",
     version = 1,
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_tran_open_req, "httr2_request")
 
@@ -55,7 +55,7 @@ test_that("Unity Catalog API - don't perform", {
     name = "some_name",
     version = 1,
     stage = "Production",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_tran_approve_req, "httr2_request")
 
@@ -63,7 +63,7 @@ test_that("Unity Catalog API - don't perform", {
     name = "some_name",
     version = 1,
     stage = "Production",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_tran_reject_req, "httr2_request")
 
@@ -72,7 +72,7 @@ test_that("Unity Catalog API - don't perform", {
     version = 1,
     stage = "Production",
     creator = "some_creator",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_tran_del_req, "httr2_request")
 
@@ -80,20 +80,20 @@ test_that("Unity Catalog API - don't perform", {
     name = "some_name",
     version = 1,
     comment = "some_comment",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_version_comment, "httr2_request")
 
   resp_version_edit_comment <- db_mlflow_model_version_comment_edit(
     id = "some_id",
     comment = "some_comment_changed",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_version_edit_comment, "httr2_request")
 
   resp_version_del_comment <- db_mlflow_model_version_comment_delete(
     id = "some_id",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_version_del_comment, "httr2_request")
 

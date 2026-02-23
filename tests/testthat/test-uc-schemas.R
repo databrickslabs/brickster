@@ -7,14 +7,14 @@ test_that("Unity Catalog: Schemas API - don't perform", {
 
   resp_schema_list <- db_uc_schemas_list(
     catalog = "some_catalog",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_schema_list, "httr2_request")
 
   resp_schema_get <- db_uc_schemas_get(
     catalog = "some_catalog",
     schema = "some_schema",
-    perform_request = F
+    perform_request = FALSE
   )
   expect_s3_class(resp_schema_get, "httr2_request")
 
