@@ -116,7 +116,7 @@ test_that("Connection Pane Helpers", {
       token = db_token()
     )
     # remove serverless clusters from test as they cause an issue
-    clusters <- clusters[!grepl("v2n", clusters$name), ]
+    clusters <- clusters[!grepl("v2n", clusters$name, fixed = TRUE), ]
     cluster_id <- get_id_from_panel_name(clusters$name[[1]])
     cluster_data <- get_cluster(
       id = cluster_id,

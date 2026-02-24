@@ -192,7 +192,7 @@ test_that("dbListTables uses connection context when generating SQL", {
   local_mocked_bindings(
     dbGetQuery = function(conn, statement, ...) {
       state$sql <- c(state$sql, statement)
-      if (grepl("test_catalog\\.test_schema", statement)) {
+      if (grepl("test_catalog.test_schema", statement, fixed = TRUE)) {
         return(data.frame(tableName = "t_a"))
       }
       if (grepl("schema_only$", statement)) {
