@@ -1119,7 +1119,7 @@ setMethod(
   signature("DatabricksConnection", "Id"),
   function(conn, x, ...) {
     # Handle schema.table identifiers
-    names <- purrr::map_chr(x@name, ~ paste0("`", .x, "`"))
+    names <- purrr::map_chr(x@name, \(x) paste0("`", x, "`"))
     DBI::SQL(paste(names, collapse = "."))
   }
 )
@@ -1479,7 +1479,7 @@ db_create_table_from_data <- function(
   }
 
   # Build column definitions
-  col_names <- purrr::map_chr(names(value), ~ dbQuoteIdentifier(conn, .x))
+  col_names <- purrr::map_chr(names(value), \(x) dbQuoteIdentifier(conn, x))
   col_defs <- paste(col_names, col_types, collapse = ", ")
 
   # Create table
@@ -1600,7 +1600,7 @@ db_create_table_as_select_values <- function(
 #' @keywords internal
 db_append_with_select_values <- function(conn, quoted_name, value) {
   # Get column names with proper quoting
-  col_names <- purrr::map_chr(names(value), ~ dbQuoteIdentifier(conn, .x))
+  col_names <- purrr::map_chr(names(value), \(x) dbQuoteIdentifier(conn, x))
   col_list <- paste(col_names, collapse = ", ")
 
   # Generate VALUES clause with type-aware formatting

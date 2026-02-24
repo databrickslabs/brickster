@@ -258,7 +258,7 @@ get_uc_volume <- function(catalog, schema, host, volume, token) {
     token = token
   )
 
-  volume <- purrr::keep(volumes, ~.x$name == volume)[[1]]
+  volume <- purrr::keep(volumes, \(x) x$name == volume)[[1]]
 
   info <- list(
     "name" = volume$name,
@@ -289,8 +289,8 @@ get_schema_objects <- function(catalog, schema, host, token) {
   # how many objects of each type exist
   # only show when objects exist within
   sizes <- purrr::map_int(objects, nrow) |>
-    purrr::keep(~.x > 0) |>
-    purrr::imap_chr(~ glue::glue("{.y} ({.x})"))
+    purrr::keep(\(x) x > 0) |>
+    purrr::imap_chr(\(x, y) glue::glue("{y} ({x})"))
 
   data.frame(
     name = unname(sizes),

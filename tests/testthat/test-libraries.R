@@ -66,7 +66,7 @@ test_that("Libraries API", {
     purrr::map_chr(resp_list_dbrv$versions, "key"),
     decreasing = TRUE
   )
-  std_runtimes <- purrr::keep(runtimes, ~ !grepl("photon|gpu", .x))
+  std_runtimes <- purrr::keep(runtimes, \(x) !grepl("photon|gpu", x))
   resp_create_cluster <- db_cluster_create(
     name = "brickster_test_libraries_cluster",
     spark_version = std_runtimes[1],
