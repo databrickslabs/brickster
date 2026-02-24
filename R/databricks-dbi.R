@@ -1532,8 +1532,8 @@ db_escape_string_literal <- function(conn, val) {
   }
 
   # Spark SQL accepts backslash-escaped quotes; escape backslashes first
-  escaped <- gsub("\\\\", "\\\\\\\\", val)
-  escaped <- gsub("'", "\\\\'", escaped)
+  escaped <- gsub("\\", "\\\\", val, fixed = TRUE)
+  escaped <- gsub("'", "\\'", escaped, fixed = TRUE)
   paste0("'", escaped, "'")
 }
 

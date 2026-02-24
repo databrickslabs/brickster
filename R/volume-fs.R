@@ -315,7 +315,7 @@ db_volume_dir_exists <- function(
 
 
 is_valid_volume_path <- function(path) {
-  if (!grepl("^/Volumes/", path)) {
+  if (!startsWith(path, "/Volumes/")) {
     cli::cli_abort("{.arg path} must start with {.path /Volumes/}")
   }
   path

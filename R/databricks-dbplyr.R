@@ -96,7 +96,7 @@ sql_query_save.DatabricksConnection <- function(
 
   # For user-provided names, ensure uniqueness to avoid conflicts
   # Don't modify dbplyr-generated names (they start with dbplyr_)
-  if (temporary && is.character(name) && !grepl("^dbplyr_", name) && nzchar(trimws(name))) {
+  if (temporary && is.character(name) && !startsWith(name, "dbplyr_") && nzchar(trimws(name))) {
     name <- generate_temp_name(name)
   }
 
