@@ -233,3 +233,207 @@ test_that("cluster action/list wrappers return expected payload shapes", {
   expect_identical(db_cluster_events(cluster_id = "c-1", perform_request = TRUE)[[1]]$type, "RUNNING")
   expect_identical(db_cluster_get(cluster_id = "c-1", perform_request = TRUE)$cluster_id, "c-1")
 })
+
+test_that("cluster get/list responses add print classes without changing list access", {
+  withr::local_envvar(c(
+    "DATABRICKS_HOST" = "http://mock_host",
+    "DATABRICKS_TOKEN" = "mock_token"
+  ))
+
+  local_mocked_bindings(
+    db_request = function(...) {
+      args <- list(...)
+      structure(list(endpoint = args$endpoint), class = "httr2_request")
+    },
+    db_perform_request = function(req) {
+      if (identical(req$endpoint, "clusters/list")) {
+        return(list(
+          clusters = list(
+            list(
+              cluster_id = "c-1",
+              cluster_name = "cluster-a",
+              state = "RUNNING",
+              num_workers = 2,
+              release_version = "14.3",
+              runtime_engine = "PHOTON",
+              executors = list(list(executor_id = "1"), list(executor_id = "2")),
+              node_type_id = "m5d.large",
+              spark_version = "14.3.x-scala2.12"
+            ),
+            list(
+              cluster_id = "c-2",
+              cluster_name = "cluster-b",
+              state = "TERMINATED",
+              autoscale = list(min_workers = 1, max_workers = 3),
+              release_version = "14.2",
+              node_type_id = "m5d.xlarge",
+              spark_version = "14.2.x-scala2.12"
+            )
+          )
+        ))
+      }
+
+      cli::cli_abort("Unexpected endpoint in test mock: {req$endpoint}")
+    },
+    db_perform_response = function(req) {
+      if (identical(req$endpoint, "clusters/get")) {
+        return(structure(
+          list(
+            cluster_id = "c-1",
+            cluster_name = "cluster-a",
+            state = "RUNNING",
+            num_workers = 2,
+            release_version = "14.3",
+            runtime_engine = "PHOTON",
+            executors = list(list(executor_id = "1"), list(executor_id = "2")),
+            node_type_id = "m5d.large",
+            spark_version = "14.3.x-scala2.12"
+          ),
+          class = "httr2_response"
+        ))
+      }
+
+      cli::cli_abort("Unexpected endpoint in test mock: {req$endpoint}")
+    },
+    .package = "brickster"
+  )
+
+  local_mocked_bindings(
+    resp_body_json = function(resp, ...) unclass(resp),
+    .package = "httr2"
+  )
+
+  cluster <- db_cluster_get(cluster_id = "c-1", perform_request = TRUE)
+  clusters <- db_cluster_list(perform_request = TRUE)
+
+  expect_type(cluster, "list")
+  expect_s3_class(cluster, c("db_cluster", "list"))
+  expect_identical(cluster$cluster_id, "c-1")
+
+  expect_type(clusters, "list")
+  expect_s3_class(clusters, c("db_cluster_list", "list"))
+  expect_s3_class(clusters[[1]], c("db_cluster", "list"))
+  expect_identical(clusters[[2]]$cluster_id, "c-2")
+
+  cluster_print <- cli::ansi_strip(paste(capture.output(print(cluster)), collapse = "\n"))
+  clusters_print <- cli::ansi_strip(paste(capture.output(print(clusters)), collapse = "\n"))
+
+  expect_true(grepl("cluster c-1", cluster_print, fixed = TRUE))
+  expect_true(grepl("\n  cluster-a\n", cluster_print, fixed = TRUE))
+  expect_true(grepl("Runtime: 14.3 Photon", cluster_print, fixed = TRUE))
+  expect_true(grepl("Node Type: m5d.large [2/2]", cluster_print, fixed = TRUE))
+  expect_true(grepl("State: RUNNING", cluster_print, fixed = TRUE))
+  expect_true(grepl("[[1]]", clusters_print, fixed = TRUE))
+  expect_true(grepl("cluster c-1", clusters_print, fixed = TRUE))
+  expect_true(grepl("cluster c-2", clusters_print, fixed = TRUE))
+  expect_true(grepl("Runtime: 14.2", clusters_print, fixed = TRUE))
+  expect_true(grepl("Node Type: m5d.xlarge [?/1-3]", clusters_print, fixed = TRUE))
+  expect_true(grepl("State: TERMINATED", clusters_print, fixed = TRUE))
+})
+
+test_that("cluster print shows worker and driver node types when different", {
+  cluster <- structure(
+    list(
+      cluster_id = "c-1",
+      cluster_name = "cluster-a",
+      state = "RUNNING",
+      num_workers = 2,
+      release_version = "14.3",
+      node_type_id = "m5d.large",
+      driver_node_type_id = "m5d.xlarge",
+      spark_version = "14.3.x-scala2.12"
+    ),
+    class = c("db_cluster", "list")
+  )
+
+  cluster_print <- cli::ansi_strip(paste(capture.output(print(cluster)), collapse = "\n"))
+
+  expect_true(grepl("Runtime: 14.3", cluster_print, fixed = TRUE))
+  expect_true(grepl("Nodes [2/2]:", cluster_print, fixed = TRUE))
+  expect_true(grepl("Driver: m5d.xlarge", cluster_print, fixed = TRUE))
+  expect_true(grepl("Workers: m5d.large", cluster_print, fixed = TRUE))
+  expect_false(grepl("Node Type:", cluster_print, fixed = TRUE))
+})
+
+test_that("cluster print clearly labels single-node clusters", {
+  cluster <- structure(
+    list(
+      cluster_id = "c-1",
+      cluster_name = "single-node-cluster",
+      state = "RUNNING",
+      num_workers = 0,
+      node_type_id = "m5d.large",
+      spark_version = "14.3.x-scala2.12",
+      is_single_node = TRUE
+    ),
+    class = c("db_cluster", "list")
+  )
+
+  cluster_print <- cli::ansi_strip(paste(capture.output(print(cluster)), collapse = "\n"))
+
+  expect_true(grepl("Node Type: m5d.large [single-node]", cluster_print, fixed = TRUE))
+  expect_true(grepl("[single-node]", cluster_print, fixed = TRUE))
+  expect_false(grepl("[0/0]", cluster_print, fixed = TRUE))
+})
+
+test_that("cluster print does not infer single-node from worker count alone", {
+  cluster <- structure(
+    list(
+      cluster_id = "c-1",
+      cluster_name = "zero-workers-cluster",
+      state = "PENDING",
+      num_workers = 0,
+      node_type_id = "m5d.large",
+      spark_version = "14.3.x-scala2.12"
+    ),
+    class = c("db_cluster", "list")
+  )
+
+  cluster_print <- cli::ansi_strip(paste(capture.output(print(cluster)), collapse = "\n"))
+
+  expect_false(grepl("[single-node]", cluster_print, fixed = TRUE))
+  expect_true(grepl("[0/0]", cluster_print, fixed = TRUE))
+})
+
+test_that("cluster print uses executor list length as current workers", {
+  cluster <- structure(
+    list(
+      cluster_id = "c-1",
+      cluster_name = "autoscaling-cluster",
+      state = "RUNNING",
+      num_workers = 5,
+      autoscale = list(min_workers = 1, max_workers = 10),
+      executors = list(
+        list(executor_id = "1"),
+        list(executor_id = "2"),
+        list(executor_id = "3")
+      ),
+      release_version = "14.3",
+      node_type_id = "m5d.large"
+    ),
+    class = c("db_cluster", "list")
+  )
+
+  cluster_print <- cli::ansi_strip(paste(capture.output(print(cluster)), collapse = "\n"))
+
+  expect_true(grepl("[3/1-10]", cluster_print, fixed = TRUE))
+  expect_false(grepl("[5/1-10]", cluster_print, fixed = TRUE))
+})
+
+test_that("cluster print does not append Photon when runtime version is unset", {
+  cluster <- structure(
+    list(
+      cluster_id = "c-1",
+      cluster_name = "cluster-runtime-missing",
+      state = "RUNNING",
+      node_type_id = "m5d.large",
+      runtime_engine = "PHOTON"
+    ),
+    class = c("db_cluster", "list")
+  )
+
+  cluster_print <- cli::ansi_strip(paste(capture.output(print(cluster)), collapse = "\n"))
+
+  expect_true(grepl("Runtime: <unset>", cluster_print, fixed = TRUE))
+  expect_false(grepl("Runtime: <unset> Photon", cluster_print, fixed = TRUE))
+})

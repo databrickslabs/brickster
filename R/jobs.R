@@ -120,7 +120,9 @@ db_jobs_create <- function(
 #' @family Jobs API
 #'
 #' @export
-#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
+#' @returns If `perform_request = TRUE`, returns a nested list of jobs with
+#'   class `db_job_list`; each element has class `db_job`. If `FALSE`, returns
+#'   an `httr2_request`.
 db_jobs_list <- function(
   limit = 25,
   offset = 0,
@@ -146,7 +148,7 @@ db_jobs_list <- function(
 
   if (perform_request) {
     res <- db_perform_request(req)
-    res$jobs
+    new_db_job_list(res$jobs)
   } else {
     req
   }
@@ -197,7 +199,8 @@ db_jobs_delete <- function(
 #' @family Jobs API
 #'
 #' @export
-#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
+#' @returns If `perform_request = TRUE`, returns a nested list with class
+#'   `db_job`. If `FALSE`, returns an `httr2_request`.
 db_jobs_get <- function(
   job_id,
   host = db_host(),
@@ -218,7 +221,8 @@ db_jobs_get <- function(
   )
 
   if (perform_request) {
-    db_perform_request(req)
+    job <- db_perform_request(req)
+    new_db_job(job)
   } else {
     req
   }
@@ -869,4 +873,81 @@ prepare_jobs_clusters <- function(x) {
     }
   )
   job_clusters <- unname(job_clusters)
+}
+
+new_db_job <- function(x) {
+  stopifnot(is.list(x))
+  class(x) <- unique(c("db_job", class(x)))
+  x
+}
+
+new_db_job_list <- function(x) {
+  if (is.null(x)) {
+    x <- list()
+  }
+
+  stopifnot(is.list(x))
+  jobs <- purrr::map(x, new_db_job)
+  class(jobs) <- unique(c("db_job_list", class(jobs)))
+  jobs
+}
+
+job_scalar_chr <- function(x, field, default = "<unset>") {
+  value <- x[[field]]
+  if (is.null(value) || length(value) == 0) {
+    return(default)
+  }
+
+  as.character(value[[1]])
+}
+
+job_name_chr <- function(x, default = "<unset>") {
+  settings <- x[["settings"]]
+  if (is.list(settings) && !is.null(settings[["name"]])) {
+    return(as.character(settings[["name"]][[1]]))
+  }
+
+  job_scalar_chr(x, "name", default = default)
+}
+
+job_id_chr <- function(x, default = "<unset>") {
+  id <- job_scalar_chr(x, "job_id", default = default)
+  if (!identical(id, default)) {
+    return(id)
+  }
+
+  job_scalar_chr(x, "id", default = default)
+}
+
+job_owner_chr <- function(x, default = "<unset>") {
+  owner <- job_scalar_chr(x, "creator_user_name", default = default)
+  if (!identical(owner, default)) {
+    return(owner)
+  }
+
+  owner
+}
+
+#' @export
+#' @method print db_job
+#' @noRd
+print.db_job <- function(x, ...) {
+  job_id <- job_id_chr(x)
+  job_name <- job_name_chr(x)
+  job_owner <- job_owner_chr(x)
+  id_label <- cli::col_grey(job_id)
+  owner_label <- cli::col_cyan(job_owner)
+
+  cat(cli::style_bold(cli::col_cyan("job")), " ", id_label, "\n", sep = "")
+  cat("  ", job_name, "\n", sep = "")
+  cat("  Owner: ", owner_label, "\n", sep = "")
+  invisible(x)
+}
+
+#' @export
+#' @method print db_job_list
+#' @noRd
+print.db_job_list <- function(x, ...) {
+  print(unclass(x), ...)
+  invisible(x)
 }

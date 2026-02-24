@@ -15,7 +15,9 @@ db_cluster_list(host = db_host(), token = db_token(), perform_request = TRUE)
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \value{
-If \code{perform_request = TRUE}, returns endpoint-specific API output. If \code{FALSE}, returns an \code{httr2_request}.
+If \code{perform_request = TRUE}, returns a nested list of clusters with
+class \code{db_cluster_list}; each element has class \code{db_cluster}. If \code{FALSE},
+returns an \code{httr2_request}.
 }
 \description{
 List Clusters
