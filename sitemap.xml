@@ -122,7 +122,6 @@
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_escape_string_literal.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_generate_typed_values_sql.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_generate_typed_values_sql_for_view.html</loc></url>
-<url><loc>https://databrickslabs.github.io/brickster/reference/db_generate_values_sql.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_host.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_jobs_create.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_jobs_delete.html</loc></url>
