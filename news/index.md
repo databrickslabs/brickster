@@ -20,6 +20,14 @@
   [`db_volume_download_dir()`](https://databrickslabs.github.io/brickster/reference/db_volume_download_dir.md)
   for consistent directory traversal semantics
 - Added a new vignette for working with volumes
+- Added compact, colorized [cli](https://cli.r-lib.org) S3 print methods
+  for
+  [`db_cluster_get()`](https://databrickslabs.github.io/brickster/reference/db_cluster_get.md)/[`db_cluster_list()`](https://databrickslabs.github.io/brickster/reference/db_cluster_list.md),
+  [`db_sql_warehouse_get()`](https://databrickslabs.github.io/brickster/reference/db_sql_warehouse_get.md)/[`db_sql_warehouse_list()`](https://databrickslabs.github.io/brickster/reference/db_sql_warehouse_list.md),
+  and
+  [`db_jobs_get()`](https://databrickslabs.github.io/brickster/reference/db_jobs_get.md)/[`db_jobs_list()`](https://databrickslabs.github.io/brickster/reference/db_jobs_list.md)
+  that preserve nested list structures while improving at-a-glance
+  summaries
 
 ## brickster 0.2.12
 

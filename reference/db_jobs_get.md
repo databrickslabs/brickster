@@ -36,8 +36,8 @@ db_jobs_get(
 
 ## Value
 
-If `perform_request = TRUE`, returns endpoint-specific API output. If
-`FALSE`, returns an `httr2_request`.
+If `perform_request = TRUE`, returns a nested list with class `db_job`.
+If `FALSE`, returns an `httr2_request`.
 
 ## See also
 

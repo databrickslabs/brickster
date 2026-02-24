@@ -27,7 +27,8 @@ db_cluster_list(host = db_host(), token = db_token(), perform_request = TRUE)
 
 ## Value
 
-If `perform_request = TRUE`, returns endpoint-specific API output. If
+If `perform_request = TRUE`, returns a nested list of clusters with
+class `db_cluster_list`; each element has class `db_cluster`. If
 `FALSE`, returns an `httr2_request`.
 
 ## Details
