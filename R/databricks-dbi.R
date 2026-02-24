@@ -1495,28 +1495,6 @@ db_create_table_from_data <- function(
 }
 
 
-#' Generate VALUES SQL from data frame
-#' @keywords internal
-db_generate_values_sql <- function(conn, data) {
-  # Convert each row to SQL values
-  row_values <- apply(data, 1, function(row) {
-    values <- purrr::map_chr(row, function(val) {
-      if (is.na(val)) {
-        "NULL"
-      } else if (is.character(val)) {
-        db_escape_string_literal(conn, val)
-      } else if (is.logical(val)) {
-        if (val) "TRUE" else "FALSE"
-      } else {
-        as.character(val)
-      }
-    })
-    paste0("(", paste(values, collapse = ", "), ")")
-  })
-
-  paste(row_values, collapse = ", ")
-}
-
 #' Generate type-aware VALUES SQL from data frame
 #' @keywords internal
 db_generate_typed_values_sql <- function(conn, data) {
