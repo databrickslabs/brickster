@@ -52,6 +52,11 @@ db_volume_write(
   If `TRUE`, show progress bar for file operations (default: `TRUE` for
   uploads/downloads, `FALSE` for other operations)
 
+## Value
+
+If `perform_request = TRUE`, returns endpoint-specific API output. If
+`FALSE`, returns an `httr2_request`.
+
 ## Details
 
 Uploads a file of up to 5 GiB.

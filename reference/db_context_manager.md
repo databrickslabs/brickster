@@ -4,6 +4,12 @@ Databricks Execution Context Manager (R6 Class)
 
 Databricks Execution Context Manager (R6 Class)
 
+## Value
+
+A new `databricks_context_manager` object.
+
+Command results
+
 ## Details
 
 `db_context_manager()` provides a simple interface to send commands to
@@ -56,10 +62,6 @@ Create a new context manager object.
   Databricks workspace token, defaults to calling
   [`db_token()`](https://databrickslabs.github.io/brickster/reference/db_token.md).
 
-#### Returns
-
-A new `databricks_context_manager` object.
-
 ------------------------------------------------------------------------
 
 ### Method [`close()`](https://rdrr.io/r/base/connections.html)
@@ -89,10 +91,6 @@ Execute a command against a Databricks cluster
 - `language`:
 
   One of `r`, `py`, `scala`, `sql`, or `sh`.
-
-#### Returns
-
-Command results
 
 ------------------------------------------------------------------------
 

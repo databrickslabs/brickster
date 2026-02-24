@@ -641,6 +641,8 @@ dbplyr support for dplyr syntax with Databricks SQL
   : Databricks Request Helper
 - [`db_perform_request()`](https://databrickslabs.github.io/brickster/reference/db_perform_request.md)
   : Perform Databricks API Request
+- [`db_perform_response()`](https://databrickslabs.github.io/brickster/reference/db_perform_response.md)
+  : Perform Databricks API Request and Return Response
 - [`db_req_error_body()`](https://databrickslabs.github.io/brickster/reference/db_req_error_body.md)
   : Propagate Databricks API Errors
 - [`db_request_json()`](https://databrickslabs.github.io/brickster/reference/db_request_json.md)

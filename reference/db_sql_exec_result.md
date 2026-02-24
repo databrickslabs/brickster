@@ -39,6 +39,11 @@ db_sql_exec_result(
   If `TRUE` (default) the request is performed, if `FALSE` the httr2
   request is returned *without* being performed.
 
+## Value
+
+If `perform_request = TRUE`, returns endpoint-specific API output. If
+`FALSE`, returns an `httr2_request`.
+
 ## Details
 
 After the statement execution has `SUCCEEDED`, this request can be used

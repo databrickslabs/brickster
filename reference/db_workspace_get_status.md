@@ -34,6 +34,11 @@ db_workspace_get_status(
   If `TRUE` (default) the request is performed, if `FALSE` the httr2
   request is returned *without* being performed.
 
+## Value
+
+If `perform_request = TRUE`, returns endpoint-specific API output. If
+`FALSE`, returns an `httr2_request`.
+
 ## Details
 
 If path does not exist, this call returns an error

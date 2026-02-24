@@ -71,6 +71,11 @@ db_vs_indexes_query(
   If `TRUE` (default) the request is performed, if `FALSE` the httr2
   request is returned *without* being performed.
 
+## Value
+
+If `perform_request = TRUE`, returns endpoint-specific API output. If
+`FALSE`, returns an `httr2_request`.
+
 ## Details
 
 You cannot specify both `query_vector` and `query_text` at the same

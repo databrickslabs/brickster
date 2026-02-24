@@ -46,6 +46,11 @@ db_volume_read(
   If `TRUE`, show progress bar for file operations (default: `TRUE` for
   uploads/downloads, `FALSE` for other operations)
 
+## Value
+
+If `perform_request = TRUE`, returns endpoint-specific API output. If
+`FALSE`, returns an `httr2_request`.
+
 ## See also
 
 Other Volumes FileSystem API:

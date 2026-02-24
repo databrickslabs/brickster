@@ -44,6 +44,11 @@ db_repo_update(
   If `TRUE` (default) the request is performed, if `FALSE` the httr2
   request is returned *without* being performed.
 
+## Value
+
+If `perform_request = TRUE`, returns endpoint-specific API output. If
+`FALSE`, returns an `httr2_request`.
+
 ## Details
 
 Specify either `branch` or `tag`, not both.

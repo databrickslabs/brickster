@@ -34,6 +34,11 @@ db_libs_cluster_status(
   If `TRUE` (default) the request is performed, if `FALSE` the httr2
   request is returned *without* being performed.
 
+## Value
+
+If `perform_request = TRUE`, returns endpoint-specific API output. If
+`FALSE`, returns an `httr2_request`.
+
 ## See also
 
 [`wait_for_lib_installs()`](https://databrickslabs.github.io/brickster/reference/wait_for_lib_installs.md)

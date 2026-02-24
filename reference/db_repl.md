@@ -33,6 +33,10 @@ db_repl(
   Databricks workspace token, defaults to calling
   [`db_token()`](https://databrickslabs.github.io/brickster/reference/db_token.md).
 
+## Value
+
+Invisibly returns `NULL`.
+
 ## Details
 
 `db_repl()` will take over the existing console and allow execution of

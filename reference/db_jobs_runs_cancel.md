@@ -34,6 +34,11 @@ db_jobs_runs_cancel(
   If `TRUE` (default) the request is performed, if `FALSE` the httr2
   request is returned *without* being performed.
 
+## Value
+
+If `perform_request = TRUE`, returns endpoint-specific API output. If
+`FALSE`, returns an `httr2_request`.
+
 ## Details
 
 The run is canceled asynchronously, so when this request completes, the

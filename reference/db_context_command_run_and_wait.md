@@ -59,6 +59,10 @@ db_context_command_run_and_wait(
   Databricks workspace token, defaults to calling
   [`db_token()`](https://databrickslabs.github.io/brickster/reference/db_token.md).
 
+## Value
+
+Endpoint-specific output.
+
 ## See also
 
 Other Execution Context API:

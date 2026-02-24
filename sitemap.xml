@@ -1,5 +1,6 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://databrickslabs.github.io/brickster/404.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/AGENTS.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/LICENSE.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/articles/cluster-management.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/articles/index.html</loc></url>
@@ -158,6 +159,7 @@
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_mlflow_registered_model_details.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_oauth_client.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_perform_request.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/db_perform_response.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_prepare_create_table_fields.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_query_create.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_query_delete.html</loc></url>
