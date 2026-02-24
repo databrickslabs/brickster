@@ -115,6 +115,11 @@ test_that("get_latest_dbr rejects invalid runtime flag combinations", {
 })
 
 test_that("cluster create/edit wrappers validate cloud attrs and include autoscale bodies", {
+  withr::local_envvar(c(
+    "DATABRICKS_HOST" = "http://mock_host",
+    "DATABRICKS_TOKEN" = "mock_token"
+  ))
+
   req <- structure(list(), class = "httr2_request")
   state <- new.env(parent = emptyenv())
   state$create_body <- NULL
@@ -192,6 +197,11 @@ test_that("cluster create/edit wrappers validate cloud attrs and include autosca
 })
 
 test_that("cluster action/list wrappers return expected payload shapes", {
+  withr::local_envvar(c(
+    "DATABRICKS_HOST" = "http://mock_host",
+    "DATABRICKS_TOKEN" = "mock_token"
+  ))
+
   req <- structure(list(), class = "httr2_request")
 
   local_mocked_bindings(
