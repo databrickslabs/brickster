@@ -19,7 +19,9 @@ db_sql_warehouse_list(
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \value{
-If \code{perform_request = TRUE}, returns endpoint-specific API output. If \code{FALSE}, returns an \code{httr2_request}.
+If \code{perform_request = TRUE}, returns a nested list of warehouses
+with class \code{db_sql_warehouse_list}; each element has class
+\code{db_sql_warehouse}. If \code{FALSE}, returns an \code{httr2_request}.
 }
 \description{
 List Warehouses

@@ -628,7 +628,8 @@ db_cluster_resize <- function(
 #' @family Clusters API
 #'
 #' @export
-#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
+#' @returns If `perform_request = TRUE`, returns a nested list with class
+#'   `db_cluster`. If `FALSE`, returns an `httr2_request`.
 db_cluster_get <- function(
   cluster_id,
   host = db_host(),
@@ -649,8 +650,9 @@ db_cluster_get <- function(
   )
 
   if (perform_request) {
-    db_perform_response(req) |>
+    cluster <- db_perform_response(req) |>
       httr2::resp_body_json()
+    new_db_cluster(cluster)
   } else {
     req
   }
@@ -677,7 +679,9 @@ db_cluster_get <- function(
 #' @family Clusters API
 #'
 #' @export
-#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
+#' @returns If `perform_request = TRUE`, returns a nested list of clusters with
+#'   class `db_cluster_list`; each element has class `db_cluster`. If `FALSE`,
+#'   returns an `httr2_request`.
 db_cluster_list <- function(
   host = db_host(),
   token = db_token(),
@@ -692,7 +696,8 @@ db_cluster_list <- function(
   )
 
   if (perform_request) {
-    db_perform_request(req)$clusters
+    clusters <- db_perform_request(req)$clusters
+    new_db_cluster_list(clusters)
   } else {
     req
   }
@@ -1021,4 +1026,230 @@ get_latest_dbr <- function(
     key = runtime_matches[["key"]],
     name = runtime_matches[["name"]]
   )
+}
+
+new_db_cluster <- function(x) {
+  stopifnot(is.list(x))
+  class(x) <- unique(c("db_cluster", class(x)))
+  x
+}
+
+new_db_cluster_list <- function(x) {
+  if (is.null(x)) {
+    x <- list()
+  }
+
+  stopifnot(is.list(x))
+  clusters <- purrr::map(x, new_db_cluster)
+  class(clusters) <- unique(c("db_cluster_list", class(clusters)))
+  clusters
+}
+
+cluster_scalar_chr <- function(x, field, default = NA_character_) {
+  value <- x[[field]]
+  if (is.null(value) || length(value) == 0) {
+    return(default)
+  }
+
+  as.character(value[[1]])
+}
+
+cluster_runtime_label <- function(x, default = "<unset>") {
+  release_version <- cluster_scalar_chr(x, "release_version", default = default)
+  if (identical(release_version, default)) {
+    release_version <- cluster_scalar_chr(x, "spark_version", default = default)
+  }
+
+  runtime_engine <- cluster_scalar_chr(x, "runtime_engine", default = NA_character_)
+  has_photon_engine <- !is.na(runtime_engine) &&
+    grepl("PHOTON", runtime_engine, ignore.case = TRUE)
+  has_photon_in_version <- !identical(release_version, default) &&
+    grepl("PHOTON", release_version, ignore.case = TRUE)
+
+  if (has_photon_engine && !has_photon_in_version && !identical(release_version, default)) {
+    paste(release_version, "Photon")
+  } else {
+    release_version
+  }
+}
+
+cluster_is_single_node <- function(x) {
+  if (isTRUE(x[["is_single_node"]])) {
+    return(TRUE)
+  }
+
+  custom_tags <- x[["custom_tags"]]
+  if (is.list(custom_tags)) {
+    resource_class <- custom_tags[["ResourceClass"]]
+    if (!is.null(resource_class) && toupper(as.character(resource_class[[1]])) == "SINGLENODE") {
+      return(TRUE)
+    }
+  }
+
+  spark_conf <- x[["spark_conf"]]
+  if (!is.list(spark_conf)) {
+    return(FALSE)
+  }
+
+  profile <- spark_conf[["spark.databricks.cluster.profile"]]
+  if (!is.null(profile) && tolower(as.character(profile[[1]])) == "singlenode") {
+    return(TRUE)
+  }
+
+  spark_master <- spark_conf[["spark.master"]]
+  if (!is.null(spark_master) && startsWith(tolower(as.character(spark_master[[1]])), "local")) {
+    return(TRUE)
+  }
+
+  FALSE
+}
+
+cluster_current_workers_chr <- function(x, default = NA_character_) {
+  executors <- x[["executors"]]
+  if (is.list(executors)) {
+    return(as.character(length(executors)))
+  }
+
+  cluster_scalar_chr(x, "num_workers", default = default)
+}
+
+cluster_worker_range_chr <- function(x, default = NA_character_) {
+  autoscale <- x$autoscale
+  if (is.list(autoscale)) {
+    min_workers <- cluster_scalar_chr(autoscale, "min_workers", default = "?")
+    max_workers <- cluster_scalar_chr(autoscale, "max_workers", default = "?")
+    if (identical(min_workers, max_workers)) {
+      return(min_workers)
+    }
+    return(paste0(min_workers, "-", max_workers))
+  }
+
+  num_workers <- cluster_scalar_chr(x, "num_workers", default = default)
+  if (identical(num_workers, default)) {
+    return(default)
+  }
+
+  num_workers
+}
+
+cluster_worker_scaling_label <- function(
+  x,
+  default = "<unset>",
+  current_default = "?"
+) {
+  if (cluster_is_single_node(x)) {
+    return("[single-node]")
+  }
+
+  worker_range <- cluster_worker_range_chr(x, default = default)
+  if (identical(worker_range, default)) {
+    return(default)
+  }
+
+  current_workers <- cluster_scalar_chr(
+    x = x,
+    field = "num_workers",
+    default = current_default
+  )
+  current_workers_exec <- cluster_current_workers_chr(
+    x = x,
+    default = current_default
+  )
+
+  if (!identical(current_workers_exec, current_default)) {
+    current_workers <- current_workers_exec
+  }
+
+  paste0("[", current_workers, "/", worker_range, "]")
+}
+
+cluster_node_types <- function(x, default = "<unset>") {
+  worker_node_type <- cluster_scalar_chr(x, "node_type_id", default = default)
+  driver_node_type <- cluster_scalar_chr(
+    x,
+    "driver_node_type_id",
+    default = worker_node_type
+  )
+
+  list(
+    worker = worker_node_type,
+    driver = driver_node_type,
+    different = !identical(worker_node_type, default) &&
+      !identical(driver_node_type, default) &&
+      !identical(worker_node_type, driver_node_type)
+  )
+}
+
+cluster_state_colored <- function(x, default = "<unset>") {
+  state <- cluster_scalar_chr(x, "state", default = default)
+  if (identical(state, default)) {
+    return(state)
+  }
+
+  if (state %in% c("RUNNING")) {
+    return(cli::col_green(state))
+  }
+
+  if (state %in% c("PENDING", "STARTING", "RESTARTING", "RESIZING")) {
+    return(cli::col_yellow(state))
+  }
+
+  if (state %in% c("TERMINATING", "TERMINATED", "ERROR", "INTERNAL_ERROR")) {
+    return(cli::col_red(state))
+  }
+
+  cli::col_blue(state)
+}
+
+#' @export
+#' @method print db_cluster
+#' @noRd
+print.db_cluster <- function(x, ...) {
+  cluster_name <- cluster_scalar_chr(x, "cluster_name", default = "<unset>")
+  cluster_id <- cluster_scalar_chr(x, "cluster_id", default = "<unset>")
+  node_types <- cluster_node_types(x, default = "<unset>")
+  spark_version <- cluster_runtime_label(x, default = "<unset>")
+  worker_scaling <- cluster_worker_scaling_label(x, default = "<unset>")
+  cluster_state <- cluster_state_colored(x, default = "<unset>")
+  id_label <- cli::col_grey(cluster_id)
+  runtime_value <- cli::col_cyan(spark_version)
+
+  cat(cli::style_bold(cli::col_cyan("cluster")), " ", id_label, "\n", sep = "")
+  cat("  ", cluster_name, "\n", sep = "")
+  cat("  Runtime: ", runtime_value, "\n", sep = "")
+
+  if (isTRUE(node_types$different)) {
+    nodes_header <- if (!identical(worker_scaling, "<unset>")) {
+      paste0("Nodes ", cli::col_yellow(worker_scaling), ":")
+    } else {
+      "Nodes:"
+    }
+
+    cat("  ", nodes_header, "\n", sep = "")
+    cat("    Driver: ", cli::col_cyan(node_types$driver), "\n", sep = "")
+    cat("    Workers: ", cli::col_cyan(node_types$worker), "\n", sep = "")
+  } else {
+    node_type <- node_types$worker
+    if (identical(node_type, "<unset>")) {
+      node_type <- node_types$driver
+    }
+
+    cat("  Node Type: ", cli::col_cyan(node_type), sep = "")
+    if (!identical(worker_scaling, "<unset>")) {
+      cat(" ", cli::col_yellow(worker_scaling), sep = "")
+    }
+    cat("\n", sep = "")
+  }
+
+  cat("  State: ", cluster_state, "\n", sep = "")
+
+  invisible(x)
+}
+
+#' @export
+#' @method print db_cluster_list
+#' @noRd
+print.db_cluster_list <- function(x, ...) {
+  print(unclass(x), ...)
+  invisible(x)
 }

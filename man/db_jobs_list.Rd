@@ -32,7 +32,9 @@ response.}
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \value{
-If \code{perform_request = TRUE}, returns endpoint-specific API output. If \code{FALSE}, returns an \code{httr2_request}.
+If \code{perform_request = TRUE}, returns a nested list of jobs with
+class \code{db_job_list}; each element has class \code{db_job}. If \code{FALSE}, returns
+an \code{httr2_request}.
 }
 \description{
 List Jobs
