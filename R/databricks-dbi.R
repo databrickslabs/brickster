@@ -115,7 +115,7 @@ setMethod(
         !is.null(http_path) &&
         nzchar(http_path)
     ) {
-      cli::cli_abort("Specify only one of warehouse_id or http_path")
+      cli::cli_abort("Specify only one of {.arg warehouse_id} or {.arg http_path}")
     }
 
     if (is.null(warehouse_id) || !nzchar(warehouse_id)) {
@@ -123,17 +123,17 @@ setMethod(
         warehouse_id <- warehouse_id_from_http_path(http_path)
       } else {
         cli::cli_abort(
-          "warehouse_id or http_path must be provided and non-empty"
+          "{.arg warehouse_id} or {.arg http_path} must be provided and non-empty"
         )
       }
     }
 
     if (!is.numeric(max_active_connections) || max_active_connections <= 0) {
-      cli::cli_abort("max_active_connections must be a positive numeric value")
+      cli::cli_abort("{.arg max_active_connections} must be a positive numeric value")
     }
 
     if (!is.numeric(fetch_timeout) || fetch_timeout <= 0) {
-      cli::cli_abort("fetch_timeout must be a positive numeric value")
+      cli::cli_abort("{.arg fetch_timeout} must be a positive numeric value")
     }
 
     # Validate connection by testing a simple query
@@ -154,7 +154,7 @@ setMethod(
       },
       error = function(e) {
         cli::cli_abort(
-          "Failed to connect to warehouse {warehouse_id}: {e$message}"
+          "Failed to connect to warehouse {.val {warehouse_id}}: {e$message}"
         )
       }
     )
@@ -978,7 +978,7 @@ db_assert_valid_conn <- function(conn) {
 #' @keywords internal
 db_assert_statement <- function(statement) {
   if (missing(statement) || is.null(statement) || !nzchar(trimws(statement))) {
-    cli::cli_abort("statement must be provided and non-empty")
+    cli::cli_abort("{.arg statement} must be provided and non-empty")
   }
 }
 
@@ -986,7 +986,7 @@ db_assert_statement <- function(statement) {
 #' @keywords internal
 warehouse_id_from_http_path <- function(http_path) {
   if (is.null(http_path) || !nzchar(http_path)) {
-    cli::cli_abort("http_path must be provided and non-empty")
+    cli::cli_abort("{.arg http_path} must be provided and non-empty")
   }
 
   sub("^/sql/1\\.0/warehouses/", "", http_path)
@@ -1027,17 +1027,17 @@ setMethod("dbDataType", "DatabricksConnection", function(dbObj, obj, ...) {
 #' @keywords internal
 db_prepare_create_table_fields <- function(fields) {
   if (missing(fields) || is.null(fields)) {
-    cli::cli_abort("fields must be provided")
+    cli::cli_abort("{.arg fields} must be provided")
   }
 
   if (is.data.frame(fields)) {
     if (ncol(fields) == 0) {
-      cli::cli_abort("fields must contain at least one column")
+      cli::cli_abort("{.arg fields} must contain at least one column")
     }
     list(value = fields, field_types = NULL)
   } else if (is.character(fields)) {
     if (length(fields) == 0) {
-      cli::cli_abort("fields must contain at least one column")
+      cli::cli_abort("{.arg fields} must contain at least one column")
     }
     field_names <- names(fields)
     if (
@@ -1045,7 +1045,7 @@ db_prepare_create_table_fields <- function(fields) {
         any(is.na(field_names) | !nzchar(field_names))
     ) {
       cli::cli_abort(
-        "fields must be a named character vector when provided as character"
+        "{.arg fields} must be a named character vector when provided as character"
       )
     }
     empty_cols <- setNames(
@@ -1055,7 +1055,7 @@ db_prepare_create_table_fields <- function(fields) {
     value <- as.data.frame(empty_cols, stringsAsFactors = FALSE)
     list(value = value, field_types = fields)
   } else {
-    cli::cli_abort("fields must be a data frame or named character vector")
+    cli::cli_abort("{.arg fields} must be a data frame or named character vector")
   }
 }
 
@@ -1158,7 +1158,7 @@ setMethod(
   ) {
     # Validate inputs
     if (overwrite && append) {
-      cli::cli_abort("Cannot specify both overwrite = TRUE and append = TRUE")
+      cli::cli_abort("Cannot specify both {.code overwrite = TRUE} and {.code append = TRUE}")
     }
 
     if (temporary) {
@@ -1175,7 +1175,7 @@ setMethod(
     if (row.names) {
       if (".row_names" %in% names(value)) {
         cli::cli_abort(
-          "Cannot preserve row names: column '.row_names' already exists"
+          "Cannot preserve row names: column {.val .row_names} already exists"
         )
       }
       value <- tibble::add_column(
@@ -1208,7 +1208,7 @@ setMethod(
 
     if (append && !table_exists) {
       cli::cli_abort(
-        "Table {quoted_name} does not exist. Cannot append to non-existing table."
+        "Table {.val {quoted_name}} does not exist. Cannot append to non-existing table."
       )
     }
 
@@ -1275,7 +1275,7 @@ setMethod(
 
     # Validate inputs
     if (overwrite && append) {
-      cli::cli_abort("Cannot specify both overwrite = TRUE and append = TRUE")
+      cli::cli_abort("Cannot specify both {.code overwrite = TRUE} and {.code append = TRUE}")
     }
 
     if (temporary) {
@@ -1316,7 +1316,7 @@ setMethod(
 
     if (append && !table_exists) {
       cli::cli_abort(
-        "Table {quoted_name} does not exist. Cannot append to non-existing table."
+        "Table {.val {quoted_name}} does not exist. Cannot append to non-existing table."
       )
     }
 
@@ -1691,7 +1691,7 @@ db_write_table_volume <- function(
   if (
     !db_volume_dir_exists(staging_volume, host = conn@host, token = conn@token)
   ) {
-    cli::cli_abort("Staging volume directory does not exist: {staging_volume}")
+    cli::cli_abort("Staging volume directory does not exist: {.path {staging_volume}}")
   }
 
   # Generate unique directory name for dataset
@@ -1853,7 +1853,10 @@ setMethod(
     # Check table exists
     if (!dbExistsTable(conn, name)) {
       cli::cli_abort(
-        "Table {name} does not exist. Use dbWriteTable() to create it first."
+        c(
+          "Table {.val {name}} does not exist.",
+          "i" = "Use {.fn dbWriteTable} to create it first."
+        )
       )
     }
 
@@ -1883,7 +1886,10 @@ setMethod(
     if (!dbExistsTable(conn, name)) {
       table_name <- as.character(dbQuoteIdentifier(conn, name))
       cli::cli_abort(
-        "Table {table_name} does not exist. Use dbWriteTable() to create it first."
+        c(
+          "Table {.val {table_name}} does not exist.",
+          "i" = "Use {.fn dbWriteTable} to create it first."
+        )
       )
     }
 
