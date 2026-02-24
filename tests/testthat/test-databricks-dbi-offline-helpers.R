@@ -49,7 +49,7 @@ test_that("dbConnect validates tuning inputs and persists connection settings", 
       token = "mock_token",
       max_active_connections = 0
     ),
-    "max_active_connections must be a positive numeric value"
+    "`max_active_connections` must be a positive numeric value"
   )
 
   expect_error(
@@ -60,7 +60,7 @@ test_that("dbConnect validates tuning inputs and persists connection settings", 
       token = "mock_token",
       fetch_timeout = 0
     ),
-    "fetch_timeout must be a positive numeric value"
+    "`fetch_timeout` must be a positive numeric value"
   )
 })
 
@@ -70,7 +70,7 @@ test_that("dbWriteTable validates user input", {
 
   expect_error(
     dbWriteTable(con, "tbl", value, overwrite = TRUE, append = TRUE),
-    "Cannot specify both overwrite = TRUE and append = TRUE"
+    "Cannot specify both `overwrite = TRUE` and `append = TRUE`"
   )
   expect_error(
     dbWriteTable(con, "tbl", value, temporary = TRUE),
@@ -144,7 +144,7 @@ test_that("dbWriteTable handles row.names consistently for character and Id sign
       row.names = TRUE,
       overwrite = TRUE
     ),
-    "column '.row_names' already exists"
+    "column \".row_names\" already exists"
   )
 
   local_mocked_bindings(

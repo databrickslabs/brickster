@@ -424,7 +424,7 @@ db_volume_upload_dir <- function(
 ) {
   # Validate inputs
   if (!fs::dir_exists(local_dir)) {
-    cli::cli_abort("Local directory does not exist: {local_dir}")
+    cli::cli_abort("Local directory does not exist: {.path {local_dir}}")
   }
 
   volume_dir <- is_valid_volume_path(volume_dir)
@@ -469,7 +469,7 @@ db_volume_upload_dir <- function(
   )
 
   if (length(requests) == 0) {
-    cli::cli_warn("No files found in directory: {local_dir}")
+    cli::cli_warn("No files found in directory: {.path {local_dir}}")
     return(TRUE)
   }
 
@@ -529,7 +529,7 @@ db_volume_download_dir <- function(
   )
 
   if (length(volume_files) == 0) {
-    cli::cli_warn("No files found in volume directory: {volume_dir}")
+    cli::cli_warn("No files found in volume directory: {.path {volume_dir}}")
     return(TRUE)
   }
 
@@ -551,7 +551,7 @@ db_volume_download_dir <- function(
     if (length(existing_files) > 0) {
       cli::cli_abort(c(
         "Local files already exist:",
-        "x" = "{length(existing_files)} file(s) already exist. Set {.arg overwrite = TRUE} to replace them.",
+        "x" = "{length(existing_files)} file(s) already exist. Set {.code overwrite = TRUE} to replace them.",
         "i" = "Example existing file: {.path {existing_files[[1]]}}"
       ))
     }
