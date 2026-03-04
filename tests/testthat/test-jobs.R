@@ -229,7 +229,7 @@ test_that("Jobs API", {
     purrr::map_chr(resp_list_dbrv$versions, "key"),
     decreasing = TRUE
   )
-  std_runtimes <- purrr::keep(runtimes, ~ !grepl("photon|gpu", .x))
+  std_runtimes <- purrr::keep(runtimes, \(x) !grepl("photon|gpu", x))
   job_clusters <- list(
     "simple_cluster" = new_cluster(
       spark_version = std_runtimes[1],

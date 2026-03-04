@@ -151,7 +151,7 @@ test_that("Clusters API", {
     purrr::map_chr(resp_list_dbrv$versions, "key"),
     decreasing = TRUE
   )
-  std_runtimes <- purrr::keep(runtimes, ~ !grepl("photon|gpu", .x))
+  std_runtimes <- purrr::keep(runtimes, \(x) !grepl("photon|gpu", x))
 
   expect_no_error({
     resp_create <- db_cluster_create(
