@@ -1588,11 +1588,10 @@ db_append_with_select_values <- function(conn, quoted_name, value) {
   insert_sql <- paste0(
     "INSERT INTO ",
     quoted_name,
-    " SELECT * FROM VALUES ",
-    values_sql,
-    " AS t(",
+    " (",
     col_list,
-    ")"
+    ") VALUES ",
+    values_sql
   )
 
   # Execute using helper function
