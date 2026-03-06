@@ -87,12 +87,22 @@ test_that("dbWriteTable routes to volume path when staging is preferred", {
   value <- data.frame(x = 1:3)
   state <- new.env(parent = emptyenv())
   state$path <- NULL
+  state$show_progress <- NULL
 
   local_mocked_bindings(
     dbExistsTable = function(...) FALSE,
     db_should_use_volume_method = function(...) TRUE,
-    db_write_table_volume = function(...) {
+    db_write_table_volume = function(
+      conn,
+      quoted_name,
+      value,
+      staging_volume,
+      append,
+      show_progress,
+      ...
+    ) {
       state$path <- "volume"
+      state$show_progress <- show_progress
       invisible(TRUE)
     },
     db_write_table_standard = function(...) {
@@ -102,8 +112,33 @@ test_that("dbWriteTable routes to volume path when staging is preferred", {
     .package = "brickster"
   )
 
-  expect_invisible(dbWriteTable(con, "tbl_volume", value, overwrite = TRUE))
+  expect_invisible(
+    dbWriteTable(
+      con,
+      "tbl_volume",
+      value,
+      overwrite = TRUE,
+      show_progress = FALSE
+    )
+  )
   expect_identical(state$path, "volume")
+  expect_false(state$show_progress)
+})
+
+test_that("dbWriteTable rejects progress argument name", {
+  con <- make_dbi_test_con(staging_volume = "/Volumes/c/s/v")
+  value <- data.frame(x = 1:3)
+
+  expect_error(
+    dbWriteTable(
+      con,
+      "tbl_volume",
+      value,
+      overwrite = TRUE,
+      progress = FALSE
+    ),
+    "Argument `progress` is not supported; use `show_progress`"
+  )
 })
 
 test_that("dbWriteTable routes to standard path when volume staging is not preferred", {
@@ -367,7 +402,7 @@ test_that("db_write_table_volume errors when staging directory is missing", {
       value = data.frame(x = 1L),
       staging_volume = "/Volumes/c/s/v",
       append = FALSE,
-      progress = FALSE
+      show_progress = FALSE
     ),
     "Staging volume directory does not exist"
   )
@@ -419,7 +454,7 @@ test_that("db_write_table_volume executes create flow when append is FALSE", {
       value = data.frame(x = c(1L, 2L)),
       staging_volume = "/Volumes/c/s/v",
       append = FALSE,
-      progress = FALSE
+      show_progress = FALSE
     )
   )
 
@@ -474,7 +509,7 @@ test_that("db_write_table_volume executes append flow when append is TRUE", {
       value = data.frame(x = c(1L, 2L)),
       staging_volume = "/Volumes/c/s/v",
       append = TRUE,
-      progress = FALSE
+      show_progress = FALSE
     )
   )
 

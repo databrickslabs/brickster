@@ -14,7 +14,7 @@
   temporary = FALSE,
   field.types = NULL,
   staging_volume = NULL,
-  progress = TRUE,
+  show_progress = TRUE,
   ...
 )
 }
@@ -37,9 +37,9 @@
 
 \item{staging_volume}{Optional volume path for large dataset staging}
 
-\item{progress}{If \code{TRUE}, show progress bar for file uploads (default: \code{TRUE})}
+\item{show_progress}{If \code{TRUE}, show progress bar for file uploads (default: \code{TRUE})}
 
-\item{...}{Additional arguments}
+\item{...}{Additional arguments.}
 }
 \value{
 \code{TRUE} invisibly on success

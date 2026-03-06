@@ -1136,8 +1136,8 @@ setMethod(
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
 #' @param field.types Named character vector of SQL types for columns
 #' @param staging_volume Optional volume path for large dataset staging
-#' @param progress If `TRUE`, show progress bar for file uploads (default: `TRUE`)
-#' @param ... Additional arguments
+#' @param show_progress If `TRUE`, show progress bar for file uploads (default: `TRUE`)
+#' @param ... Additional arguments.
 #' @returns `TRUE` invisibly on success
 #' @export
 setMethod(
@@ -1153,9 +1153,17 @@ setMethod(
     temporary = FALSE,
     field.types = NULL,
     staging_volume = NULL,
-    progress = TRUE,
+    show_progress = TRUE,
     ...
   ) {
+    dots <- list(...)
+    if ("progress" %in% names(dots)) {
+      cli::cli_abort("Argument {.arg progress} is not supported; use {.arg show_progress}.")
+    }
+    if (!is.logical(show_progress) || length(show_progress) != 1L || is.na(show_progress)) {
+      cli::cli_abort("{.arg show_progress} must be `TRUE` or `FALSE`.")
+    }
+
     # Validate inputs
     if (overwrite && append) {
       cli::cli_abort("Cannot specify both {.code overwrite = TRUE} and {.code append = TRUE}")
@@ -1217,12 +1225,12 @@ setMethod(
       db_should_use_volume_method(value, effective_staging_volume, temporary)
     ) {
       db_write_table_volume(
-        conn,
-        quoted_name,
-        value,
-        effective_staging_volume,
-        append,
-        progress
+        conn = conn,
+        quoted_name = quoted_name,
+        value = value,
+        staging_volume = effective_staging_volume,
+        append = append,
+        show_progress = show_progress
       )
     } else {
       db_write_table_standard(
@@ -1250,8 +1258,8 @@ setMethod(
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
 #' @param field.types Named character vector of SQL types for columns
 #' @param staging_volume Optional volume path for large dataset staging
-#' @param progress If `TRUE`, show progress bar for file uploads (default: `TRUE`)
-#' @param ... Additional arguments
+#' @param show_progress If `TRUE`, show progress bar for file uploads (default: `TRUE`)
+#' @param ... Additional arguments.
 #' @returns `TRUE` invisibly on success
 #' @export
 setMethod(
@@ -1267,9 +1275,17 @@ setMethod(
     temporary = FALSE,
     field.types = NULL,
     staging_volume = NULL,
-    progress = TRUE,
+    show_progress = TRUE,
     ...
   ) {
+    dots <- list(...)
+    if ("progress" %in% names(dots)) {
+      cli::cli_abort("Argument {.arg progress} is not supported; use {.arg show_progress}.")
+    }
+    if (!is.logical(show_progress) || length(show_progress) != 1L || is.na(show_progress)) {
+      cli::cli_abort("{.arg show_progress} must be `TRUE` or `FALSE`.")
+    }
+
     # Handle Id object by implementing the logic directly instead of delegating
     # This avoids double-quoting issues
 
@@ -1336,12 +1352,12 @@ setMethod(
       }
 
       db_write_table_volume(
-        conn,
-        quoted_name,
-        value,
-        effective_staging_volume,
-        append,
-        progress
+        conn = conn,
+        quoted_name = quoted_name,
+        value = value,
+        staging_volume = effective_staging_volume,
+        append = append,
+        show_progress = show_progress
       )
     } else {
       db_write_table_standard(
@@ -1369,8 +1385,8 @@ setMethod(
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
 #' @param field.types Named character vector of SQL types for columns
 #' @param staging_volume Optional volume path for large dataset staging
-#' @param progress If `TRUE`, show progress bar for file uploads (default: `TRUE`)
-#' @param ... Additional arguments
+#' @param show_progress If `TRUE`, show progress bar for file uploads (default: `TRUE`)
+#' @param ... Additional arguments.
 #' @returns `TRUE` invisibly on success
 #' @export
 setMethod(
@@ -1386,7 +1402,7 @@ setMethod(
     temporary = FALSE,
     field.types = NULL,
     staging_volume = NULL,
-    progress = TRUE,
+    show_progress = TRUE,
     ...
   ) {
     # Convert AsIs to character and delegate to character method
@@ -1401,7 +1417,7 @@ setMethod(
       temporary = temporary,
       field.types = field.types,
       staging_volume = staging_volume,
-      progress = progress,
+      show_progress = show_progress,
       ...
     )
   }
@@ -1660,8 +1676,12 @@ db_write_table_volume <- function(
   value,
   staging_volume,
   append = FALSE,
-  progress = TRUE
+  show_progress = TRUE
 ) {
+  if (!is.logical(show_progress) || length(show_progress) != 1L || is.na(show_progress)) {
+    cli::cli_abort("{.arg show_progress} must be `TRUE` or `FALSE`.")
+  }
+
   # Validate volume path
   staging_volume <- is_valid_volume_path(staging_volume)
 
@@ -1692,7 +1712,7 @@ db_write_table_volume <- function(
 
       # Clean up volume directory (recursive since it contains files)
       # Use tryCatch to avoid errors during cleanup from stopping the exit handler
-      if (progress) {
+      if (show_progress) {
         cli::cli_progress_step("Clearing staged files")
       }
 
@@ -1705,12 +1725,12 @@ db_write_table_volume <- function(
             token = conn@token
           )
 
-          if (progress) {
+          if (show_progress) {
             cli::cli_progress_done()
           }
         },
         error = function(e) {
-          if (progress) {
+          if (show_progress) {
             cli::cli_progress_done(result = "failed")
           }
 
@@ -1725,7 +1745,7 @@ db_write_table_volume <- function(
   )
 
   # Convert to Parquet
-  if (progress) {
+  if (show_progress) {
     cli::cli_progress_step("Writing files")
   }
 
@@ -1737,7 +1757,7 @@ db_write_table_volume <- function(
     max_rows_per_file = 5000000L
   )
 
-  if (progress) {
+  if (show_progress) {
     cli::cli_progress_done()
   }
 
@@ -1759,7 +1779,7 @@ db_write_table_volume <- function(
   )
 
   # Execute SQL to create/populate table
-  if (progress) {
+  if (show_progress) {
     cli::cli_progress_step(
       if (append) {
         "Appending data to table"
@@ -1807,7 +1827,7 @@ db_write_table_volume <- function(
     show_progress = FALSE
   )
 
-  if (progress) cli::cli_progress_done()
+  if (show_progress) cli::cli_progress_done()
 }
 
 #' Append rows to an existing Databricks table
