@@ -75,7 +75,7 @@ db_request <- function(
   }
 
   if (!is.null(body)) {
-    body <- Filter(length, body)
+    body <- purrr::compact(body)
     req <- req |>
       httr2::req_body_json(body, ...)
   }

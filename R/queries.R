@@ -191,7 +191,7 @@ db_query_update <- function(
     tags = tags
   )
   # keep non-null values
-  body$query <- Filter(length, query)
+  body$query <- purrr::compact(query)
   # dynamically generate update mask
   body$update_mask <- paste(names(body$query), collapse = ",")
 

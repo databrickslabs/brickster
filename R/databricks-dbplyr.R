@@ -9,7 +9,6 @@
 #' @importFrom dbplyr translate_sql dbplyr_edition sql_query_save simulate_spark_sql db_collect
 #' @importFrom dplyr copy_to
 #' @importFrom glue glue_sql
-#' @importFrom purrr map_chr map2_chr
 #' @name databricks-dbplyr
 NULL
 
