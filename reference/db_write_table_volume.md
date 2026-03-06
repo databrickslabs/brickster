@@ -11,6 +11,6 @@ db_write_table_volume(
   value,
   staging_volume,
   append = FALSE,
-  progress = TRUE
+  show_progress = TRUE
 )
 ```

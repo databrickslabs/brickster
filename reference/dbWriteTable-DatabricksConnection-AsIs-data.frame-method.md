@@ -16,7 +16,7 @@ dbWriteTable(
   temporary = FALSE,
   field.types = NULL,
   staging_volume = NULL,
-  progress = TRUE,
+  show_progress = TRUE,
   ...
 )
 ```
@@ -59,13 +59,13 @@ dbWriteTable(
 
   Optional volume path for large dataset staging
 
-- progress:
+- show_progress:
 
   If `TRUE`, show progress bar for file uploads (default: `TRUE`)
 
 - ...:
 
-  Additional arguments
+  Additional arguments.
 
 ## Value
 

@@ -28,6 +28,12 @@
   [`db_jobs_get()`](https://databrickslabs.github.io/brickster/reference/db_jobs_get.md)/[`db_jobs_list()`](https://databrickslabs.github.io/brickster/reference/db_jobs_list.md)
   that preserve nested list structures while improving at-a-glance
   summaries
+- Standardized DBI write progress argument naming:
+  [`dbWriteTable()`](https://dbi.r-dbi.org/reference/dbWriteTable.html)
+  and internal
+  [`db_write_table_volume()`](https://databrickslabs.github.io/brickster/reference/db_write_table_volume.md)
+  now use `show_progress`
+  ([\#201](https://github.com/databrickslabs/brickster/issues/201))
 
 ## brickster 0.2.12
 
