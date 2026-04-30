@@ -6,6 +6,10 @@ on:
 
 name: Commands
 
+# Security note: /document and /style fetch a pull request branch and execute
+# package R code from that branch. Before triggering these commands on an
+# external contributor PR, a MEMBER or OWNER must review the PR's R code for
+# malicious constructs.
 permissions:
   contents: read
   pull-requests: read
