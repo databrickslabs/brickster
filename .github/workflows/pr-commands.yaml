@@ -27,15 +27,15 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - uses: r-lib/actions/pr-fetch@6f6e5bc62fba3a704f74e7ad7ef7676c5c6a2590 # v2.11.4
+      - uses: r-lib/actions/pr-fetch@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: r-lib/actions/setup-r@6f6e5bc62fba3a704f74e7ad7ef7676c5c6a2590 # v2.11.4
+      - uses: r-lib/actions/setup-r@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
         with:
           use-public-rspm: true
 
-      - uses: r-lib/actions/setup-r-dependencies@6f6e5bc62fba3a704f74e7ad7ef7676c5c6a2590 # v2.11.4
+      - uses: r-lib/actions/setup-r-dependencies@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
         env:
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -51,7 +51,7 @@ jobs:
           git add man/\* NAMESPACE
           git commit -m 'Document'
 
-      - uses: r-lib/actions/pr-push@6f6e5bc62fba3a704f74e7ad7ef7676c5c6a2590 # v2.11.4
+      - uses: r-lib/actions/pr-push@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -67,11 +67,11 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - uses: r-lib/actions/pr-fetch@6f6e5bc62fba3a704f74e7ad7ef7676c5c6a2590 # v2.11.4
+      - uses: r-lib/actions/pr-fetch@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: r-lib/actions/setup-r@6f6e5bc62fba3a704f74e7ad7ef7676c5c6a2590 # v2.11.4
+      - uses: r-lib/actions/setup-r@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
 
       - name: Install dependencies
         run: Rscript -e 'install.packages("styler")'
@@ -86,6 +86,6 @@ jobs:
           git add \*.R
           git commit -m 'Style'
 
-      - uses: r-lib/actions/pr-push@6f6e5bc62fba3a704f74e7ad7ef7676c5c6a2590 # v2.11.4
+      - uses: r-lib/actions/pr-push@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
