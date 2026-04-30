@@ -13,9 +13,7 @@ permissions:
 jobs:
   test-coverage:
     environment: runtime
-    runs-on:
-      group: databrickslabs-protected-runner-group
-      labels: linux-ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
@@ -72,9 +70,7 @@ jobs:
 
   upload-coverage:
     needs: test-coverage
-    runs-on:
-      group: databrickslabs-protected-runner-group
-      labels: linux-ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       id-token: write

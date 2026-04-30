@@ -14,9 +14,7 @@ permissions:
 jobs:
   R-CMD-check:
     environment: runtime
-    runs-on:
-      group: databrickslabs-protected-runner-group
-      labels: ${{ matrix.config.os }}
+    runs-on: ${{ matrix.config.os }}
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
 
@@ -25,10 +23,10 @@ jobs:
       matrix:
         config:
           # - {os: macOS-latest,   r: 'release'}
-          - {os: windows-server-2022-latest, r: 'release'}
-          - {os: linux-ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
-          - {os: linux-ubuntu-latest,   r: 'release'}
-          - {os: linux-ubuntu-latest,   r: 'oldrel-1'}
+          - {os: windows-2022, r: 'release'}
+          - {os: ubuntu-24.04,   r: 'devel', http-user-agent: 'release'}
+          - {os: ubuntu-24.04,   r: 'release'}
+          - {os: ubuntu-24.04,   r: 'oldrel-1'}
 
     env:
       R_KEEP_PKG_SOURCE: yes
