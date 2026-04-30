@@ -6,27 +6,34 @@ on:
 
 name: Commands
 
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   document:
     if: ${{ github.event.issue.pull_request && (github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER') && startsWith(github.event.comment.body, '/document') }}
     name: document
+    permissions:
+      contents: write # Push generated documentation updates back to the PR branch.
+      pull-requests: read
     runs-on:
       group: databrickslabs-protected-runner-group
       labels: linux-ubuntu-latest
-    env:
-      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - uses: r-lib/actions/pr-fetch@v2
+      - uses: r-lib/actions/pr-fetch@6f6e5bc62fba3a704f74e7ad7ef7676c5c6a2590 # v2.11.4
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: r-lib/actions/setup-r@v2
+      - uses: r-lib/actions/setup-r@6f6e5bc62fba3a704f74e7ad7ef7676c5c6a2590 # v2.11.4
         with:
           use-public-rspm: true
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
+      - uses: r-lib/actions/setup-r-dependencies@6f6e5bc62fba3a704f74e7ad7ef7676c5c6a2590 # v2.11.4
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
         with:
           extra-packages: roxygen2
 
@@ -40,24 +47,27 @@ jobs:
           git add man/\* NAMESPACE
           git commit -m 'Document'
 
-      - uses: r-lib/actions/pr-push@v2
+      - uses: r-lib/actions/pr-push@6f6e5bc62fba3a704f74e7ad7ef7676c5c6a2590 # v2.11.4
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
   style:
     if: ${{ github.event.issue.pull_request && (github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER') && startsWith(github.event.comment.body, '/style') }}
     name: style
-    runs-on: ubuntu-latest
-    env:
-      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    permissions:
+      contents: write # Push formatting updates back to the PR branch.
+      pull-requests: read
+    runs-on:
+      group: databrickslabs-protected-runner-group
+      labels: linux-ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - uses: r-lib/actions/pr-fetch@v2
+      - uses: r-lib/actions/pr-fetch@6f6e5bc62fba3a704f74e7ad7ef7676c5c6a2590 # v2.11.4
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: r-lib/actions/setup-r@v2
+      - uses: r-lib/actions/setup-r@6f6e5bc62fba3a704f74e7ad7ef7676c5c6a2590 # v2.11.4
 
       - name: Install dependencies
         run: Rscript -e 'install.packages("styler")'
@@ -72,6 +82,6 @@ jobs:
           git add \*.R
           git commit -m 'Style'
 
-      - uses: r-lib/actions/pr-push@v2
+      - uses: r-lib/actions/pr-push@6f6e5bc62fba3a704f74e7ad7ef7676c5c6a2590 # v2.11.4
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
