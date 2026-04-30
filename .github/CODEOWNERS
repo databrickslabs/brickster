@@ -1,0 +1,3 @@
+# Security-sensitive GitHub Actions changes require owner review.
+.github/CODEOWNERS @zacdav-db
+.github/workflows/ @zacdav-db
