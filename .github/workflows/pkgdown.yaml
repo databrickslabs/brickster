@@ -20,17 +20,8 @@ jobs:
     runs-on:
       group: databrickslabs-protected-runner-group
       labels: linux-ubuntu-latest
-    env:
-      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
     steps:
-
-      - name: .Renviron file
-        run: |
-          echo DATABRICKS_HOST="$DATABRICKS_HOST" >> ~/.Renviron
-          echo DATABRICKS_TOKEN="$DATABRICKS_TOKEN" >> ~/.Renviron
-
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - uses: r-lib/actions/setup-pandoc@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
