@@ -17,6 +17,9 @@ jobs:
     environment: runtime
     permissions:
       contents: write # Deploy pkgdown output to the gh-pages branch.
+    # This protected runner is acceptable only for privileged triggers above
+    # (push to protected branches, release publication, or manual dispatch).
+    # Do not add pull_request, issue_comment, or other untrusted triggers here.
     runs-on:
       group: databrickslabs-protected-runner-group
       labels: linux-ubuntu-latest

@@ -28,6 +28,20 @@ Before enabling or changing internal runners, verify the environment still has
 required reviewers configured in GitHub repository settings under
 `Settings > Environments > runtime`.
 
+## Protected Runner Workflows
+
+The `pkgdown` workflow may use `databrickslabs-protected-runner-group` with
+`contents: write` because it is limited to privileged triggers: protected-branch
+`push`, release publication, and manual dispatch. The runner group configuration
+must remain locked down:
+
+- Only trusted repositories may target the runner group.
+- Workflows using the runner group must not add `pull_request`, `issue_comment`,
+  `pull_request_target`, `workflow_run`, or other externally influenced triggers.
+- Jobs using the runner group must continue to declare the `runtime` environment
+  when they execute repository code with runtime secrets or write tokens.
+- Changes to protected-runner workflows require CODEOWNERS review.
+
 ## Pull Request Comment Commands
 
 The `/document` and `/style` issue-comment commands fetch the pull request branch
