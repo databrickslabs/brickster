@@ -12,11 +12,104 @@ permissions:
   contents: read
 
 jobs:
-  R-CMD-check:
+  R-CMD-check-pr:
+    if: github.event_name == 'pull_request'
+    runs-on: ${{ matrix.config.os }}
+
+    name: PR ${{ matrix.config.os }} (${{ matrix.config.r }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          # - {os: macOS-latest,   r: 'release'}
+          - {os: windows-2022, r: 'release'}
+          - {os: ubuntu-24.04,   r: 'devel', http-user-agent: 'release'}
+          - {os: ubuntu-24.04,   r: 'release'}
+          - {os: ubuntu-24.04,   r: 'oldrel-1'}
+
+    env:
+      R_KEEP_PKG_SOURCE: yes
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - uses: r-lib/actions/setup-pandoc@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
+
+      - uses: r-lib/actions/setup-r@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
+        with:
+          r-version: ${{ matrix.config.r }}
+          http-user-agent: ${{ matrix.config.http-user-agent }}
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          extra-packages: rcmdcheck
+
+      - uses: r-lib/actions/check-r-package@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+  R-CMD-check-pr-required:
+    if: github.event_name == 'pull_request'
+    needs: R-CMD-check-pr
+    name: R-CMD-check-pr-required
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Confirm required PR checks passed
+        run: echo "R CMD check PR matrix passed."
+
+  R-CMD-check-pr-runtime:
+    if: github.event_name == 'pull_request'
     environment: runtime
     runs-on: ${{ matrix.config.os }}
 
-    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+    name: Runtime PR ${{ matrix.config.os }} (${{ matrix.config.r }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          # - {os: macOS-latest,   r: 'release'}
+          - {os: windows-2022, r: 'release'}
+          - {os: ubuntu-24.04,   r: 'devel', http-user-agent: 'release'}
+          - {os: ubuntu-24.04,   r: 'release'}
+          - {os: ubuntu-24.04,   r: 'oldrel-1'}
+
+    env:
+      R_KEEP_PKG_SOURCE: yes
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - uses: r-lib/actions/setup-pandoc@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
+
+      - uses: r-lib/actions/setup-r@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
+        with:
+          r-version: ${{ matrix.config.r }}
+          http-user-agent: ${{ matrix.config.http-user-agent }}
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          extra-packages: rcmdcheck
+
+      - uses: r-lib/actions/check-r-package@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+  R-CMD-check-runtime:
+    if: github.event_name == 'push'
+    environment: runtime
+    runs-on: ${{ matrix.config.os }}
+
+    name: Runtime ${{ matrix.config.os }} (${{ matrix.config.r }})
 
     strategy:
       fail-fast: false
