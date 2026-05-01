@@ -12,6 +12,106 @@ permissions:
 
 jobs:
   test-coverage:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    env:
+      NOT_CRAN: TRUE
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - uses: r-lib/actions/setup-r@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
+        with:
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          extra-packages: any::covr, any::xml2
+          needs: coverage
+
+      - name: Test coverage
+        run: |
+          cov <- covr::package_coverage(
+            quiet = FALSE,
+            clean = FALSE,
+            install_path = file.path(normalizePath(Sys.getenv("RUNNER_TEMP"), winslash = "/"), "package")
+          )
+          print(cov)
+          covr::to_cobertura(cov)
+        shell: Rscript {0}
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: coverage-report
+          path: cobertura.xml
+          if-no-files-found: error
+
+      - name: Show testthat output
+        if: always()
+        run: |
+          ## --------------------------------------------------------------------
+          find '${{ runner.temp }}/package' -name 'testthat.Rout*' -exec cat '{}' \; || true
+        shell: bash
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: coverage-test-failures
+          path: ${{ runner.temp }}/package
+
+  test-coverage-pr-required:
+    if: github.event_name == 'pull_request'
+    needs: test-coverage
+    name: test-coverage-pr-required
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Confirm required PR coverage passed
+        run: echo "Coverage PR job passed."
+
+  test-coverage-pr-runtime:
+    if: github.event_name == 'pull_request'
+    environment: runtime
+    runs-on: ubuntu-24.04
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      DATABRICKS_WSID: ${{ secrets.DATABRICKS_WSID }}
+      NOT_CRAN: TRUE
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - uses: r-lib/actions/setup-r@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
+        with:
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          extra-packages: any::covr, any::xml2
+          needs: coverage
+
+      - name: Test coverage
+        run: |
+          cov <- covr::package_coverage(
+            quiet = FALSE,
+            clean = FALSE,
+            install_path = file.path(normalizePath(Sys.getenv("RUNNER_TEMP"), winslash = "/"), "package")
+          )
+          print(cov)
+        shell: Rscript {0}
+
+  test-coverage-runtime:
+    if: github.event_name == 'push'
     environment: runtime
     runs-on: ubuntu-24.04
     env:
@@ -69,7 +169,8 @@ jobs:
           path: ${{ runner.temp }}/package
 
   upload-coverage:
-    needs: test-coverage
+    if: always() && !cancelled()
+    needs: [test-coverage, test-coverage-runtime]
     runs-on: ubuntu-24.04
     permissions:
       contents: read

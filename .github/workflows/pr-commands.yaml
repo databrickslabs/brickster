@@ -1,5 +1,3 @@
-# DISABLED: this issue_comment workflow fetched PR branch code and ran it with
-# contents: write. Redesign before restoring a .yml/.yaml workflow extension.
 # Workflow derived from https://github.com/r-lib/actions/tree/master/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 on:
@@ -8,10 +6,6 @@ on:
 
 name: Commands
 
-# Security note: /document and /style fetch a pull request branch and execute
-# package R code from that branch. Before triggering these commands on an
-# external contributor PR, a MEMBER or OWNER must review the PR's R code for
-# malicious constructs.
 permissions:
   contents: read
   pull-requests: read
@@ -20,12 +14,7 @@ jobs:
   document:
     if: ${{ github.event.issue.pull_request && (github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER') && startsWith(github.event.comment.body, '/document') }}
     name: document
-    permissions:
-      contents: write # Push generated documentation updates back to the PR branch.
-      pull-requests: read
-    runs-on:
-      group: databrickslabs-protected-runner-group
-      labels: linux-ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
@@ -41,31 +30,30 @@ jobs:
         env:
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
         with:
-          extra-packages: roxygen2
+          extra-packages: any::roxygen2
 
       - name: Document
         run: Rscript -e 'roxygen2::roxygenise()'
 
-      - name: commit
+      - name: Create documentation patch
         run: |
-          git config --local user.name "$GITHUB_ACTOR"
-          git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          git add man/\* NAMESPACE
-          git commit -m 'Document'
+          git diff --binary -- man NAMESPACE > document.patch
+          if [ ! -s document.patch ]; then
+            echo "No documentation changes generated." > document.patch
+          fi
+        shell: bash
 
-      - uses: r-lib/actions/pr-push@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
+      - name: Upload documentation patch
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          name: document-patch-${{ github.event.issue.number }}
+          path: document.patch
+          if-no-files-found: error
 
   style:
     if: ${{ github.event.issue.pull_request && (github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER') && startsWith(github.event.comment.body, '/style') }}
     name: style
-    permissions:
-      contents: write # Push formatting updates back to the PR branch.
-      pull-requests: read
-    runs-on:
-      group: databrickslabs-protected-runner-group
-      labels: linux-ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
@@ -74,20 +62,29 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: r-lib/actions/setup-r@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
+        with:
+          use-public-rspm: true
 
-      - name: Install dependencies
-        run: Rscript -e 'install.packages("styler")'
+      - uses: r-lib/actions/setup-r-dependencies@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          extra-packages: any::styler
 
       - name: Style
         run: Rscript -e 'styler::style_pkg()'
 
-      - name: commit
+      - name: Create style patch
         run: |
-          git config --local user.name "$GITHUB_ACTOR"
-          git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          git add \*.R
-          git commit -m 'Style'
+          git diff --binary -- '*.R' > style.patch
+          if [ ! -s style.patch ]; then
+            echo "No style changes generated." > style.patch
+          fi
+        shell: bash
 
-      - uses: r-lib/actions/pr-push@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
+      - name: Upload style patch
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          name: style-patch-${{ github.event.issue.number }}
+          path: style.patch
+          if-no-files-found: error
