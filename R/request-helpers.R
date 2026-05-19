@@ -40,7 +40,7 @@ db_request <- function(
     httr2::req_user_agent(string = user_agent_str) |>
     httr2::req_url_path_append(endpoint) |>
     httr2::req_method(method) |>
-    httr2::req_retry(max_tries = 3, backoff = ~2)
+    httr2::req_retry(max_tries = 3, backoff = ~2, retry_on_failure = TRUE)
 
   # if token is present use directly
   # otherwise initiate OAuth 2.0 U2M or M2M Workspace flow
