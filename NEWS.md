@@ -1,5 +1,6 @@
 # brickster 0.2.13
 
+-   Enabled `db_request()` retries for transient low-level HTTP request failures, improving resilience to intermittent curl/HTTP2 framing errors (#215)
 -   Added Azure AD service principal OAuth M2M support (`ARM_CLIENT_ID`, `ARM_CLIENT_SECRET`, `ARM_TENANT_ID`) with optional `DATABRICKS_AUTH_TYPE` override (`oauth-m2m`, `azure-client-secret`, `oauth-u2m`); default auth resolution now prefers Azure M2M over U2M when ARM credentials are present (#185)
 -   Marked DBFS REST wrappers (`db_dbfs_*`) as deprecated and moved them to internal-only, guiding users towards using volumes (`db_volume_*`)
 -   Added `db_volume_download_dir()` for parallel directory downloads from Unity Catalog volumes to local directories
