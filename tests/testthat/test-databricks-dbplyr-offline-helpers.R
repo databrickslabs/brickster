@@ -1,4 +1,4 @@
-make_test_con <- function() {
+make_test_con <- function(disposition = "EXTERNAL_LINKS") {
   new(
     "DatabricksConnection",
     warehouse_id = "test_warehouse",
@@ -6,7 +6,8 @@ make_test_con <- function() {
     token = "test_token",
     catalog = "",
     schema = "",
-    staging_volume = ""
+    staging_volume = "",
+    disposition = disposition
   )
 }
 
@@ -82,6 +83,25 @@ test_that("sql_query_save covers temporary and persistent branches", {
 
   expect_match(table_sql, "CREATE OR REPLACE TABLE", ignore.case = TRUE)
   expect_match(table_sql, "`already_quoted`")
+})
+
+test_that("db_collect uses connection query disposition", {
+  con <- make_test_con(disposition = "INLINE")
+  state <- new.env(parent = emptyenv())
+  state$disposition <- NULL
+
+  local_mocked_bindings(
+    dbGetQuery = function(conn, statement, show_progress = TRUE, ...) {
+      state$disposition <- conn@disposition
+      data.frame(v = c(1L, 2L, 3L))
+    },
+    .package = "brickster"
+  )
+
+  out <- dbplyr::db_collect(con, "SELECT * FROM tbl")
+
+  expect_identical(state$disposition, "INLINE")
+  expect_identical(out$v, c(1L, 2L, 3L))
 })
 
 test_that("sql_query_save validates connection", {

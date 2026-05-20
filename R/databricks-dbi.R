@@ -28,6 +28,7 @@ setClass(
     catalog = "character",
     schema = "character",
     staging_volume = "character",
+    disposition = "character",
     max_active_connections = "numeric",
     fetch_timeout = "numeric"
   )
@@ -83,6 +84,9 @@ setMethod("show", "DatabricksDriver", function(object) {
 #' @param catalog Optional catalog name to use as default
 #' @param schema Optional schema name to use as default
 #' @param staging_volume Optional volume path for large dataset staging
+#' @param disposition Query disposition mode to use by default for DBI query
+#'   results. Use `"EXTERNAL_LINKS"` for large results or `"INLINE"` for
+#'   smaller results that must avoid direct cloud-storage result downloads.
 #' @param max_active_connections Maximum number of concurrent download
 #' connections when fetching query results (default: 30)
 #' @param fetch_timeout Timeout in seconds for downloading each result chunk
@@ -102,12 +106,15 @@ setMethod(
     catalog = NULL,
     schema = NULL,
     staging_volume = NULL,
+    disposition = c("EXTERNAL_LINKS", "INLINE"),
     max_active_connections = 30,
     fetch_timeout = 300,
     token = db_token(),
     host = db_host(),
     ...
   ) {
+    disposition <- match.arg(disposition)
+
     # Validate required parameters
     if (
       !is.null(warehouse_id) &&
@@ -168,6 +175,7 @@ setMethod(
       catalog = catalog %||% "",
       schema = schema %||% "",
       staging_volume = staging_volume %||% "",
+      disposition = disposition,
       max_active_connections = max_active_connections,
       fetch_timeout = fetch_timeout
     )
@@ -218,6 +226,7 @@ setMethod("show", "DatabricksConnection", function(object) {
   if (!is.null(object@staging_volume) && nzchar(object@staging_volume)) {
     cat("  Staging Volume:", object@staging_volume, "\n")
   }
+  cat("  Disposition:", object@disposition, "\n")
   cat("  Max Active Connections:", object@max_active_connections, "\n")
   cat("  Fetch Timeout (s):", object@fetch_timeout, "\n")
 })
@@ -227,14 +236,17 @@ setMethod("show", "DatabricksConnection", function(object) {
 #' Send query to Databricks (asynchronous)
 #' @param conn A DatabricksConnection object
 #' @param statement SQL statement to execute
+#' @param disposition Query disposition mode. Defaults to the connection's
+#'   `disposition` setting.
 #' @param ... Additional arguments (ignored)
 #' @returns A DatabricksResult object
 #' @export
 setMethod(
   "dbSendQuery",
   signature = c(conn = "DatabricksConnection", statement = "character"),
-  function(conn, statement, ...) {
+  function(conn, statement, disposition = conn@disposition, ...) {
     db_assert_statement(statement)
+    disposition <- match.arg(disposition, c("EXTERNAL_LINKS", "INLINE"))
 
     # Execute query asynchronously
     resp <- db_sql_exec_query(
@@ -242,8 +254,8 @@ setMethod(
       statement = statement,
       catalog = if (nzchar(conn@catalog)) conn@catalog else NULL,
       schema = if (nzchar(conn@schema)) conn@schema else NULL,
-      disposition = "EXTERNAL_LINKS",
-      format = "ARROW_STREAM",
+      disposition = disposition,
+      format = if (disposition == "INLINE") "JSON_ARRAY" else "ARROW_STREAM",
       wait_timeout = "0s", # Async execution
       host = conn@host,
       token = conn@token
@@ -265,8 +277,8 @@ setMethod(
 #'
 #' @param conn A DatabricksConnection object
 #' @param statement SQL statement to execute
-#' @param disposition Query disposition mode: "EXTERNAL_LINKS" (default) for large results,
-#'   "INLINE" for small metadata queries (automatically chooses appropriate format)
+#' @param disposition Query disposition mode. Defaults to the connection's
+#'   `disposition` setting.
 #' @param show_progress If `TRUE`, show progress updates during query execution (default: `TRUE`)
 #' @param ... Additional arguments passed to underlying query execution
 #' @returns A data.frame with query results
@@ -277,10 +289,12 @@ setMethod(
   function(
     conn,
     statement,
-    disposition = "EXTERNAL_LINKS",
+    disposition = conn@disposition,
     show_progress = TRUE,
     ...
   ) {
+    disposition <- match.arg(disposition, c("EXTERNAL_LINKS", "INLINE"))
+
     # Detect schema discovery queries (LIMIT 0) and optimize them
     if (endsWith(trimws(statement), "LIMIT 0")) {
       # Force INLINE disposition and disable progress for schema queries
@@ -397,7 +411,11 @@ setMethod("dbFetch", "DatabricksResult", function(res, n = -1, ...) {
   }
 
   # Check if we need to poll for completion and start executing step
-  initial_status <- db_sql_exec_status(statement_id = res@statement_id)
+  initial_status <- db_sql_exec_status(
+    statement_id = res@statement_id,
+    host = res@connection@host,
+    token = res@connection@token
+  )
   if (initial_status$status$state %in% c("RUNNING", "PENDING")) {
     cli::cli_progress_step("Executing query")
     status <- db_sql_exec_poll_for_success(
@@ -415,6 +433,15 @@ setMethod("dbFetch", "DatabricksResult", function(res, n = -1, ...) {
   # Use total_row_count to detect empty result sets
   if (status$manifest$total_row_count == 0) {
     results <- db_sql_create_empty_result(status$manifest)
+  } else if (
+    identical(status$manifest$format, "JSON_ARRAY") ||
+      !is.null(status$result$data_array)
+  ) {
+    results <- db_sql_process_inline(
+      result_data = status$result,
+      manifest = status$manifest,
+      row_limit = if (n > 0) n else NULL
+    )
   } else {
     # Use helper function to fetch results with progress
     results <- db_sql_fetch_results(
@@ -871,7 +898,8 @@ setMethod("dbGetInfo", "DatabricksConnection", function(dbObj, ...) {
     username = NA_character_,
     host = dbObj@host,
     port = NA_integer_,
-    warehouse_id = dbObj@warehouse_id
+    warehouse_id = dbObj@warehouse_id,
+    disposition = dbObj@disposition
   )
 })
 

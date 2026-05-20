@@ -1,4 +1,4 @@
-make_dbi_test_con <- function(staging_volume = "") {
+make_dbi_test_con <- function(staging_volume = "", disposition = "EXTERNAL_LINKS") {
   new(
     "DatabricksConnection",
     warehouse_id = "test_warehouse",
@@ -7,6 +7,7 @@ make_dbi_test_con <- function(staging_volume = "") {
     catalog = "test_catalog",
     schema = "test_schema",
     staging_volume = staging_volume,
+    disposition = disposition,
     max_active_connections = 30,
     fetch_timeout = 300
   )
@@ -31,12 +32,14 @@ test_that("dbConnect validates tuning inputs and persists connection settings", 
     warehouse_id = "wh-1",
     host = "mock_host",
     token = "mock_token",
+    disposition = "INLINE",
     max_active_connections = 12,
     fetch_timeout = 45
   )
 
   expect_s4_class(con, "DatabricksConnection")
   expect_identical(con@warehouse_id, "wh-1")
+  expect_identical(con@disposition, "INLINE")
   expect_identical(con@max_active_connections, 12)
   expect_identical(con@fetch_timeout, 45)
   expect_true(state$opened)
@@ -61,6 +64,17 @@ test_that("dbConnect validates tuning inputs and persists connection settings", 
       fetch_timeout = 0
     ),
     "`fetch_timeout` must be a positive numeric value"
+  )
+
+  expect_error(
+    dbConnect(
+      drv,
+      warehouse_id = "wh-1",
+      host = "mock_host",
+      token = "mock_token",
+      disposition = "invalid"
+    ),
+    "'arg' should be one of"
   )
 })
 
@@ -363,10 +377,61 @@ test_that("query execution DBI methods dispatch expected options", {
   expect_identical(rows_unknown, 0L)
 
   expect_identical(state$query_calls[[1]]$wait_timeout, "0s")
+  expect_identical(state$query_calls[[1]]$disposition, "EXTERNAL_LINKS")
+  expect_identical(state$query_calls[[1]]$format, "ARROW_STREAM")
   expect_identical(state$query_calls[[2]]$wait_timeout, "0s")
   expect_identical(state$query_calls[[3]]$disposition, "INLINE")
   expect_false(state$query_calls[[3]]$show_progress)
   expect_identical(state$query_calls[[4]]$disposition, "EXTERNAL_LINKS")
+
+  con_inline <- make_dbi_test_con(disposition = "INLINE")
+  res_inline <- dbSendQuery(con_inline, "SELECT 2")
+  expect_s4_class(res_inline, "DatabricksResult")
+  expect_identical(state$query_calls[[5]]$disposition, "INLINE")
+  expect_identical(state$query_calls[[5]]$format, "JSON_ARRAY")
+
+  out_inline <- dbGetQuery(con_inline, "SELECT * FROM inline_table")
+  expect_identical(out_inline$ok, TRUE)
+  expect_identical(state$query_calls[[6]]$disposition, "INLINE")
+})
+
+test_that("dbFetch processes inline results from dbSendQuery", {
+  con <- make_dbi_test_con(disposition = "INLINE")
+  res <- new(
+    "DatabricksResult",
+    statement_id = "stmt-inline",
+    statement = "SELECT 1 UNION ALL SELECT 2",
+    connection = con,
+    completed = FALSE,
+    rows_fetched = 0
+  )
+
+  local_mocked_bindings(
+    db_sql_exec_status = function(...) {
+      list(
+        statement_id = "stmt-inline",
+        status = list(state = "SUCCEEDED"),
+        manifest = list(
+          format = "JSON_ARRAY",
+          total_chunk_count = 1L,
+          total_row_count = 2L,
+          schema = list(columns = list(
+            list(name = "id", type_name = "INT")
+          ))
+        ),
+        result = list(data_array = list(list(1L), list(2L)))
+      )
+    },
+    db_sql_fetch_results = function(...) {
+      stop("external result fetcher should not be called")
+    },
+    .package = "brickster"
+  )
+
+  out <- dbFetch(res)
+
+  expect_s3_class(out, "tbl_df")
+  expect_identical(out$id, c(1L, 2L))
 })
 
 test_that("volume-method selection warns/errors at size thresholds", {
