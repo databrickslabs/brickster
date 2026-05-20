@@ -9,6 +9,7 @@
 ^\.covrignore$
 ^LICENSE\.md$
 ^NOTICE
+^SECURITY\.md$
 ^cran-comments\.md$
 ^CLAUDE.md
 ^\.claude
