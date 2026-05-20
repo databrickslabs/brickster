@@ -1,10 +1,10 @@
-# https://docs.databricks.com/api/workspace/statementexecution
+# https://docs.databricks.com/api/aws/workspace/statementexecution
 # https://docs.databricks.com/en/sql/admin/sql-execution-tutorial.html#language-curl
 
 #' Execute SQL Query
 #'
 #' @details Refer to the
-#' [web documentation](https://docs.databricks.com/api/workspace/statementexecution/executestatement)
+#' [web documentation](https://docs.databricks.com/api/aws/workspace/statementexecution/executestatement)
 #' for detailed material on interaction of the various parameters and general recommendations
 #'
 #' @param statement String, the SQL statement to execute. The statement can
@@ -21,7 +21,7 @@
 #' To represent a `NULL` value, the value field may be omitted or set to `NULL`
 #' explicitly.
 #'
-#' See [docs](https://docs.databricks.com/api/workspace/statementexecution/executestatement)
+#' See [docs](https://docs.databricks.com/api/aws/workspace/statementexecution/executestatement)
 #' for more details.
 #' @param row_limit Integer, applies the given row limit to the statement's
 #' result set, but unlike the `LIMIT` clause in SQL, it also sets the
@@ -34,10 +34,10 @@
 #' true. When using `EXTERNAL_LINKS` disposition, a default byte_limit of
 #' 100 GiB is applied if `byte_limit` is not explicitly set.
 #' @param disposition One of `"INLINE"` (default) or `"EXTERNAL_LINKS"`. See
-#' [docs](https://docs.databricks.com/api/workspace/statementexecution/executestatement)
+#' [docs](https://docs.databricks.com/api/aws/workspace/statementexecution/executestatement)
 #' for details.
 #' @param format One of `"JSON_ARRAY"` (default), `"ARROW_STREAM"`, or `"CSV"`.
-#' See [docs](https://docs.databricks.com/api/workspace/statementexecution/executestatement)
+#' See [docs](https://docs.databricks.com/api/aws/workspace/statementexecution/executestatement)
 #' for details.
 #' @param wait_timeout String, default is `"10s"`. The time in seconds the call
 #' will wait for the statement's result set as `Ns`, where `N` can be set to
@@ -130,7 +130,7 @@ db_sql_exec_query <- function(
 #' Requests that an executing statement be canceled. Callers must poll for
 #' status to see the terminal state.
 #'
-#' [Read more on Databricks API docs](https://docs.databricks.com/api/workspace/statementexecution/cancelexecution)
+#' [Read more on Databricks API docs](https://docs.databricks.com/api/aws/workspace/statementexecution/cancelexecution)
 #'
 #' @param statement_id String, query execution `statement_id`
 #' @inheritParams auth_params
@@ -175,7 +175,7 @@ db_sql_exec_cancel <- function(
 #' After at least 12 hours in terminal state, the statement is removed from the
 #' warehouse and further calls will receive an HTTP `404` response.
 #'
-#' [Read more on Databricks API docs](https://docs.databricks.com/api/workspace/statementexecution/getstatement)
+#' [Read more on Databricks API docs](https://docs.databricks.com/api/aws/workspace/statementexecution/getstatement)
 #'
 #' @inheritParams auth_params
 #' @inheritParams db_sql_exec_cancel
@@ -222,7 +222,7 @@ db_sql_exec_status <- function(
 #' `next_chunk_index` and `next_chunk_internal_link` fields for simple
 #' iteration through the result set.
 #'
-#' [Read more on Databricks API docs](https://docs.databricks.com/api/workspace/statementexecution/getstatementresultchunkn)
+#' [Read more on Databricks API docs](https://docs.databricks.com/api/aws/workspace/statementexecution/getstatementresultchunkn)
 #'
 #' @param chunk_index Integer, chunk index to fetch result. Starts from `0`.
 #' @inheritParams db_sql_exec_cancel

@@ -69,7 +69,7 @@ If \code{perform_request = TRUE}, returns endpoint-specific API output. If \code
 Create Job
 }
 \details{
-\href{https://docs.databricks.com/api/workspace/jobs/create}{Full Documentation}
+\href{https://docs.databricks.com/api/aws/workspace/jobs/create}{Full Documentation}
 }
 \seealso{
 \code{\link[=job_tasks]{job_tasks()}}, \code{\link[=job_task]{job_task()}}, \code{\link[=email_notifications]{email_notifications()}},

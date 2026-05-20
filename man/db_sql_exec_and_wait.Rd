@@ -39,7 +39,7 @@ A parameter consists of a name, a value, and \emph{optionally} a type.
 To represent a \code{NULL} value, the value field may be omitted or set to \code{NULL}
 explicitly.
 
-See \href{https://docs.databricks.com/api/workspace/statementexecution/executestatement}{docs}
+See \href{https://docs.databricks.com/api/aws/workspace/statementexecution/executestatement}{docs}
 for more details.}
 
 \item{row_limit}{Integer, applies the given row limit to the statement's
@@ -57,11 +57,11 @@ true. When using \code{EXTERNAL_LINKS} disposition, a default byte_limit of
 \item{wait_timeout}{Initial wait timeout (default "30s")}
 
 \item{disposition}{One of \code{"INLINE"} (default) or \code{"EXTERNAL_LINKS"}. See
-\href{https://docs.databricks.com/api/workspace/statementexecution/executestatement}{docs}
+\href{https://docs.databricks.com/api/aws/workspace/statementexecution/executestatement}{docs}
 for details.}
 
 \item{format}{One of \code{"JSON_ARRAY"} (default), \code{"ARROW_STREAM"}, or \code{"CSV"}.
-See \href{https://docs.databricks.com/api/workspace/statementexecution/executestatement}{docs}
+See \href{https://docs.databricks.com/api/aws/workspace/statementexecution/executestatement}{docs}
 for details.}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}

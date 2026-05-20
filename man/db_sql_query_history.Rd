@@ -47,7 +47,7 @@ db_sql_query_history(
 If \code{perform_request = TRUE}, returns endpoint-specific API output. If \code{FALSE}, returns an \code{httr2_request}.
 }
 \description{
-For more details refer to the \href{https://docs.databricks.com/api/workspace/queryhistory/list}{query history documentation}.
+For more details refer to the \href{https://docs.databricks.com/api/aws/workspace/queryhistory/list}{query history documentation}.
 This function elevates the sub-components of \code{filter_by} parameter to the R
 function directly.
 }

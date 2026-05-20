@@ -1,6 +1,6 @@
 #' List Warehouse Query History
 #'
-#' For more details refer to the [query history documentation](https://docs.databricks.com/api/workspace/queryhistory/list).
+#' For more details refer to the [query history documentation](https://docs.databricks.com/api/aws/workspace/queryhistory/list).
 #' This function elevates the sub-components of `filter_by` parameter to the R
 #' function directly.
 #'

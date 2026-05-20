@@ -9,6 +9,7 @@
 -   Added a new vignette for working with volumes
 -   Added compact, colorized `{cli}` S3 print methods for `db_cluster_get()`/`db_cluster_list()`, `db_sql_warehouse_get()`/`db_sql_warehouse_list()`, and `db_jobs_get()`/`db_jobs_list()` that preserve nested list structures while improving at-a-glance summaries
 -   Standardized DBI write progress argument naming: `dbWriteTable()` and internal `db_write_table_volume()` now use `show_progress` (#201)
+-   Updated Databricks API reference links to use AWS-specific documentation routes
 
 # brickster 0.2.12
 

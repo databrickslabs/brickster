@@ -27,7 +27,7 @@ events starting from the beginning of time.}
 up to the current time.}
 
 \item{event_types}{List. Optional set of event types to filter by. Default
-is to return all events. \href{https://docs.databricks.com/api/workspace/clusters/events#events}{Event Types}.}
+is to return all events. \href{https://docs.databricks.com/api/aws/workspace/clusters/events#events}{Event Types}.}
 
 \item{order}{Either \code{DESC} (default) or \code{ASC}.}
 

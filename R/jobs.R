@@ -26,7 +26,7 @@
 #' @inheritParams db_sql_warehouse_create
 #'
 #' @details
-#' [Full Documentation](https://docs.databricks.com/api/workspace/jobs/create)
+#' [Full Documentation](https://docs.databricks.com/api/aws/workspace/jobs/create)
 #'
 #' @seealso [job_tasks()], [job_task()], [email_notifications()],
 #' [cron_schedule()], [access_control_request()], [access_control_req_user()],

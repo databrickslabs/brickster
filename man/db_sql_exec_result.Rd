@@ -43,7 +43,7 @@ in the \code{\link[=db_sql_exec_result]{db_sql_exec_result()}} request, and simi
 \code{next_chunk_index} and \code{next_chunk_internal_link} fields for simple
 iteration through the result set.
 
-\href{https://docs.databricks.com/api/workspace/statementexecution/getstatementresultchunkn}{Read more on Databricks API docs}
+\href{https://docs.databricks.com/api/aws/workspace/statementexecution/getstatementresultchunkn}{Read more on Databricks API docs}
 }
 \seealso{
 Other SQL Execution APIs: 

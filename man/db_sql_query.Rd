@@ -41,7 +41,7 @@ A parameter consists of a name, a value, and \emph{optionally} a type.
 To represent a \code{NULL} value, the value field may be omitted or set to \code{NULL}
 explicitly.
 
-See \href{https://docs.databricks.com/api/workspace/statementexecution/executestatement}{docs}
+See \href{https://docs.databricks.com/api/aws/workspace/statementexecution/executestatement}{docs}
 for more details.}
 
 \item{row_limit}{Integer, applies the given row limit to the statement's

@@ -30,7 +30,7 @@ Connecting to Databricks SQL Warehouses *typically* involves using one of the me
 |                                                                                         |                                                                               |                                                                      |
 |                                                                                         |                                                                               | Very slow with larger write operations.                              |
 +-----------------------------------------------------------------------------------------+-------------------------------------------------------------------------------+----------------------------------------------------------------------+
-| [Statement Execution API](https://docs.databricks.com/api/workspace/statementexecution) | Straightforward API that can handle data of all sizes.                        | No direct support for write operations.                              |
+| [Statement Execution API](https://docs.databricks.com/api/aws/workspace/statementexecution) | Straightforward API that can handle data of all sizes.                        | No direct support for write operations.                              |
 +-----------------------------------------------------------------------------------------+-------------------------------------------------------------------------------+----------------------------------------------------------------------+
 | Databricks SQL Connector\                                                               | Convenient to work with and good performance.                                 | It's in Python, requires `{reticulate}`.                             |
 | (`databricks-sql-connector`)                                                            |                                                                               |                                                                      |
@@ -50,7 +50,7 @@ That leaves a void for something that is:
 
 `{brickster}` now provides both `{DBI}` and `{dbplyr}` backends for working with Databricks SQL warehouses.
 
-It uses the [Statement Execution API](https://docs.databricks.com/api/workspace/statementexecution) in combination with the [Files API](https://docs.databricks.com/api/workspace/files) (the latter specifically for large data uploads).
+It uses the [Statement Execution API](https://docs.databricks.com/api/aws/workspace/statementexecution) in combination with the [Files API](https://docs.databricks.com/api/aws/workspace/files) (the latter specifically for large data uploads).
 
 ## Connecting to a Warehouse
 

@@ -69,7 +69,7 @@ db_workspace_delete <- function(
 #' At this time we do not support the `direct_download` parameter and returns a
 #' base64 encoded string.
 #'
-#' [See More](https://docs.databricks.com/api/workspace/workspace/export).
+#' [See More](https://docs.databricks.com/api/aws/workspace/workspace/export).
 #'
 #' @family Workspace API
 #'

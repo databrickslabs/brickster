@@ -89,7 +89,7 @@
 #'
 #' Cannot specify both `autoscale` and `num_workers`, must choose one.
 #'
-#' [More Documentation](https://docs.databricks.com/api/workspace/clusters/create).
+#' [More Documentation](https://docs.databricks.com/api/aws/workspace/clusters/create).
 #'
 #' @family Clusters API
 #'
@@ -811,7 +811,7 @@ db_cluster_list_zones <- function(
 #' @param end_time The end time in epoch milliseconds. If empty, returns events
 #' up to the current time.
 #' @param event_types List. Optional set of event types to filter by. Default
-#' is to return all events. [Event Types](https://docs.databricks.com/api/workspace/clusters/events#events).
+#' is to return all events. [Event Types](https://docs.databricks.com/api/aws/workspace/clusters/events#events).
 #' @param order Either `DESC` (default) or `ASC`.
 #' @param offset The offset in the result set. Defaults to 0 (no offset). When
 #' an offset is specified and the results are requested in descending order, the

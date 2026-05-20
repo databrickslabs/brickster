@@ -40,7 +40,7 @@ A parameter consists of a name, a value, and \emph{optionally} a type.
 To represent a \code{NULL} value, the value field may be omitted or set to \code{NULL}
 explicitly.
 
-See \href{https://docs.databricks.com/api/workspace/statementexecution/executestatement}{docs}
+See \href{https://docs.databricks.com/api/aws/workspace/statementexecution/executestatement}{docs}
 for more details.}
 
 \item{row_limit}{Integer, applies the given row limit to the statement's
@@ -56,11 +56,11 @@ true. When using \code{EXTERNAL_LINKS} disposition, a default byte_limit of
 100 GiB is applied if \code{byte_limit} is not explicitly set.}
 
 \item{disposition}{One of \code{"INLINE"} (default) or \code{"EXTERNAL_LINKS"}. See
-\href{https://docs.databricks.com/api/workspace/statementexecution/executestatement}{docs}
+\href{https://docs.databricks.com/api/aws/workspace/statementexecution/executestatement}{docs}
 for details.}
 
 \item{format}{One of \code{"JSON_ARRAY"} (default), \code{"ARROW_STREAM"}, or \code{"CSV"}.
-See \href{https://docs.databricks.com/api/workspace/statementexecution/executestatement}{docs}
+See \href{https://docs.databricks.com/api/aws/workspace/statementexecution/executestatement}{docs}
 for details.}
 
 \item{wait_timeout}{String, default is \code{"10s"}. The time in seconds the call
@@ -107,7 +107,7 @@ Execute SQL Query
 }
 \details{
 Refer to the
-\href{https://docs.databricks.com/api/workspace/statementexecution/executestatement}{web documentation}
+\href{https://docs.databricks.com/api/aws/workspace/statementexecution/executestatement}{web documentation}
 for detailed material on interaction of the various parameters and general recommendations
 }
 \seealso{

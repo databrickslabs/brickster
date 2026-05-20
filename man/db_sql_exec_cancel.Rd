@@ -31,7 +31,7 @@ Cancel SQL Query
 Requests that an executing statement be canceled. Callers must poll for
 status to see the terminal state.
 
-\href{https://docs.databricks.com/api/workspace/statementexecution/cancelexecution}{Read more on Databricks API docs}
+\href{https://docs.databricks.com/api/aws/workspace/statementexecution/cancelexecution}{Read more on Databricks API docs}
 }
 \seealso{
 Other SQL Execution APIs: 

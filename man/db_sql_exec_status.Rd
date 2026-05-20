@@ -38,7 +38,7 @@ When the statement is in the terminal states \code{CANCELED}, \code{CLOSED} or
 After at least 12 hours in terminal state, the statement is removed from the
 warehouse and further calls will receive an HTTP \code{404} response.
 
-\href{https://docs.databricks.com/api/workspace/statementexecution/getstatement}{Read more on Databricks API docs}
+\href{https://docs.databricks.com/api/aws/workspace/statementexecution/getstatement}{Read more on Databricks API docs}
 }
 \seealso{
 Other SQL Execution APIs: 

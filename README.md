@@ -10,7 +10,7 @@
 
 `{brickster}` is the R toolkit for Databricks, it includes:
 
--   Wrappers for [Databricks API's](https://docs.databricks.com/api/workspace/introduction) (e.g. [`db_cluster_list`](https://databrickslabs.github.io/brickster/reference/db_cluster_list.html), [`db_volume_read`](https://databrickslabs.github.io/brickster/reference/db_volume_read.html))
+-   Wrappers for [Databricks API's](https://docs.databricks.com/api/aws/workspace/introduction) (e.g. [`db_cluster_list`](https://databrickslabs.github.io/brickster/reference/db_cluster_list.html), [`db_volume_read`](https://databrickslabs.github.io/brickster/reference/db_volume_read.html))
 
 -   Browser workspace assets via RStudio Connections Pane ([`open_workspace()`](https://databrickslabs.github.io/brickster/reference/open_workspace.html))
 
@@ -126,19 +126,19 @@ pak::pak("databrickslabs/brickster")
 
 | API | Available | Version |
 |----------------------------------|-------------------|-------------------|
-| [DBFS](https://docs.databricks.com/api/workspace/dbfs) | Yes | 2.0 |
-| [Secrets](https://docs.databricks.com/api/workspace/secrets) | Yes | 2.0 |
-| [Repos](https://docs.databricks.com/api/workspace/repos) | Yes | 2.0 |
-| [mlflow Model Registry](https://docs.databricks.com/api/workspace/modelregistry) | Yes | 2.0 |
-| [Clusters](https://docs.databricks.com/api/workspace/clusters) | Yes | 2.0 |
-| [Libraries](https://docs.databricks.com/api/workspace/libraries) | Yes | 2.0 |
-| [Workspace](https://docs.databricks.com/api/workspace/workspace) | Yes | 2.0 |
-| [Endpoints](https://docs.databricks.com/api/workspace/warehouses) | Yes | 2.0 |
-| [Query History](https://docs.databricks.com/api/workspace/queryhistory) | Yes | 2.0 |
-| [Jobs](https://docs.databricks.com/api/workspace/jobs) | Yes | 2.1 |
-| [Volumes (Files)](https://docs.databricks.com/api/workspace/files) | Yes | 2.0 |
-| [SQL Statement Execution](https://docs.databricks.com/api/workspace/statementexecution) | Yes | 2.0 |
-| [REST 1.2 Commands](https://docs.databricks.com/api/workspace/commandexecution) | Partially | 1.2 |
-| [Unity Catalog - Tables](https://docs.databricks.com/api/workspace/tables) | Yes | 2.1 |
-| [Unity Catalog - Volumes](https://docs.databricks.com/api/workspace/volumes) | Yes | 2.1 |
-| [Unity Catalog](https://docs.databricks.com/api/workspace/catalogs) | Partially | 2.1 |
+| [DBFS](https://docs.databricks.com/api/aws/workspace/dbfs) | Yes | 2.0 |
+| [Secrets](https://docs.databricks.com/api/aws/workspace/secrets) | Yes | 2.0 |
+| [Repos](https://docs.databricks.com/api/aws/workspace/repos) | Yes | 2.0 |
+| [mlflow Model Registry](https://docs.databricks.com/api/aws/workspace/modelregistry) | Yes | 2.0 |
+| [Clusters](https://docs.databricks.com/api/aws/workspace/clusters) | Yes | 2.0 |
+| [Libraries](https://docs.databricks.com/api/aws/workspace/libraries) | Yes | 2.0 |
+| [Workspace](https://docs.databricks.com/api/aws/workspace/workspace) | Yes | 2.0 |
+| [Endpoints](https://docs.databricks.com/api/aws/workspace/warehouses) | Yes | 2.0 |
+| [Query History](https://docs.databricks.com/api/aws/workspace/queryhistory) | Yes | 2.0 |
+| [Jobs](https://docs.databricks.com/api/aws/workspace/jobs) | Yes | 2.1 |
+| [Volumes (Files)](https://docs.databricks.com/api/aws/workspace/files) | Yes | 2.0 |
+| [SQL Statement Execution](https://docs.databricks.com/api/aws/workspace/statementexecution) | Yes | 2.0 |
+| [REST 1.2 Commands](https://docs.databricks.com/api/aws/workspace/commandexecution) | Partially | 1.2 |
+| [Unity Catalog - Tables](https://docs.databricks.com/api/aws/workspace/tables) | Yes | 2.1 |
+| [Unity Catalog - Volumes](https://docs.databricks.com/api/aws/workspace/volumes) | Yes | 2.1 |
+| [Unity Catalog](https://docs.databricks.com/api/aws/workspace/catalogs) | Partially | 2.1 |
