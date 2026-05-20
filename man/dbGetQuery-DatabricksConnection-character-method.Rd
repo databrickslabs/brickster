@@ -7,7 +7,7 @@
 \S4method{dbGetQuery}{DatabricksConnection,character}(
   conn,
   statement,
-  disposition = "EXTERNAL_LINKS",
+  disposition = conn@disposition,
   show_progress = TRUE,
   ...
 )
@@ -17,8 +17,8 @@
 
 \item{statement}{SQL statement to execute}
 
-\item{disposition}{Query disposition mode: "EXTERNAL_LINKS" (default) for large results,
-"INLINE" for small metadata queries (automatically chooses appropriate format)}
+\item{disposition}{Query disposition mode. Defaults to the connection's
+\code{disposition} setting.}
 
 \item{show_progress}{If \code{TRUE}, show progress updates during query execution (default: \code{TRUE})}
 

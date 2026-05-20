@@ -4,12 +4,15 @@
 \alias{dbSendQuery,DatabricksConnection,character-method}
 \title{Send query to Databricks (asynchronous)}
 \usage{
-\S4method{dbSendQuery}{DatabricksConnection,character}(conn, statement, ...)
+\S4method{dbSendQuery}{DatabricksConnection,character}(conn, statement, disposition = conn@disposition, ...)
 }
 \arguments{
 \item{conn}{A DatabricksConnection object}
 
 \item{statement}{SQL statement to execute}
+
+\item{disposition}{Query disposition mode. Defaults to the connection's
+\code{disposition} setting.}
 
 \item{...}{Additional arguments (ignored)}
 }

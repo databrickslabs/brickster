@@ -11,6 +11,7 @@
   catalog = NULL,
   schema = NULL,
   staging_volume = NULL,
+  disposition = c("EXTERNAL_LINKS", "INLINE"),
   max_active_connections = 30,
   fetch_timeout = 300,
   token = db_token(),
@@ -31,6 +32,10 @@ the warehouse ID is extracted from this path}
 \item{schema}{Optional schema name to use as default}
 
 \item{staging_volume}{Optional volume path for large dataset staging}
+
+\item{disposition}{Query disposition mode to use by default for DBI query
+results. Use \code{"EXTERNAL_LINKS"} for large results or \code{"INLINE"} for
+smaller results that must avoid direct cloud-storage result downloads.}
 
 \item{max_active_connections}{Maximum number of concurrent download
 connections when fetching query results (default: 30)}
