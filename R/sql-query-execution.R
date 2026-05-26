@@ -568,7 +568,9 @@ db_sql_fetch_results_fast <- function(
     results <- tibble::as_tibble(nanoarrow::read_nanoarrow(ipc_resp$body))
   }
 
-  cli::cli_progress_done()
+  if (show_progress) {
+    cli::cli_progress_done()
+  }
 
   if (!is.null(row_limit) && row_limit > 0 && nrow(results) > row_limit) {
     results <- results[1:row_limit, ]
@@ -632,12 +634,16 @@ db_sql_fetch_results_parallel <- function(
   ipc_data <- httr2::req_perform_parallel(
     links,
     max_active = max_active_connections,
-    progress = list(
-      clear = TRUE,
-      format = "Downloading {cli::pb_bar} {cli::pb_percent} [{cli::pb_elapsed}]",
-      format_failed = "Download failed [{cli::pb_elapsed}]",
-      type = "iterator"
-    )
+    progress = if (show_progress) {
+      list(
+        clear = TRUE,
+        format = "Downloading {cli::pb_bar} {cli::pb_percent} [{cli::pb_elapsed}]",
+        format_failed = "Download failed [{cli::pb_elapsed}]",
+        type = "iterator"
+      )
+    } else {
+      FALSE
+    }
   )
 
   if (show_progress) {
@@ -665,7 +671,9 @@ db_sql_fetch_results_parallel <- function(
     ) |>
       purrr::list_rbind()
   }
-  cli::cli_progress_done()
+  if (show_progress) {
+    cli::cli_progress_done()
+  }
 
   # Apply row limit if specified
   if (!is.null(row_limit) && row_limit > 0 && nrow(results) > row_limit) {

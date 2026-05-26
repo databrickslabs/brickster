@@ -4,12 +4,15 @@
 \alias{dbFetch,DatabricksResult-method}
 \title{Fetch results from Databricks query}
 \usage{
-\S4method{dbFetch}{DatabricksResult}(res, n = -1, ...)
+\S4method{dbFetch}{DatabricksResult}(res, n = -1, show_progress = res@connection@show_progress, ...)
 }
 \arguments{
 \item{res}{A DatabricksResult object}
 
 \item{n}{Maximum number of rows to fetch (-1 for all rows)}
+
+\item{show_progress}{If \code{TRUE}, show progress updates during result fetching.
+Defaults to the connection's \code{show_progress} setting.}
 
 \item{...}{Additional arguments (ignored)}
 }

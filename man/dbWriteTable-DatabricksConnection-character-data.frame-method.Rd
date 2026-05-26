@@ -14,7 +14,7 @@
   temporary = FALSE,
   field.types = NULL,
   staging_volume = NULL,
-  show_progress = TRUE,
+  show_progress = conn@show_progress,
   ...
 )
 }
@@ -37,7 +37,8 @@
 
 \item{staging_volume}{Optional volume path for large dataset staging}
 
-\item{show_progress}{If \code{TRUE}, show progress bar for file uploads (default: \code{TRUE})}
+\item{show_progress}{If \code{TRUE}, show progress updates while writing.
+Defaults to the connection's \code{show_progress} setting.}
 
 \item{...}{Additional arguments.}
 }

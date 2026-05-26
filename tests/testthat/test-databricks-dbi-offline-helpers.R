@@ -1,4 +1,8 @@
-make_dbi_test_con <- function(staging_volume = "", disposition = "EXTERNAL_LINKS") {
+make_dbi_test_con <- function(
+  staging_volume = "",
+  disposition = "EXTERNAL_LINKS",
+  show_progress = TRUE
+) {
   new(
     "DatabricksConnection",
     warehouse_id = "test_warehouse",
@@ -9,7 +13,8 @@ make_dbi_test_con <- function(staging_volume = "", disposition = "EXTERNAL_LINKS
     staging_volume = staging_volume,
     disposition = disposition,
     max_active_connections = 30,
-    fetch_timeout = 300
+    fetch_timeout = 300,
+    show_progress = show_progress
   )
 }
 
@@ -34,7 +39,8 @@ test_that("dbConnect validates tuning inputs and persists connection settings", 
     token = "mock_token",
     disposition = "INLINE",
     max_active_connections = 12,
-    fetch_timeout = 45
+    fetch_timeout = 45,
+    show_progress = FALSE
   )
 
   expect_s4_class(con, "DatabricksConnection")
@@ -42,6 +48,7 @@ test_that("dbConnect validates tuning inputs and persists connection settings", 
   expect_identical(con@disposition, "INLINE")
   expect_identical(con@max_active_connections, 12)
   expect_identical(con@fetch_timeout, 45)
+  expect_false(con@show_progress)
   expect_true(state$opened)
 
   expect_error(
@@ -64,6 +71,17 @@ test_that("dbConnect validates tuning inputs and persists connection settings", 
       fetch_timeout = 0
     ),
     "`fetch_timeout` must be a positive numeric value"
+  )
+
+  expect_error(
+    dbConnect(
+      drv,
+      warehouse_id = "wh-1",
+      host = "mock_host",
+      token = "mock_token",
+      show_progress = NA
+    ),
+    "`show_progress` must be `TRUE` or `FALSE`"
   )
 
   expect_error(
@@ -156,10 +174,14 @@ test_that("dbWriteTable rejects progress argument name", {
 })
 
 test_that("dbWriteTable routes to standard path when volume staging is not preferred", {
-  con <- make_dbi_test_con(staging_volume = "/Volumes/c/s/v")
+  con <- make_dbi_test_con(
+    staging_volume = "/Volumes/c/s/v",
+    show_progress = FALSE
+  )
   value <- data.frame(x = 1:3)
   state <- new.env(parent = emptyenv())
   state$path <- NULL
+  state$show_progress <- NULL
 
   local_mocked_bindings(
     dbExistsTable = function(...) FALSE,
@@ -169,7 +191,9 @@ test_that("dbWriteTable routes to standard path when volume staging is not prefe
       invisible(TRUE)
     },
     db_write_table_standard = function(...) {
+      args <- list(...)
       state$path <- "standard"
+      state$show_progress <- args$show_progress
       invisible(TRUE)
     },
     .package = "brickster"
@@ -177,6 +201,7 @@ test_that("dbWriteTable routes to standard path when volume staging is not prefe
 
   expect_invisible(dbWriteTable(con, "tbl_standard", value, overwrite = TRUE))
   expect_identical(state$path, "standard")
+  expect_false(state$show_progress)
 })
 
 test_that("dbWriteTable handles row.names consistently for character and Id signatures", {
@@ -264,7 +289,8 @@ test_that("dbListTables uses connection context when generating SQL", {
     schema = "schema_only",
     staging_volume = "",
     max_active_connections = 30,
-    fetch_timeout = 300
+    fetch_timeout = 300,
+    show_progress = TRUE
   )
   expect_identical(dbListTables(con_schema_only), "t_b")
 
@@ -277,7 +303,8 @@ test_that("dbListTables uses connection context when generating SQL", {
     schema = "",
     staging_volume = "",
     max_active_connections = 30,
-    fetch_timeout = 300
+    fetch_timeout = 300,
+    show_progress = TRUE
   )
   expect_identical(dbListTables(con_global), c("x", "y"))
 
@@ -393,6 +420,61 @@ test_that("query execution DBI methods dispatch expected options", {
   out_inline <- dbGetQuery(con_inline, "SELECT * FROM inline_table")
   expect_identical(out_inline$ok, TRUE)
   expect_identical(state$query_calls[[6]]$disposition, "INLINE")
+})
+
+test_that("query and fetch progress default to connection setting", {
+  con <- make_dbi_test_con(show_progress = FALSE)
+  state <- new.env(parent = emptyenv())
+  state$query_progress <- NULL
+  state$fetch_progress <- NULL
+
+  local_mocked_bindings(
+    db_sql_query = function(show_progress, ...) {
+      state$query_progress <- c(state$query_progress, show_progress)
+      data.frame(ok = TRUE)
+    },
+    db_sql_exec_status = function(...) {
+      list(
+        statement_id = "stmt-external",
+        status = list(state = "SUCCEEDED"),
+        manifest = list(
+          format = "ARROW_STREAM",
+          total_chunk_count = 1L,
+          total_row_count = 1L,
+          schema = list(columns = list(
+            list(name = "ok", type_name = "BOOLEAN")
+          ))
+        ),
+        result = list(external_links = list(
+          list(external_link = "https://example.test/result")
+        ))
+      )
+    },
+    db_sql_fetch_results = function(show_progress, ...) {
+      state$fetch_progress <- show_progress
+      data.frame(ok = TRUE)
+    },
+    .package = "brickster"
+  )
+
+  expect_identical(dbGetQuery(con, "SELECT 1")$ok, TRUE)
+  expect_identical(
+    dbGetQuery(con, "SELECT 1", show_progress = TRUE)$ok,
+    TRUE
+  )
+
+  res <- new(
+    "DatabricksResult",
+    statement_id = "stmt-external",
+    statement = "SELECT 1",
+    connection = con,
+    completed = FALSE,
+    rows_fetched = 0
+  )
+  expect_identical(dbFetch(res)$ok, TRUE)
+
+  expect_identical(state$query_progress, c(FALSE, TRUE))
+  expect_false(state$fetch_progress)
 })
 
 test_that("dbFetch processes inline results from dbSendQuery", {

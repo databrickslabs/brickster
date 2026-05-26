@@ -14,6 +14,7 @@
   disposition = c("EXTERNAL_LINKS", "INLINE"),
   max_active_connections = 30,
   fetch_timeout = 300,
+  show_progress = TRUE,
   token = db_token(),
   host = db_host(),
   ...
@@ -42,6 +43,9 @@ connections when fetching query results (default: 30)}
 
 \item{fetch_timeout}{Timeout in seconds for downloading each result chunk
 (default: 300)}
+
+\item{show_progress}{If \code{TRUE}, show progress updates by default for DBI
+queries, dbplyr collection, and table writes (default: \code{TRUE})}
 
 \item{token}{Authentication token (defaults to db_token())}
 

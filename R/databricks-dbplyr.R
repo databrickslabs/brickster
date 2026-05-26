@@ -542,13 +542,24 @@ spark_sql_translation <- function(con) {
 #' @param sql SQL query to execute
 #' @param n Maximum number of rows to collect (-1 for all)
 #' @param warn_incomplete Whether to warn if results were truncated
+#' @param show_progress If `TRUE`, show progress updates during collection.
+#'   Defaults to the connection's `show_progress` setting.
 #' @param ... Additional arguments
 #' @returns A data frame with query results
 #' @export
 #' @method db_collect DatabricksConnection
-db_collect.DatabricksConnection <- function(con, sql, n = -1, warn_incomplete = TRUE, ...) {
+db_collect.DatabricksConnection <- function(
+  con,
+  sql,
+  n = -1,
+  warn_incomplete = TRUE,
+  show_progress = con@show_progress,
+  ...
+) {
+  db_assert_show_progress(show_progress)
+
   # Use dbGetQuery which already has proper progress handling
-  out <- dbGetQuery(con, sql, show_progress = TRUE)
+  out <- dbGetQuery(con, sql, show_progress = show_progress)
   
   # Apply row limit if specified
   if (n > 0 && nrow(out) > n) {

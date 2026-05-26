@@ -4,7 +4,14 @@
 \alias{db_collect.DatabricksConnection}
 \title{Collect query results with proper progress timing for Databricks}
 \usage{
-\method{db_collect}{DatabricksConnection}(con, sql, n = -1, warn_incomplete = TRUE, ...)
+\method{db_collect}{DatabricksConnection}(
+  con,
+  sql,
+  n = -1,
+  warn_incomplete = TRUE,
+  show_progress = con@show_progress,
+  ...
+)
 }
 \arguments{
 \item{con}{A DatabricksConnection object}
@@ -14,6 +21,9 @@
 \item{n}{Maximum number of rows to collect (-1 for all)}
 
 \item{warn_incomplete}{Whether to warn if results were truncated}
+
+\item{show_progress}{If \code{TRUE}, show progress updates during collection.
+Defaults to the connection's \code{show_progress} setting.}
 
 \item{...}{Additional arguments}
 }

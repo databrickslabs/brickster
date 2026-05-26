@@ -11,7 +11,8 @@ db_write_table_standard(
   overwrite,
   append,
   field.types,
-  temporary = FALSE
+  temporary = FALSE,
+  show_progress = TRUE
 )
 }
 \description{

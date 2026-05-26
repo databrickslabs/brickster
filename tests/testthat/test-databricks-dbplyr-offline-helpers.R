@@ -1,4 +1,4 @@
-make_test_con <- function(disposition = "EXTERNAL_LINKS") {
+make_test_con <- function(disposition = "EXTERNAL_LINKS", show_progress = TRUE) {
   new(
     "DatabricksConnection",
     warehouse_id = "test_warehouse",
@@ -7,7 +7,10 @@ make_test_con <- function(disposition = "EXTERNAL_LINKS") {
     catalog = "",
     schema = "",
     staging_volume = "",
-    disposition = disposition
+    disposition = disposition,
+    max_active_connections = 30,
+    fetch_timeout = 300,
+    show_progress = show_progress
   )
 }
 
@@ -85,23 +88,32 @@ test_that("sql_query_save covers temporary and persistent branches", {
   expect_match(table_sql, "`already_quoted`")
 })
 
-test_that("db_collect uses connection query disposition", {
-  con <- make_test_con(disposition = "INLINE")
+test_that("db_collect uses connection query disposition and progress default", {
+  con <- make_test_con(disposition = "INLINE", show_progress = FALSE)
   state <- new.env(parent = emptyenv())
   state$disposition <- NULL
+  state$show_progress <- NULL
 
   local_mocked_bindings(
     dbGetQuery = function(conn, statement, show_progress = TRUE, ...) {
       state$disposition <- conn@disposition
+      state$show_progress <- c(state$show_progress, show_progress)
       data.frame(v = c(1L, 2L, 3L))
     },
     .package = "brickster"
   )
 
   out <- dbplyr::db_collect(con, "SELECT * FROM tbl")
+  out_override <- dbplyr::db_collect(
+    con,
+    "SELECT * FROM tbl",
+    show_progress = TRUE
+  )
 
   expect_identical(state$disposition, "INLINE")
+  expect_identical(state$show_progress, c(FALSE, TRUE))
   expect_identical(out$v, c(1L, 2L, 3L))
+  expect_identical(out_override$v, c(1L, 2L, 3L))
 })
 
 test_that("sql_query_save validates connection", {
