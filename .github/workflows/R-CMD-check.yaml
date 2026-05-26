@@ -3,8 +3,8 @@
 on:
   push:
     branches: [main, master]
-  pull_request:
-    branches: [main, master]
+  pull_request_review:
+    types: [submitted]
 
 name: R-CMD-check
 
@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   R-CMD-check-pr:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request_review' && github.event.review.state == 'approved'
     runs-on: ${{ matrix.config.os }}
 
     name: PR ${{ matrix.config.os }} (${{ matrix.config.r }})
@@ -33,6 +33,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - uses: r-lib/actions/setup-pandoc@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
 
@@ -53,7 +56,7 @@ jobs:
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
   R-CMD-check-pr-required:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request_review' && github.event.review.state == 'approved'
     needs: R-CMD-check-pr
     name: R-CMD-check-pr-required
     runs-on: ubuntu-24.04
@@ -62,7 +65,7 @@ jobs:
         run: echo "R CMD check PR matrix passed."
 
   R-CMD-check-pr-runtime:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request_review' && github.event.review.state == 'approved'
     environment: runtime
     runs-on: ${{ matrix.config.os }}
 
@@ -85,6 +88,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - uses: r-lib/actions/setup-pandoc@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
 
