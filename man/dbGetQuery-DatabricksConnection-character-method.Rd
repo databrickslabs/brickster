@@ -8,7 +8,7 @@
   conn,
   statement,
   disposition = conn@disposition,
-  show_progress = TRUE,
+  show_progress = conn@show_progress,
   ...
 )
 }
@@ -20,7 +20,8 @@
 \item{disposition}{Query disposition mode. Defaults to the connection's
 \code{disposition} setting.}
 
-\item{show_progress}{If \code{TRUE}, show progress updates during query execution (default: \code{TRUE})}
+\item{show_progress}{If \code{TRUE}, show progress updates during query execution.
+Defaults to the connection's \code{show_progress} setting.}
 
 \item{...}{Additional arguments passed to underlying query execution}
 }

@@ -30,8 +30,10 @@ setClass(
     staging_volume = "character",
     disposition = "character",
     max_active_connections = "numeric",
-    fetch_timeout = "numeric"
-  )
+    fetch_timeout = "numeric",
+    show_progress = "logical"
+  ),
+  prototype = list(show_progress = TRUE)
 )
 
 #' DBI Result for Databricks
@@ -91,6 +93,8 @@ setMethod("show", "DatabricksDriver", function(object) {
 #' connections when fetching query results (default: 30)
 #' @param fetch_timeout Timeout in seconds for downloading each result chunk
 #' (default: 300)
+#' @param show_progress If `TRUE`, show progress updates by default for DBI
+#'   queries, dbplyr collection, and table writes (default: `TRUE`)
 #' @param token Authentication token (defaults to db_token())
 #' @param host Databricks workspace host (defaults to db_host())
 #' @param ... Additional arguments (ignored)
@@ -109,6 +113,7 @@ setMethod(
     disposition = c("EXTERNAL_LINKS", "INLINE"),
     max_active_connections = 30,
     fetch_timeout = 300,
+    show_progress = TRUE,
     token = db_token(),
     host = db_host(),
     ...
@@ -142,6 +147,8 @@ setMethod(
     if (!is.numeric(fetch_timeout) || fetch_timeout <= 0) {
       cli::cli_abort("{.arg fetch_timeout} must be a positive numeric value")
     }
+
+    db_assert_show_progress(show_progress)
 
     # Validate connection by testing a simple query
     tryCatch(
@@ -177,7 +184,8 @@ setMethod(
       staging_volume = staging_volume %||% "",
       disposition = disposition,
       max_active_connections = max_active_connections,
-      fetch_timeout = fetch_timeout
+      fetch_timeout = fetch_timeout,
+      show_progress = show_progress
     )
 
     dbi_connection_opened(con)
@@ -229,6 +237,7 @@ setMethod("show", "DatabricksConnection", function(object) {
   cat("  Disposition:", object@disposition, "\n")
   cat("  Max Active Connections:", object@max_active_connections, "\n")
   cat("  Fetch Timeout (s):", object@fetch_timeout, "\n")
+  cat("  Show Progress:", object@show_progress, "\n")
 })
 
 # Query Methods ----------------------------------------------------------------
@@ -279,7 +288,8 @@ setMethod(
 #' @param statement SQL statement to execute
 #' @param disposition Query disposition mode. Defaults to the connection's
 #'   `disposition` setting.
-#' @param show_progress If `TRUE`, show progress updates during query execution (default: `TRUE`)
+#' @param show_progress If `TRUE`, show progress updates during query execution.
+#'   Defaults to the connection's `show_progress` setting.
 #' @param ... Additional arguments passed to underlying query execution
 #' @returns A data.frame with query results
 #' @export
@@ -290,10 +300,11 @@ setMethod(
     conn,
     statement,
     disposition = conn@disposition,
-    show_progress = TRUE,
+    show_progress = conn@show_progress,
     ...
   ) {
     disposition <- match.arg(disposition, c("EXTERNAL_LINKS", "INLINE"))
+    db_assert_show_progress(show_progress)
 
     # Detect schema discovery queries (LIMIT 0) and optimize them
     if (endsWith(trimws(statement), "LIMIT 0")) {
@@ -401,10 +412,19 @@ setMethod(
 #' Fetch results from Databricks query
 #' @param res A DatabricksResult object
 #' @param n Maximum number of rows to fetch (-1 for all rows)
+#' @param show_progress If `TRUE`, show progress updates during result fetching.
+#'   Defaults to the connection's `show_progress` setting.
 #' @param ... Additional arguments (ignored)
 #' @returns A data.frame with query results
 #' @export
-setMethod("dbFetch", "DatabricksResult", function(res, n = -1, ...) {
+setMethod("dbFetch", "DatabricksResult", function(
+  res,
+  n = -1,
+  show_progress = res@connection@show_progress,
+  ...
+) {
+  db_assert_show_progress(show_progress)
+
   if (res@completed) {
     # Return empty data frame if already completed
     return(data.frame())
@@ -417,7 +437,9 @@ setMethod("dbFetch", "DatabricksResult", function(res, n = -1, ...) {
     token = res@connection@token
   )
   if (initial_status$status$state %in% c("RUNNING", "PENDING")) {
-    cli::cli_progress_step("Executing query")
+    if (show_progress) {
+      cli::cli_progress_step("Executing query")
+    }
     status <- db_sql_exec_poll_for_success(
       res@statement_id,
       show_progress = FALSE,
@@ -452,7 +474,7 @@ setMethod("dbFetch", "DatabricksResult", function(res, n = -1, ...) {
       row_limit = if (n > 0) n else NULL,
       host = res@connection@host,
       token = res@connection@token,
-      show_progress = TRUE
+      show_progress = show_progress
     )
   }
 
@@ -899,7 +921,8 @@ setMethod("dbGetInfo", "DatabricksConnection", function(dbObj, ...) {
     host = dbObj@host,
     port = NA_integer_,
     warehouse_id = dbObj@warehouse_id,
-    disposition = dbObj@disposition
+    disposition = dbObj@disposition,
+    show_progress = dbObj@show_progress
   )
 })
 
@@ -1007,6 +1030,18 @@ db_assert_valid_conn <- function(conn) {
 db_assert_statement <- function(statement) {
   if (missing(statement) || is.null(statement) || !nzchar(trimws(statement))) {
     cli::cli_abort("{.arg statement} must be provided and non-empty")
+  }
+}
+
+#' Assert that a progress flag is valid
+#' @keywords internal
+db_assert_show_progress <- function(show_progress) {
+  if (
+    !is.logical(show_progress) ||
+      length(show_progress) != 1L ||
+      is.na(show_progress)
+  ) {
+    cli::cli_abort("{.arg show_progress} must be `TRUE` or `FALSE`.")
   }
 }
 
@@ -1164,7 +1199,8 @@ setMethod(
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
 #' @param field.types Named character vector of SQL types for columns
 #' @param staging_volume Optional volume path for large dataset staging
-#' @param show_progress If `TRUE`, show progress bar for file uploads (default: `TRUE`)
+#' @param show_progress If `TRUE`, show progress updates while writing.
+#'   Defaults to the connection's `show_progress` setting.
 #' @param ... Additional arguments.
 #' @returns `TRUE` invisibly on success
 #' @export
@@ -1181,16 +1217,14 @@ setMethod(
     temporary = FALSE,
     field.types = NULL,
     staging_volume = NULL,
-    show_progress = TRUE,
+    show_progress = conn@show_progress,
     ...
   ) {
     dots <- list(...)
     if ("progress" %in% names(dots)) {
       cli::cli_abort("Argument {.arg progress} is not supported; use {.arg show_progress}.")
     }
-    if (!is.logical(show_progress) || length(show_progress) != 1L || is.na(show_progress)) {
-      cli::cli_abort("{.arg show_progress} must be `TRUE` or `FALSE`.")
-    }
+    db_assert_show_progress(show_progress)
 
     # Validate inputs
     if (overwrite && append) {
@@ -1268,7 +1302,8 @@ setMethod(
         overwrite,
         append,
         field.types,
-        temporary
+        temporary,
+        show_progress = show_progress
       )
     }
 
@@ -1286,7 +1321,8 @@ setMethod(
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
 #' @param field.types Named character vector of SQL types for columns
 #' @param staging_volume Optional volume path for large dataset staging
-#' @param show_progress If `TRUE`, show progress bar for file uploads (default: `TRUE`)
+#' @param show_progress If `TRUE`, show progress updates while writing.
+#'   Defaults to the connection's `show_progress` setting.
 #' @param ... Additional arguments.
 #' @returns `TRUE` invisibly on success
 #' @export
@@ -1303,16 +1339,14 @@ setMethod(
     temporary = FALSE,
     field.types = NULL,
     staging_volume = NULL,
-    show_progress = TRUE,
+    show_progress = conn@show_progress,
     ...
   ) {
     dots <- list(...)
     if ("progress" %in% names(dots)) {
       cli::cli_abort("Argument {.arg progress} is not supported; use {.arg show_progress}.")
     }
-    if (!is.logical(show_progress) || length(show_progress) != 1L || is.na(show_progress)) {
-      cli::cli_abort("{.arg show_progress} must be `TRUE` or `FALSE`.")
-    }
+    db_assert_show_progress(show_progress)
 
     # Handle Id object by implementing the logic directly instead of delegating
     # This avoids double-quoting issues
@@ -1395,7 +1429,8 @@ setMethod(
         overwrite,
         append,
         field.types,
-        temporary
+        temporary,
+        show_progress = show_progress
       )
     }
 
@@ -1413,7 +1448,8 @@ setMethod(
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
 #' @param field.types Named character vector of SQL types for columns
 #' @param staging_volume Optional volume path for large dataset staging
-#' @param show_progress If `TRUE`, show progress bar for file uploads (default: `TRUE`)
+#' @param show_progress If `TRUE`, show progress updates while writing.
+#'   Defaults to the connection's `show_progress` setting.
 #' @param ... Additional arguments.
 #' @returns `TRUE` invisibly on success
 #' @export
@@ -1430,7 +1466,7 @@ setMethod(
     temporary = FALSE,
     field.types = NULL,
     staging_volume = NULL,
-    show_progress = TRUE,
+    show_progress = conn@show_progress,
     ...
   ) {
     # Convert AsIs to character and delegate to character method
@@ -1460,7 +1496,8 @@ db_write_table_standard <- function(
   overwrite,
   append,
   field.types,
-  temporary = FALSE
+  temporary = FALSE,
+  show_progress = TRUE
 ) {
   if (temporary) {
     cli::cli_abort(
@@ -1469,9 +1506,11 @@ db_write_table_standard <- function(
   }
 
   # Show progress for table creation
-  cli::cli_progress_step(
-    if (append) "Appending data to table" else "Creating table"
-  )
+  if (show_progress) {
+    cli::cli_progress_step(
+      if (append) "Appending data to table" else "Creating table"
+    )
+  }
 
   if (append) {
     # For append, use atomic INSERT INTO with SELECT VALUES
@@ -1490,7 +1529,9 @@ db_write_table_standard <- function(
     )
   }
 
-  cli::cli_progress_done()
+  if (show_progress) {
+    cli::cli_progress_done()
+  }
 }
 
 #' Create table from data frame structure
@@ -1706,9 +1747,7 @@ db_write_table_volume <- function(
   append = FALSE,
   show_progress = TRUE
 ) {
-  if (!is.logical(show_progress) || length(show_progress) != 1L || is.na(show_progress)) {
-    cli::cli_abort("{.arg show_progress} must be `TRUE` or `FALSE`.")
-  }
+  db_assert_show_progress(show_progress)
 
   # Validate volume path
   staging_volume <- is_valid_volume_path(staging_volume)
