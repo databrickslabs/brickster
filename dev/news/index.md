@@ -5,6 +5,9 @@
 - Fixed
   [`git_source()`](https://databrickslabs.github.io/brickster/dev/reference/git_source.md)
   erroring when `type` was left at its default
+- Fixed Unity Catalog volume file requests so `db_volume_*` paths
+  containing spaces are encoded correctly
+  ([\#231](https://github.com/databrickslabs/brickster/issues/231))
 - [`db_uc_volumes_list()`](https://databrickslabs.github.io/brickster/dev/reference/db_uc_volumes_list.md)
   now forwards the `max_results`, `include_browse`, and `page_token`
   arguments to the API, which were previously ignored
