@@ -14,7 +14,6 @@ permissions:
 
 jobs:
   pkgdown:
-    environment: runtime
     permissions:
       contents: write # Deploy pkgdown output to the gh-pages branch.
     # This protected runner is acceptable only for privileged triggers above
