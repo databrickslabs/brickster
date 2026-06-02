@@ -1,8 +1,6 @@
 # Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 on:
-  push:
-    branches: [main, master]
   pull_request_review:
     types: [submitted]
 name: test-coverage.yaml
@@ -12,9 +10,13 @@ permissions:
 
 jobs:
   test-coverage:
-    if: github.event_name == 'pull_request_review' && github.event.review.state == 'approved'
+    if: github.event.review.state == 'approved'
+    environment: runtime
     runs-on: ubuntu-24.04
     env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      DATABRICKS_WSID: ${{ secrets.DATABRICKS_WSID }}
       NOT_CRAN: TRUE
 
     steps:
@@ -68,133 +70,10 @@ jobs:
           path: ${{ runner.temp }}/package
 
   test-coverage-pr-required:
-    if: github.event_name == 'pull_request_review' && github.event.review.state == 'approved'
+    if: github.event.review.state == 'approved'
     needs: test-coverage
     name: test-coverage-pr-required
     runs-on: ubuntu-24.04
     steps:
       - name: Confirm required PR coverage passed
         run: echo "Coverage PR job passed."
-
-  test-coverage-pr-runtime:
-    if: github.event_name == 'pull_request_review' && github.event.review.state == 'approved'
-    environment: runtime
-    runs-on: ubuntu-24.04
-    env:
-      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-      DATABRICKS_WSID: ${{ secrets.DATABRICKS_WSID }}
-      NOT_CRAN: TRUE
-
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          fetch-depth: 0
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.event.pull_request.head.sha }}
-
-      - uses: r-lib/actions/setup-r@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
-        with:
-          use-public-rspm: true
-
-      - uses: r-lib/actions/setup-r-dependencies@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
-        env:
-          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          extra-packages: any::covr, any::xml2
-          needs: coverage
-
-      - name: Test coverage
-        run: |
-          cov <- covr::package_coverage(
-            quiet = FALSE,
-            clean = FALSE,
-            install_path = file.path(normalizePath(Sys.getenv("RUNNER_TEMP"), winslash = "/"), "package")
-          )
-          print(cov)
-        shell: Rscript {0}
-
-  test-coverage-runtime:
-    if: github.event_name == 'push'
-    environment: runtime
-    runs-on: ubuntu-24.04
-    env:
-      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-      DATABRICKS_WSID: ${{ secrets.DATABRICKS_WSID }}
-      NOT_CRAN: TRUE
-
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          fetch-depth: 0
-
-      - uses: r-lib/actions/setup-r@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
-        with:
-          use-public-rspm: true
-
-      - uses: r-lib/actions/setup-r-dependencies@a51a8012b0aab7c32ef9d19bf54da93f3254335e # v2.12.0
-        env:
-          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          extra-packages: any::covr, any::xml2
-          needs: coverage
-
-      - name: Test coverage
-        run: |
-          cov <- covr::package_coverage(
-            quiet = FALSE,
-            clean = FALSE,
-            install_path = file.path(normalizePath(Sys.getenv("RUNNER_TEMP"), winslash = "/"), "package")
-          )
-          print(cov)
-          covr::to_cobertura(cov)
-        shell: Rscript {0}
-
-      - name: Upload coverage report
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: coverage-report
-          path: cobertura.xml
-          if-no-files-found: error
-
-      - name: Show testthat output
-        if: always()
-        run: |
-          ## --------------------------------------------------------------------
-          find '${{ runner.temp }}/package' -name 'testthat.Rout*' -exec cat '{}' \; || true
-        shell: bash
-
-      - name: Upload test results
-        if: failure()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: coverage-test-failures
-          path: ${{ runner.temp }}/package
-
-  upload-coverage:
-    if: always() && !cancelled() && github.event_name == 'push'
-    needs: [test-coverage, test-coverage-runtime]
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
-      id-token: write
-
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - name: Download coverage artifact
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: coverage-report
-          path: coverage
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
-        with:
-          # Fail if error if not on PR, or if on PR and token is given
-          fail_ci_if_error: ${{ github.event_name != 'pull_request' || secrets.CODECOV_TOKEN }}
-          files: coverage/cobertura.xml
-          plugins: noop
-          disable_search: true
-          use_oidc: true
