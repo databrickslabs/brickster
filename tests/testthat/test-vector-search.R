@@ -115,10 +115,12 @@ test_that("Vector Search APIs - don't perform", {
       filters_json = '{"mock_a <": 5}',
       query_text = "mock query text",
       num_results = 10,
+      score_threshold = 0.5,
       perform_request = FALSE
     )
   })
   expect_s3_class(req_vsi_query, "httr2_request")
+  expect_identical(req_vsi_query$body$data$score_threshold, 0.5)
 
 
   esc <- embedding_source_column(

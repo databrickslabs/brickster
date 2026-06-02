@@ -2,6 +2,7 @@
 
 -   Fixed `git_source()` erroring when `type` was left at its default
 -   `db_uc_volumes_list()` now forwards the `max_results`, `include_browse`, and `page_token` arguments to the API, which were previously ignored
+-   `db_vs_indexes_query()` now sends the `score_threshold` argument to the API, which was previously ignored
 
 # brickster 0.2.13
 
