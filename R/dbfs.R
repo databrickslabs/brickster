@@ -243,8 +243,8 @@ db_dbfs_get_status <- function(
     method = "GET",
     version = "2.0",
     body = body,
-    host = db_host(),
-    token = db_token()
+    host = host,
+    token = token
   )
 
   if (perform_request) {
