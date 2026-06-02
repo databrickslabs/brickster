@@ -1720,7 +1720,7 @@ db_should_use_volume_method <- function(
       # Fail for very large datasets
       cli::cli_abort(c(
         "Cannot write {n_rows} rows without volume staging.",
-        "x" = "Standard SQL method is not suitable for datasets larger than 30,000 rows.",
+        "x" = "Standard SQL method is not suitable for datasets larger than 50,000 rows.",
         "i" = "Use the {.arg staging_volume} parameter to enable volume-based uploads.",
         "i" = "Example: {.code dbWriteTable(conn, name, data, staging_volume = '/Volumes/catalog/schema/volume')}"
       ))

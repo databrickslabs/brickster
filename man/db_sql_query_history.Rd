@@ -52,7 +52,7 @@ This function elevates the sub-components of \code{filter_by} parameter to the R
 function directly.
 }
 \details{
-By default the filter parameters \code{statuses}, \code{user_ids}, and \code{endpoints_ids}
+By default the filter parameters \code{statuses}, \code{user_ids}, and \code{endpoint_ids}
 are \code{NULL}.
 }
 \concept{SQL Query History API}

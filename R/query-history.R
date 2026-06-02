@@ -4,7 +4,7 @@
 #' This function elevates the sub-components of `filter_by` parameter to the R
 #' function directly.
 #'
-#' By default the filter parameters `statuses`, `user_ids`, and `endpoints_ids`
+#' By default the filter parameters `statuses`, `user_ids`, and `endpoint_ids`
 #' are `NULL`.
 #'
 #' @param statuses Allows filtering by query status. Possible values are:
