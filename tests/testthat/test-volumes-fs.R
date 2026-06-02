@@ -82,6 +82,34 @@ test_that("Volumes API - don't perform", {
 
 })
 
+test_that("volume filesystem paths are percent-encoded in requests", {
+  req <- db_volume_read(
+    path = "/Volumes/catalog/schema/volume/folder name/my custom report.txt",
+    destination = withr::local_tempfile(),
+    host = "mock_host",
+    token = "mock_token",
+    perform_request = FALSE,
+    progress = FALSE
+  )
+
+  expect_s3_class(req, "httr2_request")
+  expect_match(
+    req$url,
+    "/Volumes/catalog/schema/volume/folder%20name/my%20custom%20report[.]txt"
+  )
+  expect_false(grepl("folder name", req$url, fixed = TRUE))
+  expect_false(grepl("my custom report.txt", req$url, fixed = TRUE))
+
+  req <- db_volume_file_exists(
+    path = "/Volumes/catalog/schema/volume/file name.txt",
+    host = "mock_host",
+    token = "mock_token",
+    perform_request = FALSE
+  )
+
+  expect_match(req$url, "file%20name[.]txt")
+})
+
 test_that("db_volume_upload_dir - don't perform", {
   
   withr::local_envvar(c(
