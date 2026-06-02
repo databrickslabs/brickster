@@ -1,0 +1,55 @@
+# Delete a SQL Query
+
+Delete a SQL Query
+
+## Usage
+
+``` r
+db_query_delete(
+  id,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+)
+```
+
+## Arguments
+
+- id:
+
+  String, ID for the query.
+
+- host:
+
+  Databricks workspace URL, defaults to calling
+  [`db_host()`](https://databrickslabs.github.io/brickster/dev/reference/db_host.md).
+
+- token:
+
+  Databricks workspace token, defaults to calling
+  [`db_token()`](https://databrickslabs.github.io/brickster/dev/reference/db_token.md).
+
+- perform_request:
+
+  If `TRUE` (default) the request is performed, if `FALSE` the httr2
+  request is returned *without* being performed.
+
+## Value
+
+If `perform_request = TRUE`, returns endpoint-specific API output. If
+`FALSE`, returns an `httr2_request`.
+
+## Details
+
+Moves a query to the trash. Trashed queries immediately disappear from
+searches and list views, and cannot be used for alerts. You can restore
+a trashed query through the UI. A trashed query is permanently deleted
+after 30 days.
+
+## See also
+
+Other SQL Queries API:
+[`db_query_create()`](https://databrickslabs.github.io/brickster/dev/reference/db_query_create.md),
+[`db_query_get()`](https://databrickslabs.github.io/brickster/dev/reference/db_query_get.md),
+[`db_query_list()`](https://databrickslabs.github.io/brickster/dev/reference/db_query_list.md),
+[`db_query_update()`](https://databrickslabs.github.io/brickster/dev/reference/db_query_update.md)

@@ -1,0 +1,219 @@
+# Changelog
+
+## brickster (development version)
+
+- Fixed
+  [`git_source()`](https://databrickslabs.github.io/brickster/dev/reference/git_source.md)
+  erroring when `type` was left at its default
+- [`db_uc_volumes_list()`](https://databrickslabs.github.io/brickster/dev/reference/db_uc_volumes_list.md)
+  now forwards the `max_results`, `include_browse`, and `page_token`
+  arguments to the API, which were previously ignored
+
+## brickster 0.2.13
+
+CRAN release: 2026-05-20
+
+- Enabled
+  [`db_request()`](https://databrickslabs.github.io/brickster/dev/reference/db_request.md)
+  retries for transient low-level HTTP request failures, improving
+  resilience to intermittent curl/HTTP2 framing errors
+  ([\#215](https://github.com/databrickslabs/brickster/issues/215))
+- Added `show_progress` to
+  [`dbConnect()`](https://dbi.r-dbi.org/reference/dbConnect.html) for
+  the DBI backend;
+  [`dbGetQuery()`](https://dbi.r-dbi.org/reference/dbGetQuery.html),
+  [`dbFetch()`](https://dbi.r-dbi.org/reference/dbFetch.html),
+  [`dbWriteTable()`](https://dbi.r-dbi.org/reference/dbWriteTable.html),
+  and dbplyr
+  [`collect()`](https://dplyr.tidyverse.org/reference/compute.html) now
+  use the connection default while preserving per-call `show_progress`
+  overrides
+- Added a DBI connection-level `disposition` setting so
+  [`dbSendQuery()`](https://dbi.r-dbi.org/reference/dbSendQuery.html)
+  and default
+  [`dbGetQuery()`](https://dbi.r-dbi.org/reference/dbGetQuery.html)
+  calls can use `INLINE` results when direct cloud-storage downloads are
+  blocked
+  ([\#205](https://github.com/databrickslabs/brickster/issues/205))
+- Added Azure AD service principal OAuth M2M support (`ARM_CLIENT_ID`,
+  `ARM_CLIENT_SECRET`, `ARM_TENANT_ID`) with optional
+  `DATABRICKS_AUTH_TYPE` override (`oauth-m2m`, `azure-client-secret`,
+  `oauth-u2m`); default auth resolution now prefers Azure M2M over U2M
+  when ARM credentials are present
+  ([\#185](https://github.com/databrickslabs/brickster/issues/185))
+- Marked DBFS REST wrappers (`db_dbfs_*`) as deprecated and moved them
+  to internal-only, guiding users towards using volumes (`db_volume_*`)
+- Added
+  [`db_volume_download_dir()`](https://databrickslabs.github.io/brickster/dev/reference/db_volume_download_dir.md)
+  for parallel directory downloads from Unity Catalog volumes to local
+  directories
+- Renamed `preserve_structure` to `recursive` in
+  [`db_volume_upload_dir()`](https://databrickslabs.github.io/brickster/dev/reference/db_volume_upload_dir.md)
+  and
+  [`db_volume_download_dir()`](https://databrickslabs.github.io/brickster/dev/reference/db_volume_download_dir.md)
+  for consistent directory traversal semantics
+- Added a new vignette for working with volumes
+- Added compact, colorized [cli](https://cli.r-lib.org) S3 print methods
+  for
+  [`db_cluster_get()`](https://databrickslabs.github.io/brickster/dev/reference/db_cluster_get.md)/[`db_cluster_list()`](https://databrickslabs.github.io/brickster/dev/reference/db_cluster_list.md),
+  [`db_sql_warehouse_get()`](https://databrickslabs.github.io/brickster/dev/reference/db_sql_warehouse_get.md)/[`db_sql_warehouse_list()`](https://databrickslabs.github.io/brickster/dev/reference/db_sql_warehouse_list.md),
+  and
+  [`db_jobs_get()`](https://databrickslabs.github.io/brickster/dev/reference/db_jobs_get.md)/[`db_jobs_list()`](https://databrickslabs.github.io/brickster/dev/reference/db_jobs_list.md)
+  that preserve nested list structures while improving at-a-glance
+  summaries
+- Standardized DBI write progress argument naming:
+  [`dbWriteTable()`](https://dbi.r-dbi.org/reference/dbWriteTable.html)
+  and internal
+  [`db_write_table_volume()`](https://databrickslabs.github.io/brickster/dev/reference/db_write_table_volume.md)
+  now use `show_progress`
+  ([\#201](https://github.com/databrickslabs/brickster/issues/201))
+
+## brickster 0.2.12
+
+CRAN release: 2026-02-04
+
+- Fixed `dbplyr::compute` interaction for DBI backend
+  ([\#184](https://github.com/databrickslabs/brickster/issues/184))
+- Added OAuth M2M support for workspace-level service principal
+  authentication
+  ([\#173](https://github.com/databrickslabs/brickster/issues/173),
+  [\#103](https://github.com/databrickslabs/brickster/issues/103))
+- DBI connections accept `http_path` as an alternative to `warehouse_id`
+  and extract the warehouse ID from `/sql/1.0/warehouses/<id>`.
+- Added RStudio/Positron Connections Pane support for the DBI backend.
+- Added DBI helpers for
+  [`dbCreateTable()`](https://dbi.r-dbi.org/reference/dbCreateTable.html),
+  [`dbReadTable()`](https://dbi.r-dbi.org/reference/dbReadTable.html),
+  and
+  [`dbRemoveTable()`](https://dbi.r-dbi.org/reference/dbRemoveTable.html)
+  with `Id`/`AsIs` support, plus offline tests for DBI table helpers.
+- Optimized SQL result fetching for single-chunk external links by using
+  the inline link from the initial response when available.
+- Increment version of testthat required (\>= 3.3.0)
+
+## brickster 0.2.11
+
+CRAN release: 2025-12-13
+
+- Added Lakebase workspace database helpers (`db_lakebase_*`) including
+  credential generation, instance listing, instance lookup by name or
+  UID, and catalog retrieval
+  ([\#113](https://github.com/databrickslabs/brickster/issues/113))
+- Moving all filesystem related calls to {fs}
+  ([\#140](https://github.com/databrickslabs/brickster/issues/140))
+- The DBI backend now always respects a staging volume when specified,
+  even for small data
+  ([\#143](https://github.com/databrickslabs/brickster/issues/143))
+- `schemaEvolutionMode` is now always `none` when writing to tables with
+  DBI backend and staging volumes
+  ([\#147](https://github.com/databrickslabs/brickster/issues/147))
+
+## brickster 0.2.10
+
+- Increment version of httr2 required (\>= 1.1.1)
+- DBI connections expose `max_active_connections` and `fetch_timeout` to
+  control result download concurrency and timeouts
+- DBI/dbplyr write table methods now make two transactions (create empty
+  table –\> insert into) to ensure type correctness
+- Allow optional schedules in
+  [`db_jobs_reset()`](https://databrickslabs.github.io/brickster/dev/reference/db_jobs_reset.md)
+  and propagate parameters in reset/update requests.
+- DBI/dbplyr inline writes now preserve single quotes in character
+  columns via explicit escaping
+  ([\#130](https://github.com/databrickslabs/brickster/issues/130))
+
+## brickster 0.2.9
+
+CRAN release: 2025-09-04
+
+- Added DBI + dbplyr backend support:
+  [`DatabricksSQL()`](https://databrickslabs.github.io/brickster/dev/reference/DatabricksSQL.md)
+  driver for standard DBI operations
+- Increase support for job level parameters
+- Added `db_jobs_repair_run`
+
+## brickster 0.2.8
+
+CRAN release: 2025-06-06
+
+- Added SQL Queries API coverage
+- Updated Jobs to 2.2
+- Added additional tasks for jobs: `for_each_task`, `condition_task`,
+  `sql_query_task`, `sql_file_task`, `run_job_task`
+- Removing the Python SQL connector as `db_sql_query` supersedes it.
+- Added `db_sql_query` to simplify execution of SQL
+- Adjusted `db_repl` to handle mulit-line expressions (R only)
+- Removed RStudio Addins to send lines/selection/files to console
+- Moved arrow to Suggests
+
+## brickster 0.2.7
+
+CRAN release: 2025-05-06
+
+- Exporting UC table functions (`db_uc_table*`)
+  ([\#72](https://github.com/databrickslabs/brickster/issues/72))
+- Adding support for `direct_download` option in
+  [`db_workspace_export()`](https://databrickslabs.github.io/brickster/dev/reference/db_workspace_export.md)
+- Exporting UC Catalog/Schema get/list functions
+  ([\#72](https://github.com/databrickslabs/brickster/issues/72))
+- Adding support for UC Volume management
+  ([\#72](https://github.com/databrickslabs/brickster/issues/72))
+- Fixing command execution context cancel
+  ([\#86](https://github.com/databrickslabs/brickster/issues/86),
+  [\#87](https://github.com/databrickslabs/brickster/issues/87))
+- Adding stricter version requirements for {httr2}
+  ([\#81](https://github.com/databrickslabs/brickster/issues/81),
+  [\#63](https://github.com/databrickslabs/brickster/issues/63))
+
+## brickster 0.2.6
+
+CRAN release: 2025-01-21
+
+- Fixing
+  [`db_volume_delete()`](https://databrickslabs.github.io/brickster/dev/reference/db_volume_delete.md)
+  function
+  ([\#73](https://github.com/databrickslabs/brickster/issues/73),
+  [@vladimirobucina](https://github.com/vladimirobucina))
+- Adjustments to ensure {httr2} changes don’t break things
+  ([\#75](https://github.com/databrickslabs/brickster/issues/75),
+  [@hadley](https://github.com/hadley))
+
+## brickster 0.2.5
+
+CRAN release: 2024-11-13
+
+- Adding
+  [`db_repl()`](https://databrickslabs.github.io/brickster/dev/reference/db_repl.md)
+  a remote REPL to a Databricks cluster
+  ([\#53](https://github.com/databrickslabs/brickster/issues/53))
+- Removing defunct RStudio add-in for browsing Databricks compute
+- Changes to DESCRIPTION file in preperation for CRAN
+  ([\#64](https://github.com/databrickslabs/brickster/issues/64))
+- Removal of `notebook_use_posit_repo()` and
+  `notebook_enable_htmlwidgets()` as they are incompatible with CRAN
+  ([\#64](https://github.com/databrickslabs/brickster/issues/64))
+- Removing kntir engine due to many render edge cases not being solvable
+- Adding shortcuts for REPL under addins
+- Added `db_context_command_run_and_wait`
+- Adjusted tests to use `withr`
+  ([\#68](https://github.com/databrickslabs/brickster/issues/68))
+
+## brickster 0.2.4
+
+- [`open_workspace()`](https://databrickslabs.github.io/brickster/dev/reference/open_workspace.md)
+  and the rstudio connection pane have been heavily revised to enhance
+  browsing unity catalog and also remove DBFS and WSFS browsing
+  ([\#52](https://github.com/databrickslabs/brickster/issues/52))
+
+## brickster 0.2.3
+
+- Adding NEWS.md
+- Renamed `set_lib_path` to `add_lib_path` and added the `after`
+  parameter
+- Adding OAuth U2M support (workspace level), considered the default
+  when `DATABRICKS_TOKEN` isn’t specified (e.g
+  [`db_token()`](https://databrickslabs.github.io/brickster/dev/reference/db_token.md)
+  returns `NULL`)
+- Updating authentication vignette to include information on OAuth
+- Updating README.md to include quick start and clearer information
+- Adding vector search index functions

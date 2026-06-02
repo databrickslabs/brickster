@@ -1,0 +1,48 @@
+# List Warehouses
+
+List Warehouses
+
+## Usage
+
+``` r
+db_sql_warehouse_list(
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+)
+```
+
+## Arguments
+
+- host:
+
+  Databricks workspace URL, defaults to calling
+  [`db_host()`](https://databrickslabs.github.io/brickster/dev/reference/db_host.md).
+
+- token:
+
+  Databricks workspace token, defaults to calling
+  [`db_token()`](https://databrickslabs.github.io/brickster/dev/reference/db_token.md).
+
+- perform_request:
+
+  If `TRUE` (default) the request is performed, if `FALSE` the httr2
+  request is returned *without* being performed.
+
+## Value
+
+If `perform_request = TRUE`, returns a nested list of warehouses with
+class `db_sql_warehouse_list`; each element has class
+`db_sql_warehouse`. If `FALSE`, returns an `httr2_request`.
+
+## See also
+
+Other Warehouse API:
+[`db_sql_global_warehouse_get()`](https://databrickslabs.github.io/brickster/dev/reference/db_sql_global_warehouse_get.md),
+[`db_sql_warehouse_create()`](https://databrickslabs.github.io/brickster/dev/reference/db_sql_warehouse_create.md),
+[`db_sql_warehouse_delete()`](https://databrickslabs.github.io/brickster/dev/reference/db_sql_warehouse_delete.md),
+[`db_sql_warehouse_edit()`](https://databrickslabs.github.io/brickster/dev/reference/db_sql_warehouse_edit.md),
+[`db_sql_warehouse_get()`](https://databrickslabs.github.io/brickster/dev/reference/db_sql_warehouse_get.md),
+[`db_sql_warehouse_start()`](https://databrickslabs.github.io/brickster/dev/reference/db_sql_warehouse_start.md),
+[`db_sql_warehouse_stop()`](https://databrickslabs.github.io/brickster/dev/reference/db_sql_warehouse_stop.md),
+[`get_and_start_warehouse()`](https://databrickslabs.github.io/brickster/dev/reference/get_and_start_warehouse.md)
