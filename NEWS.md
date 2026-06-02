@@ -1,6 +1,7 @@
 # brickster (development version)
 
 -   Fixed `git_source()` erroring when `type` was left at its default
+-   `db_uc_volumes_list()` now forwards the `max_results`, `include_browse`, and `page_token` arguments to the API, which were previously ignored
 
 # brickster 0.2.13
 
