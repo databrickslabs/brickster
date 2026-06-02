@@ -221,7 +221,7 @@ db_workspace_import <- function(
   } else {
     cli::cli_abort(c(
       "Nothing to upload:",
-      "x" = "Either {.arg file} or {.arg contents} must be specified."
+      "x" = "Either {.arg file} or {.arg content} must be specified."
     ))
   }
 

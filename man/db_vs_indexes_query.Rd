@@ -71,9 +71,10 @@ Refer to docs for \href{https://docs.databricks.com/en/generative-ai/create-quer
 }
 \examples{
 \dontrun{
-db_vs_indexes_sync(
+db_vs_indexes_query(
   index = "myindex",
   columns = c("id", "text"),
+  filters_json = '{"id >=": 5}',
   query_vector = c(1, 2, 3)
 )
 }

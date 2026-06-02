@@ -184,7 +184,7 @@ db_cluster_create <- function(
   } else {
     cli::cli_abort(c(
       "Invalid cloud attributes specification:",
-      "i" = "Use {.fn aws_attributes}, {.fn azure_attributes}, or {.fn gcp_attributes} for {.arg cloud_attr}"
+      "i" = "Use {.fn aws_attributes}, {.fn azure_attributes}, or {.fn gcp_attributes} for {.arg cloud_attrs}"
     ))
   }
 
@@ -324,7 +324,7 @@ db_cluster_edit <- function(
     } else {
       cli::cli_abort(c(
         "Invalid cloud attributes specification:",
-        "i" = "Use {.fn aws_attributes} or {.fn azure_attributes} for {.arg cloud_attr}"
+        "i" = "Use {.fn aws_attributes} or {.fn azure_attributes} for {.arg cloud_attrs}"
       ))
     }
   }
