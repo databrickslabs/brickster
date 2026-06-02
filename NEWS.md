@@ -1,3 +1,7 @@
+# brickster (development version)
+
+-   `db_uc_volumes_list()` now forwards the `max_results`, `include_browse`, and `page_token` arguments to the API, which were previously ignored
+
 # brickster 0.2.13
 
 -   Enabled `db_request()` retries for transient low-level HTTP request failures, improving resilience to intermittent curl/HTTP2 framing errors (#215)
