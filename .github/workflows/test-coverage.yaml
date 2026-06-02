@@ -11,8 +11,12 @@ permissions:
 jobs:
   test-coverage:
     if: github.event.review.state == 'approved'
+    environment: runtime
     runs-on: ubuntu-24.04
     env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      DATABRICKS_WSID: ${{ secrets.DATABRICKS_WSID }}
       NOT_CRAN: TRUE
 
     steps:
