@@ -740,7 +740,7 @@ list_objects <- function(host, token,
   }
 
   if (!uc_active) {
-    info[["Data"]] <- NULL
+    info[["Catalog"]] <- NULL
   }
 
   data.frame(
