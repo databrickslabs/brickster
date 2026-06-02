@@ -356,7 +356,8 @@ db_vs_indexes_query <- function(index, columns, filters_json,
     query_vector = query_vector,
     query_text = query_text,
     query_type = query_type,
-    num_results = num_results
+    num_results = num_results,
+    score_threshold = score_threshold
   )
 
   req <- db_request(
