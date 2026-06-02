@@ -329,9 +329,10 @@ db_vs_indexes_delete <- function(index,
 #' @family Vector Search API
 #' @examples
 #' \dontrun{
-#' db_vs_indexes_sync(
+#' db_vs_indexes_query(
 #'   index = "myindex",
 #'   columns = c("id", "text"),
+#'   filters_json = '{"id >=": 5}',
 #'   query_vector = c(1, 2, 3)
 #' )
 #' }
