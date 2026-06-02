@@ -29,7 +29,10 @@ db_uc_volumes_list <- function(catalog, schema,
   ) |>
     httr2::req_url_query(
       catalog_name = catalog,
-      schema_name = schema
+      schema_name = schema,
+      max_results = max_results,
+      include_browse = from_logical(include_browse),
+      page_token = page_token
     )
 
   if (perform_request) {
