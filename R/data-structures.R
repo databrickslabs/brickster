@@ -1045,8 +1045,8 @@ git_source <- function(
     "awscodecommit"
   )
 
-  match.arg(type)
-  match.arg(git_provider, providers)
+  type <- match.arg(type)
+  git_provider <- match.arg(git_provider, providers)
 
   obj <- list(
     git_url = git_url,

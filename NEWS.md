@@ -1,3 +1,7 @@
+# brickster (development version)
+
+-   Fixed `git_source()` erroring when `type` was left at its default
+
 # brickster 0.2.13
 
 -   Enabled `db_request()` retries for transient low-level HTTP request failures, improving resilience to intermittent curl/HTTP2 framing errors (#215)

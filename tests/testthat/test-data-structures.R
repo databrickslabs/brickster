@@ -510,13 +510,25 @@ test_that("git_source behaviour", {
     type = "commit"
   )
 
+  gs_default <- git_source(
+    git_url = "mockUrl",
+    git_provider = "github",
+    reference = "a"
+  )
+
   expect_s3_class(gs_git_tag, c("GitSource", "list"))
   expect_s3_class(gs_git_branch, c("GitSource", "list"))
   expect_s3_class(gs_git_commit, c("GitSource", "list"))
+  expect_s3_class(gs_default, c("GitSource", "list"))
 
   expect_true(is.git_source(gs_git_tag))
   expect_true(is.git_source(gs_git_branch))
   expect_true(is.git_source(gs_git_commit))
+
+  expect_identical(gs_git_tag$git_tag, "a")
+  expect_identical(gs_git_branch$git_branch, "a")
+  expect_identical(gs_git_commit$git_commit, "a")
+  expect_identical(gs_default$git_branch, "a")
 
   expect_error(
     git_source(
