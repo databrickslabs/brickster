@@ -854,6 +854,7 @@ db_cluster_events <- function(
     cluster_id = cluster_id,
     start_time = as.integer(start_time),
     end_time = as.integer(end_time),
+    event_types = event_types,
     order = order,
     offset = as.integer(offset),
     limit = as.integer(limit)
