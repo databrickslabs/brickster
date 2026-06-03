@@ -8,6 +8,9 @@
 - Fixed Unity Catalog volume file requests so `db_volume_*` paths
   containing spaces are encoded correctly
   ([\#231](https://github.com/databrickslabs/brickster/issues/231))
+- [`db_cluster_events()`](https://databrickslabs.github.io/brickster/dev/reference/db_cluster_events.md)
+  now forwards the `event_types` argument to the API, which was
+  previously ignored
 - [`db_uc_volumes_list()`](https://databrickslabs.github.io/brickster/dev/reference/db_uc_volumes_list.md)
   now forwards the `max_results`, `include_browse`, and `page_token`
   arguments to the API, which were previously ignored

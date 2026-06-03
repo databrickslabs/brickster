@@ -50,6 +50,8 @@
 <ul><li>Fixed <code><a href="../reference/git_source.html">git_source()</a></code> erroring when <code>type</code> was left at its default</li>
 <li>Fixed Unity Catalog volume file requests so <code>db_volume_*</code> paths containing spaces are encoded correctly (<a href="https://github.com/databrickslabs/brickster/issues/231" class="external-link">#231</a>)</li>
 <li>
+<code><a href="../reference/db_cluster_events.html">db_cluster_events()</a></code> now forwards the <code>event_types</code> argument to the API, which was previously ignored</li>
+<li>
 <code><a href="../reference/db_uc_volumes_list.html">db_uc_volumes_list()</a></code> now forwards the <code>max_results</code>, <code>include_browse</code>, and <code>page_token</code> arguments to the API, which were previously ignored</li>
 <li>
 <code><a href="../reference/db_vs_indexes_query.html">db_vs_indexes_query()</a></code> now sends the <code>score_threshold</code> argument to the API, which was previously ignored</li>
