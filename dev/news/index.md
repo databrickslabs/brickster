@@ -17,16 +17,6 @@
 - [`db_vs_indexes_query()`](https://databrickslabs.github.io/brickster/dev/reference/db_vs_indexes_query.md)
   now sends the `score_threshold` argument to the API, which was
   previously ignored
-
-## brickster 0.2.13
-
-CRAN release: 2026-05-20
-
-- Enabled
-  [`db_request()`](https://databrickslabs.github.io/brickster/dev/reference/db_request.md)
-  retries for transient low-level HTTP request failures, improving
-  resilience to intermittent curl/HTTP2 framing errors
-  ([\#215](https://github.com/databrickslabs/brickster/issues/215))
 - Added `show_progress` to
   [`dbConnect()`](https://dbi.r-dbi.org/reference/dbConnect.html) for
   the DBI backend;
@@ -37,6 +27,17 @@ CRAN release: 2026-05-20
   [`collect()`](https://dplyr.tidyverse.org/reference/compute.html) now
   use the connection default while preserving per-call `show_progress`
   overrides
+  ([\#223](https://github.com/databrickslabs/brickster/issues/223))
+
+## brickster 0.2.13
+
+CRAN release: 2026-05-20
+
+- Enabled
+  [`db_request()`](https://databrickslabs.github.io/brickster/dev/reference/db_request.md)
+  retries for transient low-level HTTP request failures, improving
+  resilience to intermittent curl/HTTP2 framing errors
+  ([\#215](https://github.com/databrickslabs/brickster/issues/215))
 - Added a DBI connection-level `disposition` setting so
   [`dbSendQuery()`](https://dbi.r-dbi.org/reference/dbSendQuery.html)
   and default
