@@ -11,6 +11,11 @@
 - [`db_cluster_events()`](https://databrickslabs.github.io/brickster/dev/reference/db_cluster_events.md)
   now forwards the `event_types` argument to the API, which was
   previously ignored
+- [`db_sql_warehouse_create()`](https://databrickslabs.github.io/brickster/dev/reference/db_sql_warehouse_create.md)
+  and
+  [`db_sql_warehouse_edit()`](https://databrickslabs.github.io/brickster/dev/reference/db_sql_warehouse_edit.md)
+  now forward the `tags` argument to the API, which was previously
+  ignored
 - [`db_uc_volumes_list()`](https://databrickslabs.github.io/brickster/dev/reference/db_uc_volumes_list.md)
   now forwards the `max_results`, `include_browse`, and `page_token`
   arguments to the API, which were previously ignored
