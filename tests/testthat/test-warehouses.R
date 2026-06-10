@@ -1,5 +1,4 @@
 test_that("Warehouse API - don't perform", {
-
   withr::local_envvar(c(
     "DATABRICKS_HOST" = "http://mock_host",
     "DATABRICKS_TOKEN" = "mock_token"
@@ -11,13 +10,17 @@ test_that("Warehouse API - don't perform", {
   resp_global_get <- db_sql_global_warehouse_get(perform_request = FALSE)
   expect_s3_class(resp_global_get, "httr2_request")
 
+  tags <- list(custom_tags = list(list(key = "team", value = "data")))
+
   resp_create <- db_sql_warehouse_create(
     name = "brickster_test_warehouse",
     cluster_size = "2X-Small",
     enable_serverless_compute = TRUE,
+    tags = tags,
     perform_request = FALSE
   )
   expect_s3_class(resp_create, "httr2_request")
+  expect_identical(resp_create$body$data$tags, tags)
 
   resp_get <- db_sql_warehouse_get(
     id = "some_warehouse_id",
@@ -34,13 +37,15 @@ test_that("Warehouse API - don't perform", {
   resp_edit <- db_sql_warehouse_edit(
     id = "some_warehouse_id",
     name = "some_warehouse_name",
-    cluster_size =  "2X-Small",
+    cluster_size = "2X-Small",
     spot_instance_policy = "COST_OPTIMIZED",
     channel = "CHANNEL_NAME_CURRENT",
     warehouse_type = "PRO",
+    tags = tags,
     perform_request = FALSE
   )
   expect_s3_class(resp_edit, "httr2_request")
+  expect_identical(resp_edit$body$data$tags, tags)
 
   resp_start <- db_sql_warehouse_start(
     id = "some_warehouse_id",
@@ -53,7 +58,6 @@ test_that("Warehouse API - don't perform", {
     perform_request = FALSE
   )
   expect_s3_class(resp_delete, "httr2_request")
-
 })
 
 skip_on_cran()
@@ -61,7 +65,6 @@ skip_unless_authenticated()
 skip_unless_aws_workspace()
 
 test_that("Warehouse API", {
-
   random_id <- sample.int(100000, 1)
 
   expect_no_error({
@@ -138,5 +141,4 @@ test_that("Warehouse API", {
   })
   expect_type(resp_delete, "list")
   expect_length(resp_delete, 0L)
-
 })
