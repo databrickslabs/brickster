@@ -11,28 +11,28 @@
 #'
 #' @returns List
 #' @export
-db_uc_catalogs_list <- function(max_results = 1000,
-                                include_browse = TRUE,
-                                page_token = NULL,
-                                host = db_host(), token = db_token(),
-                                perform_request = TRUE) {
-
+db_uc_catalogs_list <- function(
+  max_results = 1000,
+  include_browse = TRUE,
+  page_token = NULL,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   stopifnot(max_results <= 1000)
-
-  body <- list(
-    max_results = max_results,
-    include_browse = include_browse,
-    page_token = page_token
-  )
 
   req <- db_request(
     endpoint = "unity-catalog/catalogs",
     method = "GET",
     version = "2.1",
     host = host,
-    token = token,
-    body = body
-  )
+    token = token
+  ) |>
+    httr2::req_url_query(
+      max_results = max_results,
+      include_browse = from_logical(include_browse),
+      page_token = page_token
+    )
 
   if (perform_request) {
     db_perform_request(req)$catalogs
@@ -53,10 +53,12 @@ db_uc_catalogs_list <- function(max_results = 1000,
 #'
 #' @returns List
 #' @export
-db_uc_catalogs_get <- function(catalog,
-                               host = db_host(), token = db_token(),
-                               perform_request = TRUE) {
-
+db_uc_catalogs_get <- function(
+  catalog,
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE
+) {
   req <- db_request(
     endpoint = "unity-catalog/catalogs/",
     method = "GET",
