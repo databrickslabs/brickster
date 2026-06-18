@@ -33,7 +33,7 @@ readable_time <- function(x) {
 }
 
 get_catalogs <- function(host, token) {
-  catalogs <- db_uc_catalogs_list(host = host, token = token)
+  catalogs <- db_uc_catalogs_list(host = host, token = token)$catalogs
   if (length(catalogs) > 0) {
     data.frame(
       name = purrr::map_chr(catalogs, "name"),
@@ -50,7 +50,7 @@ get_schemas <- function(catalog, host, token) {
     catalog = catalog,
     host = host,
     token = token
-  )
+  )$schemas
   if (length(schemas) > 0) {
     data.frame(
       name = purrr::map_chr(schemas, "name"),
@@ -68,7 +68,7 @@ get_tables <- function(catalog, schema, host, token) {
     schema = schema,
     host = host,
     token = token
-  )
+  )$tables
   if (length(tables) > 0) {
     data.frame(
       name = purrr::map_chr(tables, "name"),
@@ -238,7 +238,7 @@ get_uc_volumes <- function(catalog, schema, host, token) {
     schema = schema,
     host = host,
     token = token
-  )
+  )$volumes
   if (length(volumes) > 0) {
     data.frame(
       name = purrr::map_chr(volumes, "name"),
@@ -256,7 +256,7 @@ get_uc_volume <- function(catalog, schema, host, volume, token) {
     schema = schema,
     host = host,
     token = token
-  )
+  )$volumes
 
   volume <- purrr::keep(volumes, \(x) x$name == volume)[[1]]
 
@@ -394,7 +394,7 @@ get_table_data <- function(catalog, schema, table, host, token, metadata = TRUE)
 }
 
 get_experiments <- function(host, token) {
-  experiments <- db_experiments_list(host = host, token = token)
+  experiments <- db_experiments_list(host = host, token = token)$experiments
   exp_names <- purrr::map_chr(experiments, "name")
   exp_ids <-  purrr::map_chr(experiments, "experiment_id")
   data.frame(

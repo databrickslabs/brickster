@@ -8,7 +8,8 @@
 #'
 #' @family Unity Catalog Management
 #'
-#' @returns List
+#' @returns Full API response list, including `next_page_token` when present,
+#' or an `httr2_request` when `perform_request = FALSE`.
 #' @export
 db_uc_schemas_list <- function(catalog,
                                max_results = 1000,
@@ -18,23 +19,21 @@ db_uc_schemas_list <- function(catalog,
 
   stopifnot(max_results <= 1000)
 
-  body <- list(
-    max_results = max_results,
-    page_token = page_token
-  )
-
   req <- db_request(
     endpoint = "unity-catalog/schemas",
     method = "GET",
     version = "2.1",
     host = host,
-    token = token,
-    body = body
+    token = token
   ) |>
-    httr2::req_url_query(catalog_name = catalog)
+    httr2::req_url_query(
+      catalog_name = catalog,
+      max_results = max_results,
+      page_token = page_token
+    )
 
   if (perform_request) {
-    db_perform_request(req)$schemas
+    db_perform_request(req)
   } else {
     req
   }
@@ -78,4 +77,3 @@ db_uc_schemas_get <- function(catalog, schema,
     req
   }
 }
-

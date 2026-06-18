@@ -22,7 +22,7 @@ db_experiments_list <- function(view_type = c("ACTIVE_ONLY", "DELETED_ONLY", "AL
   )
 
   if (perform_request) {
-    db_perform_request(req)$experiments
+    db_perform_request(req)
   } else {
     req
   }
@@ -63,4 +63,3 @@ db_experiments_get <- function(name = NULL, id = NULL,
     req
   }
 }
-

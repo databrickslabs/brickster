@@ -55,7 +55,8 @@ capabilities the table has.}
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \value{
-List
+Full API response list, including \code{next_page_token} when present,
+or an \code{httr2_request} when \code{perform_request = FALSE}.
 }
 \description{
 List Tables (Unity Catalog)

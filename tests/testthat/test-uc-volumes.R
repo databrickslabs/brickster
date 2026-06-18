@@ -8,9 +8,14 @@ test_that("Unity Catalog: Volumes API - don't perform", {
   resp_volumes_list <- db_uc_volumes_list(
     catalog = "some_catalog",
     schema = "some_schema",
+    page_token = "abc",
     perform_request = FALSE
   )
   expect_s3_class(resp_volumes_list, "httr2_request")
+  query <- httr2::url_parse(resp_volumes_list$url)$query
+  expect_identical(query$catalog_name, "some_catalog")
+  expect_identical(query$schema_name, "some_schema")
+  expect_identical(query$page_token, "abc")
 
   resp_volumes_get <- db_uc_volumes_get(
     catalog = "some_catalog",
@@ -58,6 +63,30 @@ test_that("Unity Catalog: Volumes API - don't perform", {
 
 })
 
+test_that("Unity Catalog: Volumes API preserves pagination response metadata", {
+  withr::local_envvar(c(
+    "DATABRICKS_HOST" = "http://mock_host",
+    "DATABRICKS_TOKEN" = "mock_token"
+  ))
+
+  local_mocked_bindings(
+    db_perform_request = function(req, ...) {
+      list(
+        volumes = list(list(name = "some_volume")),
+        next_page_token = "next-page"
+      )
+    }
+  )
+
+  resp_volumes_list <- db_uc_volumes_list(
+    catalog = "some_catalog",
+    schema = "some_schema"
+  )
+
+  expect_identical(resp_volumes_list$volumes[[1]]$name, "some_volume")
+  expect_identical(resp_volumes_list$next_page_token, "next-page")
+})
+
 skip_on_cran()
 skip_unless_authenticated()
 skip_unless_aws_workspace()
@@ -71,9 +100,9 @@ test_that("Unity Catalog: Volumes API", {
 
   expect_no_error({
     resp_volumes_get <- db_uc_volumes_get(
-      catalog = resp_volumes_list[[1]]$catalog_name,
-      schema = resp_volumes_list[[1]]$schema_name,
-      volume = resp_volumes_list[[1]]$name
+      catalog = resp_volumes_list$volumes[[1]]$catalog_name,
+      schema = resp_volumes_list$volumes[[1]]$schema_name,
+      volume = resp_volumes_list$volumes[[1]]$name
     )
   })
 

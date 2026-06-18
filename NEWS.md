@@ -4,6 +4,7 @@
 -   Fixed Unity Catalog volume file requests so `db_volume_*` paths containing spaces are encoded correctly (#231)
 -   `db_cluster_events()` now forwards the `event_types` argument to the API, which was previously ignored
 -   `db_sql_warehouse_create()` and `db_sql_warehouse_edit()` now forward the `tags` argument to the API, which was previously ignored
+-   Unity Catalog list helpers now preserve `next_page_token` metadata in list responses for catalogs, schemas, tables, and volumes; their list arguments are sent as documented query parameters
 -   `db_uc_volumes_list()` now forwards the `max_results`, `include_browse`, and `page_token` arguments to the API, which were previously ignored
 -   `db_vs_indexes_query()` now sends the `score_threshold` argument to the API, which was previously ignored
 -   Added `show_progress` to `dbConnect()` for the DBI backend; `dbGetQuery()`, `dbFetch()`, `dbWriteTable()`, and dbplyr `collect()` now use the connection default while preserving per-call `show_progress` overrides (#223)
