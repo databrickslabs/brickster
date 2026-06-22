@@ -15,9 +15,16 @@ test_that("Unity Catalog: Tables API - don't perform", {
   resp_tables_list <- db_uc_tables_list(
     catalog = "some_catalog",
     schema = "some_schema",
+    max_results = 10,
+    page_token = "abc",
     perform_request = FALSE
   )
   expect_s3_class(resp_tables_list, "httr2_request")
+  query <- httr2::url_parse(resp_tables_list$url)$query
+  expect_identical(query$catalog_name, "some_catalog")
+  expect_identical(query$schema_name, "some_schema")
+  expect_identical(query$max_results, "10")
+  expect_identical(query$page_token, "abc")
 
   resp_table_get <- db_uc_tables_get(
     catalog = "some_catalog",
@@ -43,6 +50,30 @@ test_that("Unity Catalog: Tables API - don't perform", {
   )
   expect_s3_class(resp_table_exists, "httr2_request")
 
+})
+
+test_that("Unity Catalog: Tables API preserves pagination response metadata", {
+  withr::local_envvar(c(
+    "DATABRICKS_HOST" = "http://mock_host",
+    "DATABRICKS_TOKEN" = "mock_token"
+  ))
+
+  local_mocked_bindings(
+    db_perform_request = function(req, ...) {
+      list(
+        tables = list(list(name = "some_table")),
+        next_page_token = "next-page"
+      )
+    }
+  )
+
+  resp_tables_list <- db_uc_tables_list(
+    catalog = "some_catalog",
+    schema = "some_schema"
+  )
+
+  expect_identical(resp_tables_list$tables[[1]]$name, "some_table")
+  expect_identical(resp_tables_list$next_page_token, "next-page")
 })
 
 skip_on_cran()
