@@ -57,7 +57,8 @@ db_uc_volumes_list(
 
 ## Value
 
-List
+Full API response list, including `next_page_token` when present, or an
+`httr2_request` when `perform_request = FALSE`.
 
 ## See also
 

@@ -16,6 +16,9 @@
   [`db_sql_warehouse_edit()`](https://databrickslabs.github.io/brickster/dev/reference/db_sql_warehouse_edit.md)
   now forward the `tags` argument to the API, which was previously
   ignored
+- Unity Catalog list helpers now preserve `next_page_token` metadata in
+  list responses for catalogs, schemas, tables, and volumes; their list
+  arguments are sent as documented query parameters
 - [`db_uc_volumes_list()`](https://databrickslabs.github.io/brickster/dev/reference/db_uc_volumes_list.md)
   now forwards the `max_results`, `include_browse`, and `page_token`
   arguments to the API, which were previously ignored

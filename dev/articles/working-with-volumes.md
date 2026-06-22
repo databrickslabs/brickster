@@ -139,7 +139,7 @@ object itself** (not files inside it).
 
 | Operation | Function | Notes |
 |----|----|----|
-| List volumes in schema | [`db_uc_volumes_list()`](https://databrickslabs.github.io/brickster/dev/reference/db_uc_volumes_list.md) | Returns volumes under `<catalog>.<schema>` |
+| List volumes in schema | [`db_uc_volumes_list()`](https://databrickslabs.github.io/brickster/dev/reference/db_uc_volumes_list.md) | Returns a response with volumes under `<catalog>.<schema>` |
 | Get one volume | [`db_uc_volumes_get()`](https://databrickslabs.github.io/brickster/dev/reference/db_uc_volumes_get.md) | Returns metadata for one volume |
 | Create volume | [`db_uc_volumes_create()`](https://databrickslabs.github.io/brickster/dev/reference/db_uc_volumes_create.md) | Supports `MANAGED` and `EXTERNAL` |
 | Update volume metadata | [`db_uc_volumes_update()`](https://databrickslabs.github.io/brickster/dev/reference/db_uc_volumes_update.md) | Rename/comment/owner updates |
