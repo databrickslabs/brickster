@@ -1,5 +1,6 @@
 # brickster (development version)
 
+-   Fixed `dbWriteTable()` and `dbAppendTable()` standard-path writes for binary columns, which now use Databricks `BINARY` types and `X'...'` literals when no staging volume is configured (#245)
 -   Fixed `git_source()` erroring when `type` was left at its default
 -   `db_uc_volumes_list()` now forwards the `max_results`, `include_browse`, and `page_token` arguments to the API, which were previously ignored
 
