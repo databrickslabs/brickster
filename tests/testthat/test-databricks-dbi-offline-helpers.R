@@ -204,6 +204,65 @@ test_that("dbWriteTable routes to standard path when volume staging is not prefe
   expect_false(state$show_progress)
 })
 
+test_that("dbWriteTable standard path supports binary columns", {
+  con <- make_dbi_test_con(show_progress = FALSE)
+  value <- data.frame(id = 1:3)
+  value$payload <- I(list(as.raw(c(0, 15, 255)), raw(0), NULL))
+  state <- new.env(parent = emptyenv())
+  state$sql <- character(0)
+
+  local_mocked_bindings(
+    dbExistsTable = function(...) FALSE,
+    db_should_use_volume_method = function(...) FALSE,
+    dbExecute = function(conn, statement, ...) {
+      state$sql <- c(state$sql, statement)
+      0L
+    },
+    db_sql_exec_and_wait = function(statement, ...) {
+      state$sql <- c(state$sql, statement)
+      list(status = list(state = "SUCCEEDED"))
+    },
+    .package = "brickster"
+  )
+
+  expect_invisible(dbWriteTable(con, "tbl_binary", value, overwrite = TRUE))
+  expect_identical(
+    state$sql[[1]],
+    "CREATE OR REPLACE TABLE `tbl_binary` (`id` INT, `payload` BINARY)"
+  )
+  expect_identical(
+    state$sql[[2]],
+    paste0(
+      "INSERT INTO `tbl_binary` (`id`, `payload`) VALUES ",
+      "(1, X'000FFF'), (2, X''), (3, NULL)"
+    )
+  )
+})
+
+test_that("dbAppendTable standard path supports binary columns", {
+  con <- make_dbi_test_con(show_progress = FALSE)
+  value <- data.frame(id = 4L)
+  value$payload <- I(list(as.raw(171)))
+  state <- new.env(parent = emptyenv())
+  state$sql <- NULL
+
+  local_mocked_bindings(
+    dbExistsTable = function(...) TRUE,
+    db_should_use_volume_method = function(...) FALSE,
+    db_sql_exec_and_wait = function(statement, ...) {
+      state$sql <- statement
+      list(status = list(state = "SUCCEEDED"))
+    },
+    .package = "brickster"
+  )
+
+  expect_invisible(dbAppendTable(con, "tbl_binary", value))
+  expect_identical(
+    state$sql,
+    "INSERT INTO `tbl_binary` (`id`, `payload`) VALUES (4, X'AB')"
+  )
+})
+
 test_that("dbWriteTable handles row.names consistently for character and Id signatures", {
   con <- make_dbi_test_con()
   state <- new.env(parent = emptyenv())

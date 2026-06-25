@@ -228,30 +228,7 @@ copy_to.DatabricksConnection <- function(
 #' @returns SQL VALUES clause
 #' @keywords internal
 db_generate_typed_values_sql_for_view <- function(con, data) {
-  # Convert each row to SQL values with proper typing
-  row_values <- apply(data, 1, function(row) {
-    values <- purrr::map2_chr(row, names(data), function(val, col_name) {
-      col_data <- data[[col_name]]
-      
-      if (is.na(val)) {
-        "NULL"
-      } else if (is.logical(col_data)) {
-        if (as.logical(val)) "TRUE" else "FALSE"
-      } else if (is.numeric(col_data)) {
-        # Don't quote numeric values to preserve type
-        as.character(val)
-      } else if (is.character(col_data)) {
-        # Quote string values and escape single quotes
-        db_escape_string_literal(con, val)
-      } else {
-        # Default to quoted string for other types
-        db_escape_string_literal(con, as.character(val))
-      }
-    })
-    paste0("(", paste(values, collapse = ", "), ")")
-  })
-  
-  paste(row_values, collapse = ", ")
+  db_generate_typed_values_sql(con, data)
 }
 
 # Slightly modified version of sparklyr/R/dplyr_sql_translation.R (thank you!)

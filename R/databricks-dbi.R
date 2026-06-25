@@ -1061,6 +1061,17 @@ db_clean_table_name <- function(name) {
   gsub('^\"|\"$', '', name)
 }
 
+# Check whether an R column represents Databricks binary values.
+db_is_binary_column <- function(x) {
+  if (inherits(x, "blob") || is.raw(x)) {
+    return(TRUE)
+  }
+
+  is.list(x) &&
+    purrr::every(x, \(value) is.raw(value) || is.null(value)) &&
+    purrr::some(x, is.raw)
+}
+
 #' Map R data types to Databricks SQL types
 #' @param dbObj A DatabricksConnection object
 #' @param obj R object(s) to get SQL types for
@@ -1072,6 +1083,10 @@ setMethod("dbDataType", "DatabricksConnection", function(dbObj, obj, ...) {
   purrr::map_chr(
     obj,
     function(x) {
+      if (db_is_binary_column(x)) {
+        return("BINARY")
+      }
+
       switch(
         class(x)[1],
         logical = "BOOLEAN",
@@ -1584,29 +1599,49 @@ db_create_table_from_data <- function(
 #' @keywords internal
 db_generate_typed_values_sql <- function(conn, data) {
   # Convert each row to SQL values with proper typing
-  row_values <- apply(data, 1, function(row) {
-    values <- purrr::map2_chr(row, names(data), function(val, col_name) {
-      col_data <- data[[col_name]]
-
-      if (is.na(val)) {
-        "NULL"
-      } else if (is.logical(col_data)) {
-        if (as.logical(val)) "TRUE" else "FALSE"
-      } else if (is.numeric(col_data)) {
-        # Don't quote numeric values to preserve type
-        as.character(val)
-      } else if (is.character(col_data)) {
-        # Quote string values and escape single quotes
-        db_escape_string_literal(conn, val)
-      } else {
-        # Default to quoted string for other types
-        db_escape_string_literal(conn, as.character(val))
-      }
+  row_values <- purrr::pmap_chr(data, function(...) {
+    row <- list(...)
+    values <- purrr::imap_chr(row, function(val, col_name) {
+      db_format_typed_value_sql(conn, val, data[[col_name]])
     })
     paste0("(", paste(values, collapse = ", "), ")")
   })
 
   paste(row_values, collapse = ", ")
+}
+
+# Format a single R value for inline SQL VALUES.
+db_format_typed_value_sql <- function(conn, val, col_data) {
+  if (db_is_missing_sql_value(val)) {
+    "NULL"
+  } else if (db_is_binary_column(col_data)) {
+    db_binary_literal(val)
+  } else if (is.logical(col_data)) {
+    if (as.logical(val)) "TRUE" else "FALSE"
+  } else if (is.numeric(col_data)) {
+    # Don't quote numeric values to preserve type
+    as.character(val)
+  } else if (is.character(col_data)) {
+    # Quote string values and escape single quotes
+    db_escape_string_literal(conn, val)
+  } else {
+    # Default to quoted string for other types
+    db_escape_string_literal(conn, as.character(val))
+  }
+}
+
+# Check whether a row value should be rendered as SQL NULL.
+db_is_missing_sql_value <- function(val) {
+  is.null(val) || (length(val) == 1L && is.na(val))
+}
+
+# Format raw bytes as a Databricks binary literal.
+db_binary_literal <- function(val) {
+  if (!is.raw(val)) {
+    cli::cli_abort("Binary columns must contain raw vectors or `NULL` values.")
+  }
+
+  paste0("X'", paste(toupper(as.character(val)), collapse = ""), "'")
 }
 
 #' Escape string literals for inline SQL VALUES
