@@ -168,7 +168,9 @@ setMethod(
       },
       error = function(e) {
         cli::cli_abort(
-          "Failed to connect to warehouse {.val {warehouse_id}}: {e$message}"
+          "Failed to connect to warehouse {.val {warehouse_id}}.",
+          parent = e,
+          call = NULL
         )
       }
     )

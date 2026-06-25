@@ -90,15 +90,29 @@ db_request <- function(
 #'
 #' @family Request Helpers
 db_req_error_body <- function(resp) {
-  json <- resp |> httr2::resp_body_json()
-  # if there is "message":
-  if ("message" %in% names(json)) {
-    paste(json$error_code, json$message, sep = ": ")
-  } else if (length(json) == 1) {
-    json[[1]]
-  } else {
-    paste(json, collapse = " ")
+  content_type <- httr2::resp_content_type(resp)
+
+  if (identical(content_type, "application/json")) {
+    json <- httr2::resp_body_json(resp)
+
+    # if there is "message":
+    if ("message" %in% names(json)) {
+      return(paste(json$error_code, json$message, sep = ": "))
+    } else {
+      return(paste(json, collapse = " "))
+    }
   }
+
+  body <- tryCatch(
+    httr2::resp_body_string(resp),
+    error = function(cnd) NULL
+  )
+
+  if (is.null(body) || !nzchar(trimws(body))) {
+    return(httr2::resp_status_desc(resp))
+  }
+
+  trimws(body)
 }
 
 #' Perform Databricks API Request
