@@ -143,7 +143,7 @@ Use `db_uc_volumes_*` when you need to create or manage the **volume object itse
 
 | Operation | Function | Notes |
 |-----------|----------|-------|
-| List volumes in schema | `db_uc_volumes_list()` | Returns volumes under `<catalog>.<schema>` |
+| List volumes in schema | `db_uc_volumes_list()` | Returns a response with volumes under `<catalog>.<schema>` |
 | Get one volume | `db_uc_volumes_get()` | Returns metadata for one volume |
 | Create volume | `db_uc_volumes_create()` | Supports `MANAGED` and `EXTERNAL` |
 | Update volume metadata | `db_uc_volumes_update()` | Rename/comment/owner updates |

@@ -149,7 +149,9 @@ test_that("get_uc_model_versions applies aliases and returns per-version metadat
 test_that("catalog list helper returns stable typed frames for non-empty and empty inputs", {
   out_catalogs <- with_mocked_bindings(
     get_catalogs(host = "mock_host", token = "mock_token"),
-    db_uc_catalogs_list = function(...) list(list(name = "c1"), list(name = "c2")),
+    db_uc_catalogs_list = function(...) {
+      list(catalogs = list(list(name = "c1"), list(name = "c2")))
+    },
     .package = "brickster"
   )
 
@@ -158,12 +160,64 @@ test_that("catalog list helper returns stable typed frames for non-empty and emp
 
   out_catalogs_empty <- with_mocked_bindings(
     get_catalogs(host = "mock_host", token = "mock_token"),
-    db_uc_catalogs_list = function(...) list(),
+    db_uc_catalogs_list = function(...) list(catalogs = list()),
     .package = "brickster"
   )
 
   expect_identical(nrow(out_catalogs_empty), 0L)
   expect_s3_class(out_catalogs_empty, "data.frame")
+})
+
+test_that("table list helper reads tables from list response", {
+  out_tables <- with_mocked_bindings(
+    get_tables(
+      catalog = "main",
+      schema = "default",
+      host = "mock_host",
+      token = "mock_token"
+    ),
+    db_uc_tables_list = function(...) {
+      list(tables = list(list(name = "t1"), list(name = "t2")))
+    },
+    .package = "brickster"
+  )
+
+  expect_identical(out_tables$name, c("t1", "t2"))
+  expect_true(all(out_tables$type == "table"))
+})
+
+test_that("volume list helper reads volumes from list response", {
+  out_volumes <- with_mocked_bindings(
+    get_uc_volumes(
+      catalog = "main",
+      schema = "default",
+      host = "mock_host",
+      token = "mock_token"
+    ),
+    db_uc_volumes_list = function(...) {
+      list(volumes = list(list(name = "v1"), list(name = "v2")))
+    },
+    .package = "brickster"
+  )
+
+  expect_identical(out_volumes$name, c("v1", "v2"))
+  expect_true(all(out_volumes$type == "volume"))
+})
+
+test_that("experiment list helper reads experiments from list response", {
+  out_experiments <- with_mocked_bindings(
+    get_experiments(host = "mock_host", token = "mock_token"),
+    db_experiments_list = function(...) {
+      list(experiments = list(
+        list(name = "/Users/me/exp_one", experiment_id = "1"),
+        list(name = "/Shared/exp_two", experiment_id = "2")
+      ))
+    },
+    .package = "brickster"
+  )
+
+  expect_identical(out_experiments$name, c("exp_one (1)", "exp_two (2)"))
+  expect_true(all(out_experiments$type == "experiment"))
 })
 
 test_that("get_schema_objects summarizes only object groups that contain rows", {

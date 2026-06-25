@@ -21,7 +21,8 @@
 #'
 #' @family Unity Catalog Table Management
 #'
-#' @returns List
+#' @returns Full API response list, including `next_page_token` when present,
+#' or an `httr2_request` when `perform_request = FALSE`.
 #' @export
 db_uc_tables_list <- function(catalog, schema, max_results = 50,
                               omit_columns = TRUE,
@@ -47,6 +48,7 @@ db_uc_tables_list <- function(catalog, schema, max_results = 50,
       catalog_name = catalog,
       schema_name = schema,
       include_delta_metadata = from_logical(include_delta_metadata),
+      max_results = max_results,
       omit_columns = from_logical(omit_columns),
       omit_properties = from_logical(omit_properties),
       omit_username = from_logical(omit_username),
@@ -56,7 +58,7 @@ db_uc_tables_list <- function(catalog, schema, max_results = 50,
     )
 
   if (perform_request) {
-    db_perform_request(req)$tables
+    db_perform_request(req)
   } else {
     req
   }
@@ -228,4 +230,3 @@ db_uc_tables_summaries <- function(catalog,
     req
   }
 }
-

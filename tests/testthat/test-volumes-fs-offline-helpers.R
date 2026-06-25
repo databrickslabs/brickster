@@ -238,6 +238,52 @@ test_that("db_volume_download_dir downloads files recursively", {
   expect_true(any(grepl("nested/inner.txt$", state$parallel_paths)))
 })
 
+test_that("db_volume_download_dir encodes volume file paths with spaces", {
+  local_dir <- withr::local_tempdir()
+
+  state <- new.env(parent = emptyenv())
+  state$request_urls <- character(0)
+  state$parallel_paths <- character(0)
+
+  local_mocked_bindings(
+    db_volume_list = function(path, ...) {
+      if (identical(as.character(path), "/Volumes/c/s/v/download space")) {
+        return(list(
+          contents = list(
+            list(name = "my custom report.txt", is_directory = FALSE)
+          )
+        ))
+      }
+
+      list(contents = list())
+    },
+    .package = "brickster"
+  )
+  local_mocked_bindings(
+    req_perform_parallel = function(requests, paths = NULL, ...) {
+      state$request_urls <- purrr::map_chr(requests, \(req) req$url)
+      state$parallel_paths <- as.character(paths)
+      vector("list", length(requests))
+    },
+    .package = "httr2"
+  )
+
+  out <- db_volume_download_dir(
+    volume_dir = "/Volumes/c/s/v/download space",
+    local_dir = local_dir,
+    overwrite = TRUE,
+    recursive = TRUE,
+    host = "mock_host",
+    token = "mock_token"
+  )
+
+  expect_true(out)
+  expect_identical(length(state$request_urls), 1L)
+  expect_match(state$request_urls[[1]], "download%20space/my%20custom%20report[.]txt")
+  expect_false(grepl("my custom report.txt", state$request_urls[[1]], fixed = TRUE))
+  expect_true(any(grepl("my custom report.txt$", state$parallel_paths)))
+})
+
 test_that("db_volume_download_dir downloads only top-level files when recursive is FALSE", {
   local_dir <- withr::local_tempdir()
 

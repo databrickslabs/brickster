@@ -2,12 +2,17 @@
 
 -   Fixed `dbWriteTable()` and `dbAppendTable()` standard-path writes for binary columns, which now use Databricks `BINARY` types and `X'...'` literals when no staging volume is configured (#245)
 -   Fixed `git_source()` erroring when `type` was left at its default
+-   Fixed Unity Catalog volume file requests so `db_volume_*` paths containing spaces are encoded correctly (#231)
+-   `db_cluster_events()` now forwards the `event_types` argument to the API, which was previously ignored
+-   `db_sql_warehouse_create()` and `db_sql_warehouse_edit()` now forward the `tags` argument to the API, which was previously ignored
+-   Unity Catalog list helpers now preserve `next_page_token` metadata in list responses for catalogs, schemas, tables, and volumes; their list arguments are sent as documented query parameters
 -   `db_uc_volumes_list()` now forwards the `max_results`, `include_browse`, and `page_token` arguments to the API, which were previously ignored
+-   `db_vs_indexes_query()` now sends the `score_threshold` argument to the API, which was previously ignored
+-   Added `show_progress` to `dbConnect()` for the DBI backend; `dbGetQuery()`, `dbFetch()`, `dbWriteTable()`, and dbplyr `collect()` now use the connection default while preserving per-call `show_progress` overrides (#223)
 
 # brickster 0.2.13
 
 -   Enabled `db_request()` retries for transient low-level HTTP request failures, improving resilience to intermittent curl/HTTP2 framing errors (#215)
--   Added `show_progress` to `dbConnect()` for the DBI backend; `dbGetQuery()`, `dbFetch()`, `dbWriteTable()`, and dbplyr `collect()` now use the connection default while preserving per-call `show_progress` overrides
 -   Added a DBI connection-level `disposition` setting so `dbSendQuery()` and default `dbGetQuery()` calls can use `INLINE` results when direct cloud-storage downloads are blocked (#205)
 -   Added Azure AD service principal OAuth M2M support (`ARM_CLIENT_ID`, `ARM_CLIENT_SECRET`, `ARM_TENANT_ID`) with optional `DATABRICKS_AUTH_TYPE` override (`oauth-m2m`, `azure-client-secret`, `oauth-u2m`); default auth resolution now prefers Azure M2M over U2M when ARM credentials are present (#185)
 -   Marked DBFS REST wrappers (`db_dbfs_*`) as deprecated and moved them to internal-only, guiding users towards using volumes (`db_volume_*`)

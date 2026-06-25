@@ -11,7 +11,8 @@
 #'
 #' @family Unity Catalog Volume Management
 #'
-#' @returns List
+#' @returns Full API response list, including `next_page_token` when present,
+#' or an `httr2_request` when `perform_request = FALSE`.
 #' @export
 db_uc_volumes_list <- function(catalog, schema,
                                max_results = 10000,
@@ -36,7 +37,7 @@ db_uc_volumes_list <- function(catalog, schema,
     )
 
   if (perform_request) {
-    db_perform_request(req)$volumes
+    db_perform_request(req)
   } else {
     req
   }
@@ -212,6 +213,5 @@ db_uc_volumes_create <- function(catalog, schema, volume,
     req
   }
 }
-
 
 

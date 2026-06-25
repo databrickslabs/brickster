@@ -124,7 +124,7 @@ test_that("Unity Catalog API", {
 
   expect_no_error({
     resp_catalog_get <- db_uc_catalogs_get(
-      catalog = resp_catalog_list[[1]]$name
+      catalog = resp_catalog_list$catalogs[[1]]$name
     )
   })
   expect_type(resp_catalog_get, "list")
@@ -139,7 +139,7 @@ test_that("Unity Catalog API", {
   expect_no_error({
     resp_schema_get <- db_uc_schemas_get(
       catalog = "main",
-      schema = resp_schema_list[[1]]$name
+      schema = resp_schema_list$schemas[[1]]$name
     )
   })
   expect_type(resp_schema_get, "list")
