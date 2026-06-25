@@ -48,6 +48,10 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="brickster-development-version">brickster (development version)<a class="anchor" aria-label="anchor" href="#brickster-development-version"></a></h2>
 <ul><li>Fixed <code><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable()</a></code> and <code><a href="https://dbi.r-dbi.org/reference/dbAppendTable.html" class="external-link">dbAppendTable()</a></code> standard-path writes for binary columns, which now use Databricks <code>BINARY</code> types and <code>X'...'</code> literals when no staging volume is configured (<a href="https://github.com/databrickslabs/brickster/issues/245" class="external-link">#245</a>)</li>
+<li>
+<code><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect()</a></code> now preserves Databricks API error details when its validation query fails</li>
+<li>
+<code><a href="../reference/db_perform_request.html">db_perform_request()</a></code> and <code><a href="../reference/db_perform_response.html">db_perform_response()</a></code> now preserve useful error messages when Databricks returns non-JSON error bodies such as empty, plain-text, or HTML responses (<a href="https://github.com/databrickslabs/brickster/issues/242" class="external-link">#242</a>)</li>
 <li>Fixed <code><a href="../reference/git_source.html">git_source()</a></code> erroring when <code>type</code> was left at its default</li>
 <li>Fixed Unity Catalog volume file requests so <code>db_volume_*</code> paths containing spaces are encoded correctly (<a href="https://github.com/databrickslabs/brickster/issues/231" class="external-link">#231</a>)</li>
 <li>

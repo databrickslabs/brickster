@@ -10,6 +10,14 @@
   `BINARY` types and `X'...'` literals when no staging volume is
   configured
   ([\#245](https://github.com/databrickslabs/brickster/issues/245))
+- [`dbConnect()`](https://dbi.r-dbi.org/reference/dbConnect.html) now
+  preserves Databricks API error details when its validation query fails
+- [`db_perform_request()`](https://databrickslabs.github.io/brickster/dev/reference/db_perform_request.md)
+  and
+  [`db_perform_response()`](https://databrickslabs.github.io/brickster/dev/reference/db_perform_response.md)
+  now preserve useful error messages when Databricks returns non-JSON
+  error bodies such as empty, plain-text, or HTML responses
+  ([\#242](https://github.com/databrickslabs/brickster/issues/242))
 - Fixed
   [`git_source()`](https://databrickslabs.github.io/brickster/dev/reference/git_source.md)
   erroring when `type` was left at its default
