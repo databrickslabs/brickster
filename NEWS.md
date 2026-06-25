@@ -1,6 +1,8 @@
 # brickster (development version)
 
 -   Fixed `dbWriteTable()` and `dbAppendTable()` standard-path writes for binary columns, which now use Databricks `BINARY` types and `X'...'` literals when no staging volume is configured (#245)
+-   `dbConnect()` now preserves Databricks API error details when its validation query fails
+-   `db_perform_request()` and `db_perform_response()` now preserve useful error messages when Databricks returns non-JSON error bodies such as empty, plain-text, or HTML responses (#242)
 -   Fixed `git_source()` erroring when `type` was left at its default
 -   Fixed Unity Catalog volume file requests so `db_volume_*` paths containing spaces are encoded correctly (#231)
 -   `db_cluster_events()` now forwards the `event_types` argument to the API, which was previously ignored

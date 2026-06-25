@@ -96,6 +96,35 @@ test_that("dbConnect validates tuning inputs and persists connection settings", 
   )
 })
 
+test_that("dbConnect preserves validation query error details", {
+  drv <- DatabricksSQL()
+
+  local_mocked_bindings(
+    db_sql_query = function(...) {
+      cli::cli_abort(c(
+        "HTTP 403 Forbidden.",
+        "i" = "PERMISSION_DENIED: You do not have permission to use the SQL Warehouse."
+      ))
+    },
+    .package = "brickster"
+  )
+
+  expect_error(
+    dbConnect(
+      drv,
+      warehouse_id = "wh-1",
+      host = "mock_host",
+      token = "mock_token"
+    ),
+    regexp = paste(
+      "Failed to connect to warehouse",
+      "HTTP 403 Forbidden",
+      "PERMISSION_DENIED",
+      sep = ".*"
+    )
+  )
+})
+
 test_that("dbWriteTable validates user input", {
   con <- make_dbi_test_con(staging_volume = "/Volumes/c/s/v")
   value <- data.frame(x = 1:3)
