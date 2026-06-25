@@ -3,6 +3,14 @@
 ## brickster (development version)
 
 - Fixed
+  [`dbWriteTable()`](https://dbi.r-dbi.org/reference/dbWriteTable.html)
+  and
+  [`dbAppendTable()`](https://dbi.r-dbi.org/reference/dbAppendTable.html)
+  standard-path writes for binary columns, which now use Databricks
+  `BINARY` types and `X'...'` literals when no staging volume is
+  configured
+  ([\#245](https://github.com/databrickslabs/brickster/issues/245))
+- Fixed
   [`git_source()`](https://databrickslabs.github.io/brickster/dev/reference/git_source.md)
   erroring when `type` was left at its default
 - Fixed Unity Catalog volume file requests so `db_volume_*` paths
