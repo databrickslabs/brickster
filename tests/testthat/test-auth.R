@@ -10,10 +10,39 @@ local_clear_auth_env <- function() {
   withr::local_options(
     use_databrickscfg = FALSE,
     db_profile = NULL,
-    brickster_oauth_client = NULL,
     .local_envir = parent.frame()
   )
 }
+
+test_that("OAuth client cache identities are stable and workspace-specific", {
+  local_clear_auth_env()
+
+  u2m_a <- db_oauth_client(
+    host = "workspace-a.cloud.databricks.com",
+    client_id = NULL,
+    client_secret = NULL,
+    auth_type = "oauth-u2m"
+  )
+  u2m_a_again <- db_oauth_client(
+    host = "workspace-a.cloud.databricks.com",
+    client_id = NULL,
+    client_secret = NULL,
+    auth_type = "oauth-u2m"
+  )
+  u2m_b <- db_oauth_client(
+    host = "workspace-b.cloud.databricks.com",
+    client_id = NULL,
+    client_secret = NULL,
+    auth_type = "oauth-u2m"
+  )
+
+  expect_identical(u2m_a$client$name, u2m_a_again$client$name)
+  expect_false(identical(u2m_a$client$name, u2m_b$client$name))
+  expect_identical(
+    u2m_b$auth_url,
+    "https://workspace-b.cloud.databricks.com/oidc/v1/authorize"
+  )
+})
 
 test_that("auth functions - baseline behaviour", {
   local_clear_auth_env()

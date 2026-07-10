@@ -47,11 +47,7 @@ db_request <- function(
   if (!is.null(token)) {
     req <- httr2::req_auth_bearer_token(req = req, token = token)
   } else {
-    # fetch client
-    oauth_client <- getOption(
-      x = "brickster_oauth_client",
-      db_oauth_client(host = host)
-    )
+    oauth_client <- db_oauth_client(host = host)
 
     if (oauth_client$is_m2m) {
       req <- httr2::req_oauth_client_credentials(
