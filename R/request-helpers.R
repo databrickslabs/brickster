@@ -123,6 +123,7 @@ db_req_error_body <- function(resp) {
 #' @family Request Helpers
 db_perform_request <- function(req, ...) {
   req |>
+    req_refresh_token_margin() |>
     httr2::req_error(body = db_req_error_body) |>
     httr2::req_perform() |>
     httr2::resp_body_json(...)
@@ -136,8 +137,32 @@ db_perform_request <- function(req, ...) {
 #' @family Request Helpers
 db_perform_response <- function(req, ...) {
   req |>
+    req_refresh_token_margin() |>
     httr2::req_error(body = db_req_error_body) |>
     httr2::req_perform(...)
+}
+
+#' Clear the cached token if it is within `margin` seconds of exipry
+#'
+#' Databricks rejects tokens within 30s of `expires_at`. httr2's
+#' client-credentials flow only refreshes at `expires_at`, leaving a rejection
+#' window. Preemptively clear the cached token when it is within `margin`
+#' seconds of expiry so the next perfom re-mints it.
+#'
+#' @family Request Helpers
+req_refresh_token_margin <- function(req, margin = 300) {
+  auth <- req$policies$auth_sign
+  if (is.null(auth)) {
+    return(req)
+  }
+  tok <- tryCatch(auth$cache$get(), error = \(e) NULL)
+  if (is.null(tok) || is.null(tok$expires_at)) {
+    return(req)
+  }
+  if (tok$expires_at - unclass(Sys.time()) < margin) {
+    auth$cache$clear()
+  }
+  req
 }
 
 #' Generate Request JSON
