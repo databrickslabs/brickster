@@ -2,6 +2,10 @@
 
 ## brickster (development version)
 
+- Fixed OAuth U2M and M2M authentication across multiple Databricks
+  workspaces in one R session by isolating OAuth clients and cached
+  tokens per workspace
+  ([\#255](https://github.com/databrickslabs/brickster/issues/255))
 - Fixed
   [`dbWriteTable()`](https://dbi.r-dbi.org/reference/dbWriteTable.html)
   and
