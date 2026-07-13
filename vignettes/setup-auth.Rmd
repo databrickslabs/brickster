@@ -180,11 +180,21 @@ For details on configuring please refer to [documentation from Databricks CLI](h
 
 There is only one `{brickster}` specific feature and it is the inclusion of `wsid` alongside `host`/`token`.
 
-When using OAuth M2M with a `.databrickscfg` profile:
+Supported OAuth fields in a `.databrickscfg` profile include:
 
 - Databricks service principal fields: `client_id`, `client_secret`
 - Azure service principal fields: `azure_client_id`, `azure_client_secret`, `azure_tenant_id`
-- Optional auth mode override: `auth_type` (`oauth-m2m`, `azure-client-secret`, `oauth-u2m`)
+- Optional auth mode override: `auth_type` (`oauth-m2m`, `azure-client-secret`, `oauth-u2m`, `databricks-cli`)
+
+Profiles created by `databricks auth login` use `auth_type = databricks-cli`.
+For these profiles, `{brickster}` calls `databricks auth token` when an API
+request is performed and keeps only the short-lived access token in memory until
+it expires. The Databricks CLI remains responsible for durable credential
+storage and refresh. The CLI must be available on `PATH`, or its executable can
+be provided with `DATABRICKS_CLI_PATH`.
+
+The `oauth-u2m` mode remains `{brickster}`'s direct browser-based OAuth flow;
+it does not reuse credentials created by `databricks auth login`.
 
 If both `DATABRICKS_AUTH_TYPE` (environment variable) and `auth_type` (`.databrickscfg`) are set, `DATABRICKS_AUTH_TYPE` takes precedence.
 

@@ -1,5 +1,15 @@
 # internal package functions for authentication
 
+db_host_url <- function(host) {
+  if (!grepl("://", host, fixed = TRUE)) {
+    host <- paste0("https://", host)
+  }
+
+  host <- httr2::url_parse(host)
+  host$scheme <- "https"
+  host
+}
+
 #' Generate/Fetch Databricks Host
 #'
 #' @description
@@ -44,21 +54,7 @@ db_host <- function(
     } else {
       host <- read_env_var(key = "host", profile = profile)
     }
-    parsed_url <- httr2::url_parse(host)
-
-    # inject scheme if not present then re-build with https
-    if (is.null(parsed_url$scheme)) {
-      parsed_url$scheme <- "https"
-    }
-
-    # if hostname is missing change path to host
-    if (is.null(parsed_url$hostname)) {
-      parsed_url$hostname <- parsed_url$path
-      parsed_url$path <- NULL
-    }
-
-    host <- httr2::url_build(parsed_url)
-    host <- httr2::url_parse(host)$hostname
+    host <- db_host_url(host)$hostname
   } else {
     # otherwise construct host string
     host <- paste0(prefix, id, ".cloud.databricks.com")
@@ -388,7 +384,7 @@ db_auth_type <- function(profile = default_config_profile()) {
     error = FALSE
   )
 
-  if ((is.null(auth_type) || !nzchar(auth_type)) && use_databricks_cfg()) {
+  if (is.null(auth_type) && use_databricks_cfg()) {
     auth_type <- read_databrickscfg(
       key = "auth_type",
       profile = profile,
@@ -400,24 +396,7 @@ db_auth_type <- function(profile = default_config_profile()) {
     return(NULL)
   }
 
-  tolower(auth_type)
-}
-
-normalize_oauth_auth_type <- function(auth_type = NULL) {
-  if (is.null(auth_type) || !nzchar(auth_type)) {
-    return(NULL)
-  }
-
-  normalized <- tolower(gsub("_", "-", auth_type, fixed = TRUE))
-
-  if (normalized %in% c("oauth-m2m", "azure-client-secret", "oauth-u2m")) {
-    return(normalized)
-  }
-
-  cli::cli_abort(c(
-    "Invalid {.var DATABRICKS_AUTH_TYPE} value {.val {auth_type}}:",
-    "x" = "Supported values are {.val oauth-m2m}, {.val azure-client-secret}, or {.val oauth-u2m}."
-  ))
+  tolower(gsub("_", "-", auth_type, fixed = TRUE))
 }
 
 resolve_oauth_auth_mode <- function(
@@ -447,7 +426,17 @@ resolve_oauth_auth_mode <- function(
       return("azure-client-secret")
     }
 
-    return("oauth-u2m")
+    if (identical(auth_type, "oauth-u2m")) {
+      return("oauth-u2m")
+    }
+
+    cli::cli_abort(c(
+      "Authentication type {.val {auth_type}} cannot be used by the OAuth client:",
+      "x" = paste0(
+        "Supported values for OAuth are {.val oauth-m2m}, ",
+        "{.val azure-client-secret}, or {.val oauth-u2m}."
+      )
+    ))
   }
 
   # default auth order when override is not set
@@ -478,6 +467,87 @@ db_oauth_client_cache_name <- function(
   )
 
   paste0("brickster-", auth_mode, "-", rlang::hash(cache_context))
+}
+
+db_cli_token_cache <- new.env(parent = emptyenv())
+
+db_cli_token <- function(
+  host,
+  profile = NULL,
+  cli_path = Sys.getenv("DATABRICKS_CLI_PATH", unset = "databricks")
+) {
+  target <- if (!is.null(profile) && nzchar(profile)) {
+    c("--profile", profile)
+  } else {
+    c("--host", httr2::url_build(db_host_url(host)))
+  }
+  args <- c("auth", "token", target)
+  output <- tryCatch(
+    processx::run(
+      command = cli_path,
+      args = args,
+      timeout = 60000,
+      windows_hide_window = TRUE
+    )$stdout,
+    error = function(cnd) {
+      detail <- trimws(cnd$stderr %||% conditionMessage(cnd))
+      login_command <- paste(
+        c("databricks", "auth", "login", args[3:4]),
+        collapse = " "
+      )
+      cli::cli_abort(
+        c(
+          "Failed to obtain an OAuth token from the Databricks CLI.",
+          "x" = detail,
+          "i" = "Run {.code {login_command}} and try again."
+        )
+      )
+    }
+  )
+
+  tryCatch(
+    {
+      token <- jsonlite::fromJSON(output)
+      expiry <- as.POSIXct(
+        token$expiry,
+        format = "%Y-%m-%dT%H:%M:%OSZ",
+        tz = "UTC"
+      )
+      httr2::oauth_token(
+        access_token = token$access_token,
+        token_type = token$token_type,
+        expires_in = floor(as.numeric(expiry) - as.numeric(Sys.time()))
+      )
+    },
+    error = function(cnd) {
+      cli::cli_abort(
+        "The Databricks CLI returned a malformed OAuth token response."
+      )
+    }
+  )
+}
+
+db_req_auth_databricks_cli <- function(
+  req,
+  host,
+  profile = default_config_profile()
+) {
+  key <- rlang::hash(list(
+    config_file = Sys.getenv("DATABRICKS_CONFIG_FILE"),
+    profile = profile,
+    host = tolower(host)
+  ))
+
+  httr2::req_oauth(
+    req = req,
+    flow = db_cli_token,
+    flow_params = list(host = host, profile = profile),
+    cache = list(
+      get = function() db_cli_token_cache[[key]],
+      set = function(token) db_cli_token_cache[[key]] <- token,
+      clear = function() db_cli_token_cache[[key]] <- NULL
+    )
+  )
 }
 
 build_databricks_m2m_oauth_client <- function(host, client_id, client_secret) {
@@ -598,6 +668,12 @@ db_oauth_client <- function(
   azure_tenant_id = db_azure_tenant_id(),
   auth_type = db_auth_type()
 ) {
+  if (is.null(auth_type) || !nzchar(auth_type)) {
+    auth_type <- NULL
+  } else {
+    auth_type <- tolower(gsub("_", "-", auth_type, fixed = TRUE))
+  }
+
   has_db_m2m <- !is.null(client_id) &&
     nzchar(client_id) &&
     !is.null(client_secret) &&
@@ -611,7 +687,7 @@ db_oauth_client <- function(
     nzchar(azure_tenant_id)
 
   auth_mode <- resolve_oauth_auth_mode(
-    auth_type = normalize_oauth_auth_type(auth_type),
+    auth_type = auth_type,
     has_db_m2m = has_db_m2m,
     has_azure_m2m = has_azure_m2m
   )

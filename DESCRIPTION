@@ -30,6 +30,7 @@ Imports:
     lifecycle,
     methods,
     nanoarrow,
+    processx,
     purrr,
     R6,
     rlang,
