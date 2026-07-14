@@ -36,11 +36,8 @@ local_cli_token_json <- function(expires_in = 3600) {
     list(
       access_token = "cli-access-token",
       token_type = "Bearer",
-      expiry = format(
-        Sys.time() + expires_in,
-        "%Y-%m-%dT%H:%M:%SZ",
-        tz = "UTC"
-      )
+      expiry = "2026-07-14T12:11:01.79814+10:00",
+      expires_in = expires_in
     ),
     auto_unbox = TRUE
   )
@@ -191,7 +188,7 @@ test_that("malformed CLI responses do not expose stdout", {
   ))
 })
 
-test_that("invalid CLI expiry metadata is rejected", {
+test_that("invalid CLI expires_in metadata is rejected", {
   local_clear_cli_auth()
 
   local_mocked_bindings(
@@ -202,7 +199,8 @@ test_that("invalid CLI expiry metadata is rejected", {
           list(
             access_token = "cli-access-token",
             token_type = "Bearer",
-            expiry = "not-a-timestamp"
+            expiry = "2026-07-14T12:11:01.79814+10:00",
+            expires_in = "not-a-number"
           ),
           auto_unbox = TRUE
         ),

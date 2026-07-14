@@ -508,15 +508,10 @@ db_cli_token <- function(
   tryCatch(
     {
       token <- jsonlite::fromJSON(output)
-      expiry <- as.POSIXct(
-        token$expiry,
-        format = "%Y-%m-%dT%H:%M:%OSZ",
-        tz = "UTC"
-      )
       httr2::oauth_token(
         access_token = token$access_token,
         token_type = token$token_type,
-        expires_in = floor(as.numeric(expiry) - as.numeric(Sys.time()))
+        expires_in = token$expires_in
       )
     },
     error = function(cnd) {
