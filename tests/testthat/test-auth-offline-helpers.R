@@ -95,14 +95,19 @@ test_that("CLI token responses are parsed without exposing refresh credentials",
 
   token <- db_cli_token(
     host = "workspace.example.com",
-    profile = "DEV",
+    profile = NULL,
     cli_path = "/mock/databricks"
   )
 
   expect_identical(state$command, "/mock/databricks")
   expect_identical(
     state$args,
-    c("auth", "token", "--profile", "DEV")
+    c(
+      "auth",
+      "token",
+      "--host",
+      "https://workspace.example.com/"
+    )
   )
   expect_identical(token$access_token, "cli-access-token")
   expect_identical(token$token_type, "Bearer")
@@ -230,17 +235,18 @@ test_that("Databricks CLI auth is deferred and cached until expiry", {
   config_file <- fs::path(config_dir, "databricks.cfg")
   writeLines(
     c(
-      "[DEFAULT]",
+      "[WORKSPACE]",
       "host = https://workspace.example.com",
       "auth_type = databricks-cli",
       "[__settings__]",
       "auth_storage = secure",
-      "default_profile = DEFAULT"
+      "default_profile = WORKSPACE"
     ),
     config_file
   )
   withr::local_envvar(DATABRICKS_CONFIG_FILE = config_file)
   withr::local_options(use_databrickscfg = TRUE)
+  expect_identical(default_config_profile(), "WORKSPACE")
 
   local_mocked_bindings(
     run = function(command, args, ...) {
@@ -272,8 +278,8 @@ test_that("Databricks CLI auth is deferred and cached until expiry", {
     c(
       "auth",
       "token",
-      "--host",
-      "https://workspace.example.com/"
+      "--profile",
+      "WORKSPACE"
     )
   )
 

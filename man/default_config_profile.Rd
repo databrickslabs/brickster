@@ -13,7 +13,7 @@ profile name
 Returns the default config profile
 }
 \details{
-Returns the config profile first looking at \code{DATABRICKS_CONFIG_PROFILE}
-and then the \code{db_profile} option.
+Returns the config profile first looking at \code{DATABRICKS_CONFIG_PROFILE},
+then the \code{db_profile} option, and then the CLI-selected default profile.
 }
 \keyword{internal}

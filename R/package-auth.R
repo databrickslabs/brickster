@@ -143,6 +143,15 @@ db_read_netrc <- function(path = "~/.netrc") {
 #'
 NULL
 
+databricks_config_path <- function() {
+  config_path <- Sys.getenv("DATABRICKS_CONFIG_FILE")
+  if (!nzchar(config_path)) {
+    config_path <- fs::path_home(".databrickscfg")
+  }
+
+  fs::path_real(config_path)
+}
+
 
 #' Reads Databricks CLI Config
 #' @details Reads `.databrickscfg` file and retrieves the values associated to
@@ -179,16 +188,7 @@ read_databrickscfg <- function(
     profile <- "DEFAULT"
   }
 
-  home_dir <- fs::path_home()
-
-  # use the .databrickscfg location specified in DATABRICKS_CONFIG_FILE
-  databricks_config_file <- Sys.getenv("DATABRICKS_CONFIG_FILE")
-  if (!nzchar(databricks_config_file)) {
-    config_path <- fs::path(home_dir, ".databrickscfg")
-  } else {
-    config_path <- databricks_config_file
-  }
-  config_path <- fs::path_real(config_path)
+  config_path <- databricks_config_path()
 
   # read config file (ini format) and fetch values from specified profile
   vars <- ini::read.ini(config_path)[[profile]]
@@ -708,18 +708,28 @@ db_oauth_client <- function(
 }
 
 #' Returns the default config profile
-#' @details Returns the config profile first looking at `DATABRICKS_CONFIG_PROFILE`
-#' and then the `db_profile` option.
+#' @details Returns the config profile first looking at `DATABRICKS_CONFIG_PROFILE`,
+#' then the `db_profile` option, and then the CLI-selected default profile.
 #'
 #' @returns profile name
 #' @keywords internal
 default_config_profile <- function() {
   profile <- Sys.getenv("DATABRICKS_CONFIG_PROFILE")
   if (nzchar(profile)) {
-    profile
-  } else {
-    getOption("db_profile")
+    return(profile)
   }
+
+  profile <- getOption("db_profile")
+  if (!is.null(profile)) {
+    return(profile)
+  }
+
+  if (!use_databricks_cfg()) {
+    return(NULL)
+  }
+
+  settings <- ini::read.ini(databricks_config_path())[["__settings__"]]
+  settings[["default_profile"]]
 }
 
 #' Returns whether or not to use a `.databrickscfg` file
