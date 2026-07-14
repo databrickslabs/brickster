@@ -155,17 +155,17 @@ This behaviour works when using credentials specified in either `.Renviron` or `
 
 ```{r}
 # using .Renviron
-db_host() # returns `DATABRICKS_HOST`
+db_host() # returns `DATABRICKS_HOST` (.Renviron)
 
 # switch profile to 'prod'
 options(db_profile = "prod")
-db_host() # returns `DATABRICKS_HOST_PROD`
+db_host() # returns `DATABRICKS_HOST_PROD` (.Renviron)
 
 # clear the session-specific profile selection
 options(db_profile = NULL)
 # use .databrickscfg
 options(use_databrickscfg = TRUE)
-db_host() # returns the CLI-selected default, otherwise `DEFAULT`
+db_host() # returns the CLI-selected default, otherwise `DEFAULT` (.databrickscfg)
 
 options(db_profile = "prod")
 db_host() # returns host from `prod` profile (.databrickscfg)
