@@ -1,12 +1,14 @@
 local_clear_auth_env <- function() {
-  withr::local_envvar(c(
-    DATABRICKS_AUTH_TYPE = NA_character_,
-    DATABRICKS_CONFIG_FILE = NA_character_,
-    DATABRICKS_CONFIG_PROFILE = NA_character_,
-    ARM_CLIENT_ID = NA_character_,
-    ARM_CLIENT_SECRET = NA_character_,
-    ARM_TENANT_ID = NA_character_
-  ), .local_envir = parent.frame())
+  withr::local_envvar(
+    c(
+      DATABRICKS_CONFIG_FILE = NA_character_,
+      DATABRICKS_CONFIG_PROFILE = NA_character_,
+      ARM_CLIENT_ID = NA_character_,
+      ARM_CLIENT_SECRET = NA_character_,
+      ARM_TENANT_ID = NA_character_
+    ),
+    .local_envir = parent.frame()
+  )
   withr::local_options(
     use_databrickscfg = FALSE,
     db_profile = NULL,
@@ -14,7 +16,11 @@ local_clear_auth_env <- function() {
   )
 }
 
-local_error_response <- function(body, content_type = "application/json", status = 400) {
+local_error_response <- function(
+  body,
+  content_type = "application/json",
+  status = 400
+) {
   httr2::response(
     status_code = status,
     headers = list("content-type" = content_type),

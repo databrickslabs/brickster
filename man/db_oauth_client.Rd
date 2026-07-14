@@ -27,7 +27,8 @@ db_oauth_client(
 
 \item{azure_tenant_id}{Azure AD tenant id.}
 
-\item{auth_type}{Optional explicit auth mode override from \code{DATABRICKS_AUTH_TYPE}.}
+\item{auth_type}{Optional auth mode. Defaults to \code{auth_type} from the selected
+\code{.databrickscfg} profile.}
 }
 \value{
 List containing \code{client} (\code{\link[httr2:oauth_client]{httr2::oauth_client()}}), \code{auth_url},

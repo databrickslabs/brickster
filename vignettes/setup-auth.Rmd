@@ -77,7 +77,7 @@ ARM_CLIENT_SECRET=abcdefg1234567890
 ARM_TENANT_ID=aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee
 ```
 
-With no explicit auth override, `{brickster}` attempts Databricks OAuth M2M (`DATABRICKS_CLIENT_*`), then Azure service principal OAuth M2M (`ARM_*`), then OAuth U2M. Set `DATABRICKS_AUTH_TYPE=azure-client-secret` to force Azure service principal authentication.
+With no `auth_type` in a selected `.databrickscfg` profile, `{brickster}` attempts Databricks OAuth M2M (`DATABRICKS_CLIENT_*`), then Azure service principal OAuth M2M (`ARM_*`), then OAuth U2M. When using `.databrickscfg`, set `auth_type = azure-client-secret` in the profile to force Azure service principal authentication.
 
 **Note**: Recommend creating an `.Renviron` for each project. You can create `.Renviron` within your user home directory if required.
 

@@ -228,8 +228,7 @@ auth_env_key <- function(
     "client_secret",
     "azure_client_id",
     "azure_client_secret",
-    "azure_tenant_id",
-    "auth_type"
+    "azure_tenant_id"
   )
 ) {
   key <- match.arg(key)
@@ -243,8 +242,7 @@ auth_env_key <- function(
     client_secret = "DATABRICKS_CLIENT_SECRET",
     azure_client_id = "ARM_CLIENT_ID",
     azure_client_secret = "ARM_CLIENT_SECRET",
-    azure_tenant_id = "ARM_TENANT_ID",
-    auth_type = "DATABRICKS_AUTH_TYPE"
+    azure_tenant_id = "ARM_TENANT_ID"
   )
 }
 
@@ -253,7 +251,7 @@ auth_env_key <- function(
 #'
 #' @param key The value to fetch from profile. One of `token`, `host`, `wsid`,
 #' `client_id`, `client_secret`, `azure_client_id`, `azure_client_secret`,
-#' `azure_tenant_id`, or `auth_type`
+#' or `azure_tenant_id`
 #' @param profile Character, the name of the profile to retrieve values
 #' @param error Boolean, when key isn't found should error be raised
 #'
@@ -268,8 +266,7 @@ read_env_var <- function(
     "client_secret",
     "azure_client_id",
     "azure_client_secret",
-    "azure_tenant_id",
-    "auth_type"
+    "azure_tenant_id"
   ),
   profile = NULL,
   error = TRUE
@@ -378,34 +375,20 @@ db_azure_tenant_id <- function(profile = default_config_profile()) {
 }
 
 db_auth_type <- function(profile = default_config_profile()) {
-  auth_type <- read_env_var(
+  if (!use_databricks_cfg()) {
+    return(NULL)
+  }
+
+  auth_type <- read_databrickscfg(
     key = "auth_type",
     profile = profile,
     error = FALSE
   )
-  from_env <- !is.null(auth_type)
-
-  if (is.null(auth_type) && use_databricks_cfg()) {
-    auth_type <- read_databrickscfg(
-      key = "auth_type",
-      profile = profile,
-      error = FALSE
-    )
-  }
-
   if (is.null(auth_type) || !nzchar(auth_type)) {
     return(NULL)
   }
 
-  auth_type <- tolower(gsub("_", "-", auth_type, fixed = TRUE))
-  if (from_env && identical(auth_type, "databricks-cli")) {
-    cli::cli_abort(c(
-      "CLI authentication cannot be selected with an environment auth type:",
-      "i" = "Use {.val databricks-cli} in the selected {.file .databrickscfg} profile."
-    ))
-  }
-
-  auth_type
+  tolower(gsub("_", "-", auth_type, fixed = TRUE))
 }
 
 resolve_oauth_auth_mode <- function(
@@ -418,7 +401,7 @@ resolve_oauth_auth_mode <- function(
     if (identical(auth_type, "oauth-m2m")) {
       if (!has_db_m2m) {
         cli::cli_abort(c(
-          "{.var DATABRICKS_AUTH_TYPE} was set to {.val oauth-m2m} but Databricks M2M credentials are incomplete:",
+          "Authentication type {.val oauth-m2m} requires Databricks M2M credentials:",
           "x" = "Need both {.var DATABRICKS_CLIENT_ID} and {.var DATABRICKS_CLIENT_SECRET}."
         ))
       }
@@ -428,7 +411,7 @@ resolve_oauth_auth_mode <- function(
     if (identical(auth_type, "azure-client-secret")) {
       if (!has_azure_m2m) {
         cli::cli_abort(c(
-          "{.var DATABRICKS_AUTH_TYPE} was set to {.val azure-client-secret} but Azure service principal credentials are incomplete:",
+          "Authentication type {.val azure-client-secret} requires Azure service principal credentials:",
           "x" = "Need {.var ARM_CLIENT_ID}, {.var ARM_CLIENT_SECRET}, and {.var ARM_TENANT_ID}."
         ))
       }
@@ -653,7 +636,8 @@ build_databricks_u2m_oauth_client <- function(host) {
 #' @param azure_client_id Azure AD service principal application id.
 #' @param azure_client_secret Azure AD service principal client secret.
 #' @param azure_tenant_id Azure AD tenant id.
-#' @param auth_type Optional explicit auth mode override from `DATABRICKS_AUTH_TYPE`.
+#' @param auth_type Optional auth mode. Defaults to `auth_type` from the selected
+#'   `.databrickscfg` profile.
 #'
 #' @details
 #' With no explicit `auth_type`, the default order is Databricks OAuth M2M, then

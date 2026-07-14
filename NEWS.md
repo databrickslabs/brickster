@@ -2,6 +2,7 @@
 
 -   Fixed OAuth U2M and M2M authentication across multiple Databricks workspaces in one R session by isolating OAuth clients and cached tokens per workspace (#255)
 -   Added `databricks-cli` authentication support for profiles created by `databricks auth login`; `{brickster}` obtains tokens through `databricks auth token`, caches only the short-lived access token in memory, and leaves durable credentials and refresh to the CLI (#253)
+-   Authentication mode overrides now come from `auth_type` in the selected `.databrickscfg` profile; replace `DATABRICKS_AUTH_TYPE` with the profile field. Environment-only authentication continues to infer the mode from available credentials.
 -   Fixed `dbWriteTable()` and `dbAppendTable()` standard-path writes for binary columns, which now use Databricks `BINARY` types and `X'...'` literals when no staging volume is configured (#245)
 -   `dbConnect()` now preserves Databricks API error details when its validation query fails
 -   `db_perform_request()` and `db_perform_response()` now preserve useful error messages when Databricks returns non-JSON error bodies such as empty, plain-text, or HTML responses (#242)
