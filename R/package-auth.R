@@ -383,6 +383,7 @@ db_auth_type <- function(profile = default_config_profile()) {
     profile = profile,
     error = FALSE
   )
+  from_env <- !is.null(auth_type)
 
   if (is.null(auth_type) && use_databricks_cfg()) {
     auth_type <- read_databrickscfg(
@@ -396,7 +397,15 @@ db_auth_type <- function(profile = default_config_profile()) {
     return(NULL)
   }
 
-  tolower(gsub("_", "-", auth_type, fixed = TRUE))
+  auth_type <- tolower(gsub("_", "-", auth_type, fixed = TRUE))
+  if (from_env && identical(auth_type, "databricks-cli")) {
+    cli::cli_abort(c(
+      "CLI authentication cannot be selected with an environment auth type:",
+      "i" = "Use {.val databricks-cli} in the selected {.file .databrickscfg} profile."
+    ))
+  }
+
+  auth_type
 }
 
 resolve_oauth_auth_mode <- function(

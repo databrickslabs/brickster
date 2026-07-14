@@ -56,9 +56,19 @@ local_sign_cli_request <- function(req) {
 
 test_that("configured auth types are normalized before provider routing", {
   local_clear_cli_auth()
-  withr::local_envvar(DATABRICKS_AUTH_TYPE = "databricks_cli")
+  withr::local_envvar(DATABRICKS_AUTH_TYPE = "oauth_m2m")
 
-  expect_identical(db_auth_type(), "databricks-cli")
+  expect_identical(db_auth_type(), "oauth-m2m")
+})
+
+test_that("Databricks CLI auth cannot be selected from the environment", {
+  local_clear_cli_auth()
+  withr::local_envvar(DATABRICKS_AUTH_TYPE = "databricks-cli")
+
+  expect_error(
+    db_auth_type(),
+    "cannot be selected with an environment auth type"
+  )
 })
 
 test_that("OAuth auth resolution rejects non-OAuth providers", {
