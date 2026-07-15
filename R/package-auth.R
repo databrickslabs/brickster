@@ -533,7 +533,8 @@ db_req_auth_databricks_cli <- function(
       get = function() db_cli_token_cache[[key]],
       set = function(token) db_cli_token_cache[[key]] <- token,
       clear = function() db_cli_token_cache[[key]] <- NULL
-    )
+    ),
+    expiry_margin = 40
   )
 }
 

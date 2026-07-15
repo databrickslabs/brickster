@@ -137,6 +137,37 @@ test_that("request helpers - m2m auth flow", {
     req$policies$auth_sign$params$flow_params$client$id,
     "client-id"
   )
+  expect_identical(req$policies$auth_sign$params$expiry_margin, 40)
+})
+
+test_that("request helpers - u2m auth flow", {
+  local_clear_auth_env()
+  withr::local_envvar(c(
+    DATABRICKS_CLIENT_ID = NA_character_,
+    DATABRICKS_CLIENT_SECRET = NA_character_
+  ))
+  local_mocked_bindings(
+    is_hosted_session = function() FALSE,
+    .package = "brickster"
+  )
+  local_mocked_bindings(
+    is_interactive = function() TRUE,
+    .package = "rlang"
+  )
+
+  req <- db_request(
+    endpoint = "clusters/list",
+    method = "GET",
+    version = "2.0",
+    host = "workspace.example.com",
+    token = NULL
+  )
+
+  expect_identical(
+    req$policies$auth_sign$params$flow,
+    "oauth_flow_auth_code"
+  )
+  expect_identical(req$policies$auth_sign$params$expiry_margin, 40)
 })
 
 test_that("request helpers isolate OAuth clients and tokens by workspace", {

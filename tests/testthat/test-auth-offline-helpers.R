@@ -279,6 +279,7 @@ test_that("Databricks CLI auth is deferred and cached until expiry", {
   )
 
   expect_s3_class(req, "httr2_request")
+  expect_identical(req$policies$auth_sign$params$expiry_margin, 40)
   expect_identical(state$calls, 0L)
   expect_s3_class(local_sign_cli_request(req), "httr2_request")
   expect_identical(state$calls, 1L)
@@ -303,8 +304,8 @@ test_that("Databricks CLI auth is deferred and cached until expiry", {
   expect_identical(state$calls, 1L)
 
   req_two$policies$auth_sign$cache$set(httr2::oauth_token(
-    access_token = "expired",
-    expires_in = -1
+    access_token = "expiring",
+    expires_in = 35
   ))
   expect_s3_class(local_sign_cli_request(req_two), "httr2_request")
   expect_identical(state$calls, 2L)

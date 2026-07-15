@@ -62,7 +62,8 @@ db_request <- function(
           req,
           client = oauth_client$client,
           scope = oauth_client$scope,
-          token_params = oauth_client$token_params
+          token_params = oauth_client$token_params,
+          expiry_margin = 40
         )
       } else if (!is_hosted_session() && rlang::is_interactive()) {
         # use client to auth
@@ -71,7 +72,8 @@ db_request <- function(
           client = oauth_client$client,
           scope = oauth_client$scope,
           auth_url = oauth_client$auth_url,
-          redirect_uri = "http://localhost:8020"
+          redirect_uri = "http://localhost:8020",
+          expiry_margin = 40
         )
       } else {
         cli::cli_abort("cannot find token or initiate OAuth flow")
