@@ -6,7 +6,8 @@ The [brickster](https://github.com/databrickslabs/brickster) package
 connects to a Databricks workspace in three ways:
 
 1.  [OAuth user-to-machine (U2M)
-    authentication](https://docs.databricks.com/en/dev-tools/auth/oauth-u2m.html#oauth-user-to-machine-u2m-authentication)
+    authentication](https://docs.databricks.com/en/dev-tools/auth/oauth-u2m.html#oauth-user-to-machine-u2m-authentication),
+    either directly or through credentials managed by the Databricks CLI
 2.  [OAuth machine-to-machine (M2M)
     authentication](https://docs.databricks.com/en/dev-tools/auth/oauth-m2m.html)
 3.  [Personal Access Tokens
@@ -56,9 +57,6 @@ To get started add the following to your `.Renviron`:
 - `ARM_TENANT_ID`: Azure AD tenant id (*only required for Azure service
   principal OAuth M2M*)
 
-- `DATABRICKS_AUTH_TYPE`: Optional auth mode override (`oauth-m2m`,
-  `azure-client-secret`, `oauth-u2m`)
-
 - `DATABRICKS_WSID`: The workspace ID
   ([docs](https://docs.databricks.com/workspace/workspace-details.html#workspace-instance-names-urls-and-ids))
 
@@ -85,12 +83,12 @@ For Azure service principal OAuth M2M:
     ARM_CLIENT_SECRET=abcdefg1234567890
     ARM_TENANT_ID=aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee
 
-With no explicit auth override,
+With no `auth_type` in a selected `.databrickscfg` profile,
 [brickster](https://github.com/databrickslabs/brickster) attempts
 Databricks OAuth M2M (`DATABRICKS_CLIENT_*`), then Azure service
-principal OAuth M2M (`ARM_*`), then OAuth U2M. Set
-`DATABRICKS_AUTH_TYPE=azure-client-secret` to force Azure service
-principal authentication.
+principal OAuth M2M (`ARM_*`), then OAuth U2M. When using
+`.databrickscfg`, set `auth_type = azure-client-secret` in the profile
+to force Azure service principal authentication.
 
 **Note**: Recommend creating an `.Renviron` for each project. You can
 create `.Renviron` within your user home directory if required.
@@ -145,29 +143,47 @@ simplify switching of credentials within an R project/session:
 2.  Using a `.databrickscfg` file (primary method in [Databricks
     CLI](https://docs.databricks.com/dev-tools/cli/index.html#set-up-authentication))
 
-To differentiate between (1) and (2) the option `use_databrickscfg` is
-used, the following example shows how to switch the session to use
-`.databrickscfg`.
+The `use_databrickscfg` option selects which configuration source
+[brickster](https://github.com/databrickslabs/brickster) reads. It does
+not sign in to the Databricks CLI or select a named profile. The
+following example switches the session from `.Renviron` to
+`.databrickscfg`:
 
 ``` r
 
-# will use the `DEFAULT` profile in `.databrickscfg`
+# uses the CLI-selected default profile, or `DEFAULT` when none is selected
 options(use_databrickscfg = TRUE)
 
-# values returned should be those in profile of `.databrickscfg`
+# values are read from `.databrickscfg`
 db_host()
 db_token()
 ```
 
-The default behaviour is to read credentials from `.Renviron`. If you
-wish to change this it’s recommended to set the option within
-`.Rprofile` so that it’s set during initialization of the R session.
+With its default value of `FALSE`,
+[brickster](https://github.com/databrickslabs/brickster) does not
+discover profiles created by `databricks auth login` and does not enable
+the `databricks-cli` authentication provider. Set the option in
+`.Rprofile` when `.databrickscfg` should be the normal configuration
+source. Posit Workbench managed OAuth sessions enable `.databrickscfg`
+automatically.
 
 ### Switching Between Credentials
 
-The `db_profile` option controls which profiles credentials are returned
-by
-[`db_host()`](https://databrickslabs.github.io/brickster/dev/reference/db_host.md)/[`db_token()`](https://databrickslabs.github.io/brickster/dev/reference/db_token.md)/[`db_wsid()`](https://databrickslabs.github.io/brickster/dev/reference/db_wsid.md).
+When `.databrickscfg` is enabled, the selected profile controls the
+host, credentials, authentication type, and the profile passed to
+`databricks auth token`.
+[brickster](https://github.com/databrickslabs/brickster) resolves the
+profile in this order:
+
+1.  `DATABRICKS_CONFIG_PROFILE`
+2.  The `db_profile` option
+3.  The CLI default selected by `databricks auth switch`
+4.  The `DEFAULT` profile
+
+`DATABRICKS_CONFIG_PROFILE` is the standard Databricks unified
+authentication setting. `db_profile` is the
+[brickster](https://github.com/databrickslabs/brickster) session-level
+equivalent.
 
 Profiles enable you to switch contexts between:
 
@@ -181,20 +197,20 @@ This behaviour works when using credentials specified in either
 ``` r
 
 # using .Renviron
-db_host() # returns `DB_HOST` (.Renviron)
+db_host() # returns `DATABRICKS_HOST` (.Renviron)
 
 # switch profile to 'prod'
 options(db_profile = "prod")
-db_host() # returns `DB_HOST_PROD` (.Renviron)
+db_host() # returns `DATABRICKS_HOST_PROD` (.Renviron)
 
-# set back to default (NULL)
+# clear the session-specific profile selection
 options(db_profile = NULL)
-# use .databrickcfg
+# use .databrickscfg
 options(use_databrickscfg = TRUE)
-db_host() # returns host from `DEFAULT` profile (.databrickscfg)
+db_host() # returns the CLI-selected default, otherwise `DEFAULT` (.databrickscfg)
 
 options(db_profile = "prod")
-db_host() # returns host from `prod` profile in (.datarickscfg)
+db_host() # returns host from `prod` profile (.databrickscfg)
 ```
 
 It is expected that profiles in `.Renviron` will adhere to the same
@@ -226,16 +242,71 @@ There is only one
 [brickster](https://github.com/databrickslabs/brickster) specific
 feature and it is the inclusion of `wsid` alongside `host`/`token`.
 
-When using OAuth M2M with a `.databrickscfg` profile:
+Supported OAuth fields in a `.databrickscfg` profile include:
 
 - Databricks service principal fields: `client_id`, `client_secret`
 - Azure service principal fields: `azure_client_id`,
   `azure_client_secret`, `azure_tenant_id`
 - Optional auth mode override: `auth_type` (`oauth-m2m`,
-  `azure-client-secret`, `oauth-u2m`)
+  `azure-client-secret`, `oauth-u2m`, `databricks-cli`)
 
-If both `DATABRICKS_AUTH_TYPE` (environment variable) and `auth_type`
-(`.databrickscfg`) are set, `DATABRICKS_AUTH_TYPE` takes precedence.
+#### Databricks CLI OAuth profiles
+
+Profiles created by `databricks auth login` use
+`auth_type = databricks-cli`. The login can be performed from any
+terminal; the credentials are not scoped to that terminal session.
+[brickster](https://github.com/databrickslabs/brickster) must run as the
+same operating-system user and use the same `.databrickscfg` and CLI
+credential storage.
+
+The `databricks-cli` provider is intentionally available only when the
+selected `.databrickscfg` profile contains `auth_type = databricks-cli`.
+Environment configuration cannot activate this provider independently.
+
+Enable `.databrickscfg` and select the profile before making requests:
+
+``` r
+
+options(
+  use_databrickscfg = TRUE,
+  db_profile = "e2-demo"
+)
+
+# The host and CLI token are resolved from the same profile.
+db_sql_warehouse_list()
+```
+
+Instead of `db_profile`, set `DATABRICKS_CONFIG_PROFILE`, or select the
+CLI default outside R:
+
+``` sh
+databricks auth switch --profile e2-demo
+```
+
+When a profile is selected,
+[brickster](https://github.com/databrickslabs/brickster) calls
+`databricks auth token --profile <profile>`. Without a selected profile,
+[brickster](https://github.com/databrickslabs/brickster) follows the
+Databricks SDK behavior and asks the CLI for the resolved host. If
+multiple profiles contain the same host, the CLI refuses to guess;
+select a profile rather than signing in again. Avoid supplying a
+different `host` argument while a profile is selected, because the
+request host and CLI credential would no longer describe the same
+configuration.
+
+Token acquisition is deferred until an API request is performed.
+[brickster](https://github.com/databrickslabs/brickster) keeps only the
+short-lived access token in memory until it expires, then calls the CLI
+again. The Databricks CLI remains responsible for durable credential
+storage and refresh. The CLI must be available on `PATH`, or its
+executable can be provided with `DATABRICKS_CLI_PATH`.
+`DATABRICKS_CONFIG_FILE` is inherited by the CLI when using a
+non-default config location.
+
+The `oauth-u2m` mode remains
+[brickster](https://github.com/databrickslabs/brickster)’s direct
+browser-based OAuth flow; it does not reuse credentials created by
+`databricks auth login`.
 
 `wsid` is used by the connections pane integration in RStudio as the
 underlying API’s require it.

@@ -45,7 +45,8 @@ db_oauth_client(
 
 - auth_type:
 
-  Optional explicit auth mode override from `DATABRICKS_AUTH_TYPE`.
+  Optional auth mode. Defaults to `auth_type` from the selected
+  `.databrickscfg` profile.
 
 ## Value
 

@@ -6,6 +6,22 @@
   workspaces in one R session by isolating OAuth clients and cached
   tokens per workspace
   ([\#255](https://github.com/databrickslabs/brickster/issues/255))
+- OAuth tokens are now refreshed 40 seconds before expiry, avoiding
+  Databricks API rejections during the final 30 seconds of a token’s
+  lifetime; this requires [httr2](https://httr2.r-lib.org) 1.3.0 or
+  later
+  ([\#257](https://github.com/databrickslabs/brickster/issues/257))
+- Added `databricks-cli` authentication support for profiles created by
+  `databricks auth login`;
+  [brickster](https://github.com/databrickslabs/brickster) obtains
+  tokens through `databricks auth token`, caches only the short-lived
+  access token in memory, and leaves durable credentials and refresh to
+  the CLI
+  ([\#253](https://github.com/databrickslabs/brickster/issues/253))
+- Authentication mode overrides now come from `auth_type` in the
+  selected `.databrickscfg` profile; replace `DATABRICKS_AUTH_TYPE` with
+  the profile field. Environment-only authentication continues to infer
+  the mode from available credentials.
 - Fixed
   [`dbWriteTable()`](https://dbi.r-dbi.org/reference/dbWriteTable.html)
   and

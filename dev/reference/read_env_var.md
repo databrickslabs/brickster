@@ -7,7 +7,7 @@ Reads Environment Variables
 ``` r
 read_env_var(
   key = c("token", "host", "wsid", "client_id", "client_secret", "azure_client_id",
-    "azure_client_secret", "azure_tenant_id", "auth_type"),
+    "azure_client_secret", "azure_tenant_id"),
   profile = NULL,
   error = TRUE
 )
@@ -19,7 +19,7 @@ read_env_var(
 
   The value to fetch from profile. One of `token`, `host`, `wsid`,
   `client_id`, `client_secret`, `azure_client_id`,
-  `azure_client_secret`, `azure_tenant_id`, or `auth_type`
+  `azure_client_secret`, or `azure_tenant_id`
 
 - profile:
 
