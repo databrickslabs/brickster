@@ -125,6 +125,31 @@ test_that("dbConnect preserves validation query error details", {
   )
 })
 
+test_that("dbConnect keeps dynamic CLI authentication refreshable", {
+  drv <- DatabricksSQL()
+  state <- new.env(parent = emptyenv())
+  state$validation_token <- "not-called"
+
+  local_mocked_bindings(
+    db_sql_query = function(..., token) {
+      state$validation_token <- token
+      data.frame(test_connection = 1)
+    },
+    dbi_connection_opened = function(conn) invisible(TRUE),
+    .package = "brickster"
+  )
+
+  con <- dbConnect(
+    drv,
+    warehouse_id = "wh-1",
+    host = "workspace.example.com",
+    token = NULL
+  )
+
+  expect_null(state$validation_token)
+  expect_null(con@token)
+})
+
 test_that("dbWriteTable validates user input", {
   con <- make_dbi_test_con(staging_volume = "/Volumes/c/s/v")
   value <- data.frame(x = 1:3)
