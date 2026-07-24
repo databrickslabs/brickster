@@ -13,7 +13,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/databrickslabs/brickster/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/databrickslabs/brickster/blob/v0.2.14/DESCRIPTION)
 
 Davies Z, Kurlansik R (2026). *brickster: R Toolkit for 'Databricks'*. R
 package version 0.2.14, <https://github.com/databrickslabs/brickster>.
