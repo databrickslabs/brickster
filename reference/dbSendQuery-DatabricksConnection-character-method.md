@@ -6,7 +6,7 @@ Send query to Databricks (asynchronous)
 
 ``` r
 # S4 method for class 'DatabricksConnection,character'
-dbSendQuery(conn, statement, ...)
+dbSendQuery(conn, statement, disposition = conn@disposition, ...)
 ```
 
 ## Arguments
@@ -18,6 +18,11 @@ dbSendQuery(conn, statement, ...)
 - statement:
 
   SQL statement to execute
+
+- disposition:
+
+  Query disposition mode. Defaults to the connection's `disposition`
+  setting.
 
 - ...:
 

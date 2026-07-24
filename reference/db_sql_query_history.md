@@ -81,4 +81,4 @@ If `perform_request = TRUE`, returns endpoint-specific API output. If
 ## Details
 
 By default the filter parameters `statuses`, `user_ids`, and
-`endpoints_ids` are `NULL`.
+`endpoint_ids` are `NULL`.

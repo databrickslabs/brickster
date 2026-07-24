@@ -9,8 +9,8 @@ Execute SQL query and return results
 dbGetQuery(
   conn,
   statement,
-  disposition = "EXTERNAL_LINKS",
-  show_progress = TRUE,
+  disposition = conn@disposition,
+  show_progress = conn@show_progress,
   ...
 )
 ```
@@ -27,14 +27,13 @@ dbGetQuery(
 
 - disposition:
 
-  Query disposition mode: "EXTERNAL_LINKS" (default) for large results,
-  "INLINE" for small metadata queries (automatically chooses appropriate
-  format)
+  Query disposition mode. Defaults to the connection's `disposition`
+  setting.
 
 - show_progress:
 
-  If `TRUE`, show progress updates during query execution (default:
-  `TRUE`)
+  If `TRUE`, show progress updates during query execution. Defaults to
+  the connection's `show_progress` setting.
 
 - ...:
 

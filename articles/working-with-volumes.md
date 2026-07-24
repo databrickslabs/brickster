@@ -16,18 +16,18 @@ In most day-to-day workflows, you will spend most of your time with
 This table is focused on **filesystem operations inside an existing
 volume**:
 
-| Operation              | Scope         | Function                                                                                                     | Notes                                                         |
-|------------------------|---------------|--------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------|
-| Upload file            | Single file   | [`db_volume_write()`](https://databrickslabs.github.io/brickster/reference/db_volume_write.md)               | Upload one local file to a volume path                        |
-| Download file          | Single file   | [`db_volume_read()`](https://databrickslabs.github.io/brickster/reference/db_volume_read.md)                 | Download one volume file to local disk                        |
-| Delete file            | Single file   | [`db_volume_delete()`](https://databrickslabs.github.io/brickster/reference/db_volume_delete.md)             | Remove one file from a volume                                 |
-| Check file exists      | Single file   | [`db_volume_file_exists()`](https://databrickslabs.github.io/brickster/reference/db_volume_file_exists.md)   | Returns `TRUE`/`FALSE`                                        |
-| List contents          | Directory     | [`db_volume_list()`](https://databrickslabs.github.io/brickster/reference/db_volume_list.md)                 | Lists files/subdirectories for a directory                    |
-| Create directory       | Directory     | [`db_volume_dir_create()`](https://databrickslabs.github.io/brickster/reference/db_volume_dir_create.md)     | Creates target directory path                                 |
-| Check directory exists | Directory     | [`db_volume_dir_exists()`](https://databrickslabs.github.io/brickster/reference/db_volume_dir_exists.md)     | Returns `TRUE`/`FALSE`                                        |
-| Delete directory       | Directory     | [`db_volume_dir_delete()`](https://databrickslabs.github.io/brickster/reference/db_volume_dir_delete.md)     | Use `recursive = TRUE` for non-empty directories              |
-| Upload directory       | Bulk transfer | [`db_volume_upload_dir()`](https://databrickslabs.github.io/brickster/reference/db_volume_upload_dir.md)     | Parallel upload, `recursive = TRUE` includes subdirectories   |
-| Download directory     | Bulk transfer | [`db_volume_download_dir()`](https://databrickslabs.github.io/brickster/reference/db_volume_download_dir.md) | Parallel download, `recursive = TRUE` includes subdirectories |
+| Operation | Scope | Function | Notes |
+|----|----|----|----|
+| Upload file | Single file | [`db_volume_write()`](https://databrickslabs.github.io/brickster/reference/db_volume_write.md) | Upload one local file to a volume path |
+| Download file | Single file | [`db_volume_read()`](https://databrickslabs.github.io/brickster/reference/db_volume_read.md) | Download one volume file to local disk |
+| Delete file | Single file | [`db_volume_delete()`](https://databrickslabs.github.io/brickster/reference/db_volume_delete.md) | Remove one file from a volume |
+| Check file exists | Single file | [`db_volume_file_exists()`](https://databrickslabs.github.io/brickster/reference/db_volume_file_exists.md) | Returns `TRUE`/`FALSE` |
+| List contents | Directory | [`db_volume_list()`](https://databrickslabs.github.io/brickster/reference/db_volume_list.md) | Lists files/subdirectories for a directory |
+| Create directory | Directory | [`db_volume_dir_create()`](https://databrickslabs.github.io/brickster/reference/db_volume_dir_create.md) | Creates target directory path |
+| Check directory exists | Directory | [`db_volume_dir_exists()`](https://databrickslabs.github.io/brickster/reference/db_volume_dir_exists.md) | Returns `TRUE`/`FALSE` |
+| Delete directory | Directory | [`db_volume_dir_delete()`](https://databrickslabs.github.io/brickster/reference/db_volume_dir_delete.md) | Use `recursive = TRUE` for non-empty directories |
+| Upload directory | Bulk transfer | [`db_volume_upload_dir()`](https://databrickslabs.github.io/brickster/reference/db_volume_upload_dir.md) | Parallel upload, `recursive = TRUE` includes subdirectories |
+| Download directory | Bulk transfer | [`db_volume_download_dir()`](https://databrickslabs.github.io/brickster/reference/db_volume_download_dir.md) | Parallel download, `recursive = TRUE` includes subdirectories |
 
 ## Example Workflows
 
@@ -37,6 +37,7 @@ If you just need to move one file in and out of a volume. This example
 goes beyond the minimum to showcase more than just upload/download.
 
 ``` r
+
 library(brickster)
 
 volume_root <- "/Volumes/zacdav/default/data"
@@ -83,6 +84,7 @@ to 100 million rows, write a 2-level partitioned Arrow dataset, upload
 it, then download it back.
 
 ``` r
+
 library(brickster)
 library(arrow)
 library(dplyr)
@@ -135,15 +137,16 @@ are skipped.
 Use `db_uc_volumes_*` when you need to create or manage the **volume
 object itself** (not files inside it).
 
-| Operation              | Function                                                                                                 | Notes                                      |
-|------------------------|----------------------------------------------------------------------------------------------------------|--------------------------------------------|
-| List volumes in schema | [`db_uc_volumes_list()`](https://databrickslabs.github.io/brickster/reference/db_uc_volumes_list.md)     | Returns volumes under `<catalog>.<schema>` |
-| Get one volume         | [`db_uc_volumes_get()`](https://databrickslabs.github.io/brickster/reference/db_uc_volumes_get.md)       | Returns metadata for one volume            |
-| Create volume          | [`db_uc_volumes_create()`](https://databrickslabs.github.io/brickster/reference/db_uc_volumes_create.md) | Supports `MANAGED` and `EXTERNAL`          |
-| Update volume metadata | [`db_uc_volumes_update()`](https://databrickslabs.github.io/brickster/reference/db_uc_volumes_update.md) | Rename/comment/owner updates               |
-| Delete volume          | [`db_uc_volumes_delete()`](https://databrickslabs.github.io/brickster/reference/db_uc_volumes_delete.md) | Removes the Unity Catalog volume object    |
+| Operation | Function | Notes |
+|----|----|----|
+| List volumes in schema | [`db_uc_volumes_list()`](https://databrickslabs.github.io/brickster/reference/db_uc_volumes_list.md) | Returns a response with volumes under `<catalog>.<schema>` |
+| Get one volume | [`db_uc_volumes_get()`](https://databrickslabs.github.io/brickster/reference/db_uc_volumes_get.md) | Returns metadata for one volume |
+| Create volume | [`db_uc_volumes_create()`](https://databrickslabs.github.io/brickster/reference/db_uc_volumes_create.md) | Supports `MANAGED` and `EXTERNAL` |
+| Update volume metadata | [`db_uc_volumes_update()`](https://databrickslabs.github.io/brickster/reference/db_uc_volumes_update.md) | Rename/comment/owner updates |
+| Delete volume | [`db_uc_volumes_delete()`](https://databrickslabs.github.io/brickster/reference/db_uc_volumes_delete.md) | Removes the Unity Catalog volume object |
 
 ``` r
+
 # list volumes in a schema
 db_uc_volumes_list(catalog = "<catalog>", schema = "<schema>")
 

@@ -23,6 +23,7 @@ Below we will create a cluster on AWS and then step through using the
 other supporting functions.
 
 ``` r
+
 library(brickster)
 
 # create a small cluster on AWS with DBR 9.1 LTS
@@ -44,11 +45,11 @@ mentioned here (e.g. `spark_conf`).
 Before creating a cluster you may want to check the supported values for
 a number of the parameters. There are functions to assist with this:
 
-|                                                                                                               Function | Purpose                                                                                                                      |
-|-----------------------------------------------------------------------------------------------------------------------:|------------------------------------------------------------------------------------------------------------------------------|
-| [`db_cluster_runtime_versions()`](https://databrickslabs.github.io/brickster/reference/db_cluster_runtime_versions.md) | List of runtime versions available for the workspace, useful for finding relevant `spark_version`                            |
-|   [`db_cluster_list_node_types()`](https://databrickslabs.github.io/brickster/reference/db_cluster_list_node_types.md) | List of supported node types available in workspace/region, useful for finding relevant `node_type_id`/`driver_node_type_id` |
-|             [`db_cluster_list_zones()`](https://databrickslabs.github.io/brickster/reference/db_cluster_list_zones.md) | AWS Only, lists availability zones (AZ) clusters can occupy                                                                  |
+| Function | Purpose |
+|---:|----|
+| [`db_cluster_runtime_versions()`](https://databrickslabs.github.io/brickster/reference/db_cluster_runtime_versions.md) | List of runtime versions available for the workspace, useful for finding relevant `spark_version` |
+| [`db_cluster_list_node_types()`](https://databrickslabs.github.io/brickster/reference/db_cluster_list_node_types.md) | List of supported node types available in workspace/region, useful for finding relevant `node_type_id`/`driver_node_type_id` |
+| [`db_cluster_list_zones()`](https://databrickslabs.github.io/brickster/reference/db_cluster_list_zones.md) | AWS Only, lists availability zones (AZ) clusters can occupy |
 
 [`db_cluster_get()`](https://databrickslabs.github.io/brickster/reference/db_cluster_get.md)
 will provide details for the cluster we just created, including
@@ -60,6 +61,7 @@ This can be useful as you may wish to wait for the cluster to be
 uses internally to wait until the cluster is running before completing.
 
 ``` r
+
 cluster_info <- db_cluster_get(cluster_id = new_cluster$cluster_id)
 cluster_info$state
 ```
@@ -72,6 +74,7 @@ For example, we may decide we want our cluster to autoscale between 2-8
 nodes and add some tags.
 
 ``` r
+
 
 # we are required to input all parameters
 db_cluster_edit(
@@ -101,6 +104,7 @@ workers active on the cluster will be increased/decreased if they are
 outside the bounds.
 
 ``` r
+
 # adjust number autoscale range to be between 4-6 workers
 db_cluster_resize(
   cluster_id = new_cluster$cluster_id,
@@ -120,6 +124,7 @@ and
 are the functions used for changing if a cluster is “pinned” or not.
 
 ``` r
+
 # pin the cluster
 db_cluster_pin(cluster_id = new_cluster$cluster_id)
 
@@ -132,12 +137,12 @@ db_cluster_pin(cluster_id = new_cluster$cluster_id)
 There are a few functions that can be used to to manage the state of an
 existing cluster
 
-|                                                                                                                                                                                                     Function | Purpose                                                                                      |
-|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|----------------------------------------------------------------------------------------------|
-|                                                                                                             [`db_cluster_start()`](https://databrickslabs.github.io/brickster/reference/db_cluster_start.md) | Start a cluster that is inactive                                                             |
-|                                                                                                         [`db_cluster_restart()`](https://databrickslabs.github.io/brickster/reference/db_cluster_restart.md) | Restart a cluster, cluster must already be running                                           |
-| [`db_cluster_delete()`](https://databrickslabs.github.io/brickster/reference/db_cluster_delete.md) /[`db_cluster_terminate()`](https://databrickslabs.github.io/brickster/reference/db_cluster_terminate.md) | Terminate an active cluster, does not remove the cluster configuration from Databricks       |
-|                                                                                                 [`db_cluster_perm_delete()`](https://databrickslabs.github.io/brickster/reference/db_cluster_perm_delete.md) | Stops (if active) and permanently deletes a cluster, it will not longer appear in Databricks |
+| Function | Purpose |
+|---:|----|
+| [`db_cluster_start()`](https://databrickslabs.github.io/brickster/reference/db_cluster_start.md) | Start a cluster that is inactive |
+| [`db_cluster_restart()`](https://databrickslabs.github.io/brickster/reference/db_cluster_restart.md) | Restart a cluster, cluster must already be running |
+| [`db_cluster_delete()`](https://databrickslabs.github.io/brickster/reference/db_cluster_delete.md) /[`db_cluster_terminate()`](https://databrickslabs.github.io/brickster/reference/db_cluster_terminate.md) | Terminate an active cluster, does not remove the cluster configuration from Databricks |
+| [`db_cluster_perm_delete()`](https://databrickslabs.github.io/brickster/reference/db_cluster_perm_delete.md) | Stops (if active) and permanently deletes a cluster, it will not longer appear in Databricks |
 
 ## Cluster Libraries
 
@@ -146,16 +151,17 @@ sources using
 [`db_libs_install()`](https://databrickslabs.github.io/brickster/reference/db_libs_install.md)
 and the associated `libs_*()` functions:
 
-|                                                                           Function | Library Source      |
-|-----------------------------------------------------------------------------------:|---------------------|
-|   [`lib_cran()`](https://databrickslabs.github.io/brickster/reference/lib_cran.md) | CRAN                |
-|   [`lib_pypi()`](https://databrickslabs.github.io/brickster/reference/lib_pypi.md) | PyPi                |
-|     [`lib_egg()`](https://databrickslabs.github.io/brickster/reference/lib_egg.md) | Python egg (file)   |
-|     [`lib_whl()`](https://databrickslabs.github.io/brickster/reference/lib_whl.md) | Python wheel (file) |
-| [`lib_maven()`](https://databrickslabs.github.io/brickster/reference/lib_maven.md) | Maven               |
-|     [`lib_jar()`](https://databrickslabs.github.io/brickster/reference/lib_jar.md) | JAR (file)          |
+| Function | Library Source |
+|---:|----|
+| [`lib_cran()`](https://databrickslabs.github.io/brickster/reference/lib_cran.md) | CRAN |
+| [`lib_pypi()`](https://databrickslabs.github.io/brickster/reference/lib_pypi.md) | PyPi |
+| [`lib_egg()`](https://databrickslabs.github.io/brickster/reference/lib_egg.md) | Python egg (file) |
+| [`lib_whl()`](https://databrickslabs.github.io/brickster/reference/lib_whl.md) | Python wheel (file) |
+| [`lib_maven()`](https://databrickslabs.github.io/brickster/reference/lib_maven.md) | Maven |
+| [`lib_jar()`](https://databrickslabs.github.io/brickster/reference/lib_jar.md) | JAR (file) |
 
 ``` r
+
 # installing a package from CRAN on cluster
 db_libs_install(
   cluster_id = new_cluster$cluster_id,
@@ -172,6 +178,7 @@ function will block until all the libraries for the specified cluster
 have finished installing.
 
 ``` r
+
 wait_for_lib_installs(cluster_id = new_cluster$cluster_id)
 ```
 
@@ -185,6 +192,7 @@ is used for getting the status of all libraries across all clusters in
 the workspace.
 
 ``` r
+
 db_libs_cluster_status(cluster_id = new_cluster$cluster_id)
 ```
 
@@ -192,6 +200,7 @@ Libraries can be uninstalled using
 [`db_libs_uninstall()`](https://databrickslabs.github.io/brickster/reference/db_libs_uninstall.md).
 
 ``` r
+
 db_libs_uninstall(
   cluster_id = new_cluster$cluster_id,
   libraries = libraries(
@@ -206,6 +215,7 @@ shows that the library will be uninstalled upon restart
 (e.g. [`db_cluster_restart()`](https://databrickslabs.github.io/brickster/reference/db_cluster_restart.md)).
 
 ``` r
+
 db_libs_cluster_status(cluster_id = new_cluster$cluster_id)
 ```
 
@@ -218,6 +228,7 @@ types](https://docs.databricks.com/api/workspace/clusters/events#events)
 that can occur, and by default the 50 most recent events are returned.
 
 ``` r
+
 events <- db_cluster_events(cluster_id = new_cluster$cluster_id)
 head(events, 1)
 ```

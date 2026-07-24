@@ -14,5 +14,5 @@ profile name
 
 ## Details
 
-Returns the config profile first looking at `DATABRICKS_CONFIG_PROFILE`
-and then the `db_profile` option.
+Returns the config profile first looking at `DATABRICKS_CONFIG_PROFILE`,
+then the `db_profile` option, and then the CLI-selected default profile.

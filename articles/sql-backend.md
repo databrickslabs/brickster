@@ -36,6 +36,7 @@ Connecting to a Databricks SQL warehouse requires creating a
 [DBI](https://dbi.r-dbi.org) connection:
 
 ``` r
+
 library(brickster)
 library(DBI)
 library(dplyr)
@@ -45,7 +46,8 @@ library(dbplyr)
 con <- dbConnect(
   drv = DatabricksSQL(),
   warehouse_id = "<your_warehouse_id>",
-  catalog = "samples"
+  catalog = "samples",
+  show_progress = FALSE
 )
 ```
 
@@ -56,6 +58,7 @@ con <- dbConnect(
 Execute SQL directly and return results as data frames:
 
 ``` r
+
 trips <- dbGetQuery(con, "SELECT * FROM samples.nyctaxi.trips LIMIT 10")
 ```
 
@@ -64,6 +67,7 @@ Tables can be references either via
 [`I()`](https://rdrr.io/r/base/AsIs.html), or using the name as-is:
 
 ``` r
+
 # List available tables
 tables <- dbListTables(con)
 
@@ -97,6 +101,7 @@ Ensure that `staging_volume` is a valid Volume path and you have
 permission to write files.
 
 ``` r
+
 # small data (150 rows)
 # creates the table schema explicitly then inserts rows inline
 dbWriteTable(
@@ -116,7 +121,7 @@ dbWriteTable(
   value = iris_big,
   overwrite = TRUE,
   staging_volume = "/Volumes/<catalog>/<schema>/<volume>/...", # or inherited from connection
-  progress = TRUE
+  show_progress = TRUE
 )
 ```
 
@@ -130,6 +135,7 @@ either via [`Id()`](https://dbi.r-dbi.org/reference/Id.html),
 [`tbl()`](https://dplyr.tidyverse.org/reference/tbl.html):
 
 ``` r
+
 # Connect to existing tables
 tbl(con, "samples.nyctaxi.trips")
 tbl(con, I("samples.nyctaxi.trips"))
@@ -140,6 +146,7 @@ tbl(con, in_catalog("samples", "nyctaxi", "trips"))
 Chain dplyr operations - they execute remotely on Databricks:
 
 ``` r
+
 # Filter and select (translated to SQL)
 long_trips <- tbl(con, "samples.nyctaxi.trips") |>
   filter(trip_distance > 10) |>
@@ -163,6 +170,7 @@ latest point possible in your analysis to take reduce the required
 computation locally.
 
 ``` r
+
 # Customer summary statistics
 trips_summary <- tbl(con, "samples.nyctaxi.trips") |>
   group_by(pickup_zip) %>%
@@ -188,6 +196,7 @@ functions like `copy_to` only usable when specifying `temporary` as
 `FALSE` which will use `dbWriteTable` to create a table.
 
 ``` r
+
 iris_remote <- copy_to(
   con,
   iris,

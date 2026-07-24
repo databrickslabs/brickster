@@ -6,7 +6,14 @@ Collect query results with proper progress timing for Databricks
 
 ``` r
 # S3 method for class 'DatabricksConnection'
-db_collect(con, sql, n = -1, warn_incomplete = TRUE, ...)
+db_collect(
+  con,
+  sql,
+  n = -1,
+  warn_incomplete = TRUE,
+  show_progress = con@show_progress,
+  ...
+)
 ```
 
 ## Arguments
@@ -26,6 +33,11 @@ db_collect(con, sql, n = -1, warn_incomplete = TRUE, ...)
 - warn_incomplete:
 
   Whether to warn if results were truncated
+
+- show_progress:
+
+  If `TRUE`, show progress updates during collection. Defaults to the
+  connection's `show_progress` setting.
 
 - ...:
 

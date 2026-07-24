@@ -26,6 +26,7 @@ it were running locally.
 Using the REPL is simple, to start just provide `cluster_id`:
 
 ``` r
+
 # start REPL
 db_repl(cluster_id = "<insert cluster id>")
 ```

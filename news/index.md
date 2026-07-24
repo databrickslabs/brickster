@@ -1,7 +1,117 @@
 # Changelog
 
+## brickster 0.2.14
+
+- Fixed OAuth U2M and M2M authentication across multiple Databricks
+  workspaces in one R session by isolating OAuth clients and cached
+  tokens per workspace
+  ([\#256](https://github.com/databrickslabs/brickster/issues/256),
+  [@zacdav-db](https://github.com/zacdav-db))
+- OAuth tokens are now refreshed 40 seconds before expiry, avoiding
+  Databricks API rejections during the final 30 seconds of a token’s
+  lifetime; this requires [httr2](https://httr2.r-lib.org) 1.3.0 or
+  later
+  ([\#258](https://github.com/databrickslabs/brickster/issues/258),
+  [@zacdav-db](https://github.com/zacdav-db))
+- Added `databricks-cli` authentication support for profiles created by
+  `databricks auth login`;
+  [brickster](https://github.com/databrickslabs/brickster) obtains
+  tokens through `databricks auth token`, caches only the short-lived
+  access token in memory, and leaves durable credentials and refresh to
+  the CLI
+  ([\#258](https://github.com/databrickslabs/brickster/issues/258),
+  [@zacdav-db](https://github.com/zacdav-db))
+- Authentication mode overrides now come from `auth_type` in the
+  selected `.databrickscfg` profile; replace `DATABRICKS_AUTH_TYPE` with
+  the profile field. Environment-only authentication continues to infer
+  the mode from available credentials
+  ([\#258](https://github.com/databrickslabs/brickster/issues/258),
+  [@zacdav-db](https://github.com/zacdav-db))
+- Fixed
+  [`dbWriteTable()`](https://dbi.r-dbi.org/reference/dbWriteTable.html)
+  and
+  [`dbAppendTable()`](https://dbi.r-dbi.org/reference/dbAppendTable.html)
+  standard-path writes for binary columns, which now use Databricks
+  `BINARY` types and `X'...'` literals when no staging volume is
+  configured
+  ([\#246](https://github.com/databrickslabs/brickster/issues/246),
+  [@zacdav-db](https://github.com/zacdav-db))
+- [`dbConnect()`](https://dbi.r-dbi.org/reference/dbConnect.html) now
+  preserves Databricks API error details when its validation query fails
+  ([\#247](https://github.com/databrickslabs/brickster/issues/247),
+  [@zacdav](https://github.com/zacdav))
+- [`db_perform_request()`](https://databrickslabs.github.io/brickster/reference/db_perform_request.md)
+  and
+  [`db_perform_response()`](https://databrickslabs.github.io/brickster/reference/db_perform_response.md)
+  now preserve useful error messages when Databricks returns non-JSON
+  error bodies such as empty, plain-text, or HTML responses
+  ([\#247](https://github.com/databrickslabs/brickster/issues/247),
+  [@zacdav](https://github.com/zacdav))
+- Fixed
+  [`git_source()`](https://databrickslabs.github.io/brickster/reference/git_source.md)
+  erroring when `type` was left at its default
+  ([\#225](https://github.com/databrickslabs/brickster/issues/225),
+  [@m-muecke](https://github.com/m-muecke))
+- Fixed Unity Catalog volume file requests so `db_volume_*` paths
+  containing spaces are encoded correctly
+  ([\#233](https://github.com/databrickslabs/brickster/issues/233),
+  [@zacdav-db](https://github.com/zacdav-db))
+- [`db_cluster_events()`](https://databrickslabs.github.io/brickster/reference/db_cluster_events.md)
+  now forwards the `event_types` argument to the API, which was
+  previously ignored
+  ([\#236](https://github.com/databrickslabs/brickster/issues/236),
+  [@m-muecke](https://github.com/m-muecke))
+- [`db_sql_warehouse_create()`](https://databrickslabs.github.io/brickster/reference/db_sql_warehouse_create.md)
+  and
+  [`db_sql_warehouse_edit()`](https://databrickslabs.github.io/brickster/reference/db_sql_warehouse_edit.md)
+  now forward the `tags` argument to the API, which was previously
+  ignored
+  ([\#240](https://github.com/databrickslabs/brickster/issues/240),
+  [@m-muecke](https://github.com/m-muecke))
+- Unity Catalog list helpers now preserve `next_page_token` metadata in
+  list responses for catalogs, schemas, tables, and volumes; their list
+  arguments are sent as documented query parameters
+  ([\#244](https://github.com/databrickslabs/brickster/issues/244),
+  [@zacdav-db](https://github.com/zacdav-db))
+- [`db_uc_volumes_list()`](https://databrickslabs.github.io/brickster/reference/db_uc_volumes_list.md)
+  now forwards the `max_results`, `include_browse`, and `page_token`
+  arguments to the API, which were previously ignored
+  ([\#228](https://github.com/databrickslabs/brickster/issues/228),
+  [@m-muecke](https://github.com/m-muecke))
+- [`db_vs_indexes_query()`](https://databrickslabs.github.io/brickster/reference/db_vs_indexes_query.md)
+  now sends the `score_threshold` argument to the API, which was
+  previously ignored
+  ([\#235](https://github.com/databrickslabs/brickster/issues/235),
+  [@m-muecke](https://github.com/m-muecke))
+- Added `show_progress` to
+  [`dbConnect()`](https://dbi.r-dbi.org/reference/dbConnect.html) for
+  the DBI backend;
+  [`dbGetQuery()`](https://dbi.r-dbi.org/reference/dbGetQuery.html),
+  [`dbFetch()`](https://dbi.r-dbi.org/reference/dbFetch.html),
+  [`dbWriteTable()`](https://dbi.r-dbi.org/reference/dbWriteTable.html),
+  and dbplyr
+  [`collect()`](https://dplyr.tidyverse.org/reference/compute.html) now
+  use the connection default while preserving per-call `show_progress`
+  overrides
+  ([\#223](https://github.com/databrickslabs/brickster/issues/223),
+  [@zacdav-db](https://github.com/zacdav-db))
+
 ## brickster 0.2.13
 
+CRAN release: 2026-05-20
+
+- Enabled
+  [`db_request()`](https://databrickslabs.github.io/brickster/reference/db_request.md)
+  retries for transient low-level HTTP request failures, improving
+  resilience to intermittent curl/HTTP2 framing errors
+  ([\#215](https://github.com/databrickslabs/brickster/issues/215))
+- Added a DBI connection-level `disposition` setting so
+  [`dbSendQuery()`](https://dbi.r-dbi.org/reference/dbSendQuery.html)
+  and default
+  [`dbGetQuery()`](https://dbi.r-dbi.org/reference/dbGetQuery.html)
+  calls can use `INLINE` results when direct cloud-storage downloads are
+  blocked
+  ([\#205](https://github.com/databrickslabs/brickster/issues/205))
 - Added Azure AD service principal OAuth M2M support (`ARM_CLIENT_ID`,
   `ARM_CLIENT_SECRET`, `ARM_TENANT_ID`) with optional
   `DATABRICKS_AUTH_TYPE` override (`oauth-m2m`, `azure-client-secret`,

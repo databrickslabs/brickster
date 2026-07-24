@@ -13,8 +13,10 @@ dbConnect(
   catalog = NULL,
   schema = NULL,
   staging_volume = NULL,
+  disposition = c("EXTERNAL_LINKS", "INLINE"),
   max_active_connections = 30,
   fetch_timeout = 300,
+  show_progress = TRUE,
   token = db_token(),
   host = db_host(),
   ...
@@ -48,6 +50,12 @@ dbConnect(
 
   Optional volume path for large dataset staging
 
+- disposition:
+
+  Query disposition mode to use by default for DBI query results. Use
+  `"EXTERNAL_LINKS"` for large results or `"INLINE"` for smaller results
+  that must avoid direct cloud-storage result downloads.
+
 - max_active_connections:
 
   Maximum number of concurrent download connections when fetching query
@@ -56,6 +64,11 @@ dbConnect(
 - fetch_timeout:
 
   Timeout in seconds for downloading each result chunk (default: 300)
+
+- show_progress:
+
+  If `TRUE`, show progress updates by default for DBI queries, dbplyr
+  collection, and table writes (default: `TRUE`)
 
 - token:
 

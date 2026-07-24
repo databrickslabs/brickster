@@ -16,7 +16,7 @@ dbWriteTable(
   temporary = FALSE,
   field.types = NULL,
   staging_volume = NULL,
-  show_progress = TRUE,
+  show_progress = conn@show_progress,
   ...
 )
 ```
@@ -61,7 +61,8 @@ dbWriteTable(
 
 - show_progress:
 
-  If `TRUE`, show progress bar for file uploads (default: `TRUE`)
+  If `TRUE`, show progress updates while writing. Defaults to the
+  connection's `show_progress` setting.
 
 - ...:
 

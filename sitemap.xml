@@ -2,6 +2,7 @@
 <url><loc>https://databrickslabs.github.io/brickster/404.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/AGENTS.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/LICENSE.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/SECURITY.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/articles/cluster-management.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/articles/index.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/articles/managing-jobs.html</loc></url>
@@ -74,6 +75,7 @@
 <url><loc>https://databrickslabs.github.io/brickster/reference/dbWriteTable-DatabricksConnection-Id-data.frame-method.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/dbWriteTable-DatabricksConnection-character-data.frame-method.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_append_with_select_values.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/db_assert_show_progress.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_assert_statement.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_assert_valid_conn.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_clean_table_name.html</loc></url>

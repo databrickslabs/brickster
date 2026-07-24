@@ -16,6 +16,7 @@ The `expand_tasks` parameter will return task and cluster details for
 each job (default `FALSE)`.
 
 ``` r
+
 # list all jobs within Databricks workspace
 # can control limit, offset, and if cluster/jobs details are returned
 jobs <- db_jobs_list(limit = 10)
@@ -31,6 +32,7 @@ interface in Databricks or using
 [`db_jobs_list()`](https://databrickslabs.github.io/brickster/reference/db_jobs_list.md).
 
 ``` r
+
 # details of a specific job
 job_details <- db_jobs_get(job_id = jobs[[1]]$job_id)
 ```
@@ -44,15 +46,15 @@ particular schedule, or by a direct trigger such as
 There are a number of functions that are specific to job runs execution
 and metadata:
 
-|                                   Purpose |                                                    Function                                                    |
-|------------------------------------------:|:--------------------------------------------------------------------------------------------------------------:|
-|        Trigger new run of an existing job |         [`db_jobs_run_now()`](https://databrickslabs.github.io/brickster/reference/db_jobs_run_now.md)         |
-|                        List runs of a job |       [`db_jobs_runs_list()`](https://databrickslabs.github.io/brickster/reference/db_jobs_runs_list.md)       |
-|  Retrieve metadata for a specific job run |        [`db_jobs_runs_get()`](https://databrickslabs.github.io/brickster/reference/db_jobs_runs_get.md)        |
+| Purpose | Function |
+|---:|:--:|
+| Trigger new run of an existing job | [`db_jobs_run_now()`](https://databrickslabs.github.io/brickster/reference/db_jobs_run_now.md) |
+| List runs of a job | [`db_jobs_runs_list()`](https://databrickslabs.github.io/brickster/reference/db_jobs_runs_list.md) |
+| Retrieve metadata for a specific job run | [`db_jobs_runs_get()`](https://databrickslabs.github.io/brickster/reference/db_jobs_runs_get.md) |
 | Retrieve metadata for a specific task run | [`db_jobs_runs_get_output()`](https://databrickslabs.github.io/brickster/reference/db_jobs_runs_get_output.md) |
-| Export code and/or dashboard for task run |     [`db_jobs_runs_export()`](https://databrickslabs.github.io/brickster/reference/db_jobs_runs_export.md)     |
-|                Delete record of a job run |     [`db_jobs_runs_delete()`](https://databrickslabs.github.io/brickster/reference/db_jobs_runs_delete.md)     |
-|                       Cancel run of a job |     [`db_jobs_runs_cancel()`](https://databrickslabs.github.io/brickster/reference/db_jobs_runs_cancel.md)     |
+| Export code and/or dashboard for task run | [`db_jobs_runs_export()`](https://databrickslabs.github.io/brickster/reference/db_jobs_runs_export.md) |
+| Delete record of a job run | [`db_jobs_runs_delete()`](https://databrickslabs.github.io/brickster/reference/db_jobs_runs_delete.md) |
+| Cancel run of a job | [`db_jobs_runs_cancel()`](https://databrickslabs.github.io/brickster/reference/db_jobs_runs_cancel.md) |
 
 When using functions such as `db_jobs_run_get_output()` and
 [`db_jobs_runs_export()`](https://databrickslabs.github.io/brickster/reference/db_jobs_runs_export.md)
@@ -85,6 +87,7 @@ Below is the creation of a simple job that runs a notebook and has a
 paused schedule:
 
 ``` r
+
 # define a job task
 simple_task <- job_task(
   task_key = "simple_task",
@@ -103,6 +106,7 @@ simple_task <- job_task(
 ```
 
 ``` r
+
 # create job with simple task
 simple_task_job <- db_jobs_create(
   name = "brickster example: simple",
@@ -126,6 +130,7 @@ Whilst this job runs the same notebook each time for the sake of example
 it demonstrates how to build dependencies.
 
 ``` r
+
 # one cluster definition, repeatedly use for each task
 multitask_cluster <- new_cluster(
   spark_version = "16.4.x-scala2.12",
@@ -165,6 +170,7 @@ task_c <- job_task(
 ```
 
 ``` r
+
 # create job with multiple tasks
 multitask_job <- db_jobs_create(
   name = "brickster example: multi-task",
@@ -194,6 +200,7 @@ shares a single cluster for each task.
 `new_cluster` is replaced with `job_cluster_key` in each task:
 
 ``` r
+
 # create three simple tasks that will depend on each other
 # this time we will use a shared cluster to reduce startup overhead
 # task_a -> task_b -> task_c
@@ -227,6 +234,7 @@ call where it accepts a named list of `new_clusters()`, we will reuse
 our example from earlier:
 
 ``` r
+
 # define job_clusters as a named list of new_cluster()
 multitask_job_with_reuse <- db_jobs_create(
   name = "brickster example: multi-task with reuse",
@@ -253,6 +261,7 @@ permits the use of an `idempotency_token` which can avoid re-submission
 of a run.
 
 ``` r
+
 # submit a one off job run
 # reuse the simple task from first example
 # idempotency_token guarentees no additional triggers
@@ -275,6 +284,7 @@ In this example the repo will have a folder `example` which contains
 `simple-notebook.py`.
 
 ``` r
+
 # define a job task
 # this time, the notebook_path is relative to the git root directory
 # omit file extensions like .py or .r
@@ -301,6 +311,7 @@ use
 to point to the repo containing the notebook.
 
 ``` r
+
 # create job with simple task
 simple_task_job <- db_jobs_create(
   name = "brickster example: simple",
@@ -327,6 +338,7 @@ simple_task_job <- db_jobs_create(
 Jobs can be partially updated, for example to rename an existing job:
 
 ``` r
+
 # only change the job name
 db_jobs_update(
   job_id = multitask_job_with_reuse$job_id,
@@ -337,6 +349,7 @@ db_jobs_update(
 Adding a timeout and adjusting maximum concurrent runs allowed:
 
 ``` r
+
 # adding timeout and increasing max concurrent runs
 db_jobs_update(
   job_id = multitask_job_with_reuse$job_id,
@@ -397,6 +410,7 @@ The only example yet to be covered is
 it accepts parameters as named lists:
 
 ``` r
+
 # invoke simple job example
 triggered_run <- db_jobs_run_now(job_id = simple_task_job$job_id)
 ```
@@ -404,6 +418,7 @@ triggered_run <- db_jobs_run_now(job_id = simple_task_job$job_id)
 Runs can also be cancelled:
 
 ``` r
+
 # cancel run whilst it is in progress
 db_jobs_runs_cancel(run_id = triggered_run$run_id)
 ```
@@ -419,6 +434,7 @@ respectively.
 Cleaning up all jobs created in this documentation:
 
 ``` r
+
 db_jobs_delete(job_id = simple_task_job$job_id)
 db_jobs_delete(job_id = multitask_job$job_id)
 db_jobs_delete(job_id = multitask_job_with_reuse$job_id)

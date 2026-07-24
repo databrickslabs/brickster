@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="favicon.ico">
 <link rel="manifest" href="site.webmanifest">
 <script src="lightswitch.js"></script><script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="R Toolkit for Databricks">
 <meta name="description" content="Collection of utilities that improve using Databricks from R. Primarily functions that wrap specific Databricks APIs (&lt;https://docs.databricks.com/api&gt;), RStudio connection pane support, quality of life functions to make Databricks simpler to use.">
@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="index.html">brickster</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -105,6 +105,12 @@
 <span><span class="co"># list all SQL warehouses</span></span>
 <span><span class="va">warehouses</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/db_sql_warehouse_list.html">db_sql_warehouse_list</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Refer to the <a href="https://databrickslabs.github.io/brickster/articles/setup-auth.html">“Connect to a Databricks Workspace”</a> article for more details on getting authentication configured.</p>
+<p>If you already authenticated with a profile created by <code>databricks auth login</code>, <a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> can reuse its short-lived OAuth credentials:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span></span>
+<span>  use_databrickscfg <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  db_profile <span class="op">=</span> <span class="st">"&lt;profile-name&gt;"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
@@ -113,7 +119,7 @@
 <h3 id="dbi-backend">
 <code>{DBI}</code> Backend<a class="anchor" aria-label="anchor" href="#dbi-backend"></a>
 </h3>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dbi.r-dbi.org" class="external-link">DBI</a></span><span class="op">)</span></span>
 <span></span>
@@ -146,7 +152,7 @@
 <div class="section level3">
 <h3 id="download--upload-to-volume">Download &amp; Upload to Volume<a class="anchor" aria-label="anchor" href="#download--upload-to-volume"></a>
 </h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://readr.tidyverse.org" class="external-link">readr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a></span><span class="op">)</span></span>
 <span></span>
@@ -170,7 +176,7 @@
 <h3 id="databricks-repl">Databricks REPL<a class="anchor" aria-label="anchor" href="#databricks-repl"></a>
 </h3>
 <p>Run commands against an existing interactive Databricks cluster, read this <a href="https://databrickslabs.github.io/brickster/articles/remote-repl.html">article</a> for more details.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># commands after this will run on the interactive cluster</span></span>
@@ -182,12 +188,12 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"brickster"</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="development-version">Development Version<a class="anchor" aria-label="anchor" href="#development-version"></a>
 </h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"databrickslabs/brickster"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -202,88 +208,88 @@
 <col width="26%">
 <col width="26%">
 </colgroup>
-<thead><tr class="header">
+<thead><tr>
 <th>API</th>
 <th>Available</th>
 <th>Version</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td><a href="https://docs.databricks.com/api/workspace/dbfs" class="external-link">DBFS</a></td>
 <td>Yes</td>
 <td>2.0</td>
 </tr>
-<tr class="even">
+<tr>
 <td><a href="https://docs.databricks.com/api/workspace/secrets" class="external-link">Secrets</a></td>
 <td>Yes</td>
 <td>2.0</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><a href="https://docs.databricks.com/api/workspace/repos" class="external-link">Repos</a></td>
 <td>Yes</td>
 <td>2.0</td>
 </tr>
-<tr class="even">
+<tr>
 <td><a href="https://docs.databricks.com/api/workspace/modelregistry" class="external-link">mlflow Model Registry</a></td>
 <td>Yes</td>
 <td>2.0</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><a href="https://docs.databricks.com/api/workspace/clusters" class="external-link">Clusters</a></td>
 <td>Yes</td>
 <td>2.0</td>
 </tr>
-<tr class="even">
+<tr>
 <td><a href="https://docs.databricks.com/api/workspace/libraries" class="external-link">Libraries</a></td>
 <td>Yes</td>
 <td>2.0</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><a href="https://docs.databricks.com/api/workspace/workspace" class="external-link">Workspace</a></td>
 <td>Yes</td>
 <td>2.0</td>
 </tr>
-<tr class="even">
+<tr>
 <td><a href="https://docs.databricks.com/api/workspace/warehouses" class="external-link">Endpoints</a></td>
 <td>Yes</td>
 <td>2.0</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><a href="https://docs.databricks.com/api/workspace/queryhistory" class="external-link">Query History</a></td>
 <td>Yes</td>
 <td>2.0</td>
 </tr>
-<tr class="even">
+<tr>
 <td><a href="https://docs.databricks.com/api/workspace/jobs" class="external-link">Jobs</a></td>
 <td>Yes</td>
 <td>2.1</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><a href="https://docs.databricks.com/api/workspace/files" class="external-link">Volumes (Files)</a></td>
 <td>Yes</td>
 <td>2.0</td>
 </tr>
-<tr class="even">
+<tr>
 <td><a href="https://docs.databricks.com/api/workspace/statementexecution" class="external-link">SQL Statement Execution</a></td>
 <td>Yes</td>
 <td>2.0</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><a href="https://docs.databricks.com/api/workspace/commandexecution" class="external-link">REST 1.2 Commands</a></td>
 <td>Partially</td>
 <td>1.2</td>
 </tr>
-<tr class="even">
+<tr>
 <td><a href="https://docs.databricks.com/api/workspace/tables" class="external-link">Unity Catalog - Tables</a></td>
 <td>Yes</td>
 <td>2.1</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><a href="https://docs.databricks.com/api/workspace/volumes" class="external-link">Unity Catalog - Volumes</a></td>
 <td>Yes</td>
 <td>2.1</td>
 </tr>
-<tr class="even">
+<tr>
 <td><a href="https://docs.databricks.com/api/workspace/catalogs" class="external-link">Unity Catalog</a></td>
 <td>Partially</td>
 <td>2.1</td>
@@ -339,7 +345,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>
