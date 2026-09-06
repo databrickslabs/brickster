@@ -1215,7 +1215,9 @@ setMethod(
 #' @param row.names If `TRUE`, preserve row names as a column
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
 #' @param field.types Named character vector of SQL types for columns
-#' @param staging_volume Optional volume path for large dataset staging
+#' @param staging_volume Optional volume path for large dataset staging. Standard
+#'   writes validate the generated SQL against the 16 MiB UTF-8 query-text limit
+#'   before creating or replacing a table. Use a volume if this limit is exceeded.
 #' @param show_progress If `TRUE`, show progress updates while writing.
 #'   Defaults to the connection's `show_progress` setting.
 #' @param ... Additional arguments.
@@ -1337,7 +1339,9 @@ setMethod(
 #' @param row.names If `TRUE`, preserve row names as a column
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
 #' @param field.types Named character vector of SQL types for columns
-#' @param staging_volume Optional volume path for large dataset staging
+#' @param staging_volume Optional volume path for large dataset staging. Standard
+#'   writes validate the generated SQL against the 16 MiB UTF-8 query-text limit
+#'   before creating or replacing a table. Use a volume if this limit is exceeded.
 #' @param show_progress If `TRUE`, show progress updates while writing.
 #'   Defaults to the connection's `show_progress` setting.
 #' @param ... Additional arguments.
@@ -1464,7 +1468,9 @@ setMethod(
 #' @param row.names If `TRUE`, preserve row names as a column
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
 #' @param field.types Named character vector of SQL types for columns
-#' @param staging_volume Optional volume path for large dataset staging
+#' @param staging_volume Optional volume path for large dataset staging. Standard
+#'   writes validate the generated SQL against the 16 MiB UTF-8 query-text limit
+#'   before creating or replacing a table. Use a volume if this limit is exceeded.
 #' @param show_progress If `TRUE`, show progress updates while writing.
 #'   Defaults to the connection's `show_progress` setting.
 #' @param ... Additional arguments.
@@ -1682,6 +1688,8 @@ db_create_table_as_select_values <- function(
     )
   }
 
+  insert_sql <- if (nrow(value) > 0) db_generate_insert_sql(conn, quoted_name, value) else NULL
+
   # First create the table with explicit column definitions to avoid
   # Databricks inferring overly specific types (e.g., DECIMAL(6, 4)).
   db_create_table_from_data(
@@ -1700,12 +1708,29 @@ db_create_table_as_select_values <- function(
 
   # Populate the newly created table using INSERT ... SELECT ... VALUES so that
   # the schema we just created is preserved for future appends.
-  db_append_with_select_values(conn, quoted_name, value)
+  db_append_with_select_values(conn, quoted_name, value, insert_sql = insert_sql)
 }
 
 #' Append data using atomic INSERT INTO with SELECT VALUES
 #' @keywords internal
-db_append_with_select_values <- function(conn, quoted_name, value) {
+db_append_with_select_values <- function(conn, quoted_name, value, insert_sql = NULL) {
+  if (is.null(insert_sql)) insert_sql <- db_generate_insert_sql(conn, quoted_name, value)
+  db_sql_assert_statement_size(insert_sql)
+  db_sql_exec_and_wait(
+    warehouse_id = conn@warehouse_id,
+    statement = insert_sql,
+    catalog = if (nzchar(conn@catalog)) conn@catalog else NULL,
+    schema = if (nzchar(conn@schema)) conn@schema else NULL,
+    disposition = "INLINE",
+    format = "JSON_ARRAY",
+    wait_timeout = "10s",
+    host = conn@host,
+    token = conn@token,
+    show_progress = FALSE
+  )
+}
+
+db_generate_insert_sql <- function(conn, quoted_name, value) {
   # Get column names with proper quoting
   col_names <- purrr::map_chr(names(value), \(x) dbQuoteIdentifier(conn, x))
   col_list <- paste(col_names, collapse = ", ")
@@ -1723,19 +1748,8 @@ db_append_with_select_values <- function(conn, quoted_name, value) {
     values_sql
   )
 
-  # Execute using helper function
-  db_sql_exec_and_wait(
-    warehouse_id = conn@warehouse_id,
-    statement = insert_sql,
-    catalog = if (nzchar(conn@catalog)) conn@catalog else NULL,
-    schema = if (nzchar(conn@schema)) conn@schema else NULL,
-    disposition = "INLINE",
-    format = "JSON_ARRAY",
-    wait_timeout = "10s",
-    host = conn@host,
-    token = conn@token,
-    show_progress = FALSE
-  )
+  db_sql_assert_statement_size(insert_sql)
+  insert_sql
 }
 
 #' Check if volume method should be used

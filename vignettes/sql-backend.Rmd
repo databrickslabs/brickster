@@ -105,7 +105,12 @@ When writing data (append, overwrite, etc) there are two possible behaviours:
 1.  In-line SQL statement write
 2.  Stage `.parquet` files to a Volume directory and `COPY INTO` or `CTAS`
 
-For data larger than 50k rows `{brickster}` will only permit the use of method (2), which requires `staging_volume` to be specified when establishing the connection, or directly to `dbWriteQuery`.
+For data larger than 50k rows `{brickster}` will only permit the use of method (2), which requires `staging_volume` to be specified when establishing the connection, or directly to `dbWriteTable`.
+
+Standard writes must also fit within the 16 MiB UTF-8 query-text limit, including
+SQL syntax and escaped values. `{brickster}` checks the generated statement
+before creating or replacing the target table. If this limit is exceeded, use
+`staging_volume` even when the data has fewer than 50k rows.
 
 Ensure that `staging_volume` is a valid Volume path and you have permission to write files.
 

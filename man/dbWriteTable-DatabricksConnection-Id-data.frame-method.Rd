@@ -35,7 +35,9 @@
 
 \item{field.types}{Named character vector of SQL types for columns}
 
-\item{staging_volume}{Optional volume path for large dataset staging}
+\item{staging_volume}{Optional volume path for large dataset staging. Standard
+writes validate the generated SQL against the 16 MiB UTF-8 query-text limit
+before creating or replacing a table. Use a volume if this limit is exceeded.}
 
 \item{show_progress}{If \code{TRUE}, show progress updates while writing.
 Defaults to the connection's \code{show_progress} setting.}

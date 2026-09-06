@@ -24,7 +24,8 @@ db_sql_exec_and_wait(
 \item{warehouse_id}{String, ID of warehouse upon which to execute a statement.}
 
 \item{statement}{String, the SQL statement to execute. The statement can
-optionally be parameterized, see \code{parameters}.}
+optionally be parameterized, see \code{parameters}. Query text must be at most
+16 MiB when encoded as UTF-8; larger statements are rejected locally.}
 
 \item{catalog}{String, sets default catalog for statement execution, similar
 to \verb{USE CATALOG} in SQL.}

@@ -4,7 +4,7 @@
 \alias{db_append_with_select_values}
 \title{Append data using atomic INSERT INTO with SELECT VALUES}
 \usage{
-db_append_with_select_values(conn, quoted_name, value)
+db_append_with_select_values(conn, quoted_name, value, insert_sql = NULL)
 }
 \description{
 Append data using atomic INSERT INTO with SELECT VALUES

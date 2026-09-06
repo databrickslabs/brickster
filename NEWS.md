@@ -1,5 +1,7 @@
 # brickster (development version)
 
+-   SQL requests now reject query text above 16 MiB in UTF-8 before sending it. Standard `dbWriteTable()` writes serialize and check their SQL before creating or replacing the target; use `staging_volume` when escaped values exceed this limit.
+
 -   `db_volume_upload_dir()` now creates each parent directory only once, avoiding repeated API calls for files in the same directory.
 -   Standard-path table writes now detect binary columns once per column, avoiding quadratic serialization time for lists of raw vectors.
 -   Volume file requests now encode reserved characters and literal percent sequences in paths correctly, preventing `#` and `?` in filenames from changing the request target.

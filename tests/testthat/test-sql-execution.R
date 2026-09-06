@@ -33,6 +33,22 @@ test_that("SQL Execution API - don't perform", {
   expect_s3_class(resp_status, "httr2_request")
 })
 
+test_that("SQL requests enforce the UTF-8 query-text byte boundary before construction", {
+  statement <- strrep("é", 8 * 1024^2)
+  req <- db_sql_exec_query(statement, "wh", host = "mock_host", token = "mock_token", perform_request = FALSE)
+  expect_s3_class(req, "httr2_request")
+  expect_equal(nchar(req$body$data$statement, type = "bytes"), 16 * 1024^2)
+  expect_error(db_sql_exec_query(paste0(statement, "x"), "wh", host = "mock_host", token = "mock_token", perform_request = FALSE),
+    class = "brickster_sql_statement_too_large")
+})
+
+test_that("SQL statement validation rejects missing or non-scalar text", {
+  purrr::walk(list(NA_character_, character(), c("SELECT 1", "SELECT 2"), 1), function(statement) {
+    expect_error(db_sql_exec_query(statement, "wh", host = "mock_host", token = "mock_token", perform_request = FALSE),
+      "single non-missing character string")
+  })
+})
+
 skip_on_cran()
 skip_unless_authenticated()
 skip_unless_aws_workspace()

@@ -8,7 +8,8 @@
 #' for detailed material on interaction of the various parameters and general recommendations
 #'
 #' @param statement String, the SQL statement to execute. The statement can
-#' optionally be parameterized, see `parameters`.
+#' optionally be parameterized, see `parameters`. Query text must be at most
+#' 16 MiB when encoded as UTF-8; larger statements are rejected locally.
 #' @param warehouse_id String, ID of warehouse upon which to execute a statement.
 #' @param catalog String, sets default catalog for statement execution, similar
 #' to `USE CATALOG` in SQL.
@@ -90,6 +91,7 @@ db_sql_exec_query <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
+  db_sql_assert_statement_size(statement)
   disposition <- match.arg(disposition)
   format <- match.arg(format)
   on_wait_timeout <- match.arg(on_wait_timeout)
@@ -122,6 +124,20 @@ db_sql_exec_query <- function(
   } else {
     req
   }
+}
+
+db_sql_assert_statement_size <- function(statement) {
+  if (!is.character(statement) || length(statement) != 1L || is.na(statement)) {
+    cli::cli_abort("{.arg statement} must be a single non-missing character string.")
+  }
+  size <- nchar(enc2utf8(statement), type = "bytes")
+  if (size > 16 * 1024^2) {
+    cli::cli_abort(c(
+      "SQL statement is {size} bytes; the maximum query-text size is 16 MiB (16777216 bytes).",
+      "i" = "Reduce the SQL text, or supply {.arg staging_volume} for DBI table writes."
+    ), class = "brickster_sql_statement_too_large")
+  }
+  invisible(statement)
 }
 
 #' Cancel SQL Query
