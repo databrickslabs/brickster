@@ -193,3 +193,27 @@ test_that("db_volume_download_dir - don't perform", {
   )
   
 })
+
+test_that("volume directory listing supports page query parameters", {
+  req <- db_volume_list(
+    "/Volumes/c/s/v/path",
+    host = "mock_host",
+    token = "mock_token",
+    perform_request = FALSE,
+    page_size = 100,
+    page_token = "next+/="
+  )
+  expect_s3_class(req, "httr2_request")
+  expect_identical(req$method, "GET")
+  expect_identical(httr2::url_parse(req$url)$query, list(page_size = "100", page_token = "next+/="))
+  expect_null(req$body)
+
+  expect_error(
+    db_volume_list("/Volumes/c/s/v", page_size = -1, host = "mock_host", token = "mock_token", perform_request = FALSE),
+    "page_size"
+  )
+  expect_error(
+    db_volume_list("/Volumes/c/s/v", page_token = NA_character_, host = "mock_host", token = "mock_token", perform_request = FALSE),
+    "page_token"
+  )
+})

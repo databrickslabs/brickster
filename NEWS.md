@@ -1,3 +1,7 @@
+# brickster (development version)
+
+-   `db_volume_list()` now accepts `page_size` and `page_token`. Directory downloads and recursive deletion follow every listing page, preventing files beyond the first page from being omitted.
+
 # brickster 0.2.14
 
 -   Fixed OAuth U2M and M2M authentication across multiple Databricks workspaces in one R session by isolating OAuth clients and cached tokens per workspace (#256, @zacdav-db)
