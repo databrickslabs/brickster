@@ -1,5 +1,7 @@
 # brickster (development version)
 
+-   External SQL results now download only required chunks to temporary files in bounded batches. `dbplyr::collect(n = ...)` passes its limit to query execution and probes at most one extra row for truncation warnings, avoiding full-result downloads for limited reads.
+
 -   INLINE SQL reads through `db_sql_query()` and `dbFetch()` now follow all required result chunks, stop at the requested row limit, and decode string/null values using the manifest schema. Dates, timestamps, booleans, numeric values, and binary data receive R representations; BIGINT and DECIMAL remain character to preserve precision. Empty results use matching column types.
 
 # brickster 0.2.14

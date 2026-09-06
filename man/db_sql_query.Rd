@@ -103,4 +103,12 @@ BINARY columns are lists of raw vectors, with \code{NULL} for SQL nulls and \cod
 for empty values. LONG (BIGINT) and DECIMAL remain character to avoid precision
 loss; complex types and timestamps without time zones also remain character.
 SQL nulls become typed missing values. Empty results use the same type rules.
+
+EXTERNAL_LINKS downloads use temporary files in batches of at most
+\code{max_active_connections} chunks. Manifest row offsets select the chunks needed
+for \code{row_limit}; without those offsets, limited reads fetch one chunk at a time.
+The last required chunk is downloaded in full, then sliced before conversion
+to an R data frame when Arrow is available. Temporary files are removed after
+each batch, including on errors. The returned result still requires memory
+proportional to the requested rows.
 }

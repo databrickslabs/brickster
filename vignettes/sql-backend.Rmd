@@ -82,6 +82,12 @@ binary columns are lists of raw vectors, with `NULL` for SQL null and `raw(0)` f
 empty data. Timestamps use UTC, while timestamps without time zones remain strings.
 See `db_sql_query()` for the full conversion rules.
 
+With `disposition = "EXTERNAL_LINKS"`, chunks download to temporary files in
+batches controlled by `max_active_connections`. Row limits skip later chunks,
+and temporary files are removed after each batch. The returned data still needs
+memory proportional to its size. `collect(n = ...)` also passes its limit to
+query execution; truncation warnings use a one-row probe.
+
 Execute SQL directly and return results as data frames:
 
 ```{r}

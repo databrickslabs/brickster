@@ -24,7 +24,7 @@ db_sql_fetch_results(
 
 \item{fetch_timeout}{Integer, timeout in seconds for downloading each result chunk}
 
-\item{row_limit}{Integer, limit number of rows returned (applied after fetch)}
+\item{row_limit}{Integer, limit number of rows returned and chunks downloaded}
 
 \item{host}{Databricks host}
 

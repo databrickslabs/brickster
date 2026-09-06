@@ -552,7 +552,7 @@ db_sql_create_empty_result <- function(manifest) {
 #' @param return_arrow Boolean, return arrow Table instead of tibble
 #' @param max_active_connections Integer for concurrent downloads
 #' @param fetch_timeout Integer, timeout in seconds for downloading each result chunk
-#' @param row_limit Integer, limit number of rows returned (applied after fetch)
+#' @param row_limit Integer, limit number of rows returned and chunks downloaded
 #' @param host Databricks host
 #' @param token Databricks token
 #' @param show_progress If `TRUE`, show progress updates during result fetching (default: `TRUE`)
@@ -568,7 +568,15 @@ db_sql_fetch_results <- function(
   token = db_token(),
   show_progress = TRUE
 ) {
+  if (!is.null(row_limit) && (!is.numeric(row_limit) || length(row_limit) != 1L ||
+      is.na(row_limit) || row_limit < 0 || (is.finite(row_limit) && row_limit != floor(row_limit)))) {
+    cli::cli_abort("{.arg row_limit} must be a non-negative integer, {.val Inf}, or {.val NULL}.")
+  }
   manifest <- resp$manifest
+  if (isTRUE(row_limit == 0) || isTRUE(manifest$total_row_count == 0)) {
+    result <- db_sql_create_empty_result(manifest)
+    return(if (return_arrow && rlang::is_installed("arrow")) arrow::Table$create(result) else result)
+  }
   statement_id <- resp$statement_id
   total_chunks <- manifest$total_chunk_count
 
@@ -615,48 +623,8 @@ db_sql_fetch_results_fast <- function(
   token = db_token(),
   show_progress = TRUE
 ) {
-  if (show_progress) {
-    total_rows <- manifest$total_row_count
-    cli::cli_progress_step(
-      "Fetching {cli::no(total_rows)} rows",
-      "Downloaded {cli::no(total_rows)} rows"
-    )
-  }
-
-  link <- resp$result$external_links[[1]]$external_link
-
-  req <- httr2::request(link) |>
-    httr2::req_retry(max_tries = 3, backoff = ~1)
-
-  if (!is.null(fetch_timeout)) {
-    req <- httr2::req_timeout(req, fetch_timeout)
-  }
-
-  ipc_resp <- httr2::req_perform(req)
-
-  if (show_progress) {
-    cli::cli_progress_done()
-    cli::cli_progress_step("Processing results")
-  }
-
-  if (rlang::is_installed("arrow")) {
-    results <- arrow::read_ipc_stream(ipc_resp$body, as_data_frame = FALSE)
-    if (!return_arrow) {
-      results <- tibble::as_tibble(results)
-    }
-  } else {
-    results <- tibble::as_tibble(nanoarrow::read_nanoarrow(ipc_resp$body))
-  }
-
-  if (show_progress) {
-    cli::cli_progress_done()
-  }
-
-  if (!is.null(row_limit) && row_limit > 0 && nrow(results) > row_limit) {
-    results <- results[1:row_limit, ]
-  }
-
-  results
+  db_sql_fetch_external_chunks(statement_id, manifest, 0L, return_arrow,
+    1L, fetch_timeout, row_limit, host, token, show_progress, first_result = resp$result)
 }
 
 #' Fetch SQL Query Results (Parallel Path)
@@ -674,93 +642,115 @@ db_sql_fetch_results_parallel <- function(
   token = db_token(),
   show_progress = TRUE
 ) {
-  # Show fetching progress with row count
-  if (show_progress) {
-    total_rows <- manifest$total_row_count
-    cli::cli_progress_step(
-      "Fetching {cli::no(total_rows)} rows",
-      "Downloaded {cli::no(total_rows)} rows"
-    )
+  db_sql_fetch_external_chunks(statement_id, manifest, seq.int(0L, last_chunk_index),
+    return_arrow, max_active_connections, fetch_timeout, row_limit, host, token, show_progress)
+}
+
+db_sql_fetch_external_chunks <- function(statement_id, manifest, indices,
+  return_arrow, max_active_connections, fetch_timeout, row_limit, host, token,
+  show_progress, first_result = NULL) {
+  if (!is.numeric(max_active_connections) || length(max_active_connections) != 1L ||
+      is.na(max_active_connections) || !is.finite(max_active_connections) ||
+      max_active_connections < 1 || max_active_connections != floor(max_active_connections)) {
+    cli::cli_abort("{.arg max_active_connections} must be a positive integer.")
   }
-
-  # Create requests for all result chunks
-  reqs <- purrr::map(
-    .x = seq.int(last_chunk_index, from = 0),
-    .f = db_sql_exec_result,
-    statement_id = statement_id,
-    host = host,
-    token = token,
-    perform_request = FALSE
-  )
-
-  # Get external links (use low parallelism for link retrieval)
-  resps <- httr2::req_perform_parallel(reqs, max_active = 3, progress = FALSE)
-
-  links <- resps |>
-    purrr::map(httr2::resp_body_json) |>
-    purrr::map_chr(\(x) x$external_links[[1]]$external_link) |>
-    purrr::map(function(link) {
-      req <- httr2::request(link) |>
-        httr2::req_retry(max_tries = 3, backoff = ~1)
-
-      if (!is.null(fetch_timeout)) {
-        req <- httr2::req_timeout(req, fetch_timeout)
+  limit <- min(row_limit %||% Inf, manifest$total_row_count %||% Inf)
+  metadata <- manifest$chunks
+  has_row_counts <- length(metadata) == length(indices) && length(metadata) > 0L &&
+    all(purrr::map_lgl(metadata, ~ !is.null(.x$row_offset) && !is.null(.x$row_count)))
+  if (has_row_counts) {
+    metadata <- metadata[order(purrr::map_dbl(metadata, "row_offset"))]
+    counts <- purrr::map_dbl(metadata, "row_count")
+    offsets <- purrr::map_dbl(metadata, "row_offset")
+    if (any(counts < 0) || any(offsets != c(0, head(cumsum(counts), -1L)))) {
+      cli::cli_abort("External result chunk metadata contains overlapping or missing rows.")
+    }
+    metadata <- purrr::keep(metadata, ~ .x$row_offset < limit && .x$row_count > 0)
+    indices <- purrr::map_int(metadata, "chunk_index")
+  }
+  batch_size <- if (has_row_counts || is.null(row_limit) || is.infinite(row_limit)) max_active_connections else 1L
+  chunks <- list()
+  fetched <- 0
+  while (length(indices) > 0L && fetched < limit) {
+    batch <- head(indices, batch_size)
+    indices <- tail(indices, -length(batch))
+    if (!is.null(first_result)) {
+      links <- first_result$external_links
+      expiration <- if (length(links) > 0L) links[[1]]$expiration else NULL
+      if (!is.null(expiration)) {
+        expires_at <- db_sql_parse_inline_timestamp(expiration)
+        if (is.na(expires_at) || expires_at <= Sys.time()) first_result <- NULL
       }
-
-      req
-    })
-
-  # Download with progress bar
-  ipc_data <- httr2::req_perform_parallel(
-    links,
-    max_active = max_active_connections,
-    progress = if (show_progress) {
-      list(
-        clear = TRUE,
-        format = "Downloading {cli::pb_bar} {cli::pb_percent} [{cli::pb_elapsed}]",
-        format_failed = "Download failed [{cli::pb_elapsed}]",
-        type = "iterator"
-      )
+    }
+    if (is.null(first_result)) {
+      results <- purrr::map(batch, db_sql_exec_result, statement_id = statement_id,
+        host = host, token = token)
     } else {
-      FALSE
+      results <- list(first_result)
+      first_result <- NULL
     }
-  )
-
-  if (show_progress) {
-    cli::cli_progress_done()
-    cli::cli_progress_step("Processing results")
+    links <- purrr::map2(results, batch, function(result, index) {
+      matching <- purrr::keep(result$external_links, ~ identical(as.integer(.x$chunk_index), as.integer(index)))
+      if (length(matching) == 0L && length(result$external_links) == 1L &&
+          is.null(result$external_links[[1]]$chunk_index)) matching <- result$external_links
+      if (length(matching) != 1L) cli::cli_abort("Expected one external link for result chunk {index}.")
+      link <- matching[[1]]
+      expected <- purrr::detect(metadata, ~ .x$chunk_index == index)$row_count
+      link$row_count <- link$row_count %||% expected
+      if (!is.null(expected) && link$row_count != expected) {
+        cli::cli_abort("External result chunk {index} row count does not match the manifest.")
+      }
+      link
+    })
+    decoded <- db_sql_download_external_batch(links, limit - fetched, return_arrow,
+      max_active_connections, fetch_timeout, show_progress)
+    chunks <- c(chunks, decoded)
+    fetched <- fetched + sum(purrr::map_dbl(decoded, nrow))
   }
+  if (is.finite(limit) && fetched < limit) {
+    cli::cli_abort("External results ended before the expected {limit} rows; received {fetched}.")
+  }
+  if (length(chunks) == 0L) return(db_sql_create_empty_result(manifest))
+  if (length(chunks) == 1L) return(chunks[[1]])
+  if (inherits(chunks[[1]], "Table")) do.call(arrow::concat_tables, chunks) else purrr::list_rbind(chunks)
+}
 
-  if (rlang::is_installed("arrow")) {
-    # Read IPC data as arrow tables
-    arrow_tbls <- purrr::map(
-      ipc_data,
-      ~ arrow::read_ipc_stream(.x$body, as_data_frame = FALSE)
-    )
-    results <- do.call(arrow::concat_tables, arrow_tbls)
-
-    # Convert to tibble unless arrow table requested
-    if (!return_arrow) {
-      results <- tibble::as_tibble(results)
+db_sql_download_external_batch <- function(links, row_limit, return_arrow,
+  max_active_connections, fetch_timeout, show_progress) {
+  directory <- fs::file_temp("brickster-results-")
+  fs::dir_create(directory)
+  on.exit(fs::dir_delete(directory), add = TRUE)
+  paths <- fs::path(directory, paste0(seq_along(links), ".arrow"))
+  reqs <- purrr::map(links, function(link) {
+    req <- httr2::request(link$external_link) |>
+      httr2::req_retry(max_tries = 3, backoff = ~1)
+    if (!is.null(fetch_timeout)) req <- httr2::req_timeout(req, fetch_timeout)
+    req
+  })
+  httr2::req_perform_parallel(reqs, paths = paths, max_active = max_active_connections,
+    progress = show_progress)
+  remaining <- new.env(parent = emptyenv())
+  remaining$rows <- row_limit
+  purrr::map2(paths, links, function(path, link) {
+    if (rlang::is_installed("arrow")) {
+      result <- arrow::read_ipc_stream(path, as_data_frame = FALSE)
+      if (!is.null(link$row_count) && nrow(result) != link$row_count) {
+        cli::cli_abort("Downloaded result chunk row count does not match its metadata.")
+      }
+      count <- min(nrow(result), remaining$rows)
+      result <- result$Slice(0, count)
+      if (!return_arrow) result <- tibble::as_tibble(result)
+    } else {
+      result <- tibble::as_tibble(nanoarrow::read_nanoarrow(path))
+      if (!is.null(link$row_count) && nrow(result) != link$row_count) {
+        cli::cli_abort("Downloaded result chunk row count does not match its metadata.")
+      }
+      count <- min(nrow(result), remaining$rows)
+      result <- head(result, count)
     }
-  } else {
-    # Fallback to nanoarrow
-    results <- purrr::map(
-      ipc_data,
-      ~ tibble::as_tibble(nanoarrow::read_nanoarrow(.x$body))
-    ) |>
-      purrr::list_rbind()
-  }
-  if (show_progress) {
-    cli::cli_progress_done()
-  }
-
-  # Apply row limit if specified
-  if (!is.null(row_limit) && row_limit > 0 && nrow(results) > row_limit) {
-    results <- results[1:row_limit, ]
-  }
-
-  results
+    remaining$rows <- remaining$rows - count
+    result
+  })
 }
 
 
@@ -782,6 +772,14 @@ db_sql_fetch_results_parallel <- function(
 #' for empty values. LONG (BIGINT) and DECIMAL remain character to avoid precision
 #' loss; complex types and timestamps without time zones also remain character.
 #' SQL nulls become typed missing values. Empty results use the same type rules.
+#'
+#' EXTERNAL_LINKS downloads use temporary files in batches of at most
+#' `max_active_connections` chunks. Manifest row offsets select the chunks needed
+#' for `row_limit`; without those offsets, limited reads fetch one chunk at a time.
+#' The last required chunk is downloaded in full, then sliced before conversion
+#' to an R data frame when Arrow is available. Temporary files are removed after
+#' each batch, including on errors. The returned result still requires memory
+#' proportional to the requested rows.
 #' @returns [tibble::tibble] for INLINE results; [tibble::tibble] or [arrow::Table]
 #'   for EXTERNAL_LINKS results, according to `return_arrow`.
 #' @export

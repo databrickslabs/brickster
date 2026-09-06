@@ -474,7 +474,7 @@ setMethod("dbFetch", "DatabricksResult", function(
       return_arrow = FALSE,
       max_active_connections = res@connection@max_active_connections,
       fetch_timeout = res@connection@fetch_timeout,
-      row_limit = if (n > 0) n else NULL,
+      row_limit = if (n >= 0) n else NULL,
       host = res@connection@host,
       token = res@connection@token,
       show_progress = show_progress

@@ -18,7 +18,9 @@
 
 \item{sql}{SQL query to execute}
 
-\item{n}{Maximum number of rows to collect (-1 for all)}
+\item{n}{Maximum number of rows to collect (\code{-1} or \code{Inf} for all, \code{0} for none).
+Limits are passed to query execution. When \code{warn_incomplete = TRUE}, one
+additional row is requested to detect truncation.}
 
 \item{warn_incomplete}{Whether to warn if results were truncated}
 

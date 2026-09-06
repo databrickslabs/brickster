@@ -517,7 +517,9 @@ spark_sql_translation <- function(con) {
 #' Collect query results with proper progress timing for Databricks
 #' @param con A DatabricksConnection object
 #' @param sql SQL query to execute
-#' @param n Maximum number of rows to collect (-1 for all)
+#' @param n Maximum number of rows to collect (`-1` or `Inf` for all, `0` for none).
+#'   Limits are passed to query execution. When `warn_incomplete = TRUE`, one
+#'   additional row is requested to detect truncation.
 #' @param warn_incomplete Whether to warn if results were truncated
 #' @param show_progress If `TRUE`, show progress updates during collection.
 #'   Defaults to the connection's `show_progress` setting.
@@ -534,17 +536,19 @@ db_collect.DatabricksConnection <- function(
   ...
 ) {
   db_assert_show_progress(show_progress)
+  if (!is.numeric(n) || length(n) != 1L || is.na(n) ||
+      n < -1 || (is.finite(n) && n != floor(n))) {
+    cli::cli_abort("{.arg n} must be a non-negative integer, {.val -1}, or {.val Inf}.")
+  }
+  limit <- if (n == -1 || is.infinite(n)) NULL else n + as.integer(warn_incomplete)
+  out <- dbGetQuery(con, sql, show_progress = show_progress, row_limit = limit, ...)
 
-  # Use dbGetQuery which already has proper progress handling
-  out <- dbGetQuery(con, sql, show_progress = show_progress)
-  
-  # Apply row limit if specified
-  if (n > 0 && nrow(out) > n) {
-    out <- out[1:n, ]
+  if (n >= 0 && nrow(out) > n) {
+    out <- head(out, n)
     if (warn_incomplete) {
       cli::cli_warn("Only first {n} results retrieved. Use {.code n = -1} to retrieve all.")
     }
   }
-  
+
   out
 }
