@@ -84,19 +84,12 @@ db_volume_list <- function(
   page_size = NULL,
   page_token = NULL
 ) {
-  if (!is.null(page_size) && (
-    !is.numeric(page_size) || length(page_size) != 1L ||
-      is.na(page_size) || !is.finite(page_size) ||
-      page_size < 0 || page_size > 1000 || page_size != trunc(page_size)
-  )) {
-    cli::cli_abort("{.arg page_size} must be a whole number between 0 and 1000, or NULL.")
-  }
-  if (!is.null(page_token) && (
-    !is.character(page_token) || length(page_token) != 1L ||
-      is.na(page_token) || !nzchar(page_token)
-  )) {
-    cli::cli_abort("{.arg page_token} must be a non-empty string or NULL.")
-  }
+  stopifnot(
+    "page_size must be NULL or a whole number from 0 to 1000" =
+      is.null(page_size) || (rlang::is_scalar_integerish(page_size) && page_size >= 0 && page_size <= 1000),
+    "page_token must be NULL or a non-empty string" =
+      is.null(page_token) || (rlang::is_string(page_token) && nzchar(page_token))
+  )
 
   req <- db_volume_action(
     path = path,
