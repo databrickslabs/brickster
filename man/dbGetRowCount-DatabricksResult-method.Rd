@@ -12,7 +12,8 @@
 \item{...}{Additional arguments (ignored)}
 }
 \value{
-Number of rows fetched so far
+Cumulative number of rows returned by successful fetches from this
+result, shared across copies of the result object.
 }
 \description{
 Get number of rows fetched

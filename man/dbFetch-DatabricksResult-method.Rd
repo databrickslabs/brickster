@@ -9,7 +9,8 @@
 \arguments{
 \item{res}{A DatabricksResult object}
 
-\item{n}{Maximum number of rows to fetch (-1 for all rows)}
+\item{n}{Maximum number of remaining rows to fetch. Use \code{-1} or \code{Inf} for
+all remaining rows, \code{0} for the empty schema, or \code{NA} for up to 1,000 rows.}
 
 \item{show_progress}{If \code{TRUE}, show progress updates during result fetching.
 Defaults to the connection's \code{show_progress} setting.}
@@ -17,8 +18,15 @@ Defaults to the connection's \code{show_progress} setting.}
 \item{...}{Additional arguments (ignored)}
 }
 \value{
-A data.frame with query results
+A data.frame containing the next rows, with the result's column types
+preserved when no rows remain. Fetching a cleared result raises an error.
 }
 \description{
 Fetch results from Databricks query
+}
+\details{
+Successive fetches advance a shared cursor, including when the result
+object is copied. Only the current chunk is retained between fetches; chunks
+already consumed are not downloaded again. A failed fetch does not advance
+past rows that were not returned. Clear the result when finished.
 }

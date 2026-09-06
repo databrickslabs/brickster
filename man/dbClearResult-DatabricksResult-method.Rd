@@ -17,3 +17,9 @@
 \description{
 Clear result set
 }
+\details{
+Invalidates all copies of the result and releases buffered rows.
+Cancellation is requested if the statement is not known to be terminal.
+Local state is cleared even if cancellation fails; the error identifies
+the statement to inspect. Clearing an already cleared result warns.
+}

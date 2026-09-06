@@ -88,6 +88,13 @@ and temporary files are removed after each batch. The returned data still needs
 memory proportional to its size. `collect(n = ...)` also passes its limit to
 query execution; truncation warnings use a one-row probe.
 
+For incremental reads, call `dbSendQuery()`, then repeat `dbFetch(result, n = ...)`
+until `dbHasCompleted(result)` is true. Each successful fetch advances the cursor;
+`dbGetRowCount(result)` reports the cumulative rows returned. Copies of a result
+share that cursor. Always call `dbClearResult(result)` when finished. Clearing a
+result or disconnecting its connection invalidates all copies and requests
+cancellation of any statements not known to have finished.
+
 Execute SQL directly and return results as data frames:
 
 ```{r}

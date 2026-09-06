@@ -17,3 +17,7 @@
 \description{
 Disconnect from Databricks
 }
+\details{
+Invalidates this connection and its results, including copies of the
+objects. Cancellation is requested for statements not known to be terminal.
+}

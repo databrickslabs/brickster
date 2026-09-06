@@ -2,7 +2,7 @@
 % Please edit documentation in R/databricks-dbi.R
 \name{dbHasCompleted,DatabricksResult-method}
 \alias{dbHasCompleted,DatabricksResult-method}
-\title{Check if query has completed}
+\title{Check whether all query rows have been fetched}
 \usage{
 \S4method{dbHasCompleted}{DatabricksResult}(res, ...)
 }
@@ -12,8 +12,9 @@
 \item{...}{Additional arguments (ignored)}
 }
 \value{
-\code{TRUE} if query is complete, \code{FALSE} otherwise
+\code{TRUE} when no rows remain to be fetched, \code{FALSE} otherwise. Server
+execution completing does not complete a result that still has unread rows.
 }
 \description{
-Check if query has completed
+Check whether all query rows have been fetched
 }

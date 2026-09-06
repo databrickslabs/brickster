@@ -198,7 +198,7 @@ test_that("dbFetch forwards zero-row external reads without downloading", {
     .package = "brickster"
   )
   res <- new("DatabricksResult", statement_id = "stmt", completed = FALSE,
-    connection = new("DatabricksConnection", host = "h", token = "t", disposition = "EXTERNAL_LINKS", show_progress = FALSE))
+    connection = new("DatabricksConnection", warehouse_id = "wh", host = "h", token = "t", disposition = "EXTERNAL_LINKS", show_progress = FALSE))
   expect_identical(dbFetch(res, n = 0), tibble::tibble(id = integer()))
 })
 

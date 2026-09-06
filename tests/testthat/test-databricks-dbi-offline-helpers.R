@@ -563,9 +563,9 @@ test_that("query and fetch progress default to connection setting", {
         ))
       )
     },
-    db_sql_fetch_results = function(show_progress, ...) {
+    db_sql_download_external_batch = function(show_progress, ...) {
       state$fetch_progress <- show_progress
-      data.frame(ok = TRUE)
+      list(data.frame(ok = TRUE))
     },
     .package = "brickster"
   )
