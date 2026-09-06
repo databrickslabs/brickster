@@ -75,6 +75,13 @@ con <- dbConnect(
 
 ### Reading Data
 
+With `disposition = "INLINE"`, reads follow result chunks through the Databricks
+API and decode values using the response schema. SQL nulls become typed missing
+values. BIGINT and DECIMAL columns remain character to preserve their exact values;
+binary columns are lists of raw vectors, with `NULL` for SQL null and `raw(0)` for
+empty data. Timestamps use UTC, while timestamps without time zones remain strings.
+See `db_sql_query()` for the full conversion rules.
+
 Execute SQL directly and return results as data frames:
 
 ```{r}

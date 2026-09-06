@@ -416,25 +416,105 @@ db_sql_type_to_empty_vector <- function(sql_type) {
 #' @returns tibble with query results
 #' @keywords internal
 db_sql_process_inline <- function(result_data, manifest, row_limit = NULL) {
-  # Extract column names and types
-  col_names <- purrr::map_chr(manifest$schema$columns, "name")
-
-  # Convert JSON array to tibble (empty handling done upstream)
-  data_list <- result_data$data_array
-
-  # Convert to data frame
-  df <- purrr::list_transpose(data_list)
-  names(df) <- col_names
-
-  # Convert to tibble
-  results <- tibble::as_tibble(df)
-
-  # Apply row limit if specified
-  if (!is.null(row_limit) && row_limit > 0 && nrow(results) > row_limit) {
-    results <- results[1:row_limit, ]
+  columns <- manifest$schema$columns
+  rows <- result_data$data_array %||% list()
+  if (!is.null(row_limit) && is.finite(row_limit)) rows <- head(rows, row_limit)
+  if (any(purrr::map_int(rows, length) != length(columns))) {
+    cli::cli_abort("INLINE result row width does not match the manifest schema.")
   }
+  values <- purrr::map(seq_along(columns), function(i) {
+    column <- purrr::map_chr(rows, ~ .x[[i]] %||% NA_character_)
+    db_sql_decode_inline_column(column, columns[[i]])
+  })
+  names(values) <- purrr::map_chr(columns, "name")
+  tibble::new_tibble(values, nrow = length(rows))
+}
 
-  results
+db_sql_decode_inline_column <- function(values, column) {
+  type <- toupper(column$type_name)
+  if (type == "TIMESTAMP" && grepl("^TIMESTAMP_NTZ", column$type_text %||% "")) return(values)
+  if (type %in% c("BYTE", "SHORT", "INT")) {
+    numbers <- suppressWarnings(as.numeric(values))
+    bounds <- switch(type, BYTE = c(-128, 127), SHORT = c(-32768, 32767), INT = c(-2147483648, 2147483647))
+    invalid <- !is.na(values) & (is.na(numbers) | numbers != floor(numbers) |
+      numbers < bounds[[1]] | numbers > bounds[[2]])
+    if (any(invalid)) cli::cli_abort("Unable to decode INLINE column {.val {column$name}} as {.val {type}}.")
+    # R reserves the lowest signed 32-bit integer for NA.
+    return(if (any(numbers == -2147483648, na.rm = TRUE)) numbers else as.integer(numbers))
+  }
+  decoded <- suppressWarnings(switch(type,
+    FLOAT = as.numeric(values),
+    DOUBLE = as.numeric(values),
+    BOOLEAN = {
+      lower <- tolower(values)
+      if (any(!is.na(lower) & !lower %in% c("true", "false"))) {
+        cli::cli_abort("Invalid BOOLEAN value in INLINE column {.val {column$name}}.")
+      }
+      ifelse(is.na(lower), NA, lower == "true")
+    },
+    DATE = as.Date(values, format = "%Y-%m-%d"),
+    TIMESTAMP = db_sql_parse_inline_timestamp(values),
+    BINARY = purrr::map(values, ~ if (is.na(.x)) NULL else base64enc::base64decode(.x)),
+    values
+  ))
+  if (type %in% c("FLOAT", "DOUBLE", "DATE", "TIMESTAMP") &&
+      any(!is.na(values) & is.na(decoded) & !is.nan(decoded))) {
+    cli::cli_abort("Unable to decode INLINE column {.val {column$name}} as {.val {type}}.")
+  }
+  decoded
+}
+
+db_sql_parse_inline_timestamp <- function(values) {
+  values <- sub(" ", "T", values, fixed = TRUE)
+  values <- sub("Z$", "+0000", values)
+  values <- sub("([+-][0-9]{2}):([0-9]{2})$", "\\1\\2", values)
+  has_offset <- grepl("[+-][0-9]{4}$", values)
+  values[!is.na(values) & !has_offset] <- paste0(values[!is.na(values) & !has_offset], "+0000")
+  as.POSIXct(values, format = "%Y-%m-%dT%H:%M:%OS%z", tz = "UTC")
+}
+
+# Fetch only the INLINE chunks needed for the requested row count.
+db_sql_fetch_inline <- function(resp, row_limit = NULL, host, token) {
+  if (!is.null(row_limit) && (!is.numeric(row_limit) || length(row_limit) != 1L ||
+      is.na(row_limit) || row_limit < 0 || (is.finite(row_limit) && row_limit != floor(row_limit)))) {
+    cli::cli_abort("{.arg row_limit} must be a non-negative integer, {.val Inf}, or {.val NULL}.")
+  }
+  limit <- min(row_limit %||% Inf, resp$manifest$total_row_count %||% Inf)
+  if (limit == 0) return(db_sql_process_inline(list(data_array = list()), resp$manifest))
+  chunks <- list()
+  result <- resp$result
+  fetched <- 0
+  seen <- numeric()
+  repeat {
+    index <- result$chunk_index %||% 0L
+    if (index %in% seen) cli::cli_abort("INLINE result returned a repeated chunk index.")
+    seen <- c(seen, index)
+    count <- length(result$data_array)
+    if (!is.null(result$row_offset) && result$row_offset != fetched) {
+      cli::cli_abort("INLINE result chunk offset does not match the number of rows fetched.")
+    }
+    if (!is.null(result$row_count) && result$row_count != count) {
+      cli::cli_abort("INLINE result chunk row count does not match its data.")
+    }
+    chunks[[length(chunks) + 1L]] <- db_sql_process_inline(result, resp$manifest, limit - fetched)
+    fetched <- fetched + count
+    if (fetched >= limit) break
+    next_index <- result$next_chunk_index
+    if (is.null(next_index)) {
+      if (is.finite(limit) && fetched < limit) {
+        cli::cli_abort("INLINE results ended before the expected {limit} rows; received {fetched}.")
+      }
+      break
+    }
+    if (next_index %in% seen) cli::cli_abort("INLINE result returned a repeated chunk index.")
+    result <- db_sql_exec_result(resp$statement_id, chunk_index = next_index, host = host, token = token)
+  }
+  if (length(chunks) == 1L) return(chunks[[1]])
+  columns <- purrr::map(seq_along(chunks[[1]]), function(i) {
+    do.call(c, purrr::map(chunks, ~ .x[[i]]))
+  })
+  names(columns) <- names(chunks[[1]])
+  tibble::new_tibble(columns, nrow = sum(purrr::map_int(chunks, nrow)))
 }
 
 #' Create Empty Data Frame from Query Manifest
@@ -687,13 +767,23 @@ db_sql_fetch_results_parallel <- function(
 #' Execute query with SQL Warehouse
 #'
 #' @inheritParams db_sql_exec_query
-#' @param return_arrow Boolean, determine if result is [tibble::tibble] or
-#' [arrow::Table].
+#' @param return_arrow Boolean, return an [arrow::Table] instead of a
+#' [tibble::tibble] for EXTERNAL_LINKS results. INLINE results always return a tibble.
 #' @param max_active_connections Integer to decide on concurrent downloads.
 #' @param fetch_timeout Integer, timeout in seconds for downloading each result chunk
 #' @param disposition Disposition mode ("INLINE" or "EXTERNAL_LINKS")
 #' @param show_progress If `TRUE`, show progress updates during query execution (default: `TRUE`)
-#' @returns [tibble::tibble] or [arrow::Table].
+#' @details
+#' INLINE results follow continuation chunks up to `row_limit`. Values are decoded
+#' from the manifest: BYTE/SHORT/INT to integer, FLOAT/DOUBLE to numeric, BOOLEAN
+#' to logical, DATE to Date, and TIMESTAMP to POSIXct in UTC. INT columns containing
+#' -2147483648 use numeric vectors because R reserves that integer for `NA`.
+#' BINARY columns are lists of raw vectors, with `NULL` for SQL nulls and `raw(0)`
+#' for empty values. LONG (BIGINT) and DECIMAL remain character to avoid precision
+#' loss; complex types and timestamps without time zones also remain character.
+#' SQL nulls become typed missing values. Empty results use the same type rules.
+#' @returns [tibble::tibble] for INLINE results; [tibble::tibble] or [arrow::Table]
+#'   for EXTERNAL_LINKS results, according to `return_arrow`.
 #' @export
 db_sql_query <- function(
   warehouse_id,
@@ -734,18 +824,14 @@ db_sql_query <- function(
 
   # Check for empty results early and return immediately
   # Use total_row_count to detect empty result sets
-  if (resp$manifest$total_row_count == 0) {
+  if (resp$manifest$total_row_count == 0 && disposition != "INLINE") {
     return(db_sql_create_empty_result(resp$manifest))
   }
 
   # Fetch and process results based on disposition
   if (disposition == "INLINE") {
     # Use inline processor for JSON_ARRAY results
-    db_sql_process_inline(
-      result_data = resp$result,
-      manifest = resp$manifest,
-      row_limit = row_limit
-    )
+    db_sql_fetch_inline(resp, row_limit = row_limit, host = host, token = token)
   } else {
     # Use external links processor for ARROW_STREAM results
     db_sql_fetch_results(

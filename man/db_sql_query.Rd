@@ -72,8 +72,8 @@ manifest and result data (or a \code{FAILED} state in case of an execution error
 If the statement takes longer to execute, \code{on_wait_timeout} determines what
 should happen after the timeout is reached.}
 
-\item{return_arrow}{Boolean, determine if result is \link[tibble:tibble]{tibble::tibble} or
-\link[arrow:Table-class]{arrow::Table}.}
+\item{return_arrow}{Boolean, return an \link[arrow:Table-class]{arrow::Table} instead of a
+\link[tibble:tibble]{tibble::tibble} for EXTERNAL_LINKS results. INLINE results always return a tibble.}
 
 \item{max_active_connections}{Integer to decide on concurrent downloads.}
 
@@ -88,8 +88,19 @@ should happen after the timeout is reached.}
 \item{show_progress}{If \code{TRUE}, show progress updates during query execution (default: \code{TRUE})}
 }
 \value{
-\link[tibble:tibble]{tibble::tibble} or \link[arrow:Table-class]{arrow::Table}.
+\link[tibble:tibble]{tibble::tibble} for INLINE results; \link[tibble:tibble]{tibble::tibble} or \link[arrow:Table-class]{arrow::Table}
+for EXTERNAL_LINKS results, according to \code{return_arrow}.
 }
 \description{
 Execute query with SQL Warehouse
+}
+\details{
+INLINE results follow continuation chunks up to \code{row_limit}. Values are decoded
+from the manifest: BYTE/SHORT/INT to integer, FLOAT/DOUBLE to numeric, BOOLEAN
+to logical, DATE to Date, and TIMESTAMP to POSIXct in UTC. INT columns containing
+-2147483648 use numeric vectors because R reserves that integer for \code{NA}.
+BINARY columns are lists of raw vectors, with \code{NULL} for SQL nulls and \code{raw(0)}
+for empty values. LONG (BIGINT) and DECIMAL remain character to avoid precision
+loss; complex types and timestamps without time zones also remain character.
+SQL nulls become typed missing values. Empty results use the same type rules.
 }

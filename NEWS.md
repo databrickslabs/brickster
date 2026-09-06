@@ -1,3 +1,7 @@
+# brickster (development version)
+
+-   INLINE SQL reads through `db_sql_query()` and `dbFetch()` now follow all required result chunks, stop at the requested row limit, and decode string/null values using the manifest schema. Dates, timestamps, booleans, numeric values, and binary data receive R representations; BIGINT and DECIMAL remain character to preserve precision. Empty results use matching column types.
+
 # brickster 0.2.14
 
 -   Fixed OAuth U2M and M2M authentication across multiple Databricks workspaces in one R session by isolating OAuth clients and cached tokens per workspace (#256, @zacdav-db)

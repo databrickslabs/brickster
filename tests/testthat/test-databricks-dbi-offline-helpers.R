@@ -614,7 +614,7 @@ test_that("dbFetch processes inline results from dbSendQuery", {
             list(name = "id", type_name = "INT")
           ))
         ),
-        result = list(data_array = list(list(1L), list(2L)))
+        result = list(data_array = list(list("1"), list("2")))
       )
     },
     db_sql_fetch_results = function(...) {
@@ -776,4 +776,26 @@ test_that("db_write_table_volume executes append flow when append is TRUE", {
   expect_match(state$sql, "^COPY INTO")
   expect_identical(state$created, state$uploaded)
   expect_identical(state$deleted, state$created)
+})
+
+test_that("dbFetch reads later INLINE chunks up to n", {
+  res <- new("DatabricksResult", statement_id = "stmt-pages", connection = make_dbi_test_con(disposition = "INLINE"), completed = FALSE, rows_fetched = 0)
+  state <- new.env(parent = emptyenv())
+  state$chunks <- integer()
+  local_mocked_bindings(
+    db_sql_exec_status = function(...) list(statement_id = "stmt-pages", status = list(state = "SUCCEEDED"),
+      manifest = list(format = "JSON_ARRAY", total_row_count = 4,
+        schema = list(columns = list(list(name = "id", type_name = "INT")))),
+      result = list(chunk_index = 0L, row_offset = 0, row_count = 2, data_array = list(list("1"), list("2")), next_chunk_index = 1L)),
+    db_sql_exec_result = function(statement_id, chunk_index, ...) {
+      expect_identical(statement_id, "stmt-pages")
+      state$chunks <- c(state$chunks, chunk_index)
+      list(chunk_index = 1L, row_offset = 2, row_count = 2, data_array = list(list("3"), list("4")))
+    },
+    .package = "brickster"
+  )
+  expect_identical(dbFetch(res, n = 0, show_progress = FALSE), tibble::tibble(id = integer()))
+  expect_length(state$chunks, 0L)
+  expect_identical(dbFetch(res, n = 3, show_progress = FALSE)$id, 1:3)
+  expect_identical(state$chunks, 1L)
 })

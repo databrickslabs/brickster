@@ -453,18 +453,19 @@ setMethod("dbFetch", "DatabricksResult", function(
     status <- initial_status
   }
 
+  is_inline <- identical(status$manifest$format, "JSON_ARRAY") ||
+    identical(res@connection@disposition, "INLINE") || !is.null(status$result$data_array)
+
   # Check for empty results early and return immediately
   # Use total_row_count to detect empty result sets
-  if (status$manifest$total_row_count == 0) {
+  if (status$manifest$total_row_count == 0 && !is_inline) {
     results <- db_sql_create_empty_result(status$manifest)
-  } else if (
-    identical(status$manifest$format, "JSON_ARRAY") ||
-      !is.null(status$result$data_array)
-  ) {
-    results <- db_sql_process_inline(
-      result_data = status$result,
-      manifest = status$manifest,
-      row_limit = if (n > 0) n else NULL
+  } else if (is_inline) {
+    results <- db_sql_fetch_inline(
+      status,
+      row_limit = if (n >= 0) n else NULL,
+      host = res@connection@host,
+      token = res@connection@token
     )
   } else {
     # Use helper function to fetch results with progress
