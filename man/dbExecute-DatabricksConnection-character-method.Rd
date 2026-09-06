@@ -4,12 +4,16 @@
 \alias{dbExecute,DatabricksConnection,character-method}
 \title{Execute statement on Databricks}
 \usage{
-\S4method{dbExecute}{DatabricksConnection,character}(conn, statement, ...)
+\S4method{dbExecute}{DatabricksConnection,character}(conn, statement, poll_timeout = Inf, ...)
 }
 \arguments{
 \item{conn}{A DatabricksConnection object}
 
 \item{statement}{SQL statement}
+
+\item{poll_timeout}{Maximum elapsed seconds to wait for completion. Defaults
+to \code{Inf} to preserve unlimited waits for long-running statements. See
+\code{\link[=db_sql_query]{db_sql_query()}} for polling deadline and cancellation semantics.}
 
 \item{...}{Additional arguments (ignored)}
 }

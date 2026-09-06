@@ -1,6 +1,6 @@
 # brickster (development version)
 
--   SQL query waits, `dbFetch()`, cluster/warehouse startup helpers, and `db_context_command_run_and_wait()` now accept `poll_timeout` (default: 20 minutes; use `Inf` for unlimited polling). Polling stops with an actionable error when the deadline expires; server operations are not cancelled. Unsuccessful terminal states now surface API details instead of reaching result parsing or returning an inactive resource.
+-   SQL query waits, `dbFetch()`, cluster/warehouse startup helpers, and `db_context_command_run_and_wait()` now accept `poll_timeout` (default: 20 minutes; use `Inf` for unlimited polling). Polling stops with an actionable error when the deadline expires; server operations are not cancelled. `dbExecute()` also accepts `poll_timeout`, defaulting to `Inf`; standard and volume table writes retain unlimited polling so long-running writes are not interrupted by the new default. Unsuccessful terminal states now surface API details instead of reaching result parsing or returning an inactive resource.
 
 # brickster 0.2.14
 

@@ -23,3 +23,6 @@
 \description{
 Append rows to an existing Databricks table
 }
+\details{
+Appends retain unlimited completion polling, like \code{\link[=dbWriteTable]{dbWriteTable()}}.
+}

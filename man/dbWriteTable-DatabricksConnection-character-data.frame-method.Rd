@@ -48,3 +48,7 @@ Defaults to the connection's \code{show_progress} setting.}
 \description{
 Write a data frame to Databricks table
 }
+\details{
+Table writes retain unlimited completion polling; the \code{poll_timeout}
+default for query reads does not apply to writes.
+}

@@ -814,3 +814,85 @@ test_that("dbFetch passes only its remaining wait budget to SQL polling", {
   out <- dbFetch(res, poll_timeout = 5, show_progress = FALSE)
   expect_identical(out, tibble::tibble(id = integer()))
 })
+
+test_that("dbExecute preserves unlimited waits and honors an explicit polling budget", {
+  state <- new.env(parent = emptyenv())
+  state$elapsed <- 0
+  local_mocked_bindings(proc.time = function() c(elapsed = state$elapsed), .package = "base")
+  local_mocked_bindings(
+    db_sql_exec_query = function(...) {
+      state$elapsed <- state$elapsed + 1201
+      list(statement_id = "long-execute", status = list(state = "PENDING"))
+    },
+    db_sql_exec_status = function(...) list(status = list(state = "SUCCEEDED"), manifest = list(total_row_count = 1)),
+    .package = "brickster"
+  )
+  conn <- make_dbi_test_con()
+  expect_identical(dbExecute(conn, "INSERT INTO t VALUES (1)", poll_timeout = Inf), 1L)
+  expect_identical(dbExecute(conn, "INSERT INTO t VALUES (1)"), 1L)
+  expect_error(dbExecute(conn, "INSERT INTO t VALUES (1)", poll_timeout = 2), "Timed out.*long-execute")
+})
+
+test_that("public standard writes retain unlimited SQL completion waits", {
+  state <- new.env(parent = emptyenv())
+  state$elapsed <- 0
+  state$completed <- 0L
+  local_mocked_bindings(proc.time = function() c(elapsed = state$elapsed), .package = "base")
+  local_mocked_bindings(
+    dbExistsTable = function(...) TRUE,
+    db_sql_exec_query = function(...) {
+      state$elapsed <- state$elapsed + 1201
+      list(statement_id = "long-write", status = list(state = "PENDING"))
+    },
+    db_sql_exec_status = function(...) {
+      state$completed <- state$completed + 1L
+      list(status = list(state = "SUCCEEDED"), manifest = list(total_row_count = 0))
+    },
+    .package = "brickster"
+  )
+  conn <- make_dbi_test_con(show_progress = FALSE)
+  expect_true(dbWriteTable(conn, "t", data.frame(id = 1L), overwrite = TRUE))
+  expect_true(dbAppendTable(conn, "t", data.frame(id = 2L)))
+  expect_identical(state$completed, 3L)
+})
+
+test_that("public volume writes keep staging until long SQL statements complete", {
+  skip_if_not_installed("arrow")
+  state <- new.env(parent = emptyenv())
+  state$elapsed <- 0
+  state$pending <- FALSE
+  state$completed <- 0L
+  state$deleted_while_pending <- logical()
+  local_mocked_bindings(proc.time = function() c(elapsed = state$elapsed), .package = "base")
+  local_mocked_bindings(
+    dbExistsTable = function(...) TRUE,
+    db_volume_dir_exists = function(...) TRUE,
+    db_volume_dir_create = function(...) TRUE,
+    db_volume_upload_dir = function(local_dir, ...) {
+      expect_gt(length(fs::dir_ls(local_dir)), 0L)
+      TRUE
+    },
+    db_volume_dir_delete = function(...) {
+      state$deleted_while_pending <- c(state$deleted_while_pending, state$pending)
+      TRUE
+    },
+    db_sql_exec_query = function(...) {
+      state$elapsed <- state$elapsed + 1201
+      state$pending <- TRUE
+      list(statement_id = "long-volume-write", status = list(state = "PENDING"))
+    },
+    db_sql_exec_status = function(...) {
+      state$pending <- FALSE
+      state$completed <- state$completed + 1L
+      list(status = list(state = "SUCCEEDED"), manifest = list(total_row_count = 0))
+    },
+    .package = "brickster"
+  )
+  conn <- make_dbi_test_con(staging_volume = "/Volumes/c/s/v", show_progress = FALSE)
+  write <- tryCatch(dbWriteTable(conn, "t", data.frame(id = 1L), overwrite = TRUE), error = identity)
+  expect_identical(state$deleted_while_pending, FALSE)
+  expect_false(inherits(write, "error"))
+  expect_true(dbAppendTable(conn, "t", data.frame(id = 2L)))
+  expect_identical(state$completed, 2L)
+  expect_identical(state$deleted_while_pending, c(FALSE, FALSE))
+})

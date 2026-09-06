@@ -375,12 +375,15 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param statement SQL statement
 #' @param ... Additional arguments (ignored)
+#' @param poll_timeout Maximum elapsed seconds to wait for completion. Defaults
+#'   to `Inf` to preserve unlimited waits for long-running statements. See
+#'   [db_sql_query()] for polling deadline and cancellation semantics.
 #' @returns Number of rows in result set (from metadata, without loading data)
 #' @export
 setMethod(
   "dbExecute",
   signature = c(conn = "DatabricksConnection", statement = "character"),
-  function(conn, statement, ...) {
+  function(conn, statement, poll_timeout = Inf, ...) {
     db_assert_statement(statement)
 
     # Execute statement synchronously to get metadata without loading data
@@ -394,7 +397,8 @@ setMethod(
       wait_timeout = "10s",
       host = conn@host,
       token = conn@token,
-      show_progress = FALSE # No progress for metadata queries
+      show_progress = FALSE,
+      poll_timeout = poll_timeout
     )
 
     # Return row count from manifest without loading data
@@ -1223,6 +1227,8 @@ setMethod(
 #' @param row.names If `TRUE`, preserve row names as a column
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
 #' @param field.types Named character vector of SQL types for columns
+#' @details Table writes retain unlimited completion polling; the `poll_timeout`
+#'   default for query reads does not apply to writes.
 #' @param staging_volume Optional volume path for large dataset staging
 #' @param show_progress If `TRUE`, show progress updates while writing.
 #'   Defaults to the connection's `show_progress` setting.
@@ -1735,7 +1741,8 @@ db_append_with_select_values <- function(conn, quoted_name, value) {
     wait_timeout = "10s",
     host = conn@host,
     token = conn@token,
-    show_progress = FALSE
+    show_progress = FALSE,
+    poll_timeout = Inf
   )
 }
 
@@ -1925,7 +1932,7 @@ db_write_table_volume <- function(
     )
   }
 
-  # Execute SQL using helper function (inline since we don't need data back)
+  # Keep staged inputs available for long-running statements.
   db_sql_exec_and_wait(
     warehouse_id = conn@warehouse_id,
     statement = copy_sql,
@@ -1936,13 +1943,15 @@ db_write_table_volume <- function(
     wait_timeout = "10s",
     host = conn@host,
     token = conn@token,
-    show_progress = FALSE
+    show_progress = FALSE,
+    poll_timeout = Inf
   )
 
   if (show_progress) cli::cli_progress_done()
 }
 
 #' Append rows to an existing Databricks table
+#' @details Appends retain unlimited completion polling, like [dbWriteTable()].
 #' @param conn A DatabricksConnection object
 #' @param name Table name (character, Id, or SQL)
 #' @param value Data frame to append
