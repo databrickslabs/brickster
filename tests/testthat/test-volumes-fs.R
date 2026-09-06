@@ -82,6 +82,30 @@ test_that("Volumes API - don't perform", {
 
 })
 
+test_that("directory deletion inspection returns a request in either recursive mode", {
+  local_mocked_bindings(
+    req_perform = function(...) stop("Request unexpectedly performed"),
+    .package = "httr2"
+  )
+
+  purrr::walk(c(FALSE, TRUE), function(recursive) {
+    req <- db_volume_dir_delete(
+      path = "/Volumes/c/s/v/path",
+      recursive = recursive,
+      host = "mock_host",
+      token = "mock_token",
+      perform_request = FALSE
+    )
+
+    expect_s3_class(req, "httr2_request")
+    expect_identical(req$method, "DELETE")
+    expect_identical(
+      req$url,
+      "https://mock_host/api/2.0/fs/directories/Volumes/c/s/v/path"
+    )
+  })
+})
+
 test_that("volume filesystem paths are percent-encoded in requests", {
   req <- db_volume_read(
     path = "/Volumes/catalog/schema/volume/folder name/my custom report.txt",
