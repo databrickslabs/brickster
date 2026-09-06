@@ -1214,7 +1214,11 @@ setMethod(
 #' @param append If `TRUE`, append to existing table
 #' @param row.names If `TRUE`, preserve row names as a column
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
-#' @param field.types Named character vector of SQL types for columns
+#' @param field.types Named character vector of SQL types for columns when
+#'   creating or replacing a table. Volume writes cast specified columns to
+#'   boolean, numeric, decimal, string, binary, date or timestamp types and retain
+#'   Parquet types for unspecified columns.
+#'   Unsupported declarations fail before staging. Appends use the existing schema.
 #' @param staging_volume Optional volume path for large dataset staging
 #' @param show_progress If `TRUE`, show progress updates while writing.
 #'   Defaults to the connection's `show_progress` setting.
@@ -1309,7 +1313,8 @@ setMethod(
         value = value,
         staging_volume = effective_staging_volume,
         append = append,
-        show_progress = show_progress
+        show_progress = show_progress,
+        field.types = field.types
       )
     } else {
       db_write_table_standard(
@@ -1336,7 +1341,11 @@ setMethod(
 #' @param append If `TRUE`, append to existing table
 #' @param row.names If `TRUE`, preserve row names as a column
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
-#' @param field.types Named character vector of SQL types for columns
+#' @param field.types Named character vector of SQL types for columns when
+#'   creating or replacing a table. Volume writes cast specified columns to
+#'   boolean, numeric, decimal, string, binary, date or timestamp types and retain
+#'   Parquet types for unspecified columns.
+#'   Unsupported declarations fail before staging. Appends use the existing schema.
 #' @param staging_volume Optional volume path for large dataset staging
 #' @param show_progress If `TRUE`, show progress updates while writing.
 #'   Defaults to the connection's `show_progress` setting.
@@ -1436,7 +1445,8 @@ setMethod(
         value = value,
         staging_volume = effective_staging_volume,
         append = append,
-        show_progress = show_progress
+        show_progress = show_progress,
+        field.types = field.types
       )
     } else {
       db_write_table_standard(
@@ -1463,7 +1473,11 @@ setMethod(
 #' @param append If `TRUE`, append to existing table
 #' @param row.names If `TRUE`, preserve row names as a column
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
-#' @param field.types Named character vector of SQL types for columns
+#' @param field.types Named character vector of SQL types for columns when
+#'   creating or replacing a table. Volume writes cast specified columns to
+#'   boolean, numeric, decimal, string, binary, date or timestamp types and retain
+#'   Parquet types for unspecified columns.
+#'   Unsupported declarations fail before staging. Appends use the existing schema.
 #' @param staging_volume Optional volume path for large dataset staging
 #' @param show_progress If `TRUE`, show progress updates while writing.
 #'   Defaults to the connection's `show_progress` setting.
@@ -1781,6 +1795,41 @@ db_should_use_volume_method <- function(
   FALSE
 }
 
+db_assert_write_cast_types <- function(col_types, operation) {
+  scalar_type <- paste0(
+    "^(BOOLEAN|TINYINT|BYTE|SMALLINT|SHORT|INT|INTEGER|BIGINT|LONG|FLOAT|REAL|",
+    "DOUBLE( +PRECISION)?|STRING|BINARY|DATE|TIMESTAMP(_LTZ|_NTZ)?|",
+    "(DECIMAL|DEC|NUMERIC)( *\\( *[0-9]+ *(, *[0-9]+ *)?\\))?)$"
+  )
+  supported <- grepl(scalar_type, toupper(trimws(col_types)))
+  if (any(!supported)) {
+    cli::cli_abort(c(
+      "{operation} cannot preserve the {.arg field.types} declarations for {.val {names(col_types)[!supported]}}.",
+      "i" = "Use supported scalar SQL types, or load a separate table with {.fun dbCreateTable} and {.fun dbAppendTable} and replace the target explicitly."
+    ))
+  }
+  invisible(col_types)
+}
+
+db_volume_write_projection <- function(conn, value, field.types) {
+  if (is.null(field.types) || length(field.types) == 0L) return("*")
+  if (!is.character(field.types) || is.null(names(field.types)) ||
+      anyNA(field.types) || anyNA(names(field.types)) || any(!nzchar(trimws(field.types))) ||
+      any(!nzchar(names(field.types))) || anyDuplicated(names(field.types)) ||
+      any(!names(field.types) %in% names(value))) {
+    cli::cli_abort("{.arg field.types} must be a named character vector of non-missing SQL types, with at most one entry per column in {.arg value}.")
+  }
+  db_assert_write_cast_types(field.types, "Volume writes")
+  purrr::map_chr(names(value), function(name) {
+    quoted <- dbQuoteIdentifier(conn, name)
+    if (name %in% names(field.types)) {
+      paste0("CAST(", quoted, " AS ", field.types[[name]], ") AS ", quoted)
+    } else {
+      quoted
+    }
+  }) |> paste(collapse = ", ")
+}
+
 #' Write table using volume-based approach
 #' @keywords internal
 db_write_table_volume <- function(
@@ -1789,9 +1838,11 @@ db_write_table_volume <- function(
   value,
   staging_volume,
   append = FALSE,
-  show_progress = TRUE
+  show_progress = TRUE,
+  field.types = NULL
 ) {
   db_assert_show_progress(show_progress)
+  projection <- if (append) "*" else db_volume_write_projection(conn, value, field.types)
 
   # Validate volume path
   staging_volume <- is_valid_volume_path(staging_volume)
@@ -1918,7 +1969,7 @@ db_write_table_volume <- function(
     copy_sql <- paste0(
       "CREATE OR REPLACE TABLE ",
       quoted_name,
-      " AS SELECT * FROM READ_FILES('",
+      " AS SELECT ", projection, " FROM READ_FILES('",
       volume_dataset_path,
       "', format => 'parquet', schemaEvolutionMode => 'none')"
     )

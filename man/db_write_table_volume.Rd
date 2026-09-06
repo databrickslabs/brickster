@@ -10,7 +10,8 @@ db_write_table_volume(
   value,
   staging_volume,
   append = FALSE,
-  show_progress = TRUE
+  show_progress = TRUE,
+  field.types = NULL
 )
 }
 \description{

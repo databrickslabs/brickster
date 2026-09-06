@@ -107,6 +107,14 @@ When writing data (append, overwrite, etc) there are two possible behaviours:
 
 For data larger than 50k rows `{brickster}` will only permit the use of method (2), which requires `staging_volume` to be specified when establishing the connection, or directly to `dbWriteQuery`.
 
+Volume-based creation and replacement honor scalar `field.types` overrides:
+for example, `field.types = c(id = "BIGINT", amount = "DECIMAL(12, 2)")` casts those
+columns while retaining Parquet types for the remaining columns. Invalid or
+unsupported declarations fail before staging files. Supported types are boolean,
+numeric, decimal, string, binary, date and timestamp. For declarations such as
+`VARCHAR(10)`, use `dbCreateTable()` to define the schema, then append the staged
+data with `dbAppendTable()`. Appends use the existing table schema.
+
 Ensure that `staging_volume` is a valid Volume path and you have permission to write files.
 
 ```{r}

@@ -33,7 +33,11 @@
 
 \item{temporary}{If \code{TRUE}, create temporary table (NOT SUPPORTED - will error)}
 
-\item{field.types}{Named character vector of SQL types for columns}
+\item{field.types}{Named character vector of SQL types for columns when
+creating or replacing a table. Volume writes cast specified columns to
+boolean, numeric, decimal, string, binary, date or timestamp types and retain
+Parquet types for unspecified columns.
+Unsupported declarations fail before staging. Appends use the existing schema.}
 
 \item{staging_volume}{Optional volume path for large dataset staging}
 
