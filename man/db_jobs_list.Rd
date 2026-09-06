@@ -10,16 +10,16 @@ db_jobs_list(
   expand_tasks = FALSE,
   host = db_host(),
   token = db_token(),
-  perform_request = TRUE
+  perform_request = TRUE,
+  page_token = NULL,
+  return_response = FALSE
 )
 }
 \arguments{
-\item{limit}{Number of jobs to return. This value must be greater than 0 and
-less or equal to 25. The default value is 25. If a request specifies a limit
-of 0, the service instead uses the maximum limit.}
+\item{limit}{Number of jobs to return, from 1 to 100 (default: 25).}
 
-\item{offset}{The offset of the first job to return, relative to the most
-recently created job.}
+\item{offset}{Retained for compatibility with earlier API versions; must be 0.
+Jobs API 2.2 uses \code{page_token} instead of numeric offsets.}
 
 \item{expand_tasks}{Whether to include task and cluster details in the
 response.}
@@ -30,14 +30,32 @@ response.}
 
 \item{perform_request}{If \code{TRUE} (default) the request is performed, if
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
+
+\item{page_token}{Continuation token from a previous response, or \code{NULL} for
+the first page. List endpoints accept \code{next_page_token} or \code{prev_page_token};
+get endpoints accept \code{next_page_token} for additional array elements.}
+
+\item{return_response}{If \code{TRUE}, return the full single-page API response,
+including pagination tokens and any other metadata. Defaults to \code{FALSE}
+to preserve the existing list of jobs or runs.}
 }
 \value{
-If \code{perform_request = TRUE}, returns a nested list of jobs with
-class \code{db_job_list}; each element has class \code{db_job}. If \code{FALSE}, returns
-an \code{httr2_request}.
+If \code{perform_request = TRUE} and \code{return_response = FALSE}, returns a
+single page of jobs with class \code{db_job_list}; each element has class \code{db_job}.
+With \code{return_response = TRUE}, returns the full API response, including
+\code{jobs}, \code{next_page_token}, and \code{prev_page_token} when present. If
+\code{perform_request = FALSE}, returns an \code{httr2_request}.
 }
 \description{
 List Jobs
+}
+\examples{
+\dontrun{
+page <- db_jobs_list(return_response = TRUE)
+if (!is.null(page$next_page_token)) {
+  next_page <- db_jobs_list(page_token = page$next_page_token, return_response = TRUE)
+}
+}
 }
 \seealso{
 Other Jobs API: 

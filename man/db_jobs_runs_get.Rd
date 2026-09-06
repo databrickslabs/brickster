@@ -8,7 +8,8 @@ db_jobs_runs_get(
   run_id,
   host = db_host(),
   token = db_token(),
-  perform_request = TRUE
+  perform_request = TRUE,
+  page_token = NULL
 )
 }
 \arguments{
@@ -20,12 +21,19 @@ db_jobs_runs_get(
 
 \item{perform_request}{If \code{TRUE} (default) the request is performed, if
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
+
+\item{page_token}{Continuation token from a previous response, or \code{NULL} for
+the first page. List endpoints accept \code{next_page_token} or \code{prev_page_token};
+get endpoints accept \code{next_page_token} for additional array elements.}
 }
 \value{
-If \code{perform_request = TRUE}, returns endpoint-specific API output. If \code{FALSE}, returns an \code{httr2_request}.
+If \code{perform_request = TRUE}, returns the full API response for one
+page of run details, including \code{next_page_token} when present. If \code{FALSE},
+returns an \code{httr2_request}.
 }
 \description{
-Retrieve the metadata of a run.
+Retrieve one page of run metadata. Use \code{next_page_token} to retrieve additional
+array elements for large runs.
 }
 \seealso{
 Other Jobs API: 

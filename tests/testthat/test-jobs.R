@@ -1,3 +1,45 @@
+test_that("Jobs pagination is sent as query parameters", {
+  args <- list(host = "mock_host", token = "mock_token", perform_request = FALSE)
+  requests <- list(
+    do.call(db_jobs_list, c(args, list(limit = 100, page_token = "next+/="))),
+    do.call(db_jobs_get, c(args, list(job_id = "123", page_token = "next+/="))),
+    do.call(db_jobs_runs_list, c(args, list(job_id = "123", page_token = "next+/="))),
+    do.call(db_jobs_runs_get, c(args, list(run_id = "456", page_token = "next+/=")))
+  )
+  purrr::walk(requests, function(req) {
+    expect_s3_class(req, "httr2_request")
+    expect_identical(req$method, "GET")
+    expect_null(req$body)
+    expect_identical(httr2::url_parse(req$url)$query$page_token, "next+/=")
+  })
+  expect_identical(httr2::url_parse(requests[[1]]$url)$query$limit, "100")
+  expect_identical(httr2::url_parse(requests[[2]]$url)$query$job_id, "123")
+  expect_identical(httr2::url_parse(requests[[3]]$url)$query$expand_tasks, "false")
+  expect_identical(httr2::url_parse(requests[[4]]$url)$query$run_id, "456")
+  expect_null(httr2::url_parse(requests[[1]]$url)$query$offset)
+})
+
+test_that("Jobs pagination validates arguments before requesting", {
+  args <- list(host = "mock_host", token = "mock_token", perform_request = FALSE)
+  purrr::walk(list(101, 1.5, NA_real_, Inf, c(1, 2)), function(limit) {
+    expect_error(do.call(db_jobs_list, c(args, list(limit = limit))), "limit")
+    expect_error(do.call(db_jobs_runs_list, c(args, list(job_id = 1, limit = limit))), "limit")
+  })
+  expect_error(do.call(db_jobs_list, c(args, list(limit = 0))), "limit")
+  expect_error(do.call(db_jobs_runs_list, c(args, list(job_id = 1, limit = 26))), "limit")
+  max_runs <- do.call(db_jobs_runs_list, c(args, list(job_id = 1, limit = 0)))
+  expect_identical(httr2::url_parse(max_runs$url)$query$limit, "0")
+  purrr::walk(list("", NA_character_, 1, c("a", "b")), function(page_token) {
+    expect_error(do.call(db_jobs_list, c(args, list(page_token = page_token))), "page_token")
+    expect_error(do.call(db_jobs_get, c(args, list(job_id = 1, page_token = page_token))), "page_token")
+    expect_error(do.call(db_jobs_runs_list, c(args, list(job_id = 1, page_token = page_token))), "page_token")
+    expect_error(do.call(db_jobs_runs_get, c(args, list(run_id = 1, page_token = page_token))), "page_token")
+  })
+  expect_error(do.call(db_jobs_list, c(args, list(offset = 25))), "page_token")
+  expect_error(do.call(db_jobs_runs_list, c(args, list(job_id = 1, offset = 25))), "page_token")
+  expect_error(do.call(db_jobs_list, c(args, list(return_response = NA))), "return_response")
+})
+
 test_that("Jobs API - don't perform", {
   withr::local_envvar(c(
     "DATABRICKS_HOST" = "http://mock_host",

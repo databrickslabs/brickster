@@ -1,3 +1,7 @@
+# brickster (development version)
+
+-   Jobs and run list/get wrappers now accept `page_token` and send GET arguments as query parameters. Use `return_response = TRUE` on `db_jobs_list()` or `db_jobs_runs_list()` to retain continuation tokens and other response metadata; existing list returns remain the default. Jobs API 2.2 does not support nonzero `offset` values; replace them with tokens from the preceding response.
+
 # brickster 0.2.14
 
 -   Fixed OAuth U2M and M2M authentication across multiple Databricks workspaces in one R session by isolating OAuth clients and cached tokens per workspace (#256, @zacdav-db)

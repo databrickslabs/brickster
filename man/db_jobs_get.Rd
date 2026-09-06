@@ -8,7 +8,8 @@ db_jobs_get(
   job_id,
   host = db_host(),
   token = db_token(),
-  perform_request = TRUE
+  perform_request = TRUE,
+  page_token = NULL
 )
 }
 \arguments{
@@ -20,13 +21,19 @@ db_jobs_get(
 
 \item{perform_request}{If \code{TRUE} (default) the request is performed, if
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
+
+\item{page_token}{Continuation token from a previous response, or \code{NULL} for
+the first page. List endpoints accept \code{next_page_token} or \code{prev_page_token};
+get endpoints accept \code{next_page_token} for additional array elements.}
 }
 \value{
 If \code{perform_request = TRUE}, returns a nested list with class
-\code{db_job}. If \code{FALSE}, returns an \code{httr2_request}.
+\code{db_job}, preserving \code{next_page_token} when present. If \code{FALSE}, returns an
+\code{httr2_request}.
 }
 \description{
-Get Job Details
+Returns one page of job details. Use \code{next_page_token} to retrieve additional
+tasks, clusters, environments, or parameters for large jobs.
 }
 \seealso{
 Other Jobs API: 

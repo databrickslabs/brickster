@@ -107,11 +107,15 @@ db_jobs_create <- function(
 
 #' List Jobs
 #'
-#' @param limit Number of jobs to return. This value must be greater than 0 and
-#' less or equal to 25. The default value is 25. If a request specifies a limit
-#' of 0, the service instead uses the maximum limit.
-#' @param offset The offset of the first job to return, relative to the most
-#' recently created job.
+#' @param limit Number of jobs to return, from 1 to 100 (default: 25).
+#' @param offset Retained for compatibility with earlier API versions; must be 0.
+#'   Jobs API 2.2 uses `page_token` instead of numeric offsets.
+#' @param page_token Continuation token from a previous response, or `NULL` for
+#'   the first page. List endpoints accept `next_page_token` or `prev_page_token`;
+#'   get endpoints accept `next_page_token` for additional array elements.
+#' @param return_response If `TRUE`, return the full single-page API response,
+#'   including pagination tokens and any other metadata. Defaults to `FALSE`
+#'   to preserve the existing list of jobs or runs.
 #' @param expand_tasks Whether to include task and cluster details in the
 #' response.
 #' @inheritParams auth_params
@@ -120,34 +124,48 @@ db_jobs_create <- function(
 #' @family Jobs API
 #'
 #' @export
-#' @returns If `perform_request = TRUE`, returns a nested list of jobs with
-#'   class `db_job_list`; each element has class `db_job`. If `FALSE`, returns
-#'   an `httr2_request`.
+#' @returns If `perform_request = TRUE` and `return_response = FALSE`, returns a
+#'   single page of jobs with class `db_job_list`; each element has class `db_job`.
+#'   With `return_response = TRUE`, returns the full API response, including
+#'   `jobs`, `next_page_token`, and `prev_page_token` when present. If
+#'   `perform_request = FALSE`, returns an `httr2_request`.
+#' @examples
+#' \dontrun{
+#' page <- db_jobs_list(return_response = TRUE)
+#' if (!is.null(page$next_page_token)) {
+#'   next_page <- db_jobs_list(page_token = page$next_page_token, return_response = TRUE)
+#' }
+#' }
 db_jobs_list <- function(
   limit = 25,
   offset = 0,
   expand_tasks = FALSE,
   host = db_host(),
   token = db_token(),
-  perform_request = TRUE
+  perform_request = TRUE,
+  page_token = NULL,
+  return_response = FALSE
 ) {
-  body <- list(
-    limit = as.numeric(limit),
-    offset = as.numeric(offset),
-    expand_tasks = expand_tasks
+  db_jobs_validate_pagination(
+    page_token, limit, offset = offset, return_response = return_response
   )
 
   req <- db_request(
     endpoint = "jobs/list",
     method = "GET",
     version = "2.2",
-    body = body,
     host = host,
     token = token
-  )
+  ) |>
+    httr2::req_url_query(
+      limit = limit,
+      expand_tasks = from_logical(expand_tasks),
+      page_token = page_token
+    )
 
   if (perform_request) {
     res <- db_perform_request(req)
+    if (return_response) return(res)
     new_db_job_list(res$jobs)
   } else {
     req
@@ -192,6 +210,10 @@ db_jobs_delete <- function(
 
 #' Get Job Details
 #'
+#' Returns one page of job details. Use `next_page_token` to retrieve additional
+#' tasks, clusters, environments, or parameters for large jobs.
+#'
+#' @inheritParams db_jobs_list
 #' @inheritParams auth_params
 #' @inheritParams db_jobs_delete
 #' @inheritParams db_sql_warehouse_create
@@ -200,25 +222,28 @@ db_jobs_delete <- function(
 #'
 #' @export
 #' @returns If `perform_request = TRUE`, returns a nested list with class
-#'   `db_job`. If `FALSE`, returns an `httr2_request`.
+#'   `db_job`, preserving `next_page_token` when present. If `FALSE`, returns an
+#'   `httr2_request`.
 db_jobs_get <- function(
   job_id,
   host = db_host(),
   token = db_token(),
-  perform_request = TRUE
+  perform_request = TRUE,
+  page_token = NULL
 ) {
-  body <- list(
-    job_id = as.character(job_id)
-  )
+  db_jobs_validate_pagination(page_token)
 
   req <- db_request(
     endpoint = "jobs/get",
     method = "GET",
     version = "2.2",
-    body = body,
     host = host,
     token = token
-  )
+  ) |>
+    httr2::req_url_query(
+      job_id = as.character(job_id),
+      page_token = page_token
+    )
 
   if (perform_request) {
     job <- db_perform_request(req)
@@ -594,7 +619,10 @@ db_jobs_runs_submit <- function(
 
 #' List Job Runs
 #'
-#' List runs in descending order by start time.
+#' List runs in descending order by end time, or start time for unfinished runs.
+#'
+#' @param limit Number of runs to return, from 1 to 25 (default: 25). A value of
+#'   0 requests the service maximum.
 #'
 #' @param active_only Boolean (Default: `FALSE`). If `TRUE` only active runs are
 #' included in the results; otherwise, lists both active and completed runs.
@@ -613,7 +641,10 @@ db_jobs_runs_submit <- function(
 #' @family Jobs API
 #'
 #' @export
-#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
+#' @returns If `perform_request = TRUE` and `return_response = FALSE`, returns the
+#'   single page's list of runs, or `NULL` when the response omits `runs`. With
+#'   `return_response = TRUE`, returns the full API response, including pagination
+#'   tokens and metadata. If `perform_request = FALSE`, returns an `httr2_request`.
 db_jobs_runs_list <- function(
   job_id,
   active_only = FALSE,
@@ -624,8 +655,15 @@ db_jobs_runs_list <- function(
   expand_tasks = FALSE,
   host = db_host(),
   token = db_token(),
-  perform_request = TRUE
+  perform_request = TRUE,
+  page_token = NULL,
+  return_response = FALSE
 ) {
+  db_jobs_validate_pagination(
+    page_token, limit, min_limit = 0, max_limit = 25,
+    offset = offset, return_response = return_response
+  )
+
   run_type <- match.arg(run_type, several.ok = FALSE)
 
   if (active_only && completed_only) {
@@ -634,27 +672,26 @@ db_jobs_runs_list <- function(
     )
   }
 
-  body <- list(
-    job_id = as.character(job_id),
-    active_only = active_only,
-    completed_only = completed_only,
-    offset = as.numeric(offset),
-    limit = as.numeric(limit),
-    run_type = run_type,
-    expand_tasks = expand_tasks
-  )
-
   req <- db_request(
     endpoint = "jobs/runs/list",
     method = "GET",
     version = "2.2",
-    body = body,
     host = host,
     token = token
-  )
+  ) |>
+    httr2::req_url_query(
+      job_id = as.character(job_id),
+      active_only = from_logical(active_only),
+      completed_only = from_logical(completed_only),
+      limit = limit,
+      run_type = run_type,
+      expand_tasks = from_logical(expand_tasks),
+      page_token = page_token
+    )
 
   if (perform_request) {
     res <- db_perform_request(req)
+    if (return_response) return(res)
     res$runs
   } else {
     req
@@ -663,7 +700,10 @@ db_jobs_runs_list <- function(
 
 #' Get Job Run Details
 #'
-#' Retrieve the metadata of a run.
+#' Retrieve one page of run metadata. Use `next_page_token` to retrieve additional
+#' array elements for large runs.
+#'
+#' @inheritParams db_jobs_list
 #'
 #' @param run_id The canonical identifier of the run.
 #' @inheritParams auth_params
@@ -672,25 +712,29 @@ db_jobs_runs_list <- function(
 #' @family Jobs API
 #'
 #' @export
-#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
+#' @returns If `perform_request = TRUE`, returns the full API response for one
+#'   page of run details, including `next_page_token` when present. If `FALSE`,
+#'   returns an `httr2_request`.
 db_jobs_runs_get <- function(
   run_id,
   host = db_host(),
   token = db_token(),
-  perform_request = TRUE
+  perform_request = TRUE,
+  page_token = NULL
 ) {
-  body <- list(
-    run_id = as.character(run_id)
-  )
+  db_jobs_validate_pagination(page_token)
 
   req <- db_request(
     endpoint = "jobs/runs/get",
     method = "GET",
     version = "2.2",
-    body = body,
     host = host,
     token = token
-  )
+  ) |>
+    httr2::req_url_query(
+      run_id = as.character(run_id),
+      page_token = page_token
+    )
 
   if (perform_request) {
     db_perform_request(req)
@@ -950,4 +994,24 @@ print.db_job <- function(x, ...) {
 print.db_job_list <- function(x, ...) {
   print(unclass(x), ...)
   invisible(x)
+}
+
+
+db_jobs_validate_pagination <- function(page_token, limit = NULL, min_limit = 1,
+                                        max_limit = 100, offset = 0,
+                                        return_response = FALSE) {
+  if (!is.null(page_token) && (!is.character(page_token) || length(page_token) != 1L ||
+      is.na(page_token) || !nzchar(page_token))) {
+    cli::cli_abort("{.arg page_token} must be a non-empty string or {.val NULL}.")
+  }
+  if (!is.null(limit) && (!is.numeric(limit) || length(limit) != 1L ||
+      !is.finite(limit) || limit != floor(limit) || limit < min_limit || limit > max_limit)) {
+    cli::cli_abort("{.arg limit} must be an integer from {min_limit} to {max_limit}.")
+  }
+  if (!is.numeric(offset) || length(offset) != 1L || is.na(offset) || offset != 0) {
+    cli::cli_abort("Jobs API 2.2 does not support {.arg offset}; leave it at 0 and use {.arg page_token} from the previous response.")
+  }
+  if (!is.logical(return_response) || length(return_response) != 1L || is.na(return_response)) {
+    cli::cli_abort("{.arg return_response} must be {.val TRUE} or {.val FALSE}.")
+  }
 }
