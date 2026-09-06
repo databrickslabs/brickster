@@ -1,31 +1,104 @@
-test_that("db_volume_dir_delete recursive mode forces request execution", {
+test_that("db_volume_dir_delete inspection neither traverses nor performs requests", {
   state <- new.env(parent = emptyenv())
-  state$recursive_called <- FALSE
-  state$action_perform <- NULL
+  state$traversals <- 0L
+  state$requests <- 0L
 
   local_mocked_bindings(
     db_volume_recursive_delete_contents = function(...) {
-      state$recursive_called <- TRUE
+      state$traversals <- state$traversals + 1L
       invisible(NULL)
-    },
-    db_volume_action = function(perform_request = TRUE, ...) {
-      state$action_perform <- perform_request
-      TRUE
     },
     .package = "brickster"
   )
-
-  out <- db_volume_dir_delete(
-    path = "/Volumes/c/s/v/path",
-    recursive = TRUE,
-    perform_request = FALSE,
-    host = "mock_host",
-    token = "mock_token"
+  local_mocked_bindings(
+    req_perform = function(...) {
+      state$requests <- state$requests + 1L
+      httr2::response(status_code = 204)
+    },
+    .package = "httr2"
   )
 
-  expect_true(state$recursive_called)
-  expect_true(state$action_perform)
-  expect_true(out)
+  expect_no_condition(
+    req <- db_volume_dir_delete(
+      path = "/Volumes/c/s/v/path",
+      recursive = TRUE,
+      verbose = TRUE,
+      perform_request = FALSE,
+      host = "mock_host",
+      token = "mock_token"
+    )
+  )
+
+  expect_identical(state$traversals, 0L)
+  expect_identical(state$requests, 0L)
+  expect_s3_class(req, "httr2_request")
+})
+
+test_that("db_volume_dir_delete executes nested deletions before the parent", {
+  state <- new.env(parent = emptyenv())
+  state$requests <- character()
+  root_url <- "https://mock_host/api/2.0/fs/directories/Volumes/c/s/v/path"
+
+  local_mocked_bindings(
+    req_perform = function(req, ...) {
+      state$requests <- c(state$requests, paste(req$method, req$url))
+      if (req$method == "GET") {
+        contents <- if (req$url == root_url) {
+          list(
+            list(name = "root.txt", is_directory = FALSE),
+            list(name = "nested", is_directory = TRUE)
+          )
+        } else {
+          list(list(name = "child.txt", is_directory = FALSE))
+        }
+        return(httr2::response(
+          status_code = 200,
+          headers = list("content-type" = "application/json"),
+          body = charToRaw(jsonlite::toJSON(list(contents = contents), auto_unbox = TRUE))
+        ))
+      }
+      httr2::response(status_code = 204)
+    },
+    .package = "httr2"
+  )
+
+  expect_true(db_volume_dir_delete(
+    path = "/Volumes/c/s/v/path",
+    recursive = TRUE,
+    host = "mock_host",
+    token = "mock_token"
+  ))
+  expect_identical(state$requests, c(
+    paste("GET", root_url),
+    "DELETE https://mock_host/api/2.0/fs/files/Volumes/c/s/v/path/root.txt",
+    paste0("GET ", root_url, "/nested"),
+    "DELETE https://mock_host/api/2.0/fs/files/Volumes/c/s/v/path/nested/child.txt",
+    paste0("DELETE ", root_url, "/nested"),
+    paste("DELETE", root_url)
+  ))
+})
+
+test_that("db_volume_dir_delete nonrecursive execution only deletes the directory", {
+  state <- new.env(parent = emptyenv())
+  state$requests <- character()
+
+  local_mocked_bindings(
+    req_perform = function(req, ...) {
+      state$requests <- c(state$requests, paste(req$method, req$url))
+      httr2::response(status_code = 204)
+    },
+    .package = "httr2"
+  )
+
+  expect_true(db_volume_dir_delete(
+    path = "/Volumes/c/s/v/path",
+    host = "mock_host",
+    token = "mock_token"
+  ))
+  expect_identical(
+    state$requests,
+    "DELETE https://mock_host/api/2.0/fs/directories/Volumes/c/s/v/path"
+  )
 })
 
 test_that("db_volume_upload_dir uploads files recursively", {
@@ -133,7 +206,7 @@ test_that("db_volume_dir_delete recursive mode tolerates listing errors", {
     out <- db_volume_dir_delete(
       path = "/Volumes/c/s/v/path",
       recursive = TRUE,
-      perform_request = FALSE,
+      perform_request = TRUE,
       host = "mock_host",
       token = "mock_token"
     )
