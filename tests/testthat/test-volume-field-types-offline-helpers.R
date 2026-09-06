@@ -52,3 +52,23 @@ test_that("invalid or unsupported volume field types fail before staging", {
     expect_error(dbWriteTable(volume_types_connection(), "target", data.frame(id = 1), field.types = types), "field.types")
   })
 })
+
+test_that("invalid decimal precision and scale fail before any staging call", {
+  local_mocked_bindings(
+    dbExistsTable = function(...) FALSE,
+    db_volume_dir_exists = function(...) stop("Unexpected staging lookup"),
+    .package = "brickster"
+  )
+  purrr::walk(c("DECIMAL(0)", "DECIMAL(39)", "DECIMAL(5, 6)", "DEC(0, 0)", "NUMERIC(38, 39)"), function(type) {
+    expect_error(dbWriteTable(volume_types_connection(), "target", data.frame(id = 1),
+      field.types = c(id = type)), "precision.*1.*38.*scale")
+  })
+})
+
+test_that("decimal aliases and precision boundaries produce faithful casts", {
+  purrr::walk(c("DECIMAL", "DEC", "NUMERIC", "DECIMAL(1)", "DEC(1, 0)", "NUMERIC(1, 1)",
+    "DECIMAL(38, 0)", "numeric(38, 38)"), function(type) {
+    expect_identical(db_volume_write_projection(volume_types_connection(), data.frame(id = 1), c(id = type)),
+      paste0("CAST(`id` AS ", type, ") AS `id`"))
+  })
+})

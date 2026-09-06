@@ -1808,6 +1808,17 @@ db_assert_write_cast_types <- function(col_types, operation) {
       "i" = "Use supported scalar SQL types, or load a separate table with {.fun dbCreateTable} and {.fun dbAppendTable} and replace the target explicitly."
     ))
   }
+  decimal_types <- which(grepl("^(DECIMAL|DEC|NUMERIC) *\\(", toupper(trimws(col_types))))
+  invalid_decimal <- purrr::keep(decimal_types, function(i) {
+    params <- as.numeric(regmatches(col_types[[i]], gregexpr("[0-9]+", col_types[[i]]))[[1]])
+    precision <- params[[1]]
+    scale <- if (length(params) == 1L) 0 else params[[2]]
+    !is.finite(precision) || precision < 1 || precision > 38 ||
+      !is.finite(scale) || scale < 0 || scale > precision
+  })
+  if (length(invalid_decimal)) {
+    cli::cli_abort("{.arg field.types} for {.val {names(col_types)[invalid_decimal]}} must use decimal precision between 1 and 38 and scale between 0 and precision.")
+  }
   invisible(col_types)
 }
 
