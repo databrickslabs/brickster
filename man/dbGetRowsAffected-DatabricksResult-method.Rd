@@ -2,7 +2,7 @@
 % Please edit documentation in R/databricks-dbi.R
 \name{dbGetRowsAffected,DatabricksResult-method}
 \alias{dbGetRowsAffected,DatabricksResult-method}
-\title{Get number of rows affected (not applicable for SELECT)}
+\title{Get number of rows affected by a statement}
 \usage{
 \S4method{dbGetRowsAffected}{DatabricksResult}(res, ...)
 }
@@ -12,8 +12,9 @@
 \item{...}{Additional arguments (ignored)}
 }
 \value{
--1 (not applicable for SELECT queries)
+The reported affected row count for statement results, or zero when
+no affected-row field is returned. Query results return \code{-1}.
 }
 \description{
-Get number of rows affected (not applicable for SELECT)
+Get number of rows affected by a statement
 }

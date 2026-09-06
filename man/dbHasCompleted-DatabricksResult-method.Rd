@@ -14,6 +14,7 @@
 \value{
 \code{TRUE} when no rows remain to be fetched, \code{FALSE} otherwise. Server
 execution completing does not complete a result that still has unread rows.
+Results from \code{\link[=dbSendStatement]{dbSendStatement()}} always return \code{TRUE}.
 }
 \description{
 Check whether all query rows have been fetched

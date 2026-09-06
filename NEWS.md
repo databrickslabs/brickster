@@ -1,6 +1,6 @@
 # brickster (development version)
 
--   DBI results now keep a shared cursor: repeated `dbFetch()` calls return successive rows, `dbGetRowCount()` is cumulative, and `dbHasCompleted()` reflects unread rows. `dbClearResult()` and `dbDisconnect()` invalidate copied objects, release buffered data, and request cancellation for statements not known to be terminal. Use the DBI accessors to inspect live state.
+-   DBI query results now keep a shared cursor: repeated `dbFetch()` calls return successive rows, `dbGetRowCount()` is cumulative, and `dbHasCompleted()` reflects unread rows. `dbSendStatement()` waits for completion with unlimited polling and exposes the affected-row count through `dbGetRowsAffected()`. `dbClearResult()` and `dbDisconnect()` invalidate copied objects, release buffered data even if cancellation is interrupted, and request cancellation for statements not known to be terminal. Use the DBI accessors to inspect live state.
 
 -   External SQL results now download only required chunks to temporary files in bounded batches, using Arrow buffers that remain valid after file cleanup. Empty external results retain manifest types, including BIGINT, BINARY, DECIMAL precision, and nested schemas. `dbplyr::collect(n = ...)` passes its limit to query execution and probes at most one extra row for truncation warnings, avoiding full-result downloads for limited reads.
 

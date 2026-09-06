@@ -223,3 +223,93 @@ test_that("DBI chunk combination preserves duplicate names and promoted column t
   expect_identical(dbFetch(res), out[0, ])
   expect_true(dbClearResult(res))
 })
+
+dbi_statement_response <- function() {
+  list(statement_id = "dml", status = list(state = "SUCCEEDED"), manifest = list(
+    format = "JSON_ARRAY", total_row_count = 1,
+    schema = list(columns = list(list(name = "num_affected_rows", type_name = "LONG")))),
+    result = list(chunk_index = 0, row_offset = 0, row_count = 1, data_array = list(list("7"))))
+}
+
+test_that("statement results report completion and affected rows without query fetching", {
+  local_mocked_bindings(
+    db_sql_exec_query = function(...) dbi_statement_response(),
+    db_sql_exec_status = function(...) stop("Unexpected status request"),
+    db_sql_exec_cancel = function(...) stop("A successful write must not be cancelled"),
+    .package = "brickster"
+  )
+  res <- dbSendStatement(dbi_cursor_connection(), "UPDATE target SET value = 1")
+  expect_true(dbHasCompleted(res))
+  expect_equal(dbGetRowsAffected(res), 7)
+  expect_equal(dbGetRowsAffected(res), 7)
+  expect_warning(out <- dbFetch(res), "no rows to fetch")
+  expect_equal(nrow(out), 0)
+  expect_equal(dbGetRowCount(res), 0)
+  expect_true(dbClearResult(res))
+})
+
+test_that("pending statements wait beyond twenty minutes before normal clear", {
+  state <- new.env(parent = emptyenv())
+  state$elapsed <- 0
+  state$status_calls <- 0L
+  local_mocked_bindings(
+    proc.time = function() c(elapsed = state$elapsed),
+    Sys.sleep = function(time) NULL,
+    .package = "base"
+  )
+  local_mocked_bindings(
+    db_sql_exec_query = function(...) list(statement_id = "dml", status = list(state = "PENDING")),
+    db_sql_exec_status = function(...) {
+      state$status_calls <- state$status_calls + 1L
+      state$elapsed <- state$elapsed + 1201
+      if (state$status_calls == 1L) list(status = list(state = "RUNNING")) else dbi_statement_response()
+    },
+    db_sql_exec_cancel = function(...) stop("Normal clear must not cancel the write"),
+    .package = "brickster"
+  )
+  res <- dbSendStatement(dbi_cursor_connection(), "INSERT INTO target VALUES (1)")
+  expect_equal(state$status_calls, 2)
+  expect_true(dbHasCompleted(res))
+  expect_equal(dbGetRowsAffected(res), 7)
+  expect_true(dbClearResult(res))
+})
+
+test_that("interrupted disconnect releases every local result before propagating interrupt", {
+  state <- new.env(parent = emptyenv())
+  state$id <- 0L
+  local_mocked_bindings(
+    db_sql_exec_query = function(...) {
+      state$id <- state$id + 1L
+      list(statement_id = paste0("result-", state$id), status = list(state = "PENDING"))
+    },
+    db_sql_exec_status = function(statement_id, ...) {
+      resp <- dbi_cursor_response()
+      resp$statement_id <- statement_id
+      resp$manifest$total_row_count <- 3L
+      resp$manifest$total_chunk_count <- 1L
+      resp$result <- list(chunk_index = 0, row_offset = 0, row_count = 3,
+        data_array = list(list("1"), list("2"), list("3")))
+      resp
+    },
+    db_sql_exec_cancel = function(...) stop(structure(list(message = "cancel interrupted", call = NULL), class = c("interrupt", "condition"))),
+    .package = "brickster"
+  )
+  con <- dbi_cursor_connection()
+  first <- dbSendQuery(con, "SELECT id")
+  second <- dbSendQuery(con, "SELECT id")
+  last <- tail(names(as.list(con@state$results)), 1L)
+  buffered <- if (identical(last, first@statement_id)) first else second
+  expect_identical(dbFetch(buffered, 1)$id, 1L)
+  expect_equal(nrow(buffered@state$buffer), 3)
+  interrupted <- tryCatch(dbDisconnect(con), interrupt = identity)
+  expect_s3_class(interrupted, "interrupt")
+  expect_identical(conditionMessage(interrupted), "cancel interrupted")
+  expect_false(dbIsValid(con))
+  expect_length(as.list(con@state$results), 0L)
+  purrr::walk(list(first, second), function(result) {
+    expect_true(result@state$closed)
+    expect_null(result@state$buffer)
+    expect_null(result@state$status)
+    expect_null(result@state$ptype)
+  })
+})

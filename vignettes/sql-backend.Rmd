@@ -95,6 +95,10 @@ share that cursor. Always call `dbClearResult(result)` when finished. Clearing a
 result or disconnecting its connection invalidates all copies and requests
 cancellation of any statements not known to have finished.
 
+`dbSendStatement()` waits for a write to finish before returning. Its result is
+already complete; use `dbGetRowsAffected()` for the affected-row count, then
+`dbClearResult()`. These writes retain unlimited polling.
+
 Execute SQL directly and return results as data frames:
 
 ```{r}

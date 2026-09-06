@@ -478,7 +478,7 @@ test_that("query execution DBI methods dispatch expected options", {
       args <- list(...)
       state$next_id <- state$next_id + 1L
       state$query_calls[[length(state$query_calls) + 1L]] <- args
-      list(statement_id = paste0("stmt-", state$next_id))
+      list(statement_id = paste0("stmt-", state$next_id), status = list(state = "SUCCEEDED"), manifest = list(total_row_count = 0))
     },
     db_sql_query = function(...) {
       args <- list(...)

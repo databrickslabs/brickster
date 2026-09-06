@@ -65,6 +65,7 @@ setMethod("initialize", "DatabricksResult", function(.Object, ...) {
   .Object <- methods::callNextMethod()
   state <- new.env(parent = emptyenv())
   state$closed <- FALSE
+  state$kind <- "query"
   state$completed <- isTRUE(.Object@completed)
   state$rows_fetched <- .Object@rows_fetched
   state$statement_id <- .Object@statement_id
@@ -241,8 +242,12 @@ setMethod("dbDisconnect", "DatabricksConnection", function(conn, ...) {
     return(invisible(TRUE))
   }
   if (!dbIsValid(conn)) cli::cli_warn("Connection is invalid.")
-  on.exit(conn@state$closed <- TRUE, add = TRUE)
-  outcomes <- purrr::map(as.list(conn@state$results), function(state) {
+  states <- as.list(conn@state$results)
+  on.exit({
+    conn@state$closed <- TRUE
+    purrr::walk(states, ~ db_dbi_release_state(.x, conn))
+  }, add = TRUE)
+  outcomes <- purrr::map(states, function(state) {
     tryCatch(db_dbi_clear_state(state, conn), error = identity)
   })
   failures <- purrr::keep(outcomes, ~ inherits(.x, "error"))
@@ -382,10 +387,14 @@ setMethod(
 
 # Read-only enforcement
 #' Send statement to Databricks
+#' @details Waits for terminal execution before returning, with unlimited polling
+#'   for long-running writes. Use [dbGetRowsAffected()] for the affected-row count;
+#'   statement results have no query rows to fetch. Normal [dbClearResult()] after
+#'   this method returns does not cancel the completed write.
 #' @param conn A DatabricksConnection object
 #' @param statement SQL statement
 #' @param ... Additional arguments (ignored)
-#' @returns A DatabricksResult object
+#' @returns A completed DatabricksResult object for the statement.
 #' @export
 setMethod(
   "dbSendStatement",
@@ -418,6 +427,15 @@ setMethod(
     )
     result@state$status <- resp
     result@state$disposition <- "EXTERNAL_LINKS"
+    result@state$kind <- "statement"
+    on.exit({
+      if (!isTRUE(result@state$completed) &&
+          isTRUE(result@state$status$status$state %in% c("FAILED", "CANCELED", "CLOSED"))) {
+        db_dbi_release_state(result@state, conn)
+      }
+    }, add = TRUE)
+    db_dbi_result_status(result)
+    result@state$completed <- TRUE
     result
   }
 )
@@ -487,6 +505,10 @@ setMethod("dbFetch", "DatabricksResult", function(
   db_assert_valid_result(res)
   n <- db_dbi_fetch_count(n)
   state <- res@state
+  if (identical(state$kind, "statement")) {
+    cli::cli_warn("Results from {.fun dbSendStatement} have no rows to fetch; use {.fun dbGetRowsAffected}.")
+    return(data.frame())
+  }
   if (state$completed && is.null(state$status)) return(state$ptype)
   status <- db_dbi_result_status(res, show_progress)
   if (!isTRUE(state$initialized)) {
@@ -620,16 +642,7 @@ db_assert_valid_result <- function(res) {
 }
 
 db_dbi_clear_state <- function(state, conn) {
-  on.exit({
-    state$closed <- TRUE
-    state$buffer <- NULL
-    state$ptype <- NULL
-    state$next_result <- NULL
-    state$status <- NULL
-    if (exists(state$statement_id, envir = conn@state$results, inherits = FALSE)) {
-      rm(list = state$statement_id, envir = conn@state$results)
-    }
-  }, add = TRUE)
+  on.exit(db_dbi_release_state(state, conn), add = TRUE)
   if (!isTRUE(state$status$status$state %in% c("SUCCEEDED", "FAILED", "CANCELED", "CLOSED"))) {
     tryCatch(
       db_sql_exec_cancel(state$statement_id, host = conn@host, token = conn@token),
@@ -641,15 +654,29 @@ db_dbi_clear_state <- function(state, conn) {
   invisible(TRUE)
 }
 
+db_dbi_release_state <- function(state, conn) {
+  state$closed <- TRUE
+  state$buffer <- NULL
+  state$ptype <- NULL
+  state$next_result <- NULL
+  state$status <- NULL
+  if (exists(state$statement_id, envir = conn@state$results, inherits = FALSE)) {
+    rm(list = state$statement_id, envir = conn@state$results)
+  }
+  invisible(TRUE)
+}
+
 #' Check whether all query rows have been fetched
 #' @param res A DatabricksResult object
 #' @param ... Additional arguments (ignored)
 #' @returns `TRUE` when no rows remain to be fetched, `FALSE` otherwise. Server
 #'   execution completing does not complete a result that still has unread rows.
+#'   Results from [dbSendStatement()] always return `TRUE`.
 #' @export
 setMethod("dbHasCompleted", "DatabricksResult", function(res, ...) {
   db_assert_valid_result(res)
-  res@state$completed || isTRUE(res@state$status$manifest$total_row_count == 0)
+  identical(res@state$kind, "statement") || res@state$completed ||
+    isTRUE(res@state$status$manifest$total_row_count == 0)
 })
 
 #' Clear result set
@@ -700,14 +727,33 @@ setMethod("dbGetRowCount", "DatabricksResult", function(res, ...) {
   res@state$rows_fetched
 })
 
-#' Get number of rows affected (not applicable for SELECT)
+#' Get number of rows affected by a statement
 #' @param res A DatabricksResult object
 #' @param ... Additional arguments (ignored)
-#' @returns -1 (not applicable for SELECT queries)
+#' @returns The reported affected row count for statement results, or zero when
+#'   no affected-row field is returned. Query results return `-1`.
 #' @export
 setMethod("dbGetRowsAffected", "DatabricksResult", function(res, ...) {
-  # For SELECT queries, return -1 (no rows affected)
-  -1
+  db_assert_valid_result(res)
+  if (!identical(res@state$kind, "statement")) return(-1)
+  if (!is.null(res@state$rows_affected)) return(res@state$rows_affected)
+  status <- db_dbi_result_status(res)
+  names <- purrr::map_chr(status$manifest$schema$columns, "name")
+  count <- 0
+  if ("num_affected_rows" %in% names) {
+    data <- if (identical(status$manifest$format, "JSON_ARRAY") || !is.null(status$result$data_array)) {
+      db_sql_fetch_inline(status, row_limit = 1, host = res@connection@host, token = res@connection@token)
+    } else {
+      db_sql_fetch_results(status, row_limit = 1, host = res@connection@host,
+        token = res@connection@token, show_progress = FALSE)
+    }
+    count <- suppressWarnings(as.numeric(data$num_affected_rows))
+    if (length(count) != 1L || is.na(count) || !is.finite(count) || count < 0 || count != floor(count)) {
+      cli::cli_abort("Statement {.val {res@statement_id}} did not return a valid affected-row count. Inspect its result metadata.")
+    }
+  }
+  res@state$rows_affected <- count
+  count
 })
 
 #' Get column information from result

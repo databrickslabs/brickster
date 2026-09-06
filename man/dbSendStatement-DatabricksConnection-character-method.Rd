@@ -14,8 +14,14 @@
 \item{...}{Additional arguments (ignored)}
 }
 \value{
-A DatabricksResult object
+A completed DatabricksResult object for the statement.
 }
 \description{
 Send statement to Databricks
+}
+\details{
+Waits for terminal execution before returning, with unlimited polling
+for long-running writes. Use \code{\link[=dbGetRowsAffected]{dbGetRowsAffected()}} for the affected-row count;
+statement results have no query rows to fetch. Normal \code{\link[=dbClearResult]{dbClearResult()}} after
+this method returns does not cancel the completed write.
 }
