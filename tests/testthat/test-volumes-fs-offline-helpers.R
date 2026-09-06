@@ -76,6 +76,46 @@ test_that("db_volume_upload_dir uploads files recursively", {
   expect_true(any(grepl("nested/f2.txt$", state$upload_paths)))
 })
 
+test_that("db_volume_upload_dir creates each shared parent only once", {
+  local_dir <- withr::local_tempdir()
+  fs::dir_create(fs::path(local_dir, "shared", "deep"))
+  files <- fs::path(local_dir, c("root.txt", "shared/a.txt", "shared/b.txt", "shared/deep/c.txt"))
+  fs::file_create(files)
+  state <- new.env(parent = emptyenv())
+  state$created <- character()
+  state$uploaded <- character()
+
+  local_mocked_bindings(
+    db_volume_dir_create = function(path, ...) {
+      state$created <- c(state$created, as.character(path))
+      TRUE
+    },
+    .package = "brickster"
+  )
+  local_mocked_bindings(
+    req_perform_parallel = function(requests, ...) {
+      state$uploaded <- purrr::map_chr(requests, "url")
+      list()
+    },
+    .package = "httr2"
+  )
+
+  expect_true(db_volume_upload_dir(
+    local_dir,
+    "/Volumes/c/s/v",
+    host = "mock_host",
+    token = "mock_token"
+  ))
+  expect_identical(state$created, c(
+    "/Volumes/c/s/v", "/Volumes/c/s/v/shared", "/Volumes/c/s/v/shared/deep"
+  ))
+  expect_setequal(state$uploaded, paste0(
+    "https://mock_host/api/2.0/fs/files/Volumes/c/s/v/",
+    c("root.txt", "shared/a.txt", "shared/b.txt", "shared/deep/c.txt"),
+    "?overwrite=true"
+  ))
+})
+
 test_that("db_volume_upload_dir uploads only top-level files when recursive is FALSE", {
   local_dir <- withr::local_tempdir()
   subdir <- file.path(local_dir, "nested")

@@ -435,27 +435,24 @@ db_volume_upload_dir <- function(
   # Create volume directory
   db_volume_dir_create(volume_dir, host = host, token = token)
 
-  # map files and generate requests
-  requests <- fs::dir_map(
+  local_files <- fs::dir_ls(
     local_dir,
     recurse = recursive,
-    type = "file",
-    fun = function(local_file) {
-      if (recursive) {
-        # Preserve relative path structure
-        rel_path <- fs::path_rel(local_file, start = local_dir)
-        volume_file <- fs::path(volume_dir, rel_path)
+    type = "file"
+  )
+  relative_files <- if (recursive) {
+    fs::path_rel(local_files, start = local_dir)
+  } else {
+    fs::path_file(local_files)
+  }
+  volume_files <- fs::path(volume_dir, relative_files)
+  volume_subdirs <- setdiff(unique(fs::path_dir(volume_files)), fs::path(volume_dir))
+  purrr::walk(volume_subdirs, db_volume_dir_create, host = host, token = token)
 
-        # Create subdirectories if needed
-        volume_subdir <- fs::path_dir(volume_file)
-        if (volume_subdir != volume_dir) {
-          db_volume_dir_create(volume_subdir, host = host, token = token)
-        }
-      } else {
-        # Upload to root of volume directory
-        volume_file <- fs::path(volume_dir, fs::path_file(local_file))
-      }
-
+  requests <- purrr::map2(
+    local_files,
+    volume_files,
+    function(local_file, volume_file) {
       # Create upload request (no individual progress for parallel uploads)
       db_volume_action(
         path = volume_file,

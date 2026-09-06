@@ -1,3 +1,7 @@
+# brickster (development version)
+
+-   `db_volume_upload_dir()` now creates each parent directory only once, avoiding repeated API calls for files in the same directory.
+
 # brickster 0.2.14
 
 -   Fixed OAuth U2M and M2M authentication across multiple Databricks workspaces in one R session by isolating OAuth clients and cached tokens per workspace (#256, @zacdav-db)
