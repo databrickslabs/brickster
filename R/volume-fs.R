@@ -335,9 +335,8 @@ db_volume_action <- function(
   progress = TRUE
 ) {
   path <- is_valid_volume_path(path)
-  # Files and directories under a volume can contain spaces; httr2 does not
-  # encode them when appending the path to the request URL.
-  encoded_path <- gsub(" ", "%20", path, fixed = TRUE)
+  # Escape literal path characters while preserving directory separators.
+  encoded_path <- gsub("%2F", "/", curl::curl_escape(path), fixed = TRUE)
   action <- match.arg(action)
   type <- match.arg(type)
 

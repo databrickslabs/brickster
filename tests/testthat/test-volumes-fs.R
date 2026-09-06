@@ -110,6 +110,58 @@ test_that("volume filesystem paths are percent-encoded in requests", {
   expect_match(req$url, "file%20name[.]txt")
 })
 
+test_that("volume paths preserve literal reserved characters and separators", {
+  paths <- c(
+    "/Volumes/c/s/v/report#1.csv",
+    "/Volumes/c/s/v/report?draft.csv",
+    "/Volumes/c/s/v/100% complete.csv",
+    "/Volumes/c/s/v/literal%20name.csv",
+    "/Volumes/c/s/v/literal%2Fname.csv",
+    "/Volumes/c/s/v/caf\u00e9/",
+    "/Volumes/c/s/v/nested//file.txt"
+  )
+  encoded <- c(
+    "/Volumes/c/s/v/report%231.csv",
+    "/Volumes/c/s/v/report%3Fdraft.csv",
+    "/Volumes/c/s/v/100%25%20complete.csv",
+    "/Volumes/c/s/v/literal%2520name.csv",
+    "/Volumes/c/s/v/literal%252Fname.csv",
+    "/Volumes/c/s/v/caf%C3%A9/",
+    "/Volumes/c/s/v/nested//file.txt"
+  )
+
+  purrr::walk2(paths, encoded, function(path, encoded_path) {
+    req <- db_volume_delete(
+      path = path,
+      host = "mock_host",
+      token = "mock_token",
+      perform_request = FALSE
+    )
+    expect_s3_class(req, "httr2_request")
+    expect_identical(req$url, paste0("https://mock_host/api/2.0/fs/files", encoded_path))
+    parsed <- httr2::url_parse(req$url)
+    expect_identical(parsed$path, paste0("/api/2.0/fs/files", path))
+    expect_null(parsed$query)
+    expect_null(parsed$fragment)
+  })
+})
+
+test_that("volume upload query parameters are separate from the encoded path", {
+  req <- db_volume_write(
+    path = "/Volumes/c/s/v/report?#.csv",
+    file = withr::local_tempfile(lines = "data"),
+    overwrite = TRUE,
+    host = "mock_host",
+    token = "mock_token",
+    perform_request = FALSE
+  )
+
+  expect_identical(
+    req$url,
+    "https://mock_host/api/2.0/fs/files/Volumes/c/s/v/report%3F%23.csv?overwrite=true"
+  )
+})
+
 test_that("db_volume_upload_dir - don't perform", {
   
   withr::local_envvar(c(
