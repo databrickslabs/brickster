@@ -30,10 +30,10 @@ test_that("write preflight reuses the validated SQL without serializing twice", 
   state$events <- character()
   generate <- db_generate_typed_values_sql
   local_mocked_bindings(
-    db_generate_typed_values_sql = function(conn, data) {
+    db_generate_typed_values_sql = function(conn, data, col_types = NULL) {
       state$generated <- state$generated + 1L
       state$events <- c(state$events, "serialize")
-      generate(conn, data)
+      generate(conn, data, col_types)
     },
     dbExecute = function(conn, statement, ...) {
       state$events <- c(state$events, "create")
@@ -47,7 +47,7 @@ test_that("write preflight reuses the validated SQL without serializing twice", 
     .package = "brickster"
   )
   con <- new("DatabricksConnection", warehouse_id = "wh", host = "mock_host", token = "mock_token", catalog = "", schema = "")
-  db_create_table_as_select_values(con, "`target`", data.frame(id = 1:2), field.types = NULL, overwrite = TRUE)
+  db_create_table_as_select_values(con, "`target`", data.frame(id = 1:2), field.types = NULL, overwrite = FALSE)
   expect_identical(state$generated, 1L)
   expect_identical(state$events, c("serialize", "create", "insert"))
 })

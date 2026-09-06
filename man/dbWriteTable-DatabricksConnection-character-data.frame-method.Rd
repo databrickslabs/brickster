@@ -25,7 +25,11 @@
 
 \item{value}{Data frame to write}
 
-\item{overwrite}{If \code{TRUE}, overwrite existing table}
+\item{overwrite}{If \code{TRUE}, overwrite existing table. Standard writes replace
+schema and data in one statement. Atomic overwrites support scalar SQL types
+(boolean, numeric, decimal, string, binary, date and timestamp). Other
+declarations, including \code{CHAR}/\code{VARCHAR} length limits, fail before mutation;
+load a separate table and replace the target explicitly when these are needed.}
 
 \item{append}{If \code{TRUE}, append to existing table}
 

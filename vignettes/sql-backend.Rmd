@@ -112,11 +112,21 @@ SQL syntax and escaped values. `{brickster}` checks the generated statement
 before creating or replacing the target table. If this limit is exceeded, use
 `staging_volume` even when the data has fewer than 50k rows.
 
+For standard writes, `overwrite = TRUE` replaces schema and data in one statement,
+so a failed replacement does not leave the existing table empty. Columns receive
+explicit casts from their R types or `field.types`, preserving types such as
+`DOUBLE` and `DECIMAL(12, 2)`. Atomic overwrites support scalar boolean, numeric,
+decimal, string, binary, date and timestamp types. Other declarations, including
+`CHAR`/`VARCHAR` length constraints, fail locally before mutation. If those are
+required, load a separate table with `dbCreateTable()` and `dbAppendTable()`,
+verify it, and replace the target explicitly using a schema-preserving operation.
+Ordinary creation and append retain their existing behavior.
+
 Ensure that `staging_volume` is a valid Volume path and you have permission to write files.
 
 ```{r}
 # small data (150 rows)
-# creates the table schema explicitly then inserts rows inline
+# atomically replaces the table with explicitly typed inline values
 dbWriteTable(
   conn = con,
   name = Id(catalog = "<catalog>", schema = "<schema>", table = "<table>"),

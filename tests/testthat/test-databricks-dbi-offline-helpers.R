@@ -280,15 +280,14 @@ test_that("dbWriteTable standard path supports binary columns", {
   )
 
   expect_invisible(dbWriteTable(con, "tbl_binary", value, overwrite = TRUE))
+  expect_length(state$sql, 1L)
   expect_identical(
     state$sql[[1]],
-    "CREATE OR REPLACE TABLE `tbl_binary` (`id` INT, `payload` BINARY)"
-  )
-  expect_identical(
-    state$sql[[2]],
     paste0(
-      "INSERT INTO `tbl_binary` (`id`, `payload`) VALUES ",
-      "(1, X'000FFF'), (2, X''), (3, NULL)"
+      "CREATE OR REPLACE TABLE `tbl_binary` AS SELECT * FROM VALUES ",
+      "(CAST(1 AS INT), CAST(X'000FFF' AS BINARY)), ",
+      "(CAST(2 AS INT), CAST(X'' AS BINARY)), (CAST(3 AS INT), CAST(NULL AS BINARY)) ",
+      "AS data (`id`, `payload`)"
     )
   )
 })

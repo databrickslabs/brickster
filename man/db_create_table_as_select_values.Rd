@@ -2,7 +2,7 @@
 % Please edit documentation in R/databricks-dbi.R
 \name{db_create_table_as_select_values}
 \alias{db_create_table_as_select_values}
-\title{Create table with explicit schema before inserting values}
+\title{Create a table or atomically replace it with typed values}
 \usage{
 db_create_table_as_select_values(
   conn,
@@ -14,6 +14,6 @@ db_create_table_as_select_values(
 )
 }
 \description{
-Create table with explicit schema before inserting values
+Create a table or atomically replace it with typed values
 }
 \keyword{internal}

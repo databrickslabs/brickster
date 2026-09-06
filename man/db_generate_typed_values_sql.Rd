@@ -4,7 +4,7 @@
 \alias{db_generate_typed_values_sql}
 \title{Generate type-aware VALUES SQL from data frame}
 \usage{
-db_generate_typed_values_sql(conn, data)
+db_generate_typed_values_sql(conn, data, col_types = NULL)
 }
 \description{
 Generate type-aware VALUES SQL from data frame

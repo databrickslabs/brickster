@@ -1210,7 +1210,11 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param name Table name (character, Id, or SQL)
 #' @param value Data frame to write
-#' @param overwrite If `TRUE`, overwrite existing table
+#' @param overwrite If `TRUE`, overwrite existing table. Standard writes replace
+#'   schema and data in one statement. Atomic overwrites support scalar SQL types
+#'   (boolean, numeric, decimal, string, binary, date and timestamp). Other
+#'   declarations, including `CHAR`/`VARCHAR` length limits, fail before mutation;
+#'   load a separate table and replace the target explicitly when these are needed.
 #' @param append If `TRUE`, append to existing table
 #' @param row.names If `TRUE`, preserve row names as a column
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
@@ -1334,7 +1338,11 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param name Table name as Id object
 #' @param value Data frame to write
-#' @param overwrite If `TRUE`, overwrite existing table
+#' @param overwrite If `TRUE`, overwrite existing table. Standard writes replace
+#'   schema and data in one statement. Atomic overwrites support scalar SQL types
+#'   (boolean, numeric, decimal, string, binary, date and timestamp). Other
+#'   declarations, including `CHAR`/`VARCHAR` length limits, fail before mutation;
+#'   load a separate table and replace the target explicitly when these are needed.
 #' @param append If `TRUE`, append to existing table
 #' @param row.names If `TRUE`, preserve row names as a column
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
@@ -1463,7 +1471,11 @@ setMethod(
 #' @param conn DatabricksConnection object
 #' @param name Table name as AsIs object (from I())
 #' @param value Data frame to write
-#' @param overwrite If `TRUE`, overwrite existing table
+#' @param overwrite If `TRUE`, overwrite existing table. Standard writes replace
+#'   schema and data in one statement. Atomic overwrites support scalar SQL types
+#'   (boolean, numeric, decimal, string, binary, date and timestamp). Other
+#'   declarations, including `CHAR`/`VARCHAR` length limits, fail before mutation;
+#'   load a separate table and replace the target explicitly when these are needed.
 #' @param append If `TRUE`, append to existing table
 #' @param row.names If `TRUE`, preserve row names as a column
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
@@ -1541,7 +1553,7 @@ db_write_table_standard <- function(
       db_append_with_select_values(conn, quoted_name, value)
     }
   } else {
-    # For create/overwrite, explicitly create schema then insert rows
+    # Overwrites replace data and schema in one statement.
     db_create_table_as_select_values(
       conn,
       quoted_name,
@@ -1572,19 +1584,7 @@ db_create_table_from_data <- function(
       "Temporary tables are not supported with the SQL Statement Execution API"
     )
   }
-  # Generate column definitions
-  if (is.null(field.types)) {
-    # Use automatic type mapping for each column
-    col_types <- dbDataType(conn, value)
-  } else {
-    # Use provided types
-    col_types <- field.types[names(value)]
-    # Fill missing types with automatic mapping
-    missing_types <- is.na(col_types) | !names(value) %in% names(field.types)
-    if (any(missing_types)) {
-      col_types[missing_types] <- dbDataType(conn, value[missing_types])
-    }
-  }
+  col_types <- db_write_column_types(conn, value, field.types)
 
   # Build column definitions
   col_names <- purrr::map_chr(names(value), \(x) dbQuoteIdentifier(conn, x))
@@ -1603,16 +1603,34 @@ db_create_table_from_data <- function(
 }
 
 
+db_write_column_types <- function(conn, value, field.types) {
+  # Generate column definitions
+  if (is.null(field.types)) {
+    # Use automatic type mapping for each column
+    col_types <- dbDataType(conn, value)
+  } else {
+    # Use provided types
+    col_types <- field.types[names(value)]
+    # Fill missing types with automatic mapping
+    missing_types <- is.na(col_types) | !names(value) %in% names(field.types)
+    if (any(missing_types)) {
+      col_types[missing_types] <- dbDataType(conn, value[missing_types])
+    }
+  }
+  rlang::set_names(col_types, names(value))
+}
+
 #' Generate type-aware VALUES SQL from data frame
 #' @keywords internal
-db_generate_typed_values_sql <- function(conn, data) {
+db_generate_typed_values_sql <- function(conn, data, col_types = NULL) {
   binary_cols <- purrr::map_lgl(data, db_is_binary_column)
 
   # Convert each row to SQL values with proper typing
   row_values <- purrr::pmap_chr(data, function(...) {
     row <- list(...)
     values <- purrr::imap_chr(row, function(val, col_name) {
-      db_format_typed_value_sql(conn, val, data[[col_name]], binary_cols[[col_name]])
+      literal <- db_format_typed_value_sql(conn, val, data[[col_name]], binary_cols[[col_name]])
+      if (is.null(col_types)) literal else paste0("CAST(", literal, " AS ", col_types[[col_name]], ")")
     })
     paste0("(", paste(values, collapse = ", "), ")")
   })
@@ -1672,7 +1690,7 @@ db_escape_string_literal <- function(conn, val) {
   paste0("'", escaped, "'")
 }
 
-#' Create table with explicit schema before inserting values
+#' Create a table or atomically replace it with typed values
 #' @keywords internal
 db_create_table_as_select_values <- function(
   conn,
@@ -1686,6 +1704,29 @@ db_create_table_as_select_values <- function(
     cli::cli_abort(
       "Temporary tables are not supported with the SQL Statement Execution API"
     )
+  }
+
+  if (overwrite && nrow(value) > 0) {
+    col_types <- db_write_column_types(conn, value, field.types)
+    scalar_type <- paste0(
+      "^(BOOLEAN|TINYINT|BYTE|SMALLINT|SHORT|INT|INTEGER|BIGINT|LONG|FLOAT|REAL|",
+      "DOUBLE( +PRECISION)?|STRING|BINARY|DATE|TIMESTAMP(_LTZ|_NTZ)?|",
+      "(DECIMAL|DEC|NUMERIC)( *\\( *[0-9]+ *(, *[0-9]+ *)?\\))?)$"
+    )
+    supported <- grepl(scalar_type, toupper(trimws(col_types)))
+    if (any(!supported)) {
+      cli::cli_abort(c(
+        "Atomic overwrite cannot preserve the {.arg field.types} declarations for {.val {names(value)[!supported]}}.",
+        "i" = "Use supported scalar SQL types, or load a separate table with {.fun dbCreateTable} and {.fun dbAppendTable} and replace the target explicitly."
+      ))
+    }
+    col_names <- purrr::map_chr(names(value), ~ dbQuoteIdentifier(conn, .x))
+    values_sql <- db_generate_typed_values_sql(conn, value, col_types)
+    sql <- paste0("CREATE OR REPLACE TABLE ", quoted_name,
+      " AS SELECT * FROM VALUES ", values_sql,
+      " AS data (", paste(col_names, collapse = ", "), ")")
+    db_sql_assert_statement_size(sql)
+    return(dbExecute(conn, sql))
   }
 
   insert_sql <- if (nrow(value) > 0) db_generate_insert_sql(conn, quoted_name, value) else NULL
