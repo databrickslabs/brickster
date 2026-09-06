@@ -277,6 +277,8 @@ get_uc_volume <- function(catalog, schema, host, volume, token) {
     "id" = volume$volume_id
   )
 
+  info <- purrr::keep(info, ~ length(.x) > 0L)
+
   data.frame(
     name = names(info),
     type = unname(unlist(info)),

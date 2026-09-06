@@ -53,18 +53,25 @@ test_that("pane pagination propagates failures and rejects repeated tokens", {
   expect_error(get_schemas("main", "mock_host", "mock_token"), "Permission denied")
 })
 
-test_that("volume details are retrieved by name without listing the schema", {
+test_that("volume pane details use the named request with browse access enabled", {
+  state <- new.env(parent = emptyenv())
+  state$requests <- list()
   local_mocked_bindings(
-    db_uc_volumes_list = function(...) stop("Unexpected listing"),
-    db_uc_volumes_get = function(catalog, schema, volume, host, token, ...) {
-      expect_identical(c(catalog, schema, volume), c("main", "default", "later_volume"))
-      list(name = volume, volume_type = "MANAGED", storage_location = "s3://example", created_at = 0,
-           created_by = "creator", updated_at = 0, updated_by = "updater", volume_id = "id")
+    db_perform_request = function(req) {
+      state$requests[[length(state$requests) + 1L]] <- req
+      list(name = "later_volume", catalog_name = "main", schema_name = "default",
+           full_name = "main.default.later_volume", volume_type = "MANAGED", browse_only = TRUE)
     },
     .package = "brickster"
   )
   out <- get_uc_volume("main", "default", "mock_host", "later_volume", "mock_token")
-  expect_identical(out$type[out$name == "name"], "later_volume")
+  expect_length(state$requests, 1L)
+  req <- state$requests[[1]]
+  expect_identical(req$method, "GET")
+  expect_identical(httr2::url_parse(req$url)$path, "/api/2.1/unity-catalog/volumes/main.default.later_volume")
+  expect_identical(httr2::url_parse(req$url)$query$include_browse, "true")
+  expect_null(req$body)
+  expect_identical(out, data.frame(name = c("name", "volume type"), type = c("later_volume", "MANAGED")))
 })
 
 test_that("empty paginated model versions return an empty pane frame", {
