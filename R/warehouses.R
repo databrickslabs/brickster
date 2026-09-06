@@ -393,20 +393,29 @@ db_sql_global_warehouse_get <- function(
 #' @family Warehouse API
 #' @family Warehouse Helpers
 #'
-#' @returns `db_sql_warehouse_get()`
+#' @inheritParams get_and_start_cluster
+#' @returns The running warehouse details from `db_sql_warehouse_get()`. Raises
+#'   an error if startup fails or the polling deadline expires.
 #' @export
 get_and_start_warehouse <- function(
   id,
   polling_interval = 5,
   host = db_host(),
-  token = db_token()
+  token = db_token(),
+  poll_timeout = 1200
 ) {
+  deadline <- db_poll_deadline(poll_timeout, polling_interval)
+  operation <- paste("SQL warehouse", id)
+
   # get cluster status
   warehouse_status <- db_sql_warehouse_get(
     id = id,
     host = host,
     token = token
   )
+
+  db_poll_check_state(warehouse_status$state, c("RUNNING", "STARTING", "STOPPED"), operation, warehouse_status$health$summary)
+  db_poll_remaining(deadline, operation)
 
   # if the warehouse isn't running, start it
   if (!warehouse_status$state %in% c("RUNNING", "STARTING")) {
@@ -419,12 +428,14 @@ get_and_start_warehouse <- function(
 
   # wait for warehouse to become active
   while (warehouse_status$state != "RUNNING") {
-    Sys.sleep(polling_interval)
+    db_poll_sleep(deadline, polling_interval, operation)
     warehouse_status <- db_sql_warehouse_get(
       id = id,
       host = host,
       token = token
     )
+    db_poll_check_state(warehouse_status$state, c("RUNNING", "STARTING"), operation, warehouse_status$health$summary)
+    db_poll_remaining(deadline, operation)
   }
 
   warehouse_status

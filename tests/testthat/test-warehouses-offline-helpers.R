@@ -190,3 +190,48 @@ test_that("warehouse print shows type as Serverless, Pro, or Classic", {
   expect_true(grepl("\n  Size: Small [1/1]\n", pro_print, fixed = TRUE))
   expect_true(grepl("\n  Size: Small [1/1]\n", classic_print, fixed = TRUE))
 })
+
+test_that("warehouse startup polling obeys its elapsed deadline", {
+  state <- new.env(parent = emptyenv())
+  state$elapsed <- 0
+  state$calls <- 0L
+  state$starts <- 0L
+  local_mocked_bindings(
+    proc.time = function() c(elapsed = state$elapsed),
+    Sys.sleep = function(seconds) state$elapsed <- state$elapsed + seconds,
+    .package = "base"
+  )
+  local_mocked_bindings(
+    db_sql_warehouse_get = function(...) {
+      state$calls <- state$calls + 1L
+      if (state$calls > 3L) stop("Polling did not stop")
+      list(state = if (state$calls == 1L) "STOPPED" else "STARTING")
+    },
+    db_sql_warehouse_start = function(...) state$starts <- state$starts + 1L,
+    .package = "brickster"
+  )
+  expect_error(get_and_start_warehouse("wh-timeout", polling_interval = 0.4, poll_timeout = 1), "Timed out.*wh-timeout")
+  expect_equal(state$elapsed, 1)
+  expect_identical(state$calls, 3L)
+  expect_identical(state$starts, 1L)
+})
+
+test_that("warehouse startup surfaces stopped and deleted failure states", {
+  state <- new.env(parent = emptyenv())
+  state$terminal <- "STOPPED"
+  state$calls <- 0L
+  local_mocked_bindings(
+    db_sql_warehouse_get = function(...) {
+      state$calls <- state$calls + 1L
+      if (state$calls > 2L) stop("Polling did not stop at terminal state")
+      list(state = if (state$calls == 1L) "STARTING" else state$terminal, health = list(summary = "startup failed"))
+    },
+    .package = "brickster"
+  )
+  purrr::walk(c("STOPPED", "DELETED"), function(terminal) {
+    state$calls <- 0L
+    state$terminal <- terminal
+    expect_error(get_and_start_warehouse("wh-failure", polling_interval = 0), "startup failed")
+    expect_identical(state$calls, 2L)
+  })
+})

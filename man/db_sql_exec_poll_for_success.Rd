@@ -9,7 +9,8 @@ db_sql_exec_poll_for_success(
   interval = 1,
   show_progress = TRUE,
   host = db_host(),
-  token = db_token()
+  token = db_token(),
+  poll_timeout = 1200
 )
 }
 \arguments{
@@ -22,6 +23,11 @@ db_sql_exec_poll_for_success(
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
 \item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}
+
+\item{poll_timeout}{Maximum elapsed seconds to wait for completion (default:
+1200, or 20 minutes). Use \code{Inf} to wait without a polling deadline. The
+deadline is checked between HTTP requests; an in-flight request can finish
+after it. Timing out stops local polling without cancelling the operation.}
 }
 \description{
 Poll a Query Until Successful

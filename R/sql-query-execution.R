@@ -265,40 +265,27 @@ db_sql_exec_result <- function(
 #' @inheritParams db_sql_exec_cancel
 #' @param interval Number of seconds between status checks.
 #' @param show_progress If `TRUE`, show progress updates during polling (default: `TRUE`)
+#' @inheritParams get_and_start_cluster
 db_sql_exec_poll_for_success <- function(
   statement_id,
   interval = 1,
   show_progress = TRUE,
   host = db_host(),
-  token = db_token()
+  token = db_token(),
+  poll_timeout = 1200
 ) {
-  is_query_running <- TRUE
-
-  while (is_query_running) {
-    status <- db_sql_exec_status(
-      statement_id = statement_id,
-      host = host,
-      token = token
-    )
-
-    if (status$status$state == "SUCCEEDED") {
-      is_query_running <- FALSE
-    } else if (status$status$state %in% c("FAILED", "CLOSED", "CANCELED")) {
-      # Get the actual error message if available
-      if (!is.null(status$status$error$message)) {
-        error_msg <- status$status$error$message
-      } else {
-        error_msg <- paste("Query failed with status:", status$status$state)
-      }
-      cli::cli_abort(error_msg)
-    } else {
-      Sys.sleep(interval)
-    }
+  deadline <- db_poll_deadline(poll_timeout, interval)
+  operation <- paste("SQL statement", statement_id)
+  repeat {
+    db_poll_remaining(deadline, operation)
+    status <- db_sql_exec_status(statement_id = statement_id, host = host, token = token)
+    db_poll_check_state(status$status$state, c("PENDING", "RUNNING", "SUCCEEDED"),
+                        operation, status$status$error$message)
+    db_poll_remaining(deadline, operation)
+    if (status$status$state == "SUCCEEDED") return(status)
+    db_poll_sleep(deadline, interval, operation)
   }
-
-  status
 }
-
 
 # Internal Helper Functions for SQL Execution -------------------------------
 
@@ -310,6 +297,7 @@ db_sql_exec_poll_for_success <- function(
 #'
 #' @inheritParams db_sql_exec_query
 #' @param wait_timeout Initial wait timeout (default "30s")
+#' @inheritParams get_and_start_cluster
 #' @returns Status response with manifest when query completes successfully
 #' @keywords internal
 db_sql_exec_and_wait <- function(
@@ -325,8 +313,11 @@ db_sql_exec_and_wait <- function(
   format = c("ARROW_STREAM", "JSON_ARRAY"),
   host = db_host(),
   token = db_token(),
-  show_progress = TRUE
+  show_progress = TRUE,
+  poll_timeout = 1200
 ) {
+  deadline <- db_poll_deadline(poll_timeout, 0.1)
+
   # Validate arguments
   disposition <- match.arg(disposition)
   format <- match.arg(format)
@@ -352,6 +343,11 @@ db_sql_exec_and_wait <- function(
     token = token
   )
 
+  operation <- paste("SQL statement", resp$statement_id)
+  db_poll_check_state(resp$status$state, c("PENDING", "RUNNING", "SUCCEEDED"),
+                      operation, resp$status$error$message)
+  remaining <- db_poll_remaining(deadline, operation)
+
   # Poll for completion if still running
   if (resp$status$state %in% c("RUNNING", "PENDING")) {
     if (show_progress) {
@@ -362,13 +358,9 @@ db_sql_exec_and_wait <- function(
       interval = 0.1,
       show_progress = FALSE,
       host = host,
-      token = token
+      token = token,
+      poll_timeout = remaining
     )
-  }
-
-  # Check for query failure
-  if (resp$status$state == "FAILED") {
-    cli::cli_abort(resp$status$error$message)
   }
 
   resp
@@ -687,6 +679,7 @@ db_sql_fetch_results_parallel <- function(
 #' Execute query with SQL Warehouse
 #'
 #' @inheritParams db_sql_exec_query
+#' @inheritParams get_and_start_cluster
 #' @param return_arrow Boolean, determine if result is [tibble::tibble] or
 #' [arrow::Table].
 #' @param max_active_connections Integer to decide on concurrent downloads.
@@ -710,7 +703,8 @@ db_sql_query <- function(
   disposition = "EXTERNAL_LINKS",
   host = db_host(),
   token = db_token(),
-  show_progress = TRUE
+  show_progress = TRUE,
+  poll_timeout = 1200
 ) {
   # Choose format based on disposition
   format <- if (disposition == "INLINE") "JSON_ARRAY" else "ARROW_STREAM"
@@ -729,7 +723,8 @@ db_sql_query <- function(
     format = format,
     host = host,
     token = token,
-    show_progress = show_progress
+    show_progress = show_progress,
+    poll_timeout = poll_timeout
   )
 
   # Check for empty results early and return immediately

@@ -48,7 +48,7 @@ test_that("get_and_start_cluster does not start an already-running cluster", {
   expect_identical(out$state, "RUNNING")
 })
 
-test_that("get_and_start_cluster exits when cluster enters terminating state", {
+test_that("get_and_start_cluster reports an error when cluster enters terminating state", {
   state <- new.env(parent = emptyenv())
   state$idx <- 0L
   state$started <- FALSE
@@ -69,10 +69,12 @@ test_that("get_and_start_cluster exits when cluster enters terminating state", {
     .package = "brickster"
   )
 
-  out <- get_and_start_cluster(cluster_id = "abc", polling_interval = 0, silent = TRUE)
+  expect_error(
+    get_and_start_cluster(cluster_id = "abc", polling_interval = 0, silent = TRUE),
+    "cluster abc entered state TERMINATING"
+  )
 
   expect_true(state$started)
-  expect_identical(out$state, "TERMINATING")
 })
 
 test_that("get_latest_dbr selects expected runtime based on flags", {
@@ -436,4 +438,36 @@ test_that("cluster print does not append Photon when runtime version is unset", 
 
   expect_true(grepl("Runtime: <unset>", cluster_print, fixed = TRUE))
   expect_false(grepl("Runtime: <unset> Photon", cluster_print, fixed = TRUE))
+})
+
+test_that("cluster startup stops at its deadline and does not restart pending clusters", {
+  state <- new.env(parent = emptyenv())
+  state$elapsed <- 0
+  state$calls <- 0L
+  local_mocked_bindings(
+    proc.time = function() c(elapsed = state$elapsed),
+    Sys.sleep = function(seconds) state$elapsed <- state$elapsed + seconds,
+    .package = "base"
+  )
+  local_mocked_bindings(
+    db_cluster_get = function(...) {
+      state$calls <- state$calls + 1L
+      if (state$calls > 1L) stop("Unexpected status request after deadline")
+      list(state = "PENDING")
+    },
+    db_cluster_start = function(...) stop("Unexpected restart"),
+    .package = "brickster"
+  )
+  expect_error(get_and_start_cluster("cluster-timeout", polling_interval = 10, poll_timeout = 2, silent = TRUE), "Timed out.*cluster-timeout")
+  expect_identical(state$elapsed, 2)
+  expect_identical(state$calls, 1L)
+})
+
+test_that("cluster startup preserves ERROR details", {
+  local_mocked_bindings(
+    db_cluster_get = function(...) list(state = "ERROR", state_message = "Capacity exhausted {retry later}"),
+    db_cluster_start = function(...) stop("Unexpected restart"),
+    .package = "brickster"
+  )
+  expect_error(get_and_start_cluster("failed", silent = TRUE), "Capacity exhausted \\{retry later\\}")
 })

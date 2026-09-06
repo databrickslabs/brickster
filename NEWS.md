@@ -1,3 +1,7 @@
+# brickster (development version)
+
+-   SQL query waits, `dbFetch()`, cluster/warehouse startup helpers, and `db_context_command_run_and_wait()` now accept `poll_timeout` (default: 20 minutes; use `Inf` for unlimited polling). Polling stops with an actionable error when the deadline expires; server operations are not cancelled. Unsuccessful terminal states now surface API details instead of reaching result parsing or returning an inactive resource.
+
 # brickster 0.2.14
 
 -   Fixed OAuth U2M and M2M authentication across multiple Databricks workspaces in one R session by isolating OAuth clients and cached tokens per workspace (#256, @zacdav-db)

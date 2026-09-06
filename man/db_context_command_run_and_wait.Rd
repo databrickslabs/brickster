@@ -13,11 +13,12 @@ db_context_command_run_and_wait(
   options = list(),
   parse_result = TRUE,
   host = db_host(),
-  token = db_token()
+  token = db_token(),
+  poll_timeout = 1200
 )
 }
 \arguments{
-\item{cluster_id}{The ID of the cluster to create the context for.}
+\item{cluster_id}{Canonical identifier for the cluster.}
 
 \item{context_id}{The ID of the execution context.}
 
@@ -36,9 +37,16 @@ db_context_command_run_and_wait(
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
 \item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}
+
+\item{poll_timeout}{Maximum elapsed seconds to wait for completion (default:
+1200, or 20 minutes). Use \code{Inf} to wait without a polling deadline. The
+deadline is checked between HTTP requests; an in-flight request can finish
+after it. Timing out stops local polling without cancelling the operation.}
 }
 \value{
-Endpoint-specific output.
+Parsed results when \code{parse_result = TRUE}, or the finished command
+status response when \code{FALSE}. Raises an error on failure, cancellation, or
+an expired polling deadline.
 }
 \description{
 Run a Command and Wait For Results

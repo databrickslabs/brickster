@@ -17,7 +17,8 @@ db_sql_exec_and_wait(
   format = c("ARROW_STREAM", "JSON_ARRAY"),
   host = db_host(),
   token = db_token(),
-  show_progress = TRUE
+  show_progress = TRUE,
+  poll_timeout = 1200
 )
 }
 \arguments{
@@ -67,6 +68,11 @@ for details.}
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
 \item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}
+
+\item{poll_timeout}{Maximum elapsed seconds to wait for completion (default:
+1200, or 20 minutes). Use \code{Inf} to wait without a polling deadline. The
+deadline is checked between HTTP requests; an in-flight request can finish
+after it. Timing out stops local polling without cancelling the operation.}
 }
 \value{
 Status response with manifest when query completes successfully

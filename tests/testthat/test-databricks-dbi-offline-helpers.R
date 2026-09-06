@@ -777,3 +777,40 @@ test_that("db_write_table_volume executes append flow when append is TRUE", {
   expect_identical(state$created, state$uploaded)
   expect_identical(state$deleted, state$created)
 })
+
+test_that("dbFetch reports terminal failures before accessing missing manifests", {
+  con <- make_dbi_test_con()
+  res <- new("DatabricksResult", statement_id = "failed-statement", connection = con, completed = FALSE, rows_fetched = 0)
+  state <- new.env(parent = emptyenv())
+  state$status <- "CANCELED"
+  local_mocked_bindings(
+    db_sql_exec_status = function(...) list(status = list(state = state$status, error = list(message = "Statement failed"))),
+    .package = "brickster"
+  )
+  purrr::walk(c("FAILED", "CLOSED", "CANCELED"), function(status) {
+    state$status <- status
+    expect_error(dbFetch(res), "Statement failed")
+  })
+})
+
+test_that("dbFetch passes only its remaining wait budget to SQL polling", {
+  res <- new("DatabricksResult", statement_id = "stmt-fetch", connection = make_dbi_test_con(), completed = FALSE, rows_fetched = 0)
+  state <- new.env(parent = emptyenv())
+  state$elapsed <- 0
+  local_mocked_bindings(proc.time = function() c(elapsed = state$elapsed), .package = "base")
+  local_mocked_bindings(
+    db_sql_exec_status = function(...) {
+      state$elapsed <- 3
+      list(status = list(state = "RUNNING"))
+    },
+    db_sql_exec_poll_for_success = function(statement_id, poll_timeout, ...) {
+      expect_identical(statement_id, "stmt-fetch")
+      expect_identical(poll_timeout, 2)
+      list(status = list(state = "SUCCEEDED"), manifest = list(total_row_count = 0,
+        schema = list(columns = list(list(name = "id", type_name = "INT")))))
+    },
+    .package = "brickster"
+  )
+  out <- dbFetch(res, poll_timeout = 5, show_progress = FALSE)
+  expect_identical(out, tibble::tibble(id = integer()))
+})

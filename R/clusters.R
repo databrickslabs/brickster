@@ -881,6 +881,10 @@ db_cluster_events <- function(
 #' Get and Start Cluster
 #'
 #' @param polling_interval Number of seconds to wait between status checks
+#' @param poll_timeout Maximum elapsed seconds to wait for completion (default:
+#'   1200, or 20 minutes). Use `Inf` to wait without a polling deadline. The
+#'   deadline is checked between HTTP requests; an in-flight request can finish
+#'   after it. Timing out stops local polling without cancelling the operation.
 #' @inheritParams auth_params
 #' @inheritParams db_cluster_edit
 #' @param silent Boolean (default: `FALSE`), will emit cluster state progress
@@ -894,21 +898,31 @@ db_cluster_events <- function(
 #' @family Clusters API
 #' @family Cluster Helpers
 #'
-#' @returns `db_cluster_get()`
+#' @returns The running cluster details from `db_cluster_get()`. Raises an error
+#'   if startup fails or the polling deadline expires.
 #' @export
 get_and_start_cluster <- function(
   cluster_id,
   polling_interval = 5,
   host = db_host(),
   token = db_token(),
-  silent = FALSE
+  silent = FALSE,
+  poll_timeout = 1200
 ) {
+  deadline <- db_poll_deadline(poll_timeout, polling_interval)
+  operation <- paste("cluster", cluster_id)
+
   # get cluster status
   cluster_status <- db_cluster_get(
     cluster_id = cluster_id,
     host = host,
     token = token
   )
+
+  db_poll_check_state(cluster_status$state,
+    c("RUNNING", "PENDING", "RESIZING", "STARTING", "RESTARTING", "TERMINATED"),
+    operation, cluster_status$state_message)
+  db_poll_remaining(deadline, operation)
 
   if (!silent) {
     msg <- "{.header Checking cluster:} {.emph '{cluster_id}'}"
@@ -933,7 +947,7 @@ get_and_start_cluster <- function(
   }
 
   while (cluster_status$state != "RUNNING") {
-    Sys.sleep(polling_interval)
+    db_poll_sleep(deadline, polling_interval, operation)
     cluster_status <- db_cluster_get(
       cluster_id = cluster_id,
       host = host,
@@ -942,12 +956,10 @@ get_and_start_cluster <- function(
     if (!silent) {
       cli::cli_progress_update()
     }
-    if (cluster_status$state %in% c("TERMINATED", "TERMINATING")) {
-      if (!silent) {
-        cli::cli_progress_done(result = "failed")
-      }
-      break
-    }
+    db_poll_check_state(cluster_status$state,
+      c("RUNNING", "PENDING", "RESIZING", "STARTING", "RESTARTING"),
+      operation, cluster_status$state_message)
+    db_poll_remaining(deadline, operation)
   }
 
   if (!silent) {

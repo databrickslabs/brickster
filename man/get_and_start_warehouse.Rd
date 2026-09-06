@@ -8,7 +8,8 @@ get_and_start_warehouse(
   id,
   polling_interval = 5,
   host = db_host(),
-  token = db_token()
+  token = db_token(),
+  poll_timeout = 1200
 )
 }
 \arguments{
@@ -19,9 +20,15 @@ get_and_start_warehouse(
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
 \item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}
+
+\item{poll_timeout}{Maximum elapsed seconds to wait for completion (default:
+1200, or 20 minutes). Use \code{Inf} to wait without a polling deadline. The
+deadline is checked between HTTP requests; an in-flight request can finish
+after it. Timing out stops local polling without cancelling the operation.}
 }
 \value{
-\code{db_sql_warehouse_get()}
+The running warehouse details from \code{db_sql_warehouse_get()}. Raises
+an error if startup fails or the polling deadline expires.
 }
 \description{
 Get and Start Warehouse

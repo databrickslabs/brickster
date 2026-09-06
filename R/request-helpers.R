@@ -175,3 +175,40 @@ from_logical <- function(x) {
   stopifnot(is.logical(x))
   ifelse(x, "true", "false")
 }
+
+
+db_poll_deadline <- function(poll_timeout, interval) {
+  if (!is.numeric(poll_timeout) || length(poll_timeout) != 1L ||
+      is.na(poll_timeout) || poll_timeout <= 0) {
+    cli::cli_abort("{.arg poll_timeout} must be a positive number of seconds or {.val Inf}.")
+  }
+  if (!is.numeric(interval) || length(interval) != 1L ||
+      !is.finite(interval) || interval < 0) {
+    cli::cli_abort("The polling interval must be a non-negative, finite number of seconds.")
+  }
+  proc.time()[["elapsed"]] + poll_timeout
+}
+
+db_poll_remaining <- function(deadline, operation) {
+  remaining <- deadline - proc.time()[["elapsed"]]
+  if (remaining <= 0) {
+    cli::cli_abort(c(
+      "Timed out waiting for {operation}.",
+      "i" = "The operation may still be running. Inspect its status before retrying."
+    ), class = "brickster_poll_timeout")
+  }
+  remaining
+}
+
+db_poll_sleep <- function(deadline, interval, operation) {
+  Sys.sleep(min(interval, db_poll_remaining(deadline, operation)))
+  invisible(db_poll_remaining(deadline, operation))
+}
+
+db_poll_check_state <- function(state, allowed, operation, detail = NULL) {
+  if (length(state) != 1L || is.na(state) || !state %in% allowed) {
+    state <- if (length(state) == 1L && !is.na(state)) state else "<missing>"
+    detail <- if (is.null(detail)) "" else paste0(": ", detail)
+    cli::cli_abort("{operation} entered state {state}{detail}.", class = "brickster_poll_failure")
+  }
+}

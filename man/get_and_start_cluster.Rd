@@ -9,7 +9,8 @@ get_and_start_cluster(
   polling_interval = 5,
   host = db_host(),
   token = db_token(),
-  silent = FALSE
+  silent = FALSE,
+  poll_timeout = 1200
 )
 }
 \arguments{
@@ -23,9 +24,15 @@ get_and_start_cluster(
 
 \item{silent}{Boolean (default: \code{FALSE}), will emit cluster state progress
 if \code{TRUE}.}
+
+\item{poll_timeout}{Maximum elapsed seconds to wait for completion (default:
+1200, or 20 minutes). Use \code{Inf} to wait without a polling deadline. The
+deadline is checked between HTTP requests; an in-flight request can finish
+after it. Timing out stops local polling without cancelling the operation.}
 }
 \value{
-\code{db_cluster_get()}
+The running cluster details from \code{db_cluster_get()}. Raises an error
+if startup fails or the polling deadline expires.
 }
 \description{
 Get and Start Cluster

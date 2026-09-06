@@ -163,3 +163,96 @@ test_that("db_sql_fetch_results uses parallel path for multiple chunks", {
   )
   expect_identical(out_parallel, "parallel-path")
 })
+
+test_that("SQL submission rejects every unsuccessful terminal state", {
+  state <- new.env(parent = emptyenv())
+  state$status <- "CANCELED"
+  local_mocked_bindings(
+    db_sql_exec_query = function(...) list(statement_id = "stmt-1", status = list(state = state$status, error = list(message = "server {detail}"))),
+    .package = "brickster"
+  )
+  purrr::walk(c("FAILED", "CANCELED", "CLOSED"), function(status) {
+    state$status <- status
+    expect_error(db_sql_exec_and_wait("wh", "SELECT 1", show_progress = FALSE), "server \\{detail\\}")
+  })
+})
+
+test_that("SQL polling stops at its elapsed deadline without an extra status request", {
+  state <- new.env(parent = emptyenv())
+  state$elapsed <- 0
+  state$calls <- 0L
+  state$sleeps <- numeric()
+  local_mocked_bindings(
+    proc.time = function() c(elapsed = state$elapsed),
+    Sys.sleep = function(seconds) {
+      state$sleeps <- c(state$sleeps, seconds)
+      state$elapsed <- state$elapsed + seconds
+    },
+    .package = "base"
+  )
+  local_mocked_bindings(
+    db_sql_exec_status = function(...) {
+      state$calls <- state$calls + 1L
+      if (state$calls > 3L) stop("Polling failed to stop")
+      list(status = list(state = "RUNNING"))
+    },
+    .package = "brickster"
+  )
+  expect_error(db_sql_exec_poll_for_success("stmt-timeout", interval = 10, poll_timeout = 2), "Timed out.*stmt-timeout")
+  expect_identical(state$calls, 1L)
+  expect_identical(state$sleeps, 2)
+})
+
+test_that("SQL submission time is deducted from the polling budget", {
+  state <- new.env(parent = emptyenv())
+  state$elapsed <- 0
+  local_mocked_bindings(proc.time = function() c(elapsed = state$elapsed), .package = "base")
+  local_mocked_bindings(
+    db_sql_exec_query = function(...) {
+      state$elapsed <- 3
+      list(statement_id = "stmt-budget", status = list(state = "PENDING"))
+    },
+    db_sql_exec_poll_for_success = function(statement_id, poll_timeout, ...) {
+      expect_identical(statement_id, "stmt-budget")
+      expect_identical(poll_timeout, 2)
+      list(status = list(state = "SUCCEEDED"))
+    },
+    .package = "brickster"
+  )
+  out <- db_sql_exec_and_wait("wh", "SELECT 1", poll_timeout = 5, show_progress = FALSE)
+  expect_identical(out$status$state, "SUCCEEDED")
+})
+
+test_that("invalid polling limits are rejected before submission", {
+  local_mocked_bindings(
+    db_sql_exec_query = function(...) stop("Unexpected submission"),
+    db_cluster_get = function(...) stop("Unexpected cluster request"),
+    db_sql_warehouse_get = function(...) stop("Unexpected warehouse request"),
+    db_context_command_run = function(...) stop("Unexpected command submission"),
+    .package = "brickster"
+  )
+  purrr::walk(list(0, -1, NA_real_, -Inf, "1", c(1, 2)), function(timeout) {
+    expect_error(db_sql_query("wh", "SELECT 1", poll_timeout = timeout, show_progress = FALSE), "poll_timeout")
+    expect_error(get_and_start_cluster("cluster", poll_timeout = timeout), "poll_timeout")
+    expect_error(get_and_start_warehouse("warehouse", poll_timeout = timeout), "poll_timeout")
+    expect_error(db_context_command_run_and_wait("cluster", "context", poll_timeout = timeout), "poll_timeout")
+  })
+  expect_error(get_and_start_cluster("cluster", polling_interval = -1), "polling interval")
+  expect_error(get_and_start_warehouse("warehouse", polling_interval = Inf), "polling interval")
+})
+
+test_that("unlimited SQL polling and late HTTP responses have explicit behavior", {
+  state <- new.env(parent = emptyenv())
+  state$elapsed <- 0
+  local_mocked_bindings(proc.time = function() c(elapsed = state$elapsed), .package = "base")
+  local_mocked_bindings(
+    db_sql_exec_status = function(...) {
+      state$elapsed <- state$elapsed + 100
+      list(status = list(state = "SUCCEEDED"))
+    },
+    .package = "brickster"
+  )
+  expect_error(db_sql_exec_poll_for_success("late", poll_timeout = 5), "Timed out.*late")
+  out <- db_sql_exec_poll_for_success("unlimited", poll_timeout = Inf)
+  expect_identical(out$status$state, "SUCCEEDED")
+})

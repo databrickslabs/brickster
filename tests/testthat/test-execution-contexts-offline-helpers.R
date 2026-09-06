@@ -178,3 +178,42 @@ test_that("db_context_command_run_and_wait polls until done and supports parsed/
     "is.logical"
   )
 })
+
+test_that("command polling stops at its deadline before another status request", {
+  state <- new.env(parent = emptyenv())
+  state$elapsed <- 0
+  state$calls <- 0L
+  local_mocked_bindings(
+    proc.time = function() c(elapsed = state$elapsed),
+    Sys.sleep = function(seconds) state$elapsed <- state$elapsed + seconds,
+    .package = "base"
+  )
+  local_mocked_bindings(
+    db_context_command_run = function(...) list(id = "cmd-timeout"),
+    db_context_command_status = function(...) {
+      state$calls <- state$calls + 1L
+      if (state$calls > 2L) stop("Polling did not stop")
+      list(status = "Running")
+    },
+    .package = "brickster"
+  )
+  expect_error(db_context_command_run_and_wait("cluster", "context", poll_timeout = 1), "Timed out.*cmd-timeout")
+  expect_identical(state$elapsed, 1)
+  expect_identical(state$calls, 2L)
+})
+
+test_that("command failures and cancellation are surfaced before parsing", {
+  state <- new.env(parent = emptyenv())
+  state$status <- "Error"
+  local_mocked_bindings(
+    db_context_command_run = function(...) list(id = "cmd-failure"),
+    db_context_command_status = function(...) list(status = state$status, results = list(cause = "command failed")),
+    db_context_command_parse = function(...) stop("Unexpected parsing"),
+    .package = "brickster"
+  )
+  purrr::walk(c("Error", "Cancelled", "Cancelling"), function(status) {
+    state$status <- status
+    expect_error(db_context_command_run_and_wait("cluster", "context", parse_result = FALSE), "command failed")
+    expect_error(db_context_command_run_and_wait("cluster", "context", parse_result = TRUE), "command failed")
+  })
+})

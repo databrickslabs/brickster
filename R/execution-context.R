@@ -185,12 +185,15 @@ db_context_command_run <- function(
 #' Run a Command and Wait For Results
 #'
 #' @param parse_result Boolean, determines if results are parsed automatically.
+#' @inheritParams get_and_start_cluster
 #' @inheritParams db_context_command_run
 #'
 #' @family Execution Context API
 #'
 #' @export
-#' @returns Endpoint-specific output.
+#' @returns Parsed results when `parse_result = TRUE`, or the finished command
+#'   status response when `FALSE`. Raises an error on failure, cancellation, or
+#'   an expired polling deadline.
 db_context_command_run_and_wait <- function(
   cluster_id,
   context_id,
@@ -200,9 +203,11 @@ db_context_command_run_and_wait <- function(
   options = list(),
   parse_result = TRUE,
   host = db_host(),
-  token = db_token()
+  token = db_token(),
+  poll_timeout = 1200
 ) {
   stopifnot(is.logical(parse_result))
+  deadline <- db_poll_deadline(poll_timeout, 0.5)
 
   command <- db_context_command_run(
     cluster_id = cluster_id,
@@ -215,6 +220,9 @@ db_context_command_run_and_wait <- function(
     token = token
   )
 
+  operation <- paste("command", command$id, "on cluster", cluster_id)
+  db_poll_remaining(deadline, operation)
+
   command_status <- db_context_command_status(
     cluster_id = cluster_id,
     context_id = context_id,
@@ -223,8 +231,12 @@ db_context_command_run_and_wait <- function(
     token = token
   )
 
-  while (command_status$status %in% c("Running", "Queued")) {
-    Sys.sleep(0.5)
+  repeat {
+    db_poll_check_state(command_status$status, c("Running", "Queued", "Finished"),
+                        operation, command_status$results$cause)
+    db_poll_remaining(deadline, operation)
+    if (command_status$status == "Finished") break
+    db_poll_sleep(deadline, 0.5, operation)
     command_status <- db_context_command_status(
       cluster_id = cluster_id,
       context_id = context_id,

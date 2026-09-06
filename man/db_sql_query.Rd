@@ -19,7 +19,8 @@ db_sql_query(
   disposition = "EXTERNAL_LINKS",
   host = db_host(),
   token = db_token(),
-  show_progress = TRUE
+  show_progress = TRUE,
+  poll_timeout = 1200
 )
 }
 \arguments{
@@ -86,6 +87,11 @@ should happen after the timeout is reached.}
 \item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}
 
 \item{show_progress}{If \code{TRUE}, show progress updates during query execution (default: \code{TRUE})}
+
+\item{poll_timeout}{Maximum elapsed seconds to wait for completion (default:
+1200, or 20 minutes). Use \code{Inf} to wait without a polling deadline. The
+deadline is checked between HTTP requests; an in-flight request can finish
+after it. Timing out stops local polling without cancelling the operation.}
 }
 \value{
 \link[tibble:tibble]{tibble::tibble} or \link[arrow:Table-class]{arrow::Table}.

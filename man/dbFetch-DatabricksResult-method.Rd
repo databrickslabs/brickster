@@ -4,7 +4,13 @@
 \alias{dbFetch,DatabricksResult-method}
 \title{Fetch results from Databricks query}
 \usage{
-\S4method{dbFetch}{DatabricksResult}(res, n = -1, show_progress = res@connection@show_progress, ...)
+\S4method{dbFetch}{DatabricksResult}(
+  res,
+  n = -1,
+  show_progress = res@connection@show_progress,
+  poll_timeout = 1200,
+  ...
+)
 }
 \arguments{
 \item{res}{A DatabricksResult object}
@@ -13,6 +19,11 @@
 
 \item{show_progress}{If \code{TRUE}, show progress updates during result fetching.
 Defaults to the connection's \code{show_progress} setting.}
+
+\item{poll_timeout}{Maximum elapsed seconds to wait for completion (default:
+1200, or 20 minutes). Use \code{Inf} to wait without a polling deadline. The
+deadline is checked between HTTP requests; an in-flight request can finish
+after it. Timing out stops local polling without cancelling the operation.}
 
 \item{...}{Additional arguments (ignored)}
 }

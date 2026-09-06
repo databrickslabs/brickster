@@ -418,14 +418,18 @@ setMethod(
 #'   Defaults to the connection's `show_progress` setting.
 #' @param ... Additional arguments (ignored)
 #' @returns A data.frame with query results
+#' @inheritParams get_and_start_cluster
 #' @export
 setMethod("dbFetch", "DatabricksResult", function(
   res,
   n = -1,
   show_progress = res@connection@show_progress,
+  poll_timeout = 1200,
   ...
 ) {
   db_assert_show_progress(show_progress)
+  deadline <- db_poll_deadline(poll_timeout, 1)
+  operation <- paste("SQL statement", res@statement_id)
 
   if (res@completed) {
     # Return empty data frame if already completed
@@ -438,6 +442,9 @@ setMethod("dbFetch", "DatabricksResult", function(
     host = res@connection@host,
     token = res@connection@token
   )
+  db_poll_check_state(initial_status$status$state, c("PENDING", "RUNNING", "SUCCEEDED"),
+                      operation, initial_status$status$error$message)
+  remaining <- db_poll_remaining(deadline, operation)
   if (initial_status$status$state %in% c("RUNNING", "PENDING")) {
     if (show_progress) {
       cli::cli_progress_step("Executing query")
@@ -446,7 +453,8 @@ setMethod("dbFetch", "DatabricksResult", function(
       res@statement_id,
       show_progress = FALSE,
       host = res@connection@host,
-      token = res@connection@token
+      token = res@connection@token,
+      poll_timeout = remaining
     )
   } else {
     # Already completed
