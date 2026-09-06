@@ -211,3 +211,81 @@ test_that("external downloads reject missing manifest rows before requesting chu
   resp$manifest$chunks[[2]]$row_offset <- 3
   expect_error(db_sql_fetch_results(resp, host = "h", token = "t", show_progress = FALSE), "missing rows")
 })
+
+test_that("external Arrow reads own their buffers after the file stream closes", {
+  skip_if_not_installed("arrow")
+  state <- new.env(parent = emptyenv())
+  state$streams <- list()
+  read_ipc <- arrow::read_ipc_stream
+  local_mocked_bindings(
+    read_ipc_stream = function(file, ...) {
+      state$streams[[length(state$streams) + 1L]] <- file
+      expect_s3_class(file, "ReadableFile")
+      expect_false(inherits(file, "MemoryMappedFile"))
+      expect_false(file$supports_zero_copy())
+      read_ipc(file, ...)
+    },
+    .package = "arrow"
+  )
+  local_mocked_bindings(
+    req_perform_parallel = function(reqs, paths, ...) {
+      arrow::write_ipc_stream(data.frame(id = 1:10000), paths[[1]], compression = "uncompressed")
+      list(httr2::response(200))
+    },
+    .package = "httr2"
+  )
+  resp <- external_fetch_fixture(chunk_count = 1L, chunk_rows = 10000L)
+  resp$result <- list(external_links = list(list(chunk_index = 0, external_link = "https://storage.test/0")))
+  result <- db_sql_fetch_results(resp, row_limit = 1, return_arrow = TRUE, host = "h", token = "t", show_progress = FALSE)
+  expect_error(state$streams[[1]]$Read(1), "closed|Closed")
+  expect_identical(as.data.frame(result)$id, 1L)
+})
+
+test_that("zero-row external schemas preserve widths, binary and decimal precision", {
+  skip_if_not_installed("arrow")
+  resp <- external_fetch_fixture()
+  resp$manifest$schema$columns <- list(
+    list(name = "id", type_name = "LONG"),
+    list(name = "payload", type_name = "BINARY"),
+    list(name = "amount", type_name = "DECIMAL", type_precision = 30L, type_scale = 10L)
+  )
+  local_mocked_bindings(db_sql_exec_and_wait = function(...) resp, .package = "brickster")
+  expected <- arrow::schema(id = arrow::int64(), payload = arrow::binary(), amount = arrow::decimal128(30, 10))
+  zero <- db_sql_fetch_results(resp, row_limit = 0, return_arrow = TRUE, show_progress = FALSE)
+  expect_true(zero$schema$Equals(expected))
+  resp$manifest$total_row_count <- 0L
+  public <- db_sql_query("wh", "SELECT id", return_arrow = TRUE, show_progress = FALSE)
+  expect_s3_class(public, "Table")
+  expect_true(public$schema$Equals(expected))
+})
+
+test_that("empty external schemas retain nested SQL types and quoted field names", {
+  skip_if_not_installed("arrow")
+  manifest <- list(schema = list(columns = list(
+    list(name = "items", type_name = "ARRAY", type_text = "ARRAY<STRUCT<`a,b`: BIGINT, amount: DECIMAL(30,10)>>"),
+    list(name = "lookup", type_name = "MAP", type_text = "MAP<STRING, ARRAY<BINARY>>"),
+    list(name = "local_time", type_name = "TIMESTAMP", type_text = "TIMESTAMP_NTZ")
+  )))
+  out <- db_sql_create_empty_result(manifest, return_arrow = TRUE)
+  expected <- arrow::schema(
+    items = arrow::list_of(arrow::struct(`a,b` = arrow::int64(), amount = arrow::decimal128(30, 10))),
+    lookup = arrow::map_of(arrow::utf8(), arrow::list_of(arrow::binary())),
+    local_time = arrow::timestamp("us")
+  )
+  expect_true(out$schema$Equals(expected))
+  expect_error(db_sql_arrow_type_from_text("ARRAY<INT,STRING>"), "child types")
+  expect_error(db_sql_arrow_type_from_text("STRUCT<id INT>"), "field name or type")
+  expect_error(db_sql_arrow_type_from_text("DECIMAL"), "precision and scale")
+})
+
+test_that("empty external R columns use the selected decoder's binary prototype", {
+  local_mocked_bindings(is_installed = function(...) FALSE, .package = "rlang")
+  manifest <- list(schema = list(columns = list(
+    list(name = "payload", type_name = "BINARY"),
+    list(name = "amount", type_name = "DECIMAL", type_text = "DECIMAL(30,10)")
+  )))
+  out <- db_sql_create_empty_result(manifest)
+  expect_type(out$payload, "list")
+  expect_length(out$payload, 0L)
+  expect_type(out$amount, "double")
+})

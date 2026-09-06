@@ -4,13 +4,16 @@
 \alias{db_sql_create_empty_result}
 \title{Create Empty Data Frame from Query Manifest}
 \usage{
-db_sql_create_empty_result(manifest)
+db_sql_create_empty_result(manifest, return_arrow = FALSE)
 }
 \arguments{
 \item{manifest}{Query result manifest containing schema information}
+
+\item{return_arrow}{Return an Arrow Table when Arrow is installed.}
 }
 \value{
-tibble with zero rows but correct column types
+An empty Arrow Table with the manifest schema when requested;
+otherwise the corresponding empty tibble from Arrow or nanoarrow.
 }
 \description{
 Helper function that creates an empty data frame with proper column types

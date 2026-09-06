@@ -111,4 +111,7 @@ The last required chunk is downloaded in full, then sliced before conversion
 to an R data frame when Arrow is available. Temporary files are removed after
 each batch, including on errors. The returned result still requires memory
 proportional to the requested rows.
+Empty external results use the manifest's scalar and nested SQL types to build
+an Arrow schema before conversion. Types that the manifest cannot describe as
+Arrow types require \code{disposition = "INLINE"} for an empty result.
 }

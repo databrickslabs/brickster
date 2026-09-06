@@ -374,36 +374,6 @@ db_sql_exec_and_wait <- function(
   resp
 }
 
-#' Create Empty R Vector from Databricks SQL Type
-#'
-#' @description
-#' Internal helper that maps Databricks SQL types to appropriate empty R vectors.
-#' Used for creating properly typed empty tibbles from schema information.
-#'
-#' @param sql_type Character string representing Databricks SQL type
-#' @returns Empty R vector of appropriate type
-#' @keywords internal
-db_sql_type_to_empty_vector <- function(sql_type) {
-  sql_type <- toupper(sql_type)
-
-  if (sql_type %in% c("BYTE", "SHORT", "INT", "LONG")) {
-    integer(0)
-  } else if (sql_type %in% c("FLOAT", "DOUBLE", "DECIMAL")) {
-    numeric(0)
-  } else if (sql_type %in% c("BOOLEAN")) {
-    logical(0)
-  } else if (sql_type %in% c("DATE")) {
-    as.Date(character(0))
-  } else if (sql_type %in% c("TIMESTAMP")) {
-    as.POSIXct(character(0))
-  } else if (sql_type %in% c("STRING", "BINARY", "CHAR")) {
-    character(0)
-  } else {
-    # Default to character for complex types (ARRAY, STRUCT, MAP, INTERVAL, NULL, USER_DEFINED_TYPE)
-    character(0)
-  }
-}
-
 #' Process Inline SQL Query Results
 #'
 #' @description
@@ -524,23 +494,96 @@ db_sql_fetch_inline <- function(resp, row_limit = NULL, host, token) {
 #' based on the query result manifest schema. Used when query returns zero rows.
 #'
 #' @param manifest Query result manifest containing schema information
-#' @returns tibble with zero rows but correct column types
+#' @param return_arrow Return an Arrow Table when Arrow is installed.
+#' @returns An empty Arrow Table with the manifest schema when requested;
+#'   otherwise the corresponding empty tibble from Arrow or nanoarrow.
 #' @keywords internal
-db_sql_create_empty_result <- function(manifest) {
-  # Extract column names and types from manifest
-  col_names <- purrr::map_chr(manifest$schema$columns, "name")
-
-  # Create empty columns with proper types based on manifest
-  empty_cols <- purrr::map(manifest$schema$columns, function(col) {
-    # Use helper to get appropriate empty vector
-    db_sql_type_to_empty_vector(col$type_name)
+db_sql_create_empty_result <- function(manifest, return_arrow = FALSE) {
+  columns <- purrr::map(manifest$schema$columns, function(column) {
+    type <- column$type_text %||% column$type_name
+    if (toupper(column$type_name) == "DECIMAL" && !is.null(column$type_precision)) {
+      type <- paste0("DECIMAL(", column$type_precision, ",", column$type_scale %||% 0, ")")
+    }
+    db_sql_arrow_type_from_text(type)
   })
-  names(empty_cols) <- col_names
-
-  results <- tibble::as_tibble(empty_cols)
-
-  results
+  names(columns) <- purrr::map_chr(manifest$schema$columns, "name")
+  schema <- nanoarrow::na_struct(columns)
+  if (rlang::is_installed("arrow")) {
+    result <- arrow::Table$create(schema = arrow::as_schema(schema))
+    if (return_arrow) result else tibble::as_tibble(result)
+  } else {
+    tibble::as_tibble(nanoarrow::nanoarrow_array_init(schema))
+  }
 }
+
+db_sql_split_type <- function(text, separator = ",") {
+  chars <- strsplit(text, "", fixed = TRUE)[[1]]
+  state <- new.env(parent = emptyenv())
+  state$depth <- 0L
+  state$quoted <- FALSE
+  state$breaks <- integer()
+  purrr::walk(seq_along(chars), function(i) {
+    char <- chars[[i]]
+    if (char == "`") state$quoted <- !state$quoted
+    if (!state$quoted) {
+      if (char %in% c("<", "(")) state$depth <- state$depth + 1L
+      if (char %in% c(">", ")")) state$depth <- state$depth - 1L
+      if (state$depth == 0L && char == separator) state$breaks <- c(state$breaks, i)
+    }
+  })
+  if (state$depth != 0L || state$quoted) cli::cli_abort("Malformed SQL type {.val {text}} in the result manifest.")
+  starts <- c(1L, state$breaks + 1L)
+  ends <- c(state$breaks - 1L, nchar(text))
+  trimws(purrr::map2_chr(starts, ends, ~ substr(text, .x, .y)))
+}
+
+db_sql_arrow_type_from_text <- function(text) {
+  text <- trimws(sub("(?i)\\s+NOT\\s+NULL$", "", text, perl = TRUE))
+  type <- toupper(sub("[<( ].*$", "", text))
+  if (type %in% c("ARRAY", "MAP", "STRUCT")) {
+    if (!grepl("<.*>$", text)) cli::cli_abort("Missing fields for SQL type {.val {text}} in the result manifest.")
+    fields <- db_sql_split_type(sub("^[^<]*<(.*)>$", "\\1", text))
+    if ((type == "ARRAY" && length(fields) != 1L) || (type == "MAP" && length(fields) != 2L)) {
+      cli::cli_abort("Incorrect number of child types in {.val {text}}.")
+    }
+    if (type == "ARRAY") return(nanoarrow::na_list(db_sql_arrow_type_from_text(fields[[1]])))
+    if (type == "MAP") {
+      key <- db_sql_arrow_type_from_text(fields[[1]])
+      key$flags <- 0L # Arrow map keys cannot be nullable.
+      return(nanoarrow::na_map(key, db_sql_arrow_type_from_text(fields[[2]])))
+    }
+    children <- purrr::map(fields, function(field) {
+      pieces <- db_sql_split_type(field, ":")
+      if (length(pieces) != 2L) cli::cli_abort("Missing field name or type in {.val {field}}.")
+      list(name = gsub("``", "`", sub("^`(.*)`$", "\\1", pieces[[1]]), fixed = TRUE),
+        schema = db_sql_arrow_type_from_text(pieces[[2]]))
+    })
+    schemas <- purrr::map(children, "schema")
+    names(schemas) <- purrr::map_chr(children, "name")
+    return(nanoarrow::na_struct(schemas, nullable = TRUE))
+  }
+  if (type == "DECIMAL") {
+    parameters <- suppressWarnings(as.integer(strsplit(sub("^[^(]*\\((.*)\\)$", "\\1", text), ",", fixed = TRUE)[[1]]))
+    if (length(parameters) != 2L || anyNA(parameters)) cli::cli_abort("DECIMAL result metadata must include precision and scale.")
+    return(nanoarrow::na_decimal128(parameters[[1]], parameters[[2]]))
+  }
+  if (type == "INTERVAL") {
+    if (grepl("YEAR|MONTH", text, ignore.case = TRUE)) return(nanoarrow::na_interval_months())
+    if (grepl("DAY|HOUR|MINUTE|SECOND", text, ignore.case = TRUE)) return(nanoarrow::na_duration("us"))
+    return(nanoarrow::na_interval_month_day_nano())
+  }
+  switch(type,
+    BOOLEAN = nanoarrow::na_bool(), BYTE = , TINYINT = nanoarrow::na_int8(),
+    SHORT = , SMALLINT = nanoarrow::na_int16(), INT = , INTEGER = nanoarrow::na_int32(),
+    LONG = , BIGINT = nanoarrow::na_int64(), FLOAT = , REAL = nanoarrow::na_float(),
+    DOUBLE = nanoarrow::na_double(), DATE = nanoarrow::na_date32(),
+    TIMESTAMP_LTZ = , TIMESTAMP = nanoarrow::na_timestamp("us", "UTC"), TIMESTAMP_NTZ = nanoarrow::na_timestamp("us"),
+    BINARY = nanoarrow::na_binary(), STRING = , CHAR = , VARCHAR = nanoarrow::na_string(),
+    NULL = , VOID = nanoarrow::na_na(),
+    cli::cli_abort("Cannot determine the Arrow schema for SQL type {.val {text}} in the result manifest. Use {.code disposition = \"INLINE\"} for this empty result.")
+  )
+}
+
 
 #' Fetch SQL Query Results from Completed Query
 #'
@@ -574,8 +617,7 @@ db_sql_fetch_results <- function(
   }
   manifest <- resp$manifest
   if (isTRUE(row_limit == 0) || isTRUE(manifest$total_row_count == 0)) {
-    result <- db_sql_create_empty_result(manifest)
-    return(if (return_arrow && rlang::is_installed("arrow")) arrow::Table$create(result) else result)
+    return(db_sql_create_empty_result(manifest, return_arrow = return_arrow))
   }
   statement_id <- resp$statement_id
   total_chunks <- manifest$total_chunk_count
@@ -710,7 +752,7 @@ db_sql_fetch_external_chunks <- function(statement_id, manifest, indices,
   if (is.finite(limit) && fetched < limit) {
     cli::cli_abort("External results ended before the expected {limit} rows; received {fetched}.")
   }
-  if (length(chunks) == 0L) return(db_sql_create_empty_result(manifest))
+  if (length(chunks) == 0L) return(db_sql_create_empty_result(manifest, return_arrow = return_arrow))
   if (length(chunks) == 1L) return(chunks[[1]])
   if (inherits(chunks[[1]], "Table")) do.call(arrow::concat_tables, chunks) else purrr::list_rbind(chunks)
 }
@@ -733,7 +775,7 @@ db_sql_download_external_batch <- function(links, row_limit, return_arrow,
   remaining$rows <- row_limit
   purrr::map2(paths, links, function(path, link) {
     if (rlang::is_installed("arrow")) {
-      result <- arrow::read_ipc_stream(path, as_data_frame = FALSE)
+      result <- db_sql_read_external_arrow(path)
       if (!is.null(link$row_count) && nrow(result) != link$row_count) {
         cli::cli_abort("Downloaded result chunk row count does not match its metadata.")
       }
@@ -753,6 +795,11 @@ db_sql_download_external_batch <- function(links, row_limit, return_arrow,
   })
 }
 
+db_sql_read_external_arrow <- function(path) {
+  stream <- arrow::ReadableFile$create(path)
+  on.exit(stream$close(), add = TRUE)
+  arrow::read_ipc_stream(stream, as_data_frame = FALSE)
+}
 
 #' Execute query with SQL Warehouse
 #'
@@ -780,6 +827,9 @@ db_sql_download_external_batch <- function(links, row_limit, return_arrow,
 #' to an R data frame when Arrow is available. Temporary files are removed after
 #' each batch, including on errors. The returned result still requires memory
 #' proportional to the requested rows.
+#' Empty external results use the manifest's scalar and nested SQL types to build
+#' an Arrow schema before conversion. Types that the manifest cannot describe as
+#' Arrow types require `disposition = "INLINE"` for an empty result.
 #' @returns [tibble::tibble] for INLINE results; [tibble::tibble] or [arrow::Table]
 #'   for EXTERNAL_LINKS results, according to `return_arrow`.
 #' @export
@@ -823,7 +873,7 @@ db_sql_query <- function(
   # Check for empty results early and return immediately
   # Use total_row_count to detect empty result sets
   if (resp$manifest$total_row_count == 0 && disposition != "INLINE") {
-    return(db_sql_create_empty_result(resp$manifest))
+    return(db_sql_create_empty_result(resp$manifest, return_arrow = return_arrow))
   }
 
   # Fetch and process results based on disposition
