@@ -1,3 +1,7 @@
+# brickster (development version)
+
+-   Standard-path table writes now detect binary columns once per column, avoiding quadratic serialization time for lists of raw vectors.
+
 # brickster 0.2.14
 
 -   Fixed OAuth U2M and M2M authentication across multiple Databricks workspaces in one R session by isolating OAuth clients and cached tokens per workspace (#256, @zacdav-db)
