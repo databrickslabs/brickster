@@ -203,7 +203,9 @@ db_volume_dir_create <- function(
 #' @family Volumes FileSystem API
 #'
 #' @export
-#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
+#' @returns If `perform_request = TRUE`, returns a logical success flag.
+#' If `FALSE`, returns an `httr2_request` to delete only the directory itself.
+#' Directory contents are not listed or deleted, even when `recursive = TRUE`.
 db_volume_dir_delete <- function(
   path,
   recursive = FALSE,
@@ -212,7 +214,7 @@ db_volume_dir_delete <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
-  if (recursive) {
+  if (recursive && perform_request) {
     # Recursively delete contents first
     db_volume_recursive_delete_contents(
       path,
@@ -222,11 +224,7 @@ db_volume_dir_delete <- function(
     )
   }
 
-  # Delete the directory itself
-  # For recursive mode, always perform requests; for non-recursive, respect parameter
-  effective_perform_request <- if (recursive) TRUE else perform_request
-
-  if (verbose && effective_perform_request) {
+  if (verbose && perform_request) {
     cli::cli_inform("Deleting directory: {.path {path}}")
   }
 
@@ -236,7 +234,7 @@ db_volume_dir_delete <- function(
     type = "directories",
     host = host,
     token = token,
-    perform_request = effective_perform_request,
+    perform_request = perform_request,
     progress = FALSE
   )
 }
@@ -335,9 +333,8 @@ db_volume_action <- function(
   progress = TRUE
 ) {
   path <- is_valid_volume_path(path)
-  # Files and directories under a volume can contain spaces; httr2 does not
-  # encode them when appending the path to the request URL.
-  encoded_path <- gsub(" ", "%20", path, fixed = TRUE)
+  # Escape literal path characters while preserving directory separators.
+  encoded_path <- gsub("%2F", "/", curl::curl_escape(path), fixed = TRUE)
   action <- match.arg(action)
   type <- match.arg(type)
 

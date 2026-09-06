@@ -1600,11 +1600,13 @@ db_create_table_from_data <- function(
 #' Generate type-aware VALUES SQL from data frame
 #' @keywords internal
 db_generate_typed_values_sql <- function(conn, data) {
+  binary_cols <- purrr::map_lgl(data, db_is_binary_column)
+
   # Convert each row to SQL values with proper typing
   row_values <- purrr::pmap_chr(data, function(...) {
     row <- list(...)
     values <- purrr::imap_chr(row, function(val, col_name) {
-      db_format_typed_value_sql(conn, val, data[[col_name]])
+      db_format_typed_value_sql(conn, val, data[[col_name]], binary_cols[[col_name]])
     })
     paste0("(", paste(values, collapse = ", "), ")")
   })
@@ -1613,10 +1615,15 @@ db_generate_typed_values_sql <- function(conn, data) {
 }
 
 # Format a single R value for inline SQL VALUES.
-db_format_typed_value_sql <- function(conn, val, col_data) {
+db_format_typed_value_sql <- function(
+  conn,
+  val,
+  col_data,
+  is_binary = db_is_binary_column(col_data)
+) {
   if (db_is_missing_sql_value(val)) {
     "NULL"
-  } else if (db_is_binary_column(col_data)) {
+  } else if (is_binary) {
     db_binary_literal(val)
   } else if (is.logical(col_data)) {
     if (as.logical(val)) "TRUE" else "FALSE"
