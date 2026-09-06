@@ -17,7 +17,10 @@ db_volume_dir_delete(
 \item{path}{Absolute path of the file in the Files API, omitting the initial
 slash.}
 
-\item{recursive}{If \code{TRUE}, recursively delete directory contents (default: \code{FALSE})}
+\item{recursive}{If \code{TRUE}, recursively delete directory contents (default: \code{FALSE})
+after listing every page of each directory. Listing failures stop traversal
+before deleting that directory's contents; earlier directories may already
+have been processed.}
 
 \item{verbose}{If \code{TRUE}, announce each file/directory deletion (default: \code{FALSE})}
 

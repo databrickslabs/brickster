@@ -122,12 +122,22 @@ db_volume_list_all_contents <- function(path, host, token) {
   seen_tokens <- character()
 
   repeat {
-    page <- db_volume_list(path, host = host, token = token, page_token = page_token)
+    page <- tryCatch(
+      db_volume_list(path, host = host, token = token, page_token = page_token),
+      error = function(e) cli::cli_abort(
+        "Unable to list all contents of {.path {path}}.",
+        parent = e,
+        class = "brickster_volume_listing_error"
+      )
+    )
     pages[[length(pages) + 1L]] <- page$contents %||% list()
     page_token <- page$next_page_token
     if (is.null(page_token) || !nzchar(page_token)) break
     if (page_token %in% seen_tokens) {
-      cli::cli_abort("Directory listing returned a repeated page token for {.path {path}}.")
+      cli::cli_abort(
+        "Directory listing returned a repeated page token for {.path {path}}.",
+        class = "brickster_volume_listing_error"
+      )
     }
     seen_tokens <- c(seen_tokens, page_token)
   }
@@ -241,6 +251,9 @@ db_volume_dir_create <- function(
 #' Volume FileSystem Delete Directory
 #'
 #' @param recursive If `TRUE`, recursively delete directory contents (default: `FALSE`)
+#'   after listing every page of each directory. Listing failures stop traversal
+#'   before deleting that directory's contents; earlier directories may already
+#'   have been processed.
 #' @param verbose If `TRUE`, announce each file/directory deletion (default: `FALSE`)
 #' @inheritParams auth_params
 #' @inheritParams db_volume_read
@@ -325,8 +338,7 @@ db_volume_recursive_delete_contents <- function(
       }
     },
     error = function(e) {
-      # If listing fails, directory might be empty or not exist, continue
-      # This handles edge cases like permissions or already deleted directories
+      if (inherits(e, "brickster_volume_listing_error")) stop(e)
     }
   )
 }

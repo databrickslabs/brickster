@@ -1,6 +1,6 @@
 # brickster (development version)
 
--   `db_volume_list()` now accepts `page_size` and `page_token`. Directory downloads and recursive deletion follow every listing page, preventing files beyond the first page from being omitted.
+-   `db_volume_list()` now accepts `page_size` and `page_token`. Directory downloads and recursive deletion follow every listing page, preventing files beyond the first page from being omitted. Listing failures now stop recursive deletion instead of being treated as empty directories.
 
 # brickster 0.2.14
 
