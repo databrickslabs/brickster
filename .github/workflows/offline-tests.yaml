@@ -1,0 +1,39 @@
+name: Offline tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: offline-tests-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  offline-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      NOT_CRAN: "false"
+      R_KEEP_PKG_SOURCE: "yes"
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: r-lib/actions/setup-r@465b7d8e732ca3921382b1674c59bada9cbf3399 # v2.13.0
+        with:
+          r-version: release
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@465b7d8e732ca3921382b1674c59bada9cbf3399 # v2.13.0
+        with:
+          extra-packages: any::testthat, any::pkgload
+          needs: check
+
+      - name: Run tests without network access
+        run: sudo --preserve-env unshare --net -- "$(command -v Rscript)" -e 'testthat::test_local(reporter = "summary")'
