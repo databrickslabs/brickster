@@ -103,7 +103,7 @@ dbListFields(con, Id("samples", "nyctaxi", "trips"))
 When writing data (append, overwrite, etc) there are two possible behaviours:
 
 1.  In-line SQL statement write
-2.  Stage `.parquet` files to a Volume directory and load them with `READ_FILES`
+2.  Stage `.parquet` files to a Volume directory, then use `INSERT INTO` or `CREATE TABLE AS SELECT` (CTAS) with `READ_FILES` as the data source
 
 For data larger than 50k rows `{brickster}` will only permit the use of method (2), which requires `staging_volume` to be specified when establishing the connection, or directly to `dbWriteQuery`.
 
