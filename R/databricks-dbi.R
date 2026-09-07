@@ -1214,11 +1214,7 @@ setMethod(
 #' @param append If `TRUE`, append to existing table
 #' @param row.names If `TRUE`, preserve row names as a column
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
-#' @param field.types Named character vector of SQL types for columns when
-#'   creating or replacing a table. Volume writes cast specified columns to
-#'   boolean, numeric, decimal, string, binary, date or timestamp types and retain
-#'   Parquet types for unspecified columns.
-#'   Unsupported declarations fail before staging. Appends use the existing schema.
+#' @inheritParams db_write_table_volume
 #' @param staging_volume Optional volume path for large dataset staging
 #' @param show_progress If `TRUE`, show progress updates while writing.
 #'   Defaults to the connection's `show_progress` setting.
@@ -1341,11 +1337,7 @@ setMethod(
 #' @param append If `TRUE`, append to existing table
 #' @param row.names If `TRUE`, preserve row names as a column
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
-#' @param field.types Named character vector of SQL types for columns when
-#'   creating or replacing a table. Volume writes cast specified columns to
-#'   boolean, numeric, decimal, string, binary, date or timestamp types and retain
-#'   Parquet types for unspecified columns.
-#'   Unsupported declarations fail before staging. Appends use the existing schema.
+#' @inheritParams db_write_table_volume
 #' @param staging_volume Optional volume path for large dataset staging
 #' @param show_progress If `TRUE`, show progress updates while writing.
 #'   Defaults to the connection's `show_progress` setting.
@@ -1473,11 +1465,7 @@ setMethod(
 #' @param append If `TRUE`, append to existing table
 #' @param row.names If `TRUE`, preserve row names as a column
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
-#' @param field.types Named character vector of SQL types for columns when
-#'   creating or replacing a table. Volume writes cast specified columns to
-#'   boolean, numeric, decimal, string, binary, date or timestamp types and retain
-#'   Parquet types for unspecified columns.
-#'   Unsupported declarations fail before staging. Appends use the existing schema.
+#' @inheritParams db_write_table_volume
 #' @param staging_volume Optional volume path for large dataset staging
 #' @param show_progress If `TRUE`, show progress updates while writing.
 #'   Defaults to the connection's `show_progress` setting.
@@ -1795,53 +1783,38 @@ db_should_use_volume_method <- function(
   FALSE
 }
 
-db_assert_write_cast_types <- function(col_types, operation) {
-  scalar_type <- paste0(
-    "^(BOOLEAN|TINYINT|BYTE|SMALLINT|SHORT|INT|INTEGER|BIGINT|LONG|FLOAT|REAL|",
-    "DOUBLE( +PRECISION)?|STRING|BINARY|DATE|TIMESTAMP(_LTZ|_NTZ)?|",
-    "(DECIMAL|DEC|NUMERIC)( *\\( *[0-9]+ *(, *[0-9]+ *)?\\))?)$"
-  )
-  supported <- grepl(scalar_type, toupper(trimws(col_types)))
-  if (any(!supported)) {
+db_volume_write_projection <- function(conn, value, field.types) {
+  if (length(field.types) == 0L) return("*")
+
+  if (!is.character(field.types) || !rlang::is_named(field.types) ||
+      anyNA(field.types) || any(!nzchar(trimws(field.types)))) {
+    cli::cli_abort("{.arg field.types} must be a named character vector of non-empty SQL types.")
+  }
+  if (anyDuplicated(names(field.types)) || any(!names(field.types) %in% names(value))) {
+    cli::cli_abort("Each name in {.arg field.types} must match a column in {.arg value} and occur only once.")
+  }
+  # CAST drops CHAR/VARCHAR length limits instead of preserving them in the table.
+  if (any(grepl("\\b(CHAR|VARCHAR)\\s*\\(", field.types, ignore.case = TRUE))) {
     cli::cli_abort(c(
-      "{operation} cannot preserve the {.arg field.types} declarations for {.val {names(col_types)[!supported]}}.",
-      "i" = "Use supported scalar SQL types, or load a separate table with {.fun dbCreateTable} and {.fun dbAppendTable} and replace the target explicitly."
+      "Volume writes cannot preserve CHAR/VARCHAR length limits in {.arg field.types}.",
+      "i" = "Define the schema with {.fun dbCreateTable}, then load it with {.fun dbAppendTable}."
     ))
   }
-  decimal_types <- which(grepl("^(DECIMAL|DEC|NUMERIC) *\\(", toupper(trimws(col_types))))
-  invalid_decimal <- purrr::keep(decimal_types, function(i) {
-    params <- as.numeric(regmatches(col_types[[i]], gregexpr("[0-9]+", col_types[[i]]))[[1]])
-    precision <- params[[1]]
-    scale <- if (length(params) == 1L) 0 else params[[2]]
-    !is.finite(precision) || precision < 1 || precision > 38 ||
-      !is.finite(scale) || scale < 0 || scale > precision
-  })
-  if (length(invalid_decimal)) {
-    cli::cli_abort("{.arg field.types} for {.val {names(col_types)[invalid_decimal]}} must use decimal precision between 1 and 38 and scale between 0 and precision.")
-  }
-  invisible(col_types)
-}
 
-db_volume_write_projection <- function(conn, value, field.types) {
-  if (is.null(field.types) || length(field.types) == 0L) return("*")
-  if (!is.character(field.types) || is.null(names(field.types)) ||
-      anyNA(field.types) || anyNA(names(field.types)) || any(!nzchar(trimws(field.types))) ||
-      any(!nzchar(names(field.types))) || anyDuplicated(names(field.types)) ||
-      any(!names(field.types) %in% names(value))) {
-    cli::cli_abort("{.arg field.types} must be a named character vector of non-missing SQL types, with at most one entry per column in {.arg value}.")
-  }
-  db_assert_write_cast_types(field.types, "Volume writes")
-  purrr::map_chr(names(value), function(name) {
-    quoted <- dbQuoteIdentifier(conn, name)
-    if (name %in% names(field.types)) {
-      paste0("CAST(", quoted, " AS ", field.types[[name]], ") AS ", quoted)
-    } else {
-      quoted
-    }
-  }) |> paste(collapse = ", ")
+  columns <- as.character(dbQuoteIdentifier(conn, names(value)))
+  specified <- match(names(field.types), names(value))
+  columns[specified] <- paste0(
+    "CAST(", columns[specified], " AS ", field.types, ") AS ", columns[specified]
+  )
+  paste(columns, collapse = ", ")
 }
 
 #' Write table using volume-based approach
+#' @param field.types Named character vector of SQL types for columns when
+#'   creating or replacing a table. Volume writes cast specified columns and
+#'   retain Parquet types for the others. Databricks validates the cast types.
+#'   For `CHAR`/`VARCHAR` length limits, use [dbCreateTable()] followed by
+#'   [dbAppendTable()]. Appends use the existing table schema.
 #' @keywords internal
 db_write_table_volume <- function(
   conn,

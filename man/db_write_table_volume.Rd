@@ -14,6 +14,13 @@ db_write_table_volume(
   field.types = NULL
 )
 }
+\arguments{
+\item{field.types}{Named character vector of SQL types for columns when
+creating or replacing a table. Volume writes cast specified columns and
+retain Parquet types for the others. Databricks validates the cast types.
+For \code{CHAR}/\code{VARCHAR} length limits, use \code{\link[=dbCreateTable]{dbCreateTable()}} followed by
+\code{\link[=dbAppendTable]{dbAppendTable()}}. Appends use the existing table schema.}
+}
 \description{
 Write table using volume-based approach
 }

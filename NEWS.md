@@ -1,6 +1,6 @@
 # brickster (development version)
 
--   Volume-based `dbWriteTable()` creation and replacement now honor scalar `field.types` overrides, including BIGINT and DECIMAL precision, instead of silently ignoring them. Invalid or unsupported declarations fail before staging; unspecified columns retain their Parquet types.
+-   Volume-based `dbWriteTable()` now applies `field.types` when creating or replacing tables, instead of silently ignoring the requested column types.
 
 -   `db_volume_upload_dir()` now creates each parent directory only once, avoiding repeated API calls for files in the same directory.
 -   Standard-path table writes now detect binary columns once per column, avoiding quadratic serialization time for lists of raw vectors.
