@@ -1,3 +1,15 @@
+test_that("workspace pane shows Catalog when Unity Catalog is available", {
+  local_mocked_bindings(
+    db_sql_warehouse_list = function(...) list(),
+    db_perform_request = function(req) list(catalogs = list()),
+    .package = "brickster"
+  )
+
+  objects <- list_objects(host = "mock_host", token = "mock_token")
+
+  expect_identical(objects$type[objects$name == "Catalog"], "metastore")
+})
+
 test_that("Unity Catalog pane listings follow all pages, including empty pages", {
   state <- new.env(parent = emptyenv())
   state$requests <- list()

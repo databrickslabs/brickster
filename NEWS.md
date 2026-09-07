@@ -1,5 +1,7 @@
 # brickster (development version)
 
+-   Fixed the workspace connection pane's Catalog availability check so accessible Unity Catalog resources appear.
+
 -   The RStudio connection pane now follows all Unity Catalog listing pages for catalogs, schemas, tables, volumes, models, functions, and model versions, including empty pages with continuation tokens. Volume details are fetched by name so volumes beyond the first listing page can be inspected. `db_uc_volumes_get()` now sends `include_browse` as a query parameter, and the pane handles optional metadata omitted from browse-only responses.
 
 # brickster 0.2.14

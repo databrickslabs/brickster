@@ -729,7 +729,7 @@ list_objects <- function(host, token,
   # check if UC catalogs endpoint fails
   uc_active <- tryCatch(
     expr = {
-      db_uc_catalogs_list(host, token)
+      db_uc_catalogs_list(host = host, token = token)
       TRUE
     },
     error = function(e) FALSE
