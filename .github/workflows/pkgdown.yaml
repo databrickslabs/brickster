@@ -36,8 +36,12 @@ jobs:
         env:
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
         with:
-          extra-packages: any::pkgdown, local::.
+          # Keep pkgdown matched to the cache bundled by pkgdown.offline.
+          extra-packages: any::pkgdown@2.2.1, any::pkgdown.offline@0.1.3, local::.
           needs: website
+
+      - name: Restore bundled website assets
+        run: Rscript -e 'pkgdown.offline::init_site()'
 
       - name: Deploy package
         env:
