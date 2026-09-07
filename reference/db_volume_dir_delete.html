@@ -42,7 +42,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Volume FileSystem Delete Directory</h1>
-      <small class="dont-index">Source: <a href="https://github.com/databrickslabs/brickster/blob/v0.2.14/R/volume-fs.R" class="external-link"><code>R/volume-fs.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/databrickslabs/brickster/blob/main/R/volume-fs.R" class="external-link"><code>R/volume-fs.R</code></a></small>
       <div class="d-none name"><code>db_volume_dir_delete.Rd</code></div>
     </div>
 
@@ -72,7 +72,10 @@ slash.</p></dd>
 
 
 <dt id="arg-recursive">recursive<a class="anchor" aria-label="anchor" href="#arg-recursive"></a></dt>
-<dd><p>If <code>TRUE</code>, recursively delete directory contents (default: <code>FALSE</code>)</p></dd>
+<dd><p>If <code>TRUE</code>, recursively delete directory contents (default: <code>FALSE</code>)
+after listing every page of each directory. Listing failures stop traversal
+before deleting that directory's contents; earlier directories may already
+have been processed.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
@@ -94,7 +97,9 @@ slash.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>If <code>perform_request = TRUE</code>, returns endpoint-specific API output. If <code>FALSE</code>, returns an <code>httr2_request</code>.</p>
+    <p>If <code>perform_request = TRUE</code>, returns a logical success flag.
+If <code>FALSE</code>, returns an <code>httr2_request</code> to delete only the directory itself.
+Directory contents are not listed or deleted, even when <code>recursive = TRUE</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

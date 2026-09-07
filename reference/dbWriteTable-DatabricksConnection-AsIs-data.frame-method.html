@@ -42,7 +42,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Write table to Databricks (AsIs name signature)</h1>
-      <small class="dont-index">Source: <a href="https://github.com/databrickslabs/brickster/blob/v0.2.14/R/databricks-dbi.R" class="external-link"><code>R/databricks-dbi.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/databrickslabs/brickster/blob/main/R/databricks-dbi.R" class="external-link"><code>R/databricks-dbi.R</code></a></small>
       <div class="d-none name"><code>dbWriteTable-DatabricksConnection-AsIs-data.frame-method.Rd</code></div>
     </div>
 
@@ -101,7 +101,11 @@
 
 
 <dt id="arg-field-types">field.types<a class="anchor" aria-label="anchor" href="#arg-field-types"></a></dt>
-<dd><p>Named character vector of SQL types for columns</p></dd>
+<dd><p>Named character vector of SQL types for columns when
+creating or replacing a table. Unspecified columns use <code><a href="https://dbi.r-dbi.org/reference/dbDataType.html" class="external-link">dbDataType()</a></code>.
+Volume writes without overrides infer types from Parquet. Databricks
+validates SQL types and enforces the declared schema, including
+<code>CHAR</code>/<code>VARCHAR</code> length limits. Appends use the existing table schema.</p></dd>
 
 
 <dt id="arg-staging-volume">staging_volume<a class="anchor" aria-label="anchor" href="#arg-staging-volume"></a></dt>

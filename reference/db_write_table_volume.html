@@ -42,7 +42,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Write table using volume-based approach</h1>
-      <small class="dont-index">Source: <a href="https://github.com/databrickslabs/brickster/blob/v0.2.14/R/databricks-dbi.R" class="external-link"><code>R/databricks-dbi.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/databrickslabs/brickster/blob/main/R/databricks-dbi.R" class="external-link"><code>R/databricks-dbi.R</code></a></small>
       <div class="d-none name"><code>db_write_table_volume.Rd</code></div>
     </div>
 
@@ -58,12 +58,27 @@
 <span>  <span class="va">value</span>,</span>
 <span>  <span class="va">staging_volume</span>,</span>
 <span>  append <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  field.types <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
-  </main></div>
+
+<dl><dt id="arg-field-types">field.types<a class="anchor" aria-label="anchor" href="#arg-field-types"></a></dt>
+<dd><p>Named character vector of SQL types for columns when
+creating or replacing a table. Unspecified columns use <code><a href="https://dbi.r-dbi.org/reference/dbDataType.html" class="external-link">dbDataType()</a></code>.
+Volume writes without overrides infer types from Parquet. Databricks
+validates SQL types and enforces the declared schema, including
+<code>CHAR</code>/<code>VARCHAR</code> length limits. Appends use the existing table schema.</p></dd>
+
+</dl></div>
+
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

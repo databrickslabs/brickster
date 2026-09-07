@@ -25,6 +25,9 @@ db_volume_dir_delete(
 - recursive:
 
   If `TRUE`, recursively delete directory contents (default: `FALSE`)
+  after listing every page of each directory. Listing failures stop
+  traversal before deleting that directory's contents; earlier
+  directories may already have been processed.
 
 - verbose:
 
@@ -47,8 +50,10 @@ db_volume_dir_delete(
 
 ## Value
 
-If `perform_request = TRUE`, returns endpoint-specific API output. If
-`FALSE`, returns an `httr2_request`.
+If `perform_request = TRUE`, returns a logical success flag. If `FALSE`,
+returns an `httr2_request` to delete only the directory itself.
+Directory contents are not listed or deleted, even when
+`recursive = TRUE`.
 
 ## See also
 

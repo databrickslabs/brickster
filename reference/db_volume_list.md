@@ -9,7 +9,9 @@ db_volume_list(
   path,
   host = db_host(),
   token = db_token(),
-  perform_request = TRUE
+  perform_request = TRUE,
+  page_size = NULL,
+  page_token = NULL
 )
 ```
 
@@ -35,10 +37,22 @@ db_volume_list(
   If `TRUE` (default) the request is performed, if `FALSE` the httr2
   request is returned *without* being performed.
 
+- page_size:
+
+  Maximum number of directory entries per page, from 0 to 1000. `NULL`
+  uses the API default; 0 requests the maximum page size.
+
+- page_token:
+
+  Continuation token from a previous response, or `NULL` for the first
+  page.
+
 ## Value
 
-If `perform_request = TRUE`, returns endpoint-specific API output. If
-`FALSE`, returns an `httr2_request`.
+If `perform_request = TRUE`, returns one API response page, including
+`contents` and `next_page_token` when present. If `FALSE`, returns an
+`httr2_request`. Directory download and recursive-delete helpers fetch
+all pages.
 
 ## See also
 

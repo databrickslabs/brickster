@@ -42,7 +42,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Volume FileSystem List Directory Contents</h1>
-      <small class="dont-index">Source: <a href="https://github.com/databrickslabs/brickster/blob/v0.2.14/R/volume-fs.R" class="external-link"><code>R/volume-fs.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/databrickslabs/brickster/blob/main/R/volume-fs.R" class="external-link"><code>R/volume-fs.R</code></a></small>
       <div class="d-none name"><code>db_volume_list.Rd</code></div>
     </div>
 
@@ -56,7 +56,9 @@
 <span>  <span class="va">path</span>,</span>
 <span>  host <span class="op">=</span> <span class="fu"><a href="db_host.html">db_host</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  token <span class="op">=</span> <span class="fu"><a href="db_token.html">db_token</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  perform_request <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  perform_request <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  page_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  page_token <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -81,10 +83,22 @@ slash.</p></dd>
 <dd><p>If <code>TRUE</code> (default) the request is performed, if
 <code>FALSE</code> the httr2 request is returned <em>without</em> being performed.</p></dd>
 
+
+<dt id="arg-page-size">page_size<a class="anchor" aria-label="anchor" href="#arg-page-size"></a></dt>
+<dd><p>Maximum number of directory entries per page, from 0 to
+1000. <code>NULL</code> uses the API default; 0 requests the maximum page size.</p></dd>
+
+
+<dt id="arg-page-token">page_token<a class="anchor" aria-label="anchor" href="#arg-page-token"></a></dt>
+<dd><p>Continuation token from a previous response, or <code>NULL</code>
+for the first page.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>If <code>perform_request = TRUE</code>, returns endpoint-specific API output. If <code>FALSE</code>, returns an <code>httr2_request</code>.</p>
+    <p>If <code>perform_request = TRUE</code>, returns one API response page, including
+<code>contents</code> and <code>next_page_token</code> when present. If <code>FALSE</code>, returns an
+<code>httr2_request</code>. Directory download and recursive-delete helpers fetch all pages.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

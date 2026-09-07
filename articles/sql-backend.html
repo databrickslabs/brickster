@@ -75,7 +75,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>`{DBI}`/`{dbplyr}` backend</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/databrickslabs/brickster/blob/v0.2.14/vignettes/sql-backend.Rmd" class="external-link"><code>vignettes/sql-backend.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/databrickslabs/brickster/blob/main/vignettes/sql-backend.Rmd" class="external-link"><code>vignettes/sql-backend.Rmd</code></a></small>
       <div class="d-none name"><code>sql-backend.Rmd</code></div>
     </div>
 
@@ -197,14 +197,26 @@ Execution API</a> in combination with the <a href="https://docs.databricks.com/a
 behaviours:</p>
 <ol style="list-style-type: decimal">
 <li>In-line SQL statement write</li>
-<li>Stage <code>.parquet</code> files to a Volume directory and
-<code>COPY INTO</code> or <code>CTAS</code>
-</li>
+<li>Stage <code>.parquet</code> files to a Volume directory, then use
+<code>INSERT INTO</code> or <code>CREATE TABLE AS SELECT</code> (CTAS)
+with <code>READ_FILES</code> as the data source</li>
 </ol>
 <p>For data larger than 50k rows <a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> will only
 permit the use of method (2), which requires <code>staging_volume</code>
 to be specified when establishing the connection, or directly to
 <code>dbWriteQuery</code>.</p>
+<p>When <code>field.types</code> is supplied, volume-based writes create
+the declared schema before inserting the staged data. For example,
+<code>field.types = c(id = "BIGINT", amount = "DECIMAL(12, 2)", code = "VARCHAR(10)")</code>
+sets those column types; unspecified columns use
+<code><a href="https://dbi.r-dbi.org/reference/dbDataType.html" class="external-link">dbDataType()</a></code>, as in standard writes. Databricks converts
+incoming values and enforces the declared limits. Appends insert into
+the existing schema, including when the data frame’s column order
+differs. Without overrides, table creation infers types from
+Parquet.</p>
+<p>Creating or replacing an explicit schema and loading its data are
+separate SQL statements. If loading fails, the newly created or replaced
+table can be empty.</p>
 <p>Ensure that <code>staging_volume</code> is a valid Volume path and
 you have permission to write files.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
