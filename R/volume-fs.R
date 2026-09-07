@@ -257,7 +257,9 @@ db_volume_dir_create <- function(
 #' @family Volumes FileSystem API
 #'
 #' @export
-#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
+#' @returns If `perform_request = TRUE`, returns a logical success flag.
+#' If `FALSE`, returns an `httr2_request` to delete only the directory itself.
+#' Directory contents are not listed or deleted, even when `recursive = TRUE`.
 db_volume_dir_delete <- function(
   path,
   recursive = FALSE,
@@ -266,7 +268,7 @@ db_volume_dir_delete <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
-  if (recursive) {
+  if (recursive && perform_request) {
     # Recursively delete contents first
     db_volume_recursive_delete_contents(
       path,
@@ -276,11 +278,7 @@ db_volume_dir_delete <- function(
     )
   }
 
-  # Delete the directory itself
-  # For recursive mode, always perform requests; for non-recursive, respect parameter
-  effective_perform_request <- if (recursive) TRUE else perform_request
-
-  if (verbose && effective_perform_request) {
+  if (verbose && perform_request) {
     cli::cli_inform("Deleting directory: {.path {path}}")
   }
 
@@ -290,7 +288,7 @@ db_volume_dir_delete <- function(
     type = "directories",
     host = host,
     token = token,
-    perform_request = effective_perform_request,
+    perform_request = perform_request,
     progress = FALSE
   )
 }
@@ -388,9 +386,8 @@ db_volume_action <- function(
   progress = TRUE
 ) {
   path <- is_valid_volume_path(path)
-  # Files and directories under a volume can contain spaces; httr2 does not
-  # encode them when appending the path to the request URL.
-  encoded_path <- gsub(" ", "%20", path, fixed = TRUE)
+  # Escape literal path characters while preserving directory separators.
+  encoded_path <- gsub("%2F", "/", curl::curl_escape(path), fixed = TRUE)
   action <- match.arg(action)
   type <- match.arg(type)
 
@@ -488,27 +485,24 @@ db_volume_upload_dir <- function(
   # Create volume directory
   db_volume_dir_create(volume_dir, host = host, token = token)
 
-  # map files and generate requests
-  requests <- fs::dir_map(
+  local_files <- fs::dir_ls(
     local_dir,
     recurse = recursive,
-    type = "file",
-    fun = function(local_file) {
-      if (recursive) {
-        # Preserve relative path structure
-        rel_path <- fs::path_rel(local_file, start = local_dir)
-        volume_file <- fs::path(volume_dir, rel_path)
+    type = "file"
+  )
+  relative_files <- if (recursive) {
+    fs::path_rel(local_files, start = local_dir)
+  } else {
+    fs::path_file(local_files)
+  }
+  volume_files <- fs::path(volume_dir, relative_files)
+  volume_subdirs <- setdiff(unique(fs::path_dir(volume_files)), fs::path(volume_dir))
+  purrr::walk(volume_subdirs, db_volume_dir_create, host = host, token = token)
 
-        # Create subdirectories if needed
-        volume_subdir <- fs::path_dir(volume_file)
-        if (volume_subdir != volume_dir) {
-          db_volume_dir_create(volume_subdir, host = host, token = token)
-        }
-      } else {
-        # Upload to root of volume directory
-        volume_file <- fs::path(volume_dir, fs::path_file(local_file))
-      }
-
+  requests <- purrr::map2(
+    local_files,
+    volume_files,
+    function(local_file, volume_file) {
       # Create upload request (no individual progress for parallel uploads)
       db_volume_action(
         path = volume_file,

@@ -32,7 +32,9 @@ have been processed.}
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \value{
-If \code{perform_request = TRUE}, returns endpoint-specific API output. If \code{FALSE}, returns an \code{httr2_request}.
+If \code{perform_request = TRUE}, returns a logical success flag.
+If \code{FALSE}, returns an \code{httr2_request} to delete only the directory itself.
+Directory contents are not listed or deleted, even when \code{recursive = TRUE}.
 }
 \description{
 Volume FileSystem Delete Directory
