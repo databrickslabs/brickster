@@ -62,6 +62,10 @@ db_volume_delete <- function(
 
 #' Volume FileSystem List Directory Contents
 #'
+#' @param page_size Maximum number of directory entries per page, from 0 to
+#' 1000. `NULL` uses the API default; 0 requests the maximum page size.
+#' @param page_token Continuation token from a previous response, or `NULL`
+#' for the first page.
 #' @inheritParams auth_params
 #' @inheritParams db_volume_read
 #' @inheritParams db_sql_warehouse_create
@@ -69,24 +73,71 @@ db_volume_delete <- function(
 #' @family Volumes FileSystem API
 #'
 #' @export
-#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
+#' @returns If `perform_request = TRUE`, returns one API response page, including
+#' `contents` and `next_page_token` when present. If `FALSE`, returns an
+#' `httr2_request`. Directory download and recursive-delete helpers fetch all pages.
 db_volume_list <- function(
   path,
   host = db_host(),
   token = db_token(),
-  perform_request = TRUE
+  perform_request = TRUE,
+  page_size = NULL,
+  page_token = NULL
 ) {
-  # TODO: paginate automatically
+  if (!is.null(page_size) && (
+    !rlang::is_scalar_integerish(page_size, finite = TRUE) || page_size < 0 || page_size > 1000
+  )) {
+    cli::cli_abort("{.arg page_size} must be NULL or a whole number from 0 to 1000.")
+  }
+  if (!is.null(page_token) && (!rlang::is_string(page_token) || !nzchar(page_token))) {
+    cli::cli_abort("{.arg page_token} must be NULL or a non-empty string.")
+  }
 
-  db_volume_action(
+  req <- db_volume_action(
     path = path,
     action = "GET",
     type = "directories",
     host = host,
     token = token,
-    perform_request = perform_request,
+    perform_request = FALSE,
     progress = FALSE
-  )
+  ) |>
+    httr2::req_url_query(page_size = page_size, page_token = page_token)
+
+  if (perform_request) {
+    db_perform_request(req)
+  } else {
+    req
+  }
+}
+
+db_volume_list_all_contents <- function(path, host, token) {
+  pages <- list()
+  page_token <- NULL
+  seen_tokens <- character()
+
+  repeat {
+    page <- tryCatch(
+      db_volume_list(path, host = host, token = token, page_token = page_token),
+      error = function(e) cli::cli_abort(
+        "Unable to list all contents of {.path {path}}.",
+        parent = e,
+        class = "brickster_volume_listing_error"
+      )
+    )
+    pages[[length(pages) + 1L]] <- page$contents %||% list()
+    page_token <- page$next_page_token
+    if (is.null(page_token) || !nzchar(page_token)) break
+    if (page_token %in% seen_tokens) {
+      cli::cli_abort(
+        "Directory listing returned a repeated page token for {.path {path}}.",
+        class = "brickster_volume_listing_error"
+      )
+    }
+    seen_tokens <- c(seen_tokens, page_token)
+  }
+
+  purrr::list_flatten(pages)
 }
 
 
@@ -195,6 +246,9 @@ db_volume_dir_create <- function(
 #' Volume FileSystem Delete Directory
 #'
 #' @param recursive If `TRUE`, recursively delete directory contents (default: `FALSE`)
+#'   after listing every page of each directory. Listing failures stop traversal
+#'   before deleting that directory's contents; earlier directories may already
+#'   have been processed.
 #' @param verbose If `TRUE`, announce each file/directory deletion (default: `FALSE`)
 #' @inheritParams auth_params
 #' @inheritParams db_volume_read
@@ -250,7 +304,7 @@ db_volume_recursive_delete_contents <- function(
   tryCatch(
     {
       # List directory contents
-      contents <- db_volume_list(path, host = host, token = token)$contents
+      contents <- db_volume_list_all_contents(path, host = host, token = token)
 
       if (!is.null(contents) && length(contents) > 0) {
         # Delete all files and subdirectories
@@ -277,8 +331,7 @@ db_volume_recursive_delete_contents <- function(
       }
     },
     error = function(e) {
-      # If listing fails, directory might be empty or not exist, continue
-      # This handles edge cases like permissions or already deleted directories
+      if (inherits(e, "brickster_volume_listing_error")) stop(e)
     }
   )
 }
@@ -589,7 +642,7 @@ db_volume_list_files_recursive <- function(
   host,
   token
 ) {
-  contents <- db_volume_list(path = path, host = host, token = token)$contents
+  contents <- db_volume_list_all_contents(path = path, host = host, token = token)
 
   if (is.null(contents) || length(contents) == 0) {
     return(character(0))

@@ -8,7 +8,9 @@ db_volume_list(
   path,
   host = db_host(),
   token = db_token(),
-  perform_request = TRUE
+  perform_request = TRUE,
+  page_size = NULL,
+  page_token = NULL
 )
 }
 \arguments{
@@ -21,9 +23,17 @@ slash.}
 
 \item{perform_request}{If \code{TRUE} (default) the request is performed, if
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
+
+\item{page_size}{Maximum number of directory entries per page, from 0 to
+1000. \code{NULL} uses the API default; 0 requests the maximum page size.}
+
+\item{page_token}{Continuation token from a previous response, or \code{NULL}
+for the first page.}
 }
 \value{
-If \code{perform_request = TRUE}, returns endpoint-specific API output. If \code{FALSE}, returns an \code{httr2_request}.
+If \code{perform_request = TRUE}, returns one API response page, including
+\code{contents} and \code{next_page_token} when present. If \code{FALSE}, returns an
+\code{httr2_request}. Directory download and recursive-delete helpers fetch all pages.
 }
 \description{
 Volume FileSystem List Directory Contents

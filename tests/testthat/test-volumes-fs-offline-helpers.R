@@ -227,7 +227,7 @@ test_that("db_volume_upload_dir uploads only top-level files when recursive is F
   expect_false(any(grepl("upload_flat/nested/inner.txt$", state$upload_paths)))
 })
 
-test_that("db_volume_dir_delete recursive mode tolerates listing errors", {
+test_that("db_volume_dir_delete recursive mode surfaces initial listing errors", {
   state <- new.env(parent = emptyenv())
   state$action_perform <- NULL
 
@@ -242,18 +242,18 @@ test_that("db_volume_dir_delete recursive mode tolerates listing errors", {
     .package = "brickster"
   )
 
-  expect_no_error(
-    out <- db_volume_dir_delete(
+  expect_error(
+    db_volume_dir_delete(
       path = "/Volumes/c/s/v/path",
       recursive = TRUE,
       perform_request = TRUE,
       host = "mock_host",
       token = "mock_token"
-    )
+    ),
+    "list failed"
   )
 
-  expect_true(out)
-  expect_true(state$action_perform)
+  expect_null(state$action_perform)
 })
 
 test_that("db_volume_upload_dir warns and short-circuits for empty directories", {
@@ -540,4 +540,149 @@ test_that("db_volume_download_dir warns and short-circuits for empty directories
 
   expect_true(out)
   expect_false(state$parallel_called)
+})
+
+test_that("volume directory downloads follow empty and nested listing pages", {
+  state <- new.env(parent = emptyenv())
+  state$pages <- character()
+  state$downloads <- character()
+  local_mocked_bindings(
+    db_volume_list = function(path, page_token = NULL, ...) {
+      state$pages <- c(state$pages, paste(path, page_token %||% "first"))
+      if (path == "/Volumes/c/s/v") {
+        if (is.null(page_token)) {
+          return(list(contents = list(list(name = "a.txt", is_directory = FALSE)), next_page_token = "empty"))
+        }
+        if (page_token == "empty") return(list(contents = list(), next_page_token = "last"))
+        return(list(contents = list(list(name = "nested", is_directory = TRUE), list(name = "b.txt", is_directory = FALSE))))
+      }
+      if (is.null(page_token)) {
+        return(list(contents = list(list(name = "c.txt", is_directory = FALSE)), next_page_token = "nested-last"))
+      }
+      list(contents = list(list(name = "d.txt", is_directory = FALSE)))
+    },
+    .package = "brickster"
+  )
+  local_mocked_bindings(
+    req_perform_parallel = function(requests, ...) {
+      state$downloads <- purrr::map_chr(requests, "url")
+      list()
+    },
+    .package = "httr2"
+  )
+
+  expect_true(db_volume_download_dir(
+    "/Volumes/c/s/v", withr::local_tempdir(), host = "mock_host", token = "mock_token"
+  ))
+  expect_identical(state$pages, c(
+    "/Volumes/c/s/v first", "/Volumes/c/s/v empty", "/Volumes/c/s/v last",
+    "/Volumes/c/s/v/nested first", "/Volumes/c/s/v/nested nested-last"
+  ))
+  expect_setequal(state$downloads, paste0(
+    "https://mock_host/api/2.0/fs/files/Volumes/c/s/v/",
+    c("a.txt", "b.txt", "nested/c.txt", "nested/d.txt")
+  ))
+})
+
+test_that("recursive volume deletion lists all pages before deleting contents", {
+  state <- new.env(parent = emptyenv())
+  state$actions <- character()
+  local_mocked_bindings(
+    db_volume_list = function(path, page_token = NULL, ...) {
+      state$actions <- c(state$actions, paste("list", page_token %||% "first"))
+      list(
+        contents = list(list(name = if (is.null(page_token)) "a.txt" else "b.txt", is_directory = FALSE)),
+        next_page_token = if (is.null(page_token)) "second" else NULL
+      )
+    },
+    db_volume_delete = function(path, ...) {
+      state$actions <- c(state$actions, paste("delete", as.character(path)))
+      TRUE
+    },
+    db_volume_action = function(path, ...) {
+      state$actions <- c(state$actions, paste("delete", as.character(path)))
+      TRUE
+    },
+    .package = "brickster"
+  )
+
+  expect_true(db_volume_dir_delete("/Volumes/c/s/v/path", recursive = TRUE, host = "mock_host", token = "mock_token"))
+  expect_identical(state$actions, c(
+    "list first", "list second", "delete /Volumes/c/s/v/path/a.txt",
+    "delete /Volumes/c/s/v/path/b.txt", "delete /Volumes/c/s/v/path"
+  ))
+})
+
+test_that("volume directory traversal rejects repeated page tokens", {
+  local_mocked_bindings(
+    db_volume_list = function(...) list(contents = list(), next_page_token = "again"),
+    .package = "brickster"
+  )
+  expect_error(
+    db_volume_list_files_recursive("/Volumes/c/s/v", host = "mock_host", token = "mock_token"),
+    "repeated.*page token"
+  )
+})
+
+test_that("recursive deletion stops before mutations on a repeated listing token", {
+  state <- new.env(parent = emptyenv())
+  state$deletes <- 0L
+  local_mocked_bindings(
+    db_volume_list = function(...) list(
+      contents = list(list(name = "keep.txt", is_directory = FALSE)),
+      next_page_token = "again"
+    ),
+    db_volume_action = function(...) {
+      state$deletes <- state$deletes + 1L
+      TRUE
+    },
+    .package = "brickster"
+  )
+  expect_error(
+    db_volume_dir_delete("/Volumes/c/s/v", recursive = TRUE, host = "mock_host", token = "mock_token"),
+    "repeated.*page token"
+  )
+  expect_identical(state$deletes, 0L)
+})
+
+test_that("recursive deletion stops before mutations when a later listing page fails", {
+  state <- new.env(parent = emptyenv())
+  state$deletes <- 0L
+  local_mocked_bindings(
+    db_volume_list = function(page_token = NULL, ...) {
+      if (!is.null(page_token)) stop("Listing page failed: permission denied")
+      list(contents = list(list(name = "keep.txt", is_directory = FALSE)), next_page_token = "second")
+    },
+    db_volume_action = function(...) {
+      state$deletes <- state$deletes + 1L
+      TRUE
+    },
+    .package = "brickster"
+  )
+  expect_error(
+    db_volume_dir_delete("/Volumes/c/s/v", recursive = TRUE, host = "mock_host", token = "mock_token"),
+    "permission denied"
+  )
+  expect_identical(state$deletes, 0L)
+})
+
+test_that("nested listing failures propagate through recursive deletion", {
+  state <- new.env(parent = emptyenv())
+  state$deletes <- 0L
+  local_mocked_bindings(
+    db_volume_list = function(path, ...) {
+      if (endsWith(path, "/nested")) stop("Nested listing failed")
+      list(contents = list(list(name = "nested", is_directory = TRUE)))
+    },
+    db_volume_action = function(...) {
+      state$deletes <- state$deletes + 1L
+      TRUE
+    },
+    .package = "brickster"
+  )
+  expect_error(
+    db_volume_dir_delete("/Volumes/c/s/v", recursive = TRUE, host = "mock_host", token = "mock_token"),
+    "Nested listing failed"
+  )
+  expect_identical(state$deletes, 0L)
 })
