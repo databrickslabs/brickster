@@ -302,6 +302,65 @@ test_that("DatabricksResult edge cases work offline", {
   expect_shape(empty_result, nrow = 0)
 })
 
+test_that("volume writes preserve field types across appends and replacements", {
+  skip_on_cran()
+  staging_volume <- Sys.getenv("DATABRICKS_TEST_VOLUME")
+  skip_if(!nzchar(staging_volume), "Set DATABRICKS_TEST_VOLUME to run volume write tests")
+  skip_if_not_installed("arrow")
+  skip_unless_warehouse_available()
+
+  parts <- strsplit(staging_volume, "/", fixed = TRUE)[[1]]
+  name <- DBI::Id(
+    catalog = parts[[3]], schema = parts[[4]],
+    table = paste0("brickster_volume_types_", sample.int(1e9, 1))
+  )
+  con <- dbConnect(
+    DatabricksSQL(), warehouse_id = Sys.getenv("DATABRICKS_WAREHOUSE_ID"),
+    staging_volume = staging_volume, show_progress = FALSE
+  )
+  withr::defer(dbDisconnect(con))
+  skip_if(dbExistsTable(con, name), "Test table name already exists")
+  quoted_name <- dbQuoteIdentifier(con, name)
+  withr::defer(dbExecute(con, paste("DROP TABLE IF EXISTS", quoted_name)))
+  table_name <- paste(name@name, collapse = ".")
+
+  value <- data.frame(
+    id = c(1L, 2L, NA_integer_), amount = c(1.25, -2.5, NA_real_),
+    code = c("abc", "1234567890", NA_character_),
+    fixed = c("x", "abcde", NA_character_),
+    event_date = as.Date(c("2026-09-01", "2026-09-02", NA_character_)),
+    event_time = as.POSIXct(c("2026-09-01 01:02:03", "2026-09-02 04:05:06", NA_character_), tz = "UTC")
+  )
+  field_types <- c(fixed = "CHAR(5)", code = "VARCHAR(10)", amount = "DECIMAL(12,2)", id = "BIGINT")
+  expect_true(dbWriteTable(con, table_name, value, field.types = field_types))
+  ddl <- dbGetQuery(con, paste("SHOW CREATE TABLE", quoted_name))[[1]][[1]]
+  purrr::walk(c("id BIGINT", "amount DECIMAL(12,2)", "code VARCHAR(10)", "fixed CHAR(5)", "event_date DATE", "event_time TIMESTAMP"), function(type) {
+    expect_match(ddl, type, fixed = TRUE)
+  })
+
+  added <- transform(value[1L, ], id = 3L, amount = 123456.78, code = "append")
+  expect_true(dbAppendTable(con, name, added[rev(names(added))]))
+  result <- dbGetQuery(con, paste("SELECT * FROM", quoted_name, "ORDER BY id NULLS LAST"))
+  expect_equal(as.numeric(result$id), c(1, 2, 3, NA_real_))
+  expect_equal(as.numeric(result$amount), c(1.25, -2.5, 123456.78, NA_real_))
+  expect_equal(result$code, c("abc", "1234567890", "append", NA_character_))
+  expect_equal(as.character(result$event_date), c("2026-09-01", "2026-09-02", "2026-09-01", NA_character_))
+  expect_equal(as.numeric(result$event_time), as.numeric(value$event_time[c(1L, 2L, 1L, 3L)]))
+
+  purrr::walk(list(c(code = "12345678901"), c(fixed = "abcdef")), function(invalid) {
+    bad <- added
+    bad[names(invalid)] <- as.list(invalid)
+    expect_error(dbAppendTable(con, name, bad), "DELTA_EXCEED_CHAR_VARCHAR_LIMIT")
+  })
+  expect_equal(dbGetQuery(con, paste("SELECT COUNT(*) AS n FROM", quoted_name))$n, 4)
+
+  expect_true(dbWriteTable(con, I(table_name), added, field.types = field_types, overwrite = TRUE))
+  replaced <- dbGetQuery(con, paste("SELECT * FROM", quoted_name))
+  expect_equal(nrow(replaced), 1L)
+  expect_equal(as.numeric(replaced$id), 3)
+  expect_equal(as.numeric(replaced$amount), 123456.78)
+})
+
 # Online Tests (require warehouse connection) --------------------------------
 
 skip_on_cran()
