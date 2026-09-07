@@ -1,6 +1,6 @@
 # brickster (development version)
 
--   Volume-based `dbWriteTable()` now applies `field.types` when creating or replacing tables, instead of silently ignoring the requested column types.
+-   Volume-based `dbWriteTable()` now creates the schema requested by `field.types`, including `CHAR`/`VARCHAR` length limits. Volume writes and appends use `INSERT` to convert staged values to the target column types.
 
 -   `db_volume_upload_dir()` now creates each parent directory only once, avoiding repeated API calls for files in the same directory.
 -   Standard-path table writes now detect binary columns once per column, avoiding quadratic serialization time for lists of raw vectors.

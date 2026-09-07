@@ -740,7 +740,7 @@ test_that("db_write_table_volume executes create flow when append is FALSE", {
     )
   )
 
-  expect_match(state$sql, "^CREATE OR REPLACE TABLE")
+  expect_match(state$sql, "^CREATE TABLE .* AS SELECT \\* FROM READ_FILES")
   expect_identical(state$created, state$uploaded)
   expect_identical(state$deleted, state$created)
 })
@@ -795,7 +795,7 @@ test_that("db_write_table_volume executes append flow when append is TRUE", {
     )
   )
 
-  expect_match(state$sql, "^COPY INTO")
+  expect_match(state$sql, "INSERT INTO `tbl` (`x`) SELECT * FROM READ_FILES(", fixed = TRUE)
   expect_identical(state$created, state$uploaded)
   expect_identical(state$deleted, state$created)
 })

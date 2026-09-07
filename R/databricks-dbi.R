@@ -1310,7 +1310,8 @@ setMethod(
         staging_volume = effective_staging_volume,
         append = append,
         show_progress = show_progress,
-        field.types = field.types
+        field.types = field.types,
+        overwrite = overwrite
       )
     } else {
       db_write_table_standard(
@@ -1438,7 +1439,8 @@ setMethod(
         staging_volume = effective_staging_volume,
         append = append,
         show_progress = show_progress,
-        field.types = field.types
+        field.types = field.types,
+        overwrite = overwrite
       )
     } else {
       db_write_table_standard(
@@ -1783,38 +1785,12 @@ db_should_use_volume_method <- function(
   FALSE
 }
 
-db_volume_write_projection <- function(conn, value, field.types) {
-  if (length(field.types) == 0L) return("*")
-
-  if (!is.character(field.types) || !rlang::is_named(field.types) ||
-      anyNA(field.types) || any(!nzchar(trimws(field.types)))) {
-    cli::cli_abort("{.arg field.types} must be a named character vector of non-empty SQL types.")
-  }
-  if (anyDuplicated(names(field.types)) || any(!names(field.types) %in% names(value))) {
-    cli::cli_abort("Each name in {.arg field.types} must match a column in {.arg value} and occur only once.")
-  }
-  # CAST drops CHAR/VARCHAR length limits instead of preserving them in the table.
-  if (any(grepl("\\b(CHAR|VARCHAR)\\s*\\(", field.types, ignore.case = TRUE))) {
-    cli::cli_abort(c(
-      "Volume writes cannot preserve CHAR/VARCHAR length limits in {.arg field.types}.",
-      "i" = "Define the schema with {.fun dbCreateTable}, then load it with {.fun dbAppendTable}."
-    ))
-  }
-
-  columns <- as.character(dbQuoteIdentifier(conn, names(value)))
-  specified <- match(names(field.types), names(value))
-  columns[specified] <- paste0(
-    "CAST(", columns[specified], " AS ", field.types, ") AS ", columns[specified]
-  )
-  paste(columns, collapse = ", ")
-}
-
 #' Write table using volume-based approach
 #' @param field.types Named character vector of SQL types for columns when
-#'   creating or replacing a table. Volume writes cast specified columns and
-#'   retain Parquet types for the others. Databricks validates the cast types.
-#'   For `CHAR`/`VARCHAR` length limits, use [dbCreateTable()] followed by
-#'   [dbAppendTable()]. Appends use the existing table schema.
+#'   creating or replacing a table. Unspecified columns use [dbDataType()].
+#'   Volume writes without overrides infer types from Parquet. Databricks
+#'   validates SQL types and enforces the declared schema, including
+#'   `CHAR`/`VARCHAR` length limits. Appends use the existing table schema.
 #' @keywords internal
 db_write_table_volume <- function(
   conn,
@@ -1823,10 +1799,20 @@ db_write_table_volume <- function(
   staging_volume,
   append = FALSE,
   show_progress = TRUE,
-  field.types = NULL
+  field.types = NULL,
+  overwrite = FALSE
 ) {
   db_assert_show_progress(show_progress)
-  projection <- if (append) "*" else db_volume_write_projection(conn, value, field.types)
+  has_field_types <- length(field.types) > 0L
+  if (!append && has_field_types) {
+    if (!is.character(field.types) || !rlang::is_named(field.types) ||
+        anyNA(field.types) || any(!nzchar(trimws(field.types)))) {
+      cli::cli_abort("{.arg field.types} must be a named character vector of non-empty SQL types.")
+    }
+    if (anyDuplicated(names(field.types)) || any(!names(field.types) %in% names(value))) {
+      cli::cli_abort("Each name in {.arg field.types} must match a column in {.arg value} and occur only once.")
+    }
+  }
 
   # Validate volume path
   staging_volume <- is_valid_volume_path(staging_volume)
@@ -1936,33 +1922,33 @@ db_write_table_volume <- function(
     )
   }
 
-  # Execute SQL based on operation type
-  if (append) {
-    # Append to existing table
-    copy_sql <- paste0(
-      "COPY INTO ",
-      quoted_name,
-      " ",
-      "FROM '",
-      volume_dataset_path,
-      "' ",
-      "FILEFORMAT = PARQUET"
+  if (!append && has_field_types) {
+    db_create_table_from_data(
+      conn, quoted_name, value, field.types, overwrite = overwrite
+    )
+  }
+
+  read_sql <- paste0(
+    "SELECT * FROM READ_FILES(", db_escape_string_literal(conn, volume_dataset_path),
+    ", format => 'parquet', schemaEvolutionMode => 'none')"
+  )
+  if (append || has_field_types) {
+    # INSERT converts Parquet values to the target types; COPY INTO does not.
+    columns <- paste(dbQuoteIdentifier(conn, names(value)), collapse = ", ")
+    write_sql <- paste0(
+      "INSERT INTO ", quoted_name, " (", columns, ") ", read_sql
     )
   } else {
-    # Create new table from parquet files using READ_FILES
-    copy_sql <- paste0(
-      "CREATE OR REPLACE TABLE ",
-      quoted_name,
-      " AS SELECT ", projection, " FROM READ_FILES('",
-      volume_dataset_path,
-      "', format => 'parquet', schemaEvolutionMode => 'none')"
+    write_sql <- paste0(
+      if (overwrite) "CREATE OR REPLACE TABLE " else "CREATE TABLE ",
+      quoted_name, " AS ", read_sql
     )
   }
 
   # Execute SQL using helper function (inline since we don't need data back)
   db_sql_exec_and_wait(
     warehouse_id = conn@warehouse_id,
-    statement = copy_sql,
+    statement = write_sql,
     catalog = if (nzchar(conn@catalog)) conn@catalog else NULL,
     schema = if (nzchar(conn@schema)) conn@schema else NULL,
     disposition = "INLINE",

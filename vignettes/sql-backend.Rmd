@@ -103,15 +103,20 @@ dbListFields(con, Id("samples", "nyctaxi", "trips"))
 When writing data (append, overwrite, etc) there are two possible behaviours:
 
 1.  In-line SQL statement write
-2.  Stage `.parquet` files to a Volume directory and `COPY INTO` or `CTAS`
+2.  Stage `.parquet` files to a Volume directory and load them with `READ_FILES`
 
 For data larger than 50k rows `{brickster}` will only permit the use of method (2), which requires `staging_volume` to be specified when establishing the connection, or directly to `dbWriteQuery`.
 
-Volume-based creation and replacement apply `field.types` through SQL casts.
-For example, `field.types = c(id = "BIGINT", amount = "DECIMAL(12, 2)")` casts those
-columns and retains Parquet types for the others. Databricks validates the cast
-types. For `CHAR`/`VARCHAR` length limits, define the schema with `dbCreateTable()`
-and load it with `dbAppendTable()`. Appends use the existing table schema.
+When `field.types` is supplied, volume-based writes create the declared schema
+before inserting the staged data. For example,
+`field.types = c(id = "BIGINT", amount = "DECIMAL(12, 2)", code = "VARCHAR(10)")`
+sets those column types; unspecified columns use `dbDataType()`, as in standard
+writes. Databricks converts incoming values and enforces the declared limits.
+Appends insert into the existing schema, including when the data frame's column
+order differs. Without overrides, table creation infers types from Parquet.
+
+Creating or replacing an explicit schema and loading its data are separate SQL
+statements. If loading fails, the newly created or replaced table can be empty.
 
 Ensure that `staging_volume` is a valid Volume path and you have permission to write files.
 
