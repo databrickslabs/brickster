@@ -17,16 +17,12 @@ db_jobs_list(
 \arguments{
 \item{limit}{Number of jobs to return, from 1 to 100 (default: 25).}
 
-\item{offset}{Number of records to skip, or \code{NULL} (default) to use token
-pagination. Prefer \code{page_token} for new code. Run listings without a
-\code{page_token} omit continuation tokens when \code{offset} is supplied, including 0.}
+\item{offset}{Number of records to skip. Defaults to \code{NULL}.}
 
 \item{expand_tasks}{Whether to include task and cluster details in the
 response.}
 
-\item{page_token}{Continuation token from a previous response, or \code{NULL} for
-the first page. List endpoints accept \code{next_page_token} or \code{prev_page_token};
-get endpoints accept \code{next_page_token} for additional array elements.}
+\item{page_token}{Token from a previous response, or \code{NULL} for the first page.}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 

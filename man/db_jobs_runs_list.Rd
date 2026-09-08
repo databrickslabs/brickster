@@ -30,9 +30,7 @@ field cannot be true when \code{completed_only} is \code{TRUE}.}
 runs are included in the results; otherwise, lists both active and completed
 runs. This field cannot be true when \code{active_only} is \code{TRUE}.}
 
-\item{offset}{Number of records to skip, or \code{NULL} (default) to use token
-pagination. Prefer \code{page_token} for new code. Run listings without a
-\code{page_token} omit continuation tokens when \code{offset} is supplied, including 0.}
+\item{offset}{Number of records to skip. Defaults to \code{NULL}.}
 
 \item{limit}{Number of runs to return, from 1 to 25 (default: 25). A value of
 0 requests the service maximum.}
@@ -43,9 +41,7 @@ pagination. Prefer \code{page_token} for new code. Run listings without a
 \item{expand_tasks}{Whether to include task and cluster details in the
 response.}
 
-\item{page_token}{Continuation token from a previous response, or \code{NULL} for
-the first page. List endpoints accept \code{next_page_token} or \code{prev_page_token};
-get endpoints accept \code{next_page_token} for additional array elements.}
+\item{page_token}{Token from a previous response, or \code{NULL} for the first page.}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 

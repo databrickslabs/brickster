@@ -15,9 +15,7 @@ db_jobs_runs_get(
 \arguments{
 \item{run_id}{The canonical identifier of the run.}
 
-\item{page_token}{Continuation token from a previous response, or \code{NULL} for
-the first page. List endpoints accept \code{next_page_token} or \code{prev_page_token};
-get endpoints accept \code{next_page_token} for additional array elements.}
+\item{page_token}{Token from a previous response, or \code{NULL} for the first page.}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 

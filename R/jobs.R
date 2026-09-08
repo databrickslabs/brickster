@@ -108,12 +108,8 @@ db_jobs_create <- function(
 #' List Jobs
 #'
 #' @param limit Number of jobs to return, from 1 to 100 (default: 25).
-#' @param offset Number of records to skip, or `NULL` (default) to use token
-#'   pagination. Prefer `page_token` for new code. Run listings without a
-#'   `page_token` omit continuation tokens when `offset` is supplied, including 0.
-#' @param page_token Continuation token from a previous response, or `NULL` for
-#'   the first page. List endpoints accept `next_page_token` or `prev_page_token`;
-#'   get endpoints accept `next_page_token` for additional array elements.
+#' @param offset Number of records to skip. Defaults to `NULL`.
+#' @param page_token Token from a previous response, or `NULL` for the first page.
 #' @param expand_tasks Whether to include task and cluster details in the
 #' response.
 #' @inheritParams auth_params
