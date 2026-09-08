@@ -33,7 +33,11 @@
 
 \item{temporary}{If \code{TRUE}, create temporary table (NOT SUPPORTED - will error)}
 
-\item{field.types}{Named character vector of SQL types for columns}
+\item{field.types}{Named character vector of SQL types for columns when
+creating or replacing a table. Unspecified columns use \code{\link[=dbDataType]{dbDataType()}}.
+Volume writes without overrides infer types from Parquet. Databricks
+validates SQL types and enforces the declared schema, including
+\code{CHAR}/\code{VARCHAR} length limits. Appends use the existing table schema.}
 
 \item{staging_volume}{Optional volume path for large dataset staging}
 

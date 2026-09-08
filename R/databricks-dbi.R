@@ -1214,7 +1214,7 @@ setMethod(
 #' @param append If `TRUE`, append to existing table
 #' @param row.names If `TRUE`, preserve row names as a column
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
-#' @param field.types Named character vector of SQL types for columns
+#' @inheritParams db_write_table_volume
 #' @param staging_volume Optional volume path for large dataset staging
 #' @param show_progress If `TRUE`, show progress updates while writing.
 #'   Defaults to the connection's `show_progress` setting.
@@ -1309,7 +1309,9 @@ setMethod(
         value = value,
         staging_volume = effective_staging_volume,
         append = append,
-        show_progress = show_progress
+        show_progress = show_progress,
+        field.types = field.types,
+        overwrite = overwrite
       )
     } else {
       db_write_table_standard(
@@ -1336,7 +1338,7 @@ setMethod(
 #' @param append If `TRUE`, append to existing table
 #' @param row.names If `TRUE`, preserve row names as a column
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
-#' @param field.types Named character vector of SQL types for columns
+#' @inheritParams db_write_table_volume
 #' @param staging_volume Optional volume path for large dataset staging
 #' @param show_progress If `TRUE`, show progress updates while writing.
 #'   Defaults to the connection's `show_progress` setting.
@@ -1436,7 +1438,9 @@ setMethod(
         value = value,
         staging_volume = effective_staging_volume,
         append = append,
-        show_progress = show_progress
+        show_progress = show_progress,
+        field.types = field.types,
+        overwrite = overwrite
       )
     } else {
       db_write_table_standard(
@@ -1463,7 +1467,7 @@ setMethod(
 #' @param append If `TRUE`, append to existing table
 #' @param row.names If `TRUE`, preserve row names as a column
 #' @param temporary If `TRUE`, create temporary table (NOT SUPPORTED - will error)
-#' @param field.types Named character vector of SQL types for columns
+#' @inheritParams db_write_table_volume
 #' @param staging_volume Optional volume path for large dataset staging
 #' @param show_progress If `TRUE`, show progress updates while writing.
 #'   Defaults to the connection's `show_progress` setting.
@@ -1600,11 +1604,13 @@ db_create_table_from_data <- function(
 #' Generate type-aware VALUES SQL from data frame
 #' @keywords internal
 db_generate_typed_values_sql <- function(conn, data) {
+  binary_cols <- purrr::map_lgl(data, db_is_binary_column)
+
   # Convert each row to SQL values with proper typing
   row_values <- purrr::pmap_chr(data, function(...) {
     row <- list(...)
     values <- purrr::imap_chr(row, function(val, col_name) {
-      db_format_typed_value_sql(conn, val, data[[col_name]])
+      db_format_typed_value_sql(conn, val, data[[col_name]], binary_cols[[col_name]])
     })
     paste0("(", paste(values, collapse = ", "), ")")
   })
@@ -1613,10 +1619,15 @@ db_generate_typed_values_sql <- function(conn, data) {
 }
 
 # Format a single R value for inline SQL VALUES.
-db_format_typed_value_sql <- function(conn, val, col_data) {
+db_format_typed_value_sql <- function(
+  conn,
+  val,
+  col_data,
+  is_binary = db_is_binary_column(col_data)
+) {
   if (db_is_missing_sql_value(val)) {
     "NULL"
-  } else if (db_is_binary_column(col_data)) {
+  } else if (is_binary) {
     db_binary_literal(val)
   } else if (is.logical(col_data)) {
     if (as.logical(val)) "TRUE" else "FALSE"
@@ -1775,6 +1786,11 @@ db_should_use_volume_method <- function(
 }
 
 #' Write table using volume-based approach
+#' @param field.types Named character vector of SQL types for columns when
+#'   creating or replacing a table. Unspecified columns use [dbDataType()].
+#'   Volume writes without overrides infer types from Parquet. Databricks
+#'   validates SQL types and enforces the declared schema, including
+#'   `CHAR`/`VARCHAR` length limits. Appends use the existing table schema.
 #' @keywords internal
 db_write_table_volume <- function(
   conn,
@@ -1782,9 +1798,21 @@ db_write_table_volume <- function(
   value,
   staging_volume,
   append = FALSE,
-  show_progress = TRUE
+  show_progress = TRUE,
+  field.types = NULL,
+  overwrite = FALSE
 ) {
   db_assert_show_progress(show_progress)
+  has_field_types <- length(field.types) > 0L
+  if (!append && has_field_types) {
+    if (!is.character(field.types) || !rlang::is_named(field.types) ||
+        anyNA(field.types) || any(!nzchar(trimws(field.types)))) {
+      cli::cli_abort("{.arg field.types} must be a named character vector of non-empty SQL types.")
+    }
+    if (anyDuplicated(names(field.types)) || any(!names(field.types) %in% names(value))) {
+      cli::cli_abort("Each name in {.arg field.types} must match a column in {.arg value} and occur only once.")
+    }
+  }
 
   # Validate volume path
   staging_volume <- is_valid_volume_path(staging_volume)
@@ -1894,33 +1922,33 @@ db_write_table_volume <- function(
     )
   }
 
-  # Execute SQL based on operation type
-  if (append) {
-    # Append to existing table
-    copy_sql <- paste0(
-      "COPY INTO ",
-      quoted_name,
-      " ",
-      "FROM '",
-      volume_dataset_path,
-      "' ",
-      "FILEFORMAT = PARQUET"
+  if (!append && has_field_types) {
+    db_create_table_from_data(
+      conn, quoted_name, value, field.types, overwrite = overwrite
+    )
+  }
+
+  read_sql <- paste0(
+    "SELECT * FROM READ_FILES(", db_escape_string_literal(conn, volume_dataset_path),
+    ", format => 'parquet', schemaEvolutionMode => 'none')"
+  )
+  if (append || has_field_types) {
+    # INSERT converts Parquet values to the target types; COPY INTO does not.
+    columns <- paste(dbQuoteIdentifier(conn, names(value)), collapse = ", ")
+    write_sql <- paste0(
+      "INSERT INTO ", quoted_name, " (", columns, ") ", read_sql
     )
   } else {
-    # Create new table from parquet files using READ_FILES
-    copy_sql <- paste0(
-      "CREATE OR REPLACE TABLE ",
-      quoted_name,
-      " AS SELECT * FROM READ_FILES('",
-      volume_dataset_path,
-      "', format => 'parquet', schemaEvolutionMode => 'none')"
+    write_sql <- paste0(
+      if (overwrite) "CREATE OR REPLACE TABLE " else "CREATE TABLE ",
+      quoted_name, " AS ", read_sql
     )
   }
 
   # Execute SQL using helper function (inline since we don't need data back)
   db_sql_exec_and_wait(
     warehouse_id = conn@warehouse_id,
-    statement = copy_sql,
+    statement = write_sql,
     catalog = if (nzchar(conn@catalog)) conn@catalog else NULL,
     schema = if (nzchar(conn@schema)) conn@schema else NULL,
     disposition = "INLINE",

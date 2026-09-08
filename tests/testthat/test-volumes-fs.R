@@ -82,6 +82,30 @@ test_that("Volumes API - don't perform", {
 
 })
 
+test_that("directory deletion inspection returns a request in either recursive mode", {
+  local_mocked_bindings(
+    req_perform = function(...) stop("Request unexpectedly performed"),
+    .package = "httr2"
+  )
+
+  purrr::walk(c(FALSE, TRUE), function(recursive) {
+    req <- db_volume_dir_delete(
+      path = "/Volumes/c/s/v/path",
+      recursive = recursive,
+      host = "mock_host",
+      token = "mock_token",
+      perform_request = FALSE
+    )
+
+    expect_s3_class(req, "httr2_request")
+    expect_identical(req$method, "DELETE")
+    expect_identical(
+      req$url,
+      "https://mock_host/api/2.0/fs/directories/Volumes/c/s/v/path"
+    )
+  })
+})
+
 test_that("volume filesystem paths are percent-encoded in requests", {
   req <- db_volume_read(
     path = "/Volumes/catalog/schema/volume/folder name/my custom report.txt",
@@ -108,6 +132,58 @@ test_that("volume filesystem paths are percent-encoded in requests", {
   )
 
   expect_match(req$url, "file%20name[.]txt")
+})
+
+test_that("volume paths preserve literal reserved characters and separators", {
+  paths <- c(
+    "/Volumes/c/s/v/report#1.csv",
+    "/Volumes/c/s/v/report?draft.csv",
+    "/Volumes/c/s/v/100% complete.csv",
+    "/Volumes/c/s/v/literal%20name.csv",
+    "/Volumes/c/s/v/literal%2Fname.csv",
+    "/Volumes/c/s/v/caf\u00e9/",
+    "/Volumes/c/s/v/nested//file.txt"
+  )
+  encoded <- c(
+    "/Volumes/c/s/v/report%231.csv",
+    "/Volumes/c/s/v/report%3Fdraft.csv",
+    "/Volumes/c/s/v/100%25%20complete.csv",
+    "/Volumes/c/s/v/literal%2520name.csv",
+    "/Volumes/c/s/v/literal%252Fname.csv",
+    "/Volumes/c/s/v/caf%C3%A9/",
+    "/Volumes/c/s/v/nested//file.txt"
+  )
+
+  purrr::walk2(paths, encoded, function(path, encoded_path) {
+    req <- db_volume_delete(
+      path = path,
+      host = "mock_host",
+      token = "mock_token",
+      perform_request = FALSE
+    )
+    expect_s3_class(req, "httr2_request")
+    expect_identical(req$url, paste0("https://mock_host/api/2.0/fs/files", encoded_path))
+    parsed <- httr2::url_parse(req$url)
+    expect_identical(parsed$path, paste0("/api/2.0/fs/files", path))
+    expect_null(parsed$query)
+    expect_null(parsed$fragment)
+  })
+})
+
+test_that("volume upload query parameters are separate from the encoded path", {
+  req <- db_volume_write(
+    path = "/Volumes/c/s/v/report?#.csv",
+    file = withr::local_tempfile(lines = "data"),
+    overwrite = TRUE,
+    host = "mock_host",
+    token = "mock_token",
+    perform_request = FALSE
+  )
+
+  expect_identical(
+    req$url,
+    "https://mock_host/api/2.0/fs/files/Volumes/c/s/v/report%3F%23.csv?overwrite=true"
+  )
 })
 
 test_that("db_volume_upload_dir - don't perform", {
@@ -192,4 +268,28 @@ test_that("db_volume_download_dir - don't perform", {
     "is not a directory"
   )
   
+})
+
+test_that("volume directory listing supports page query parameters", {
+  req <- db_volume_list(
+    "/Volumes/c/s/v/path",
+    host = "mock_host",
+    token = "mock_token",
+    perform_request = FALSE,
+    page_size = 100,
+    page_token = "next+/="
+  )
+  expect_s3_class(req, "httr2_request")
+  expect_identical(req$method, "GET")
+  expect_identical(httr2::url_parse(req$url)$query, list(page_size = "100", page_token = "next+/="))
+  expect_null(req$body)
+
+  expect_error(
+    db_volume_list("/Volumes/c/s/v", page_size = -1, host = "mock_host", token = "mock_token", perform_request = FALSE),
+    "page_size"
+  )
+  expect_error(
+    db_volume_list("/Volumes/c/s/v", page_token = NA_character_, host = "mock_host", token = "mock_token", perform_request = FALSE),
+    "page_token"
+  )
 })

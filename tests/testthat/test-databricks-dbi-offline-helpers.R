@@ -293,6 +293,28 @@ test_that("dbWriteTable standard path supports binary columns", {
   )
 })
 
+test_that("binary SQL serialization scans columns once rather than per cell", {
+  con <- make_dbi_test_con()
+  value <- data.frame(id = seq_len(20L))
+  value$payload <- rep(list(as.raw(c(0, 255))), nrow(value))
+  state <- new.env(parent = emptyenv())
+  state$elements_scanned <- 0L
+  original_is_binary <- db_is_binary_column
+
+  local_mocked_bindings(
+    db_is_binary_column = function(x) {
+      state$elements_scanned <- state$elements_scanned + length(x)
+      original_is_binary(x)
+    },
+    .package = "brickster"
+  )
+
+  sql <- db_generate_typed_values_sql(con, value)
+  expected_rows <- purrr::map_chr(value$id, function(id) paste0("(", id, ", X'00FF')"))
+  expect_identical(sql, paste(expected_rows, collapse = ", "))
+  expect_lte(state$elements_scanned, ncol(value) * nrow(value))
+})
+
 test_that("dbAppendTable standard path supports binary columns", {
   con <- make_dbi_test_con(show_progress = FALSE)
   value <- data.frame(id = 4L)
@@ -718,7 +740,7 @@ test_that("db_write_table_volume executes create flow when append is FALSE", {
     )
   )
 
-  expect_match(state$sql, "^CREATE OR REPLACE TABLE")
+  expect_match(state$sql, "^CREATE TABLE .* AS SELECT \\* FROM READ_FILES")
   expect_identical(state$created, state$uploaded)
   expect_identical(state$deleted, state$created)
 })
@@ -773,7 +795,7 @@ test_that("db_write_table_volume executes append flow when append is TRUE", {
     )
   )
 
-  expect_match(state$sql, "^COPY INTO")
+  expect_match(state$sql, "INSERT INTO `tbl` (`x`) SELECT * FROM READ_FILES(", fixed = TRUE)
   expect_identical(state$created, state$uploaded)
   expect_identical(state$deleted, state$created)
 })
