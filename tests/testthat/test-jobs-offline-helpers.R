@@ -41,12 +41,12 @@ test_that("Jobs list wrappers return one full response page by default", {
   local_mocked_bindings(
     db_perform_request = function(req) {
       url <- httr2::url_parse(req$url)
-      if (is.null(url$query$page_token)) {
+      if (is.null(req$body$data$page_token)) {
         field <- if (endsWith(url$path, "/runs/list")) "runs" else "jobs"
         return(pages[[field]])
       }
-      if (identical(url$query$page_token, "empty")) return(list())
-      expect_identical(url$query$page_token, "next+/=")
+      if (identical(req$body$data$page_token, "empty")) return(list())
+      expect_identical(req$body$data$page_token, "next+/=")
       empty_page
     },
     .package = "brickster"
@@ -73,8 +73,8 @@ test_that("Jobs detail wrappers expose the next array page", {
   local_mocked_bindings(
     db_perform_request = function(req) {
       url <- httr2::url_parse(req$url)
-      first <- is.null(url$query$page_token)
-      if (!first) expect_identical(url$query$page_token, "second")
+      first <- is.null(req$body$data$page_token)
+      if (!first) expect_identical(req$body$data$page_token, "second")
       details <- list(tasks = list(list(task_key = if (first) "a" else "b")))
       if (endsWith(url$path, "/jobs/get")) details <- list(settings = details)
       if (first) details$next_page_token <- "second"

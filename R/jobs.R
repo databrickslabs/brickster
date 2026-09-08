@@ -145,19 +145,21 @@ db_jobs_list <- function(
 ) {
   db_jobs_validate_pagination(page_token, limit, offset = offset)
 
+  body <- list(
+    limit = as.numeric(limit),
+    offset = as.numeric(offset),
+    expand_tasks = expand_tasks,
+    page_token = page_token
+  )
+
   req <- db_request(
     endpoint = "jobs/list",
     method = "GET",
     version = "2.2",
+    body = body,
     host = host,
     token = token
-  ) |>
-    httr2::req_url_query(
-      limit = limit,
-      offset = offset,
-      expand_tasks = from_logical(expand_tasks),
-      page_token = page_token
-    )
+  )
 
   if (perform_request) {
     db_perform_request(req)
@@ -227,17 +229,19 @@ db_jobs_get <- function(
 ) {
   db_jobs_validate_pagination(page_token)
 
+  body <- list(
+    job_id = as.character(job_id),
+    page_token = page_token
+  )
+
   req <- db_request(
     endpoint = "jobs/get",
     method = "GET",
     version = "2.2",
+    body = body,
     host = host,
     token = token
-  ) |>
-    httr2::req_url_query(
-      job_id = as.character(job_id),
-      page_token = page_token
-    )
+  )
 
   if (perform_request) {
     job <- db_perform_request(req)
@@ -664,23 +668,25 @@ db_jobs_runs_list <- function(
     )
   }
 
+  body <- list(
+    job_id = as.character(job_id),
+    active_only = active_only,
+    completed_only = completed_only,
+    offset = as.numeric(offset),
+    limit = as.numeric(limit),
+    run_type = run_type,
+    expand_tasks = expand_tasks,
+    page_token = page_token
+  )
+
   req <- db_request(
     endpoint = "jobs/runs/list",
     method = "GET",
     version = "2.2",
+    body = body,
     host = host,
     token = token
-  ) |>
-    httr2::req_url_query(
-      job_id = as.character(job_id),
-      active_only = from_logical(active_only),
-      completed_only = from_logical(completed_only),
-      limit = limit,
-      offset = offset,
-      run_type = run_type,
-      expand_tasks = from_logical(expand_tasks),
-      page_token = page_token
-    )
+  )
 
   if (perform_request) {
     db_perform_request(req)
@@ -715,17 +721,19 @@ db_jobs_runs_get <- function(
 ) {
   db_jobs_validate_pagination(page_token)
 
+  body <- list(
+    run_id = as.character(run_id),
+    page_token = page_token
+  )
+
   req <- db_request(
     endpoint = "jobs/runs/get",
     method = "GET",
     version = "2.2",
+    body = body,
     host = host,
     token = token
-  ) |>
-    httr2::req_url_query(
-      run_id = as.character(run_id),
-      page_token = page_token
-    )
+  )
 
   if (perform_request) {
     db_perform_request(req)
