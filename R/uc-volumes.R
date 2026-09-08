@@ -62,19 +62,15 @@ db_uc_volumes_get <- function(catalog, schema, volume,
                              host = db_host(), token = db_token(),
                              perform_request = TRUE) {
 
-  body <- list(
-    include_browse = from_logical(include_browse)
-  )
-
   req <- db_request(
     endpoint = "unity-catalog/volumes",
     method = "GET",
     version = "2.1",
     host = host,
-    token = token,
-    body = body
+    token = token
   ) |>
-    httr2::req_url_path_append(paste(catalog, schema, volume, sep = "."))
+    httr2::req_url_path_append(paste(catalog, schema, volume, sep = ".")) |>
+    httr2::req_url_query(include_browse = from_logical(include_browse))
 
   if (perform_request) {
     db_perform_request(req)
