@@ -54,8 +54,9 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">db_jobs_list</span><span class="op">(</span></span>
 <span>  limit <span class="op">=</span> <span class="fl">25</span>,</span>
-<span>  offset <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  offset <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  expand_tasks <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  page_token <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  host <span class="op">=</span> <span class="fu"><a href="db_host.html">db_host</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  token <span class="op">=</span> <span class="fu"><a href="db_token.html">db_token</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  perform_request <span class="op">=</span> <span class="cn">TRUE</span></span>
@@ -67,19 +68,20 @@
 
 
 <dl><dt id="arg-limit">limit<a class="anchor" aria-label="anchor" href="#arg-limit"></a></dt>
-<dd><p>Number of jobs to return. This value must be greater than 0 and
-less or equal to 25. The default value is 25. If a request specifies a limit
-of 0, the service instead uses the maximum limit.</p></dd>
+<dd><p>Number of jobs to return, from 1 to 100 (default: 25).</p></dd>
 
 
 <dt id="arg-offset">offset<a class="anchor" aria-label="anchor" href="#arg-offset"></a></dt>
-<dd><p>The offset of the first job to return, relative to the most
-recently created job.</p></dd>
+<dd><p>Number of records to skip. Defaults to <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-expand-tasks">expand_tasks<a class="anchor" aria-label="anchor" href="#arg-expand-tasks"></a></dt>
 <dd><p>Whether to include task and cluster details in the
 response.</p></dd>
+
+
+<dt id="arg-page-token">page_token<a class="anchor" aria-label="anchor" href="#arg-page-token"></a></dt>
+<dd><p>Token from a previous response, or <code>NULL</code> for the first page.</p></dd>
 
 
 <dt id="arg-host">host<a class="anchor" aria-label="anchor" href="#arg-host"></a></dt>
@@ -97,9 +99,10 @@ response.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>If <code>perform_request = TRUE</code>, returns a nested list of jobs with
-class <code>db_job_list</code>; each element has class <code>db_job</code>. If <code>FALSE</code>, returns
-an <code>httr2_request</code>.</p>
+    <p>If <code>perform_request = TRUE</code>, returns the full single-page response
+with class <code>db_job_list</code>. Each record in <code>jobs</code> has class <code>db_job</code>.
+Pagination tokens are included when available. If <code>FALSE</code>, returns an
+<code>httr2_request</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -120,6 +123,17 @@ an <code>httr2_request</code>.</p>
 <code><a href="db_jobs_update.html">db_jobs_update()</a></code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="va">page</span> <span class="op">&lt;-</span> <span class="fu">db_jobs_list</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">jobs</span> <span class="op">&lt;-</span> <span class="va">page</span><span class="op">$</span><span class="va">jobs</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">page</span><span class="op">$</span><span class="va">next_page_token</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">next_page</span> <span class="op">&lt;-</span> <span class="fu">db_jobs_list</span><span class="op">(</span>page_token <span class="op">=</span> <span class="va">page</span><span class="op">$</span><span class="va">next_page_token</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

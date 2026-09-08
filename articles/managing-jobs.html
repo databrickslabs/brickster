@@ -89,18 +89,35 @@ allowing creation of multi-task jobs via R code.</p>
 <div class="section level3">
 <h3 id="job-basics">Job Basics<a class="anchor" aria-label="anchor" href="#job-basics"></a>
 </h3>
-<p>When listing the jobs the default behaviour is to returns the first
-25 jobs, to configure the number of jobs returned you can specify
-<code>limit</code> and <code>offset</code>.</p>
-<p>The <code>expand_tasks</code> parameter will return task and cluster
-details for each job (default <code>FALSE)</code>.</p>
+<p><code><a href="../reference/db_jobs_list.html">db_jobs_list()</a></code> returns one API response page, with up to
+25 jobs by default. Use <code>limit</code> to change the page size and
+<code>page_token</code> to retrieve another page. Jobs are in the
+response’s <code>$jobs</code> field; run listings use
+<code>$runs</code>.</p>
+<p>The <code>expand_tasks</code> parameter includes task and cluster
+details for each job (default <code>FALSE</code>).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># list all jobs within Databricks workspace</span></span>
-<span><span class="co"># can control limit, offset, and if cluster/jobs details are returned</span></span>
-<span><span class="va">jobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_jobs_list.html">db_jobs_list</a></span><span class="op">(</span>limit <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># list the first page of jobs in the workspace</span></span>
+<span><span class="va">page</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_jobs_list.html">db_jobs_list</a></span><span class="op">(</span>limit <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">jobs</span> <span class="op">&lt;-</span> <span class="va">page</span><span class="op">$</span><span class="va">jobs</span></span>
 <span></span>
-<span><span class="co"># list all runs within a specific job</span></span>
-<span><span class="va">job_runs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_jobs_runs_list.html">db_jobs_runs_list</a></span><span class="op">(</span>job_id <span class="op">=</span> <span class="va">jobs</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">job_id</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># retrieve the next page, when available</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">page</span><span class="op">$</span><span class="va">next_page_token</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">next_page</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_jobs_list.html">db_jobs_list</a></span><span class="op">(</span>limit <span class="op">=</span> <span class="fl">10</span>, page_token <span class="op">=</span> <span class="va">page</span><span class="op">$</span><span class="va">next_page_token</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># list the first page of runs for a specific job</span></span>
+<span><span class="va">run_page</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_jobs_runs_list.html">db_jobs_runs_list</a></span><span class="op">(</span>job_id <span class="op">=</span> <span class="va">jobs</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">job_id</span><span class="op">)</span></span>
+<span><span class="va">job_runs</span> <span class="op">&lt;-</span> <span class="va">run_page</span><span class="op">$</span><span class="va">runs</span></span></code></pre></div>
+<p>Earlier versions returned the jobs or runs directly. Update callers
+to extract <code>$jobs</code> or <code>$runs</code>. Use named arguments
+when calling these functions, as their argument order has changed.</p>
+<p>Numeric <code>offset</code> values are still supported, but the
+default is now <code>NULL</code> to enable token pagination. Run
+listings without a <code>page_token</code> omit continuation tokens when
+an <code>offset</code> is sent, even 0. Leave <code>offset</code> unset
+and use <code>page_token</code> from the preceding response for token
+pagination.</p>
 <p>To return the details of a specific job you can use
 <code><a href="../reference/db_jobs_get.html">db_jobs_get()</a></code>, this requires knowledge of the
 <code>job_id</code> which can be found via the user interface in

@@ -1,12 +1,14 @@
 # Get Job Run Details
 
-Retrieve the metadata of a run.
+Retrieve one page of run metadata. Use `next_page_token` to retrieve
+additional array elements for large runs.
 
 ## Usage
 
 ``` r
 db_jobs_runs_get(
   run_id,
+  page_token = NULL,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
@@ -18,6 +20,10 @@ db_jobs_runs_get(
 - run_id:
 
   The canonical identifier of the run.
+
+- page_token:
+
+  Token from a previous response, or `NULL` for the first page.
 
 - host:
 
@@ -36,8 +42,9 @@ db_jobs_runs_get(
 
 ## Value
 
-If `perform_request = TRUE`, returns endpoint-specific API output. If
-`FALSE`, returns an `httr2_request`.
+If `perform_request = TRUE`, returns the full API response for one page
+of run details, including `next_page_token` when present. If `FALSE`,
+returns an `httr2_request`.
 
 ## See also
 

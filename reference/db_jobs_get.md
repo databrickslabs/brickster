@@ -1,12 +1,14 @@
 # Get Job Details
 
-Get Job Details
+Returns one page of job details. Use `next_page_token` to retrieve
+additional tasks, clusters, environments, or parameters for large jobs.
 
 ## Usage
 
 ``` r
 db_jobs_get(
   job_id,
+  page_token = NULL,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
@@ -18,6 +20,10 @@ db_jobs_get(
 - job_id:
 
   The canonical identifier of the job.
+
+- page_token:
+
+  Token from a previous response, or `NULL` for the first page.
 
 - host:
 
@@ -36,8 +42,9 @@ db_jobs_get(
 
 ## Value
 
-If `perform_request = TRUE`, returns a nested list with class `db_job`.
-If `FALSE`, returns an `httr2_request`.
+If `perform_request = TRUE`, returns a nested list with class `db_job`,
+preserving `next_page_token` when present. If `FALSE`, returns an
+`httr2_request`.
 
 ## See also
 

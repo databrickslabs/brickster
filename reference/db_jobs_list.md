@@ -7,8 +7,9 @@ List Jobs
 ``` r
 db_jobs_list(
   limit = 25,
-  offset = 0,
+  offset = NULL,
   expand_tasks = FALSE,
+  page_token = NULL,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
@@ -19,18 +20,19 @@ db_jobs_list(
 
 - limit:
 
-  Number of jobs to return. This value must be greater than 0 and less
-  or equal to 25. The default value is 25. If a request specifies a
-  limit of 0, the service instead uses the maximum limit.
+  Number of jobs to return, from 1 to 100 (default: 25).
 
 - offset:
 
-  The offset of the first job to return, relative to the most recently
-  created job.
+  Number of records to skip. Defaults to `NULL`.
 
 - expand_tasks:
 
   Whether to include task and cluster details in the response.
+
+- page_token:
+
+  Token from a previous response, or `NULL` for the first page.
 
 - host:
 
@@ -49,8 +51,9 @@ db_jobs_list(
 
 ## Value
 
-If `perform_request = TRUE`, returns a nested list of jobs with class
-`db_job_list`; each element has class `db_job`. If `FALSE`, returns an
+If `perform_request = TRUE`, returns the full single-page response with
+class `db_job_list`. Each record in `jobs` has class `db_job`.
+Pagination tokens are included when available. If `FALSE`, returns an
 `httr2_request`.
 
 ## See also
@@ -70,3 +73,15 @@ Other Jobs API:
 [`db_jobs_runs_list()`](https://databrickslabs.github.io/brickster/reference/db_jobs_runs_list.md),
 [`db_jobs_runs_submit()`](https://databrickslabs.github.io/brickster/reference/db_jobs_runs_submit.md),
 [`db_jobs_update()`](https://databrickslabs.github.io/brickster/reference/db_jobs_update.md)
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+page <- db_jobs_list()
+jobs <- page$jobs
+if (!is.null(page$next_page_token)) {
+  next_page <- db_jobs_list(page_token = page$next_page_token)
+}
+} # }
+```
