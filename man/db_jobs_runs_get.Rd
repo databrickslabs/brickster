@@ -6,14 +6,18 @@
 \usage{
 db_jobs_runs_get(
   run_id,
+  page_token = NULL,
   host = db_host(),
   token = db_token(),
-  perform_request = TRUE,
-  page_token = NULL
+  perform_request = TRUE
 )
 }
 \arguments{
 \item{run_id}{The canonical identifier of the run.}
+
+\item{page_token}{Continuation token from a previous response, or \code{NULL} for
+the first page. List endpoints accept \code{next_page_token} or \code{prev_page_token};
+get endpoints accept \code{next_page_token} for additional array elements.}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
@@ -21,10 +25,6 @@ db_jobs_runs_get(
 
 \item{perform_request}{If \code{TRUE} (default) the request is performed, if
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
-
-\item{page_token}{Continuation token from a previous response, or \code{NULL} for
-the first page. List endpoints accept \code{next_page_token} or \code{prev_page_token};
-get endpoints accept \code{next_page_token} for additional array elements.}
 }
 \value{
 If \code{perform_request = TRUE}, returns the full API response for one

@@ -47,18 +47,28 @@ library(brickster)
 
 ## Job Basics
 
-When listing the jobs the default behaviour is to returns the first 25 jobs, to configure the number of jobs returned you can specify `limit` and `offset`.
+`db_jobs_list()` returns one API response page, with up to 25 jobs by default. Use `limit` to change the page size and `page_token` to retrieve another page. Jobs are in the response's `$jobs` field; run listings use `$runs`.
 
-The `expand_tasks` parameter will return task and cluster details for each job (default `FALSE)`.
+The `expand_tasks` parameter includes task and cluster details for each job (default `FALSE`).
 
 ```{r}
-# list all jobs within Databricks workspace
-# can control limit, offset, and if cluster/jobs details are returned
-jobs <- db_jobs_list(limit = 10)
+# list the first page of jobs in the workspace
+page <- db_jobs_list(limit = 10)
+jobs <- page$jobs
 
-# list all runs within a specific job
-job_runs <- db_jobs_runs_list(job_id = jobs[[1]]$job_id)
+# retrieve the next page, when available
+if (!is.null(page$next_page_token)) {
+  next_page <- db_jobs_list(limit = 10, page_token = page$next_page_token)
+}
+
+# list the first page of runs for a specific job
+run_page <- db_jobs_runs_list(job_id = jobs[[1]]$job_id)
+job_runs <- run_page$runs
 ```
+
+Earlier versions returned the jobs or runs directly. Update callers to extract `$jobs` or `$runs`. The jobs list no longer has custom print classes. Use named arguments when calling these functions, as their argument order has changed.
+
+Numeric `offset` values are still supported, but the default is now `NULL` to enable token pagination. Run listings without a `page_token` omit continuation tokens when an `offset` is sent, even 0. Leave `offset` unset and use `page_token` from the preceding response for token pagination.
 
 To return the details of a specific job you can use `db_jobs_get()`, this requires knowledge of the `job_id` which can be found via the user interface in Databricks or using `db_jobs_list()`.
 

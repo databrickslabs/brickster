@@ -17,6 +17,20 @@ test_that("Jobs pagination is sent as query parameters", {
   expect_identical(httr2::url_parse(requests[[3]]$url)$query$expand_tasks, "false")
   expect_identical(httr2::url_parse(requests[[4]]$url)$query$run_id, "456")
   expect_null(httr2::url_parse(requests[[1]]$url)$query$offset)
+  expect_null(httr2::url_parse(requests[[3]]$url)$query$offset)
+})
+
+test_that("Jobs list wrappers forward explicit numeric offsets", {
+  args <- list(host = "mock_host", token = "mock_token", perform_request = FALSE)
+  requests <- list(
+    do.call(db_jobs_list, c(args, list(offset = 2))),
+    do.call(db_jobs_runs_list, c(args, list(job_id = "123", offset = 2)))
+  )
+  purrr::walk(requests, function(req) {
+    expect_s3_class(req, "httr2_request")
+    expect_identical(httr2::url_parse(req$url)$query$offset, "2")
+    expect_null(httr2::url_parse(req$url)$query$page_token)
+  })
 })
 
 test_that("Jobs pagination validates arguments before requesting", {
@@ -35,9 +49,10 @@ test_that("Jobs pagination validates arguments before requesting", {
     expect_error(do.call(db_jobs_runs_list, c(args, list(job_id = 1, page_token = page_token))), "page_token")
     expect_error(do.call(db_jobs_runs_get, c(args, list(run_id = 1, page_token = page_token))), "page_token")
   })
-  expect_error(do.call(db_jobs_list, c(args, list(offset = 25))), "page_token")
-  expect_error(do.call(db_jobs_runs_list, c(args, list(job_id = 1, offset = 25))), "page_token")
-  expect_error(do.call(db_jobs_list, c(args, list(return_response = NA))), "return_response")
+  purrr::walk(list(-1, 1.5, NA_real_, Inf, c(1, 2)), function(offset) {
+    expect_error(do.call(db_jobs_list, c(args, list(offset = offset))), "offset")
+    expect_error(do.call(db_jobs_runs_list, c(args, list(job_id = 1, offset = offset))), "offset")
+  })
 })
 
 test_that("Jobs API - don't perform", {
@@ -357,7 +372,8 @@ test_that("Jobs API", {
   expect_no_error({
     resp_run_get <- db_jobs_runs_list(job_id = resp_create$job_id)
   })
-  expect_null(resp_run_get)
+  expect_type(resp_run_get, "list")
+  expect_null(resp_run_get$runs)
 
   expect_no_error({
     resp_delete <- db_jobs_delete(

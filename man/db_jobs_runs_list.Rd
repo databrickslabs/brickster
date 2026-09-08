@@ -8,15 +8,14 @@ db_jobs_runs_list(
   job_id,
   active_only = FALSE,
   completed_only = FALSE,
-  offset = 0,
+  offset = NULL,
   limit = 25,
   run_type = c("JOB_RUN", "WORKFLOW_RUN", "SUBMIT_RUN"),
   expand_tasks = FALSE,
+  page_token = NULL,
   host = db_host(),
   token = db_token(),
-  perform_request = TRUE,
-  page_token = NULL,
-  return_response = FALSE
+  perform_request = TRUE
 )
 }
 \arguments{
@@ -31,8 +30,9 @@ field cannot be true when \code{completed_only} is \code{TRUE}.}
 runs are included in the results; otherwise, lists both active and completed
 runs. This field cannot be true when \code{active_only} is \code{TRUE}.}
 
-\item{offset}{Retained for compatibility with earlier API versions; must be 0.
-Jobs API 2.2 uses \code{page_token} instead of numeric offsets.}
+\item{offset}{Number of records to skip, or \code{NULL} (default) to use token
+pagination. Prefer \code{page_token} for new code. Run listings without a
+\code{page_token} omit continuation tokens when \code{offset} is supplied, including 0.}
 
 \item{limit}{Number of runs to return, from 1 to 25 (default: 25). A value of
 0 requests the service maximum.}
@@ -43,26 +43,22 @@ Jobs API 2.2 uses \code{page_token} instead of numeric offsets.}
 \item{expand_tasks}{Whether to include task and cluster details in the
 response.}
 
+\item{page_token}{Continuation token from a previous response, or \code{NULL} for
+the first page. List endpoints accept \code{next_page_token} or \code{prev_page_token};
+get endpoints accept \code{next_page_token} for additional array elements.}
+
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
 \item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}
 
 \item{perform_request}{If \code{TRUE} (default) the request is performed, if
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
-
-\item{page_token}{Continuation token from a previous response, or \code{NULL} for
-the first page. List endpoints accept \code{next_page_token} or \code{prev_page_token};
-get endpoints accept \code{next_page_token} for additional array elements.}
-
-\item{return_response}{If \code{TRUE}, return the full single-page API response,
-including pagination tokens and any other metadata. Defaults to \code{FALSE}
-to preserve the existing list of jobs or runs.}
 }
 \value{
-If \code{perform_request = TRUE} and \code{return_response = FALSE}, returns the
-single page's list of runs, or \code{NULL} when the response omits \code{runs}. With
-\code{return_response = TRUE}, returns the full API response, including pagination
-tokens and metadata. If \code{perform_request = FALSE}, returns an \code{httr2_request}.
+If \code{perform_request = TRUE}, returns the full single-page API
+response as a list, including \code{runs}, \code{next_page_token}, and \code{prev_page_token}
+when present. The \code{runs} field may be absent when there are no runs to list.
+If \code{perform_request = FALSE}, returns an \code{httr2_request}.
 }
 \description{
 List runs in descending order by end time, or start time for unfinished runs.
