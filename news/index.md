@@ -2,24 +2,41 @@
 
 ## brickster (development version)
 
+- Fixed the workspace connection pane’s Catalog availability check so
+  accessible Unity Catalog resources appear.
+
+- The RStudio connection pane now follows all Unity Catalog listing
+  pages for catalogs, schemas, tables, volumes, models, functions, and
+  model versions, including empty pages with continuation tokens. Volume
+  details are fetched by name so volumes beyond the first listing page
+  can be inspected.
+  [`db_uc_volumes_get()`](https://databrickslabs.github.io/brickster/reference/db_uc_volumes_get.md)
+  now sends `include_browse` as a query parameter, and the pane handles
+  optional metadata omitted from browse-only responses.
+
 - Volume-based
   [`dbWriteTable()`](https://dbi.r-dbi.org/reference/dbWriteTable.html)
   now creates the schema requested by `field.types`, including
   `CHAR`/`VARCHAR` length limits. Volume writes and appends use `INSERT`
   to convert staged values to the target column types.
+
 - [`db_volume_list()`](https://databrickslabs.github.io/brickster/reference/db_volume_list.md)
   now accepts `page_size` and `page_token`. Directory downloads and
   recursive deletion follow every listing page, preventing files beyond
   the first page from being omitted. Listing failures now stop recursive
   deletion instead of being treated as empty directories.
+
 - [`db_volume_upload_dir()`](https://databrickslabs.github.io/brickster/reference/db_volume_upload_dir.md)
   now creates each parent directory only once, avoiding repeated API
   calls for files in the same directory.
+
 - Standard-path table writes now detect binary columns once per column,
   avoiding quadratic serialization time for lists of raw vectors.
+
 - Volume file requests now encode reserved characters and literal
   percent sequences in paths correctly, preventing `#` and `?` in
   filenames from changing the request target.
+
 - [`db_volume_dir_delete()`](https://databrickslabs.github.io/brickster/reference/db_volume_dir_delete.md)
   now respects `perform_request = FALSE` when `recursive = TRUE`,
   returning a directory-delete request without listing or deleting

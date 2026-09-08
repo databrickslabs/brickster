@@ -47,15 +47,14 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="brickster-development-version">brickster (development version)<a class="anchor" aria-label="anchor" href="#brickster-development-version"></a></h2>
-<ul><li>Volume-based <code><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable()</a></code> now creates the schema requested by <code>field.types</code>, including <code>CHAR</code>/<code>VARCHAR</code> length limits. Volume writes and appends use <code>INSERT</code> to convert staged values to the target column types.</li>
-<li>
-<code><a href="../reference/db_volume_list.html">db_volume_list()</a></code> now accepts <code>page_size</code> and <code>page_token</code>. Directory downloads and recursive deletion follow every listing page, preventing files beyond the first page from being omitted. Listing failures now stop recursive deletion instead of being treated as empty directories.</li>
-<li>
-<code><a href="../reference/db_volume_upload_dir.html">db_volume_upload_dir()</a></code> now creates each parent directory only once, avoiding repeated API calls for files in the same directory.</li>
-<li>Standard-path table writes now detect binary columns once per column, avoiding quadratic serialization time for lists of raw vectors.</li>
-<li>Volume file requests now encode reserved characters and literal percent sequences in paths correctly, preventing <code>#</code> and <code>?</code> in filenames from changing the request target.</li>
-<li>
-<code><a href="../reference/db_volume_dir_delete.html">db_volume_dir_delete()</a></code> now respects <code>perform_request = FALSE</code> when <code>recursive = TRUE</code>, returning a directory-delete request without listing or deleting contents.</li>
+<ul><li><p>Fixed the workspace connection pane’s Catalog availability check so accessible Unity Catalog resources appear.</p></li>
+<li><p>The RStudio connection pane now follows all Unity Catalog listing pages for catalogs, schemas, tables, volumes, models, functions, and model versions, including empty pages with continuation tokens. Volume details are fetched by name so volumes beyond the first listing page can be inspected. <code><a href="../reference/db_uc_volumes_get.html">db_uc_volumes_get()</a></code> now sends <code>include_browse</code> as a query parameter, and the pane handles optional metadata omitted from browse-only responses.</p></li>
+<li><p>Volume-based <code><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable()</a></code> now creates the schema requested by <code>field.types</code>, including <code>CHAR</code>/<code>VARCHAR</code> length limits. Volume writes and appends use <code>INSERT</code> to convert staged values to the target column types.</p></li>
+<li><p><code><a href="../reference/db_volume_list.html">db_volume_list()</a></code> now accepts <code>page_size</code> and <code>page_token</code>. Directory downloads and recursive deletion follow every listing page, preventing files beyond the first page from being omitted. Listing failures now stop recursive deletion instead of being treated as empty directories.</p></li>
+<li><p><code><a href="../reference/db_volume_upload_dir.html">db_volume_upload_dir()</a></code> now creates each parent directory only once, avoiding repeated API calls for files in the same directory.</p></li>
+<li><p>Standard-path table writes now detect binary columns once per column, avoiding quadratic serialization time for lists of raw vectors.</p></li>
+<li><p>Volume file requests now encode reserved characters and literal percent sequences in paths correctly, preventing <code>#</code> and <code>?</code> in filenames from changing the request target.</p></li>
+<li><p><code><a href="../reference/db_volume_dir_delete.html">db_volume_dir_delete()</a></code> now respects <code>perform_request = FALSE</code> when <code>recursive = TRUE</code>, returning a directory-delete request without listing or deleting contents.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.14" id="brickster-0214">brickster 0.2.14<a class="anchor" aria-label="anchor" href="#brickster-0214"></a></h2><p class="text-muted">CRAN release: 2026-07-24</p>
