@@ -32,10 +32,10 @@ response.}
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \value{
-If \code{perform_request = TRUE}, returns the full single-page API
-response as a list, including \code{jobs}, \code{next_page_token}, and \code{prev_page_token}
-when present. The \code{jobs} field may be absent when there are no jobs to list.
-If \code{perform_request = FALSE}, returns an \code{httr2_request}.
+If \code{perform_request = TRUE}, returns the full single-page response
+with class \code{db_job_list}. Each record in \code{jobs} has class \code{db_job}.
+Pagination tokens are included when available. If \code{FALSE}, returns an
+\code{httr2_request}.
 }
 \description{
 List Jobs

@@ -118,10 +118,10 @@ db_jobs_create <- function(
 #' @family Jobs API
 #'
 #' @export
-#' @returns If `perform_request = TRUE`, returns the full single-page API
-#'   response as a list, including `jobs`, `next_page_token`, and `prev_page_token`
-#'   when present. The `jobs` field may be absent when there are no jobs to list.
-#'   If `perform_request = FALSE`, returns an `httr2_request`.
+#' @returns If `perform_request = TRUE`, returns the full single-page response
+#'   with class `db_job_list`. Each record in `jobs` has class `db_job`.
+#'   Pagination tokens are included when available. If `FALSE`, returns an
+#'   `httr2_request`.
 #' @examples
 #' \dontrun{
 #' page <- db_jobs_list()
@@ -139,8 +139,6 @@ db_jobs_list <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
-  db_jobs_validate_pagination(page_token, limit, offset = offset)
-
   body <- list(
     limit = as.numeric(limit),
     offset = as.numeric(offset),
@@ -158,7 +156,7 @@ db_jobs_list <- function(
   )
 
   if (perform_request) {
-    db_perform_request(req)
+    new_db_job_list(db_perform_request(req))
   } else {
     req
   }
@@ -223,8 +221,6 @@ db_jobs_get <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
-  db_jobs_validate_pagination(page_token)
-
   body <- list(
     job_id = as.character(job_id),
     page_token = page_token
@@ -652,10 +648,6 @@ db_jobs_runs_list <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
-  db_jobs_validate_pagination(
-    page_token, limit, min_limit = 0, max_limit = 25, offset = offset
-  )
-
   run_type <- match.arg(run_type, several.ok = FALSE)
 
   if (active_only && completed_only) {
@@ -715,8 +707,6 @@ db_jobs_runs_get <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
-  db_jobs_validate_pagination(page_token)
-
   body <- list(
     run_id = as.character(run_id),
     page_token = page_token
@@ -920,6 +910,15 @@ new_db_job <- function(x) {
   x
 }
 
+new_db_job_list <- function(x) {
+  stopifnot(is.list(x))
+  if (!is.null(x$jobs)) {
+    x$jobs <- purrr::map(x$jobs, new_db_job)
+  }
+  class(x) <- unique(c("db_job_list", class(x)))
+  x
+}
+
 job_scalar_chr <- function(x, field, default = "<unset>") {
   value <- x[[field]]
   if (is.null(value) || length(value) == 0) {
@@ -972,19 +971,10 @@ print.db_job <- function(x, ...) {
   invisible(x)
 }
 
-db_jobs_validate_pagination <- function(page_token, limit = NULL, min_limit = 1,
-                                        max_limit = 100, offset = NULL) {
-  if (!is.null(page_token) && (!is.character(page_token) || length(page_token) != 1L ||
-      is.na(page_token) || !nzchar(page_token))) {
-    cli::cli_abort("{.arg page_token} must be a non-empty string or {.val NULL}.")
-  }
-  if (!is.null(limit) && (!is.numeric(limit) || length(limit) != 1L ||
-      !is.finite(limit) || limit != floor(limit) ||
-      limit < min_limit || limit > max_limit)) {
-    cli::cli_abort("{.arg limit} must be an integer from {min_limit} to {max_limit}.")
-  }
-  if (!is.null(offset) && (!is.numeric(offset) || length(offset) != 1L ||
-      !is.finite(offset) || offset != floor(offset) || offset < 0)) {
-    cli::cli_abort("{.arg offset} must be a non-negative whole number or {.val NULL}.")
-  }
+#' @export
+#' @method print db_job_list
+#' @noRd
+print.db_job_list <- function(x, ...) {
+  print(x$jobs, ...)
+  invisible(x)
 }

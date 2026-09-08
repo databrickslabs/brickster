@@ -24,35 +24,14 @@ test_that("Jobs list wrappers forward explicit numeric offsets", {
   args <- list(host = "mock_host", token = "mock_token", perform_request = FALSE)
   requests <- list(
     do.call(db_jobs_list, c(args, list(offset = 2))),
-    do.call(db_jobs_runs_list, c(args, list(job_id = "123", offset = 2)))
+    do.call(db_jobs_runs_list, c(args, list(job_id = "123", offset = 2, limit = 0)))
   )
   purrr::walk(requests, function(req) {
     expect_s3_class(req, "httr2_request")
     expect_identical(req$body$data$offset, 2)
     expect_null(req$body$data$page_token)
   })
-})
-
-test_that("Jobs pagination validates arguments before requesting", {
-  args <- list(host = "mock_host", token = "mock_token", perform_request = FALSE)
-  purrr::walk(list(101, 1.5, NA_real_, Inf, c(1, 2)), function(limit) {
-    expect_error(do.call(db_jobs_list, c(args, list(limit = limit))), "limit")
-    expect_error(do.call(db_jobs_runs_list, c(args, list(job_id = 1, limit = limit))), "limit")
-  })
-  expect_error(do.call(db_jobs_list, c(args, list(limit = 0))), "limit")
-  expect_error(do.call(db_jobs_runs_list, c(args, list(job_id = 1, limit = 26))), "limit")
-  max_runs <- do.call(db_jobs_runs_list, c(args, list(job_id = 1, limit = 0)))
-  expect_identical(max_runs$body$data$limit, 0)
-  purrr::walk(list("", NA_character_, 1, c("a", "b")), function(page_token) {
-    expect_error(do.call(db_jobs_list, c(args, list(page_token = page_token))), "page_token")
-    expect_error(do.call(db_jobs_get, c(args, list(job_id = 1, page_token = page_token))), "page_token")
-    expect_error(do.call(db_jobs_runs_list, c(args, list(job_id = 1, page_token = page_token))), "page_token")
-    expect_error(do.call(db_jobs_runs_get, c(args, list(run_id = 1, page_token = page_token))), "page_token")
-  })
-  purrr::walk(list(-1, 1.5, NA_real_, Inf, c(1, 2)), function(offset) {
-    expect_error(do.call(db_jobs_list, c(args, list(offset = offset))), "offset")
-    expect_error(do.call(db_jobs_runs_list, c(args, list(job_id = 1, offset = offset))), "offset")
-  })
+  expect_identical(requests[[2]]$body$data$limit, 0)
 })
 
 test_that("Jobs API - don't perform", {

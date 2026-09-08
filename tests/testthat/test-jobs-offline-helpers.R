@@ -24,6 +24,35 @@ test_that("job details retain their print class and list access", {
   expect_match(job_print, "Owner: owner@databricks.com", fixed = TRUE)
 })
 
+test_that("job listings retain printing and pagination metadata", {
+  withr::local_envvar(c(
+    DATABRICKS_HOST = "https://mock_host",
+    DATABRICKS_TOKEN = "mock_token"
+  ))
+  local_mocked_bindings(
+    db_perform_request = function(req) {
+      list(
+        jobs = list(
+          list(job_id = "123", settings = list(name = "job-a")),
+          list(job_id = "456", settings = list(name = "job-b"))
+        ),
+        next_page_token = "next"
+      )
+    },
+    .package = "brickster"
+  )
+
+  page <- db_jobs_list()
+  expect_s3_class(page, c("db_job_list", "list"))
+  purrr::walk(page$jobs, ~ expect_s3_class(.x, c("db_job", "list")))
+  expect_identical(page$next_page_token, "next")
+  output <- cli::ansi_strip(paste(capture.output(print(page)), collapse = "\n"))
+  expect_match(output, "job 123", fixed = TRUE)
+  expect_match(output, "job 456", fixed = TRUE)
+  expect_match(output, "\n  job-a\n", fixed = TRUE)
+  expect_match(output, "\n  job-b\n", fixed = TRUE)
+})
+
 test_that("Jobs list wrappers return one full response page by default", {
   withr::local_envvar(c(
     DATABRICKS_HOST = "https://mock_host",
@@ -58,10 +87,12 @@ test_that("Jobs list wrappers return one full response page by default", {
   )
   purrr::iwalk(list_pages, function(list_page, field) {
     first <- list_page()
-    expect_identical(first, pages[[field]])
+    expect_identical(names(first), names(pages[[field]]))
+    expect_identical(purrr::map(first[[field]], unclass), pages[[field]][[field]])
+    expect_identical(first$next_page_token, pages[[field]]$next_page_token)
     second <- list_page(page_token = first$next_page_token)
-    expect_identical(second, empty_page)
-    expect_identical(list_page(page_token = second$next_page_token), list())
+    expect_identical(unclass(second), empty_page)
+    expect_identical(unclass(list_page(page_token = second$next_page_token)), list())
   })
 })
 

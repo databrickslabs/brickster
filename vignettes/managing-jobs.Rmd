@@ -66,7 +66,7 @@ run_page <- db_jobs_runs_list(job_id = jobs[[1]]$job_id)
 job_runs <- run_page$runs
 ```
 
-Earlier versions returned the jobs or runs directly. Update callers to extract `$jobs` or `$runs`. The jobs list no longer has custom print classes. Use named arguments when calling these functions, as their argument order has changed.
+Earlier versions returned the jobs or runs directly. Update callers to extract `$jobs` or `$runs`. Use named arguments when calling these functions, as their argument order has changed.
 
 Numeric `offset` values are still supported, but the default is now `NULL` to enable token pagination. Run listings without a `page_token` omit continuation tokens when an `offset` is sent, even 0. Leave `offset` unset and use `page_token` from the preceding response for token pagination.
 
