@@ -1,5 +1,6 @@
 # brickster (development version)
 
+-   **Breaking change:** `db_jobs_list()` and `db_jobs_runs_list()` now return the full single-page API response, including pagination tokens and metadata. Extract `$jobs` or `$runs` to access the records. `offset` now defaults to `NULL` to enable token pagination; explicit numeric offsets are still forwarded. Use `page_token` from the preceding response to fetch another page. Job and run get wrappers also accept `page_token` for additional array elements. Use named arguments with these four wrappers because their argument order has changed.
 -   Fixed the workspace connection pane's Catalog availability check so accessible Unity Catalog resources appear.
 
 -   The RStudio connection pane now follows all Unity Catalog listing pages for catalogs, schemas, tables, volumes, models, functions, and model versions, including empty pages with continuation tokens. Volume details are fetched by name so volumes beyond the first listing page can be inspected. `db_uc_volumes_get()` now sends `include_browse` as a query parameter, and the pane handles optional metadata omitted from browse-only responses.

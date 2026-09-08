@@ -6,6 +6,7 @@
 \usage{
 db_jobs_get(
   job_id,
+  page_token = NULL,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
@@ -13,6 +14,8 @@ db_jobs_get(
 }
 \arguments{
 \item{job_id}{The canonical identifier of the job.}
+
+\item{page_token}{Token from a previous response, or \code{NULL} for the first page.}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
@@ -23,10 +26,12 @@ db_jobs_get(
 }
 \value{
 If \code{perform_request = TRUE}, returns a nested list with class
-\code{db_job}. If \code{FALSE}, returns an \code{httr2_request}.
+\code{db_job}, preserving \code{next_page_token} when present. If \code{FALSE}, returns an
+\code{httr2_request}.
 }
 \description{
-Get Job Details
+Returns one page of job details. Use \code{next_page_token} to retrieve additional
+tasks, clusters, environments, or parameters for large jobs.
 }
 \seealso{
 Other Jobs API: 
