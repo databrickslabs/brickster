@@ -315,6 +315,29 @@ test_that("binary SQL serialization scans columns once rather than per cell", {
   expect_lte(state$elements_scanned, ncol(value) * nrow(value))
 })
 
+test_that("db_format_typed_value_sql writes POSIXct as UTC timestamp literals", {
+  con <- make_dbi_test_con(show_progress = FALSE)
+  instant <- as.POSIXct("2024-07-01 08:00:00.123456", tz = "UTC")
+
+  for (tz in c("UTC", "America/New_York", "Europe/Berlin", "")) {
+    x <- instant
+    attr(x, "tzone") <- tz
+    expect_identical(
+      db_format_typed_value_sql(con, x, x),
+      "TIMESTAMP'2024-07-01 08:00:00.123456Z'"
+    )
+  }
+
+  expect_identical(
+    db_timestamp_literal(as.POSIXct("1900-06-15 12:00:00.5", tz = "UTC")),
+    "TIMESTAMP'1900-06-15 12:00:00.500000Z'"
+  )
+  expect_identical(
+    db_generate_typed_values_sql(con, data.frame(ts = c(instant, NA))),
+    "(TIMESTAMP'2024-07-01 08:00:00.123456Z'), (NULL)"
+  )
+})
+
 test_that("dbAppendTable standard path supports binary columns", {
   con <- make_dbi_test_con(show_progress = FALSE)
   value <- data.frame(id = 4L)

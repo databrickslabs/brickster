@@ -1629,6 +1629,8 @@ db_format_typed_value_sql <- function(
     "NULL"
   } else if (is_binary) {
     db_binary_literal(val)
+  } else if (inherits(col_data, "POSIXct")) {
+    db_timestamp_literal(val)
   } else if (is.logical(col_data)) {
     if (as.logical(val)) "TRUE" else "FALSE"
   } else if (is.numeric(col_data)) {
@@ -1655,6 +1657,10 @@ db_binary_literal <- function(val) {
   }
 
   paste0("X'", paste(toupper(as.character(val)), collapse = ""), "'")
+}
+
+db_timestamp_literal <- function(val) {
+  paste0("TIMESTAMP'", format(val, "%Y-%m-%d %H:%M:%OS6", tz = "UTC"), "Z'")
 }
 
 #' Escape string literals for inline SQL VALUES
