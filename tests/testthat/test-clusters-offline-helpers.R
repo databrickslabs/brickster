@@ -164,12 +164,18 @@ test_that("cluster create/edit wrappers validate cloud attrs and include autosca
     node_type_id = "m5d.large",
     autoscale = cluster_autoscale(1, 2),
     cloud_attrs = azure_attributes(),
+    log_conf = cluster_log_conf(dbfs = dbfs_storage_info("dbfs:/logs")),
     perform_request = TRUE
   )
 
   expect_identical(create_out$cluster_id, "c-1")
   expect_true(!is.null(state$create_body$autoscale))
   expect_true(!is.null(state$create_body$azure_attributes))
+  expect_identical(
+    state$create_body$cluster_log_conf$dbfs$destination,
+    "dbfs:/logs"
+  )
+  expect_null(state$create_body$log_conf)
 
   expect_error(
     db_cluster_edit(
@@ -188,12 +194,18 @@ test_that("cluster create/edit wrappers validate cloud attrs and include autosca
     node_type_id = "m5d.large",
     autoscale = cluster_autoscale(2, 4),
     cloud_attrs = azure_attributes(),
+    log_conf = cluster_log_conf(dbfs = dbfs_storage_info("dbfs:/logs")),
     perform_request = TRUE
   )
 
   expect_true(edit_out$ok)
   expect_true(!is.null(state$edit_body$autoscale))
   expect_true(!is.null(state$edit_body$azure_attributes))
+  expect_identical(
+    state$edit_body$cluster_log_conf$dbfs$destination,
+    "dbfs:/logs"
+  )
+  expect_null(state$edit_body$log_conf)
 })
 
 test_that("cluster action/list wrappers return expected payload shapes", {
