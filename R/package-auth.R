@@ -478,7 +478,7 @@ db_cli_token <- function(
     processx::run(
       command = cli_path,
       args = args,
-      timeout = 60000,
+      timeout = 60,
       windows_hide_window = TRUE
     )$stdout,
     error = function(cnd) {
