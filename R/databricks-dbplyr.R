@@ -4,6 +4,13 @@
 #' This file implements dbplyr backend support for Databricks SQL warehouses,
 #' enabling dplyr syntax to be translated to Databricks SQL.
 #'
+#' @details
+#' `cumprod()` returns cumulative products as doubles and propagates SQL `NULL`
+#' values to subsequent rows in the group. Use [dbplyr::window_order()] with a
+#' unique ordering (including a tie-breaker where needed) for reproducible results.
+#' The translation collects and multiplies each cumulative prefix, so large
+#' partitions can be expensive.
+#'
 #' @importFrom dbplyr sql_variant sql_translator base_scalar base_agg base_win
 #' @importFrom dbplyr sql_prefix sql sql_table_analyze sql_quote sql_query_fields
 #' @importFrom dbplyr translate_sql dbplyr_edition sql_query_save simulate_spark_sql db_collect
@@ -491,10 +498,16 @@ spark_sql_translation <- function(con) {
       sd = dbplyr::win_recycled("STDDEV_SAMP"),
       var = dbplyr::win_recycled("VAR_SAMP"),
       cumprod = function(x) {
-        dbplyr::win_over(
-          dbplyr::build_sql("SPARKLYR_CUMPROD(", x, ")"),
-          partition = dbplyr::win_current_group(),
-          order = dbplyr::win_current_order()
+        count <- dbplyr::win_cumulative("COUNT")
+        values <- dbplyr::win_cumulative("COLLECT_LIST")(
+          dbplyr::build_sql("CAST(", x, " AS DOUBLE)")
+        )
+
+        # COLLECT_LIST skips NULLs; compare counts to preserve cumprod semantics.
+        dbplyr::build_sql(
+          "CASE WHEN ", count(dbplyr::sql("*")), " = ", count(x),
+          " THEN AGGREGATE(", values,
+          ", CAST(1 AS DOUBLE), (acc, v) -> acc * v) END"
         )
       },
       weighted.mean = function(x, w) {
