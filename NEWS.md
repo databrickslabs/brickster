@@ -7,6 +7,7 @@
 -   Volume-based `dbWriteTable()` now creates the schema requested by `field.types`, including `CHAR`/`VARCHAR` length limits. Volume writes and appends use `INSERT` to convert staged values to the target column types.
 -   `db_volume_list()` now accepts `page_size` and `page_token`. Directory downloads and recursive deletion follow every listing page, preventing files beyond the first page from being omitted. Listing failures now stop recursive deletion instead of being treated as empty directories.
 -   `db_volume_upload_dir()` now creates each parent directory only once, avoiding repeated API calls for files in the same directory.
+-   Fixed `dbWriteTable()` and `dbAppendTable()` shifting POSIXct values by their time zone offset when writing without a staging volume
 -   Standard-path table writes now detect binary columns once per column, avoiding quadratic serialization time for lists of raw vectors.
 -   Volume file requests now encode reserved characters and literal percent sequences in paths correctly, preventing `#` and `?` in filenames from changing the request target.
 -   `db_volume_dir_delete()` now respects `perform_request = FALSE` when `recursive = TRUE`, returning a directory-delete request without listing or deleting contents.
