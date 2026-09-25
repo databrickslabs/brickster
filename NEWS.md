@@ -1,5 +1,6 @@
 # brickster (development version)
 
+-   `cumprod()` now uses built-in Databricks SQL functions instead of requiring sparklyr's session-registered aggregate. Cumulative products use a row frame and propagate `NULL` values to subsequent rows in each group (#294).
 -   **Breaking change:** `db_jobs_list()` and `db_jobs_runs_list()` now return the full single-page API response, including pagination tokens and metadata. Extract `$jobs` or `$runs` to access the records. `offset` now defaults to `NULL` to enable token pagination; explicit numeric offsets are still forwarded. Use `page_token` from the preceding response to fetch another page. Job and run get wrappers also accept `page_token` for additional array elements. Use named arguments with these four wrappers because their argument order has changed.
 -   Fixed the workspace connection pane's Catalog availability check so accessible Unity Catalog resources appear.
 

@@ -185,6 +185,69 @@ test_that("SQL table analyze generates correct SQL", {
   expect_match(as.character(sql), "COMPUTE STATISTICS")
 })
 
+test_that("cumprod uses built-in functions and the same cumulative frame for all windows", {
+  con <- new(
+    "DatabricksConnection",
+    warehouse_id = "test_warehouse",
+    host = "test_host",
+    token = "test_token",
+    catalog = "",
+    schema = "",
+    staging_volume = ""
+  )
+
+  purrr::walk(list(NULL, c("g", "h")), function(groups) {
+    translated <- dbplyr::translate_sql(
+      cumprod(x),
+      con = con,
+      vars_group = groups,
+      vars_order = c("t", "id")
+    )
+    partition <- if (is.null(groups)) "" else "PARTITION BY `g`, `h` "
+    window <- paste0(
+      "OVER (", partition,
+      "ORDER BY `t`, `id` ROWS UNBOUNDED PRECEDING)"
+    )
+
+    expect_identical(
+      as.character(translated),
+      paste0(
+        "CASE WHEN COUNT(*) ", window, " = COUNT(`x`) ", window,
+        " THEN AGGREGATE(COLLECT_LIST(CAST(`x` AS DOUBLE)) ", window,
+        ", CAST(1 AS DOUBLE), (acc, v) -> acc * v) END"
+      )
+    )
+  })
+})
+
+test_that("cumprod preserves expressions and explicit order_by context", {
+  con <- new(
+    "DatabricksConnection",
+    warehouse_id = "test_warehouse",
+    host = "test_host",
+    token = "test_token",
+    catalog = "",
+    schema = "",
+    staging_volume = ""
+  )
+
+  translated <- dbplyr::translate_sql(
+    order_by(desc(t), cumprod(x + 1L)),
+    con = con,
+    vars_order = "other_order"
+  )
+  window <- "OVER (ORDER BY `t` DESC ROWS UNBOUNDED PRECEDING)"
+
+  expect_identical(
+    as.character(translated),
+    paste0(
+      "CASE WHEN COUNT(*) ", window, " = COUNT(`x` + 1) ", window,
+      " THEN AGGREGATE(COLLECT_LIST(CAST(`x` + 1 AS DOUBLE)) ", window,
+      ", CAST(1 AS DOUBLE), (acc, v) -> acc * v) END"
+    )
+  )
+})
+
 # Online Tests (require warehouse connection) --------------------------------
 
 skip_on_cran()
@@ -211,6 +274,77 @@ withr::defer(
   },
   testthat::teardown_env()
 )
+
+test_that("cumprod matches R for grouped warehouse data and propagates NULLs", {
+  con <- DBI::dbConnect(
+    DatabricksSQL(),
+    warehouse_id = test_warehouse_id_dbplyr
+  )
+  withr::defer(DBI::dbDisconnect(con))
+
+  cases <- list(
+    positive = c(2, 3, 4),
+    negative = c(-2, 3, -4),
+    zero = c(2, 0, 3),
+    fractional = c(1.5, 0.5, -2),
+    leading_null = c(NA, 2, 3),
+    interior_null = c(2, NA, 3),
+    zero_then_null = c(0, NA, 3),
+    all_null = c(NA, NA, NA)
+  )
+
+  purrr::walk(c("INT", "DOUBLE", "DECIMAL(18, 6)"), function(sql_type) {
+    data <- purrr::imap(cases, function(x, group) {
+      if (sql_type == "INT") {
+        x <- as.integer(x)
+      }
+      data.frame(g = group, id = seq_along(x), t = c(1L, 1L, 2L), x = x)
+    }) |>
+      dplyr::bind_rows()
+    expected <- data |>
+      dplyr::group_by(g) |>
+      dplyr::mutate(y = cumprod(x)) |>
+      dplyr::ungroup() |>
+      dplyr::arrange(g, id)
+
+    source <- dbplyr::sql(paste0(
+      "SELECT g, id, t, CAST(x AS ", sql_type, ") AS x FROM VALUES ",
+      db_generate_typed_values_sql(con, data),
+      " AS input(g, id, t, x)"
+    ))
+    result <- dplyr::tbl(con, source) |>
+      dplyr::group_by(g) |>
+      dbplyr::window_order(t, id) |>
+      dplyr::mutate(y = cumprod(x)) |>
+      dplyr::ungroup() |>
+      dplyr::arrange(g, id) |>
+      dplyr::collect()
+
+    expect_equal(result$g, expected$g, info = sql_type)
+    expect_equal(result$id, expected$id, info = sql_type)
+    expect_equal(result$y, expected$y, tolerance = 1e-12, info = sql_type)
+    expect_type(result$y, "double")
+  })
+})
+
+test_that("cumprod advances one row at a time when ordering values are tied", {
+  con <- DBI::dbConnect(
+    DatabricksSQL(),
+    warehouse_id = test_warehouse_id_dbplyr
+  )
+  withr::defer(DBI::dbDisconnect(con))
+
+  source <- dbplyr::sql(
+    "SELECT * FROM VALUES (1, 2), (1, 2), (2, 2) AS input(t, x)"
+  )
+  result <- dplyr::tbl(con, source) |>
+    dbplyr::window_order(t) |>
+    dplyr::mutate(y = cumprod(x)) |>
+    dplyr::arrange(t, y) |>
+    dplyr::collect()
+
+  expect_equal(result$y, c(2, 4, 8))
+})
 
 test_that("dbplyr edition is correctly declared with live connection", {
   drv <- DatabricksSQL()
