@@ -10,6 +10,7 @@
 -   Standard-path table writes now detect binary columns once per column, avoiding quadratic serialization time for lists of raw vectors.
 -   Volume file requests now encode reserved characters and literal percent sequences in paths correctly, preventing `#` and `?` in filenames from changing the request target.
 -   `db_volume_dir_delete()` now respects `perform_request = FALSE` when `recursive = TRUE`, returning a directory-delete request without listing or deleting contents.
+-   `db_cluster_create()` and `db_cluster_edit()` no longer ignore `log_conf`
 
 # brickster 0.2.14
 
