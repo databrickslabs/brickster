@@ -33,7 +33,7 @@ readable_time <- function(x) {
 }
 
 get_catalogs <- function(host, token) {
-  catalogs <- db_uc_list_all_pages(
+  catalogs <- db_list_all_pages(
     db_uc_catalogs_list, "catalogs", host = host, token = token
   )
   if (length(catalogs) > 0) {
@@ -48,7 +48,7 @@ get_catalogs <- function(host, token) {
 }
 
 get_schemas <- function(catalog, host, token) {
-  schemas <- db_uc_list_all_pages(
+  schemas <- db_list_all_pages(
     db_uc_schemas_list, "schemas",
     catalog = catalog,
     host = host,
@@ -66,7 +66,7 @@ get_schemas <- function(catalog, host, token) {
 }
 
 get_tables <- function(catalog, schema, host, token) {
-  tables <- db_uc_list_all_pages(
+  tables <- db_list_all_pages(
     db_uc_tables_list, "tables",
     catalog = catalog,
     schema = schema,
@@ -85,7 +85,7 @@ get_tables <- function(catalog, schema, host, token) {
 }
 
 get_uc_models <- function(catalog, schema, host, token) {
-  models <- db_uc_list_all_pages(
+  models <- db_list_all_pages(
     db_uc_models_list, "registered_models",
     catalog = catalog,
     schema = schema,
@@ -131,7 +131,7 @@ get_uc_model <- function(catalog, schema, model, host, token) {
 get_uc_model_versions <- function(catalog, schema, model, host, token,
                                   version = NULL) {
 
-  versions <- db_uc_list_all_pages(
+  versions <- db_list_all_pages(
     db_uc_model_versions_get, "model_versions",
     catalog = catalog,
     schema = schema,
@@ -194,7 +194,7 @@ get_uc_model_versions <- function(catalog, schema, model, host, token,
 }
 
 get_uc_functions <- function(catalog, schema, host, token) {
-  funcs <- db_uc_list_all_pages(
+  funcs <- db_list_all_pages(
     db_uc_funcs_list, "functions",
     catalog = catalog,
     schema = schema,
@@ -239,7 +239,7 @@ get_uc_function <- function(catalog, schema, func, host, token) {
 }
 
 get_uc_volumes <- function(catalog, schema, host, token) {
-  volumes <- db_uc_list_all_pages(
+  volumes <- db_list_all_pages(
     db_uc_volumes_list, "volumes",
     catalog = catalog,
     schema = schema,
@@ -524,7 +524,12 @@ get_model_versions <- function(id, host, token, version = NULL) {
 }
 
 get_clusters <- function(host, token) {
-  clusters <- db_cluster_list(host = host, token = token)
+  clusters <- db_list_all_pages(
+    db_cluster_list, "clusters", host = host, token = token, page_size = 100
+  )
+  if (!length(clusters)) {
+    return(data.frame(name = character(), type = character()))
+  }
   purrr::map_dfr(clusters, function(x) {
     list(
       name = as.character(glue::glue("[{x$state}] {x$cluster_name} ({x$cluster_id})")),

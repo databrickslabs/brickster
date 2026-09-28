@@ -227,22 +227,3 @@ db_uc_funcs_get <- function(catalog, schema, func,
     req
   }
 }
-
-
-# Collect single-page UC responses for connection-pane workflows.
-db_uc_list_all_pages <- function(list_page, field, ...) {
-  pages <- list()
-  page_token <- NULL
-  seen_tokens <- character()
-  repeat {
-    page <- list_page(..., page_token = page_token)
-    pages[[length(pages) + 1L]] <- page[[field]] %||% list()
-    page_token <- page$next_page_token
-    if (is.null(page_token) || !nzchar(page_token)) break
-    if (page_token %in% seen_tokens) {
-      cli::cli_abort("Unity Catalog listing returned a repeated page token for {.val {field}}.")
-    }
-    seen_tokens <- c(seen_tokens, page_token)
-  }
-  purrr::list_flatten(pages)
-}

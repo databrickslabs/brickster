@@ -1,3 +1,43 @@
+test_that("cluster pane follows pages including empty intermediate pages", {
+  state <- new.env(parent = emptyenv())
+  state$tokens <- list()
+  local_mocked_bindings(
+    db_perform_request = function(req) {
+      query <- httr2::url_parse(req$url)$query
+      expect_identical(query$page_size, "100")
+      state$tokens[length(state$tokens) + 1L] <- list(query$page_token)
+      if (is.null(query$page_token)) {
+        return(list(clusters = list(list(cluster_id = "c-1", cluster_name = "first", state = "RUNNING")), next_page_token = "empty+/="))
+      }
+      if (query$page_token == "empty+/=") return(list(next_page_token = "last"))
+      list(clusters = list(list(cluster_id = "c-2", cluster_name = "last", state = "TERMINATED")), next_page_token = "")
+    },
+    .package = "brickster"
+  )
+  out <- get_clusters("mock_host", "mock_token")
+  expect_identical(out$name, c("[RUNNING] first (c-1)", "[TERMINATED] last (c-2)"))
+  expect_identical(out$type, c("cluster", "cluster"))
+  expect_identical(state$tokens, list(NULL, "empty+/=", "last"))
+})
+
+test_that("empty cluster pane listings return a typed empty frame", {
+  local_mocked_bindings(db_perform_request = function(req) list(), .package = "brickster")
+  expect_identical(get_clusters("mock_host", "mock_token"), data.frame(name = character(), type = character()))
+})
+
+test_that("cluster pane rejects repeated tokens and propagates later page errors", {
+  local_mocked_bindings(
+    db_cluster_list = function(host, token, page_token = NULL, ...) {
+      if (host == "repeats") return(list(next_page_token = "again"))
+      if (is.null(page_token)) return(list(next_page_token = "next"))
+      cli::cli_abort("Permission denied on later page")
+    },
+    .package = "brickster"
+  )
+  expect_error(get_clusters("repeats", "mock_token"), "repeated.*page token")
+  expect_error(get_clusters("fails", "mock_token"), "Permission denied on later page")
+})
+
 test_that("workspace pane shows Catalog when Unity Catalog is available", {
   local_mocked_bindings(
     db_sql_warehouse_list = function(...) list(),

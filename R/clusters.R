@@ -191,7 +191,7 @@ db_cluster_create <- function(
   req <- db_request(
     endpoint = "clusters/create",
     method = "POST",
-    version = "2.0",
+    version = "2.1",
     body = body,
     host = host,
     token = token
@@ -334,7 +334,7 @@ db_cluster_edit <- function(
   req <- db_request(
     endpoint = "clusters/edit",
     method = "POST",
-    version = "2.0",
+    version = "2.1",
     body = body,
     host = host,
     token = token
@@ -368,7 +368,7 @@ db_cluster_action <- function(
   req <- db_request(
     endpoint = paste0("clusters/", action),
     method = "POST",
-    version = "2.0",
+    version = "2.1",
     body = body,
     host = host,
     token = token
@@ -602,7 +602,7 @@ db_cluster_resize <- function(
   req <- db_request(
     endpoint = "clusters/resize",
     method = "POST",
-    version = "2.0",
+    version = "2.1",
     body = body,
     host = host,
     token = token
@@ -623,7 +623,7 @@ db_cluster_resize <- function(
 #'
 #' @details
 #' Retrieve the information for a cluster given its identifier. Clusters can be
-#' described while they are running or up to 30 days after they are terminated.
+#' described while they are running or up to 60 days after they are terminated.
 #'
 #' @family Clusters API
 #'
@@ -636,23 +636,17 @@ db_cluster_get <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
-  body <- list(
-    cluster_id = cluster_id
-  )
-
   req <- db_request(
     endpoint = "clusters/get",
     method = "GET",
-    version = "2.0",
-    body = body,
+    version = "2.1",
     host = host,
     token = token
-  )
+  ) |>
+    httr2::req_url_query(cluster_id = cluster_id)
 
   if (perform_request) {
-    cluster <- db_perform_response(req) |>
-      httr2::resp_body_json()
-    new_db_cluster(cluster)
+    new_db_cluster(db_perform_request(req))
   } else {
     req
   }
@@ -660,44 +654,55 @@ db_cluster_get <- function(
 
 #' List Clusters
 #'
+#' @param page_size Maximum number of clusters per page, from 1 to 100
+#'   (default: 20). Use `NULL` for the server default.
+#' @param page_token A `next_page_token` or `prev_page_token` from a previous
+#'   response, or `NULL` for the first page.
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create
 #'
 #' @details
-#' Return information about all pinned clusters, active clusters, up to 150 of
-#' the most recently terminated all-purpose clusters in the past 30 days, and up
-#' to 30 of the most recently terminated job clusters in the past 30 days.
-#'
-#' For example, if there is 1 pinned cluster, 4 active clusters, 45 terminated
-#' all-purpose clusters in the past 30 days, and 50 terminated job clusters in
-#' the past 30 days, then this API returns:
-#' * the 1 pinned cluster
-#' * 4 active clusters
-#' * All 45 terminated all-purpose clusters
-#' * The 30 most recently terminated job clusters
+#' Retrieve one page of pinned and active clusters, and clusters terminated
+#' within the past 30 days. Use `next_page_token` to request subsequent pages.
+#' Extract `$clusters` to access the records; earlier versions returned these
+#' records directly without pagination metadata.
 #'
 #' @family Clusters API
 #'
 #' @export
-#' @returns If `perform_request = TRUE`, returns a nested list of clusters with
-#'   class `db_cluster_list`; each element has class `db_cluster`. If `FALSE`,
+#' @returns If `perform_request = TRUE`, returns the full single-page API
+#'   response with class `db_cluster_list`, including pagination tokens when
+#'   present. Each record in `clusters` has class `db_cluster`. If `FALSE`,
 #'   returns an `httr2_request`.
+#' @examples
+#' \dontrun{
+#' page <- db_cluster_list()
+#' clusters <- page$clusters
+#' if (!is.null(page$next_page_token) && nzchar(page$next_page_token)) {
+#'   next_page <- db_cluster_list(page_token = page$next_page_token)
+#' }
+#' }
 db_cluster_list <- function(
   host = db_host(),
   token = db_token(),
-  perform_request = TRUE
+  perform_request = TRUE,
+  page_size = 20,
+  page_token = NULL
 ) {
+  cluster_check_number(page_size, "page_size", min = 1, max = 100)
+  cluster_check_page_token(page_token)
+
   req <- db_request(
     endpoint = "clusters/list",
     method = "GET",
-    version = "2.0",
+    version = "2.1",
     host = host,
     token = token
-  )
+  ) |>
+    httr2::req_url_query(page_size = page_size, page_token = page_token)
 
   if (perform_request) {
-    clusters <- db_perform_request(req)$clusters
-    new_db_cluster_list(clusters)
+    new_db_cluster_list(db_perform_request(req))
   } else {
     req
   }
@@ -724,7 +729,7 @@ db_cluster_list_node_types <- function(
   req <- db_request(
     endpoint = "clusters/list-node-types",
     method = "GET",
-    version = "2.0",
+    version = "2.1",
     host = host,
     token = token
   )
@@ -757,7 +762,7 @@ db_cluster_runtime_versions <- function(
   req <- db_request(
     endpoint = "clusters/spark-versions",
     method = "GET",
-    version = "2.0",
+    version = "2.1",
     host = host,
     token = token
   )
@@ -791,7 +796,7 @@ db_cluster_list_zones <- function(
   req <- db_request(
     endpoint = "clusters/list-zones",
     method = "GET",
-    version = "2.0",
+    version = "2.1",
     host = host,
     token = token
   )
@@ -813,66 +818,124 @@ db_cluster_list_zones <- function(
 #' @param event_types List. Optional set of event types to filter by. Default
 #' is to return all events. [Event Types](https://docs.databricks.com/api/workspace/clusters/events#events).
 #' @param order Either `DESC` (default) or `ASC`.
-#' @param offset The offset in the result set. Defaults to 0 (no offset). When
-#' an offset is specified and the results are requested in descending order, the
-#' end_time field is required.
-#' @param limit Maximum number of events to include in a page of events.
-#' Defaults to 50, and maximum allowed value is 500.
+#' @param offset `r lifecycle::badge("deprecated")` Use `page_token` instead.
+#'   Legacy result offset. When supplied, uses legacy pagination with a warning.
+#'   Descending requests with an offset require `end_time`.
+#' @param limit `r lifecycle::badge("deprecated")` Use `page_size` instead.
+#'   Legacy page size, from 1 to 500. When supplied, uses legacy pagination
+#'   with a warning.
+#' @param page_size Maximum number of events per page, from 0 to 500
+#'   (default: 50). Use `0` or `NULL` for the server default.
+#' @inheritParams db_cluster_list
 #' @inheritParams auth_params
 #' @inheritParams db_sql_warehouse_create
 #'
 #' @details
-#' Retrieve a list of events about the activity of a cluster. You can retrieve
-#' events from active clusters (running, pending, or reconfiguring) and
-#' terminated clusters within 30 days of their last termination. This API is
-#' paginated. If there are more events to read, the response includes all the
-#' parameters necessary to request the next page of events.
+#' Retrieve one page of events about the activity of a cluster. Extract
+#' `$events` to access the records; earlier versions returned the records
+#' directly. Use the response's `next_page_token` or `prev_page_token` as
+#' `page_token` to navigate pages, retaining the same time and event filters.
+#'
+#' `offset` and `limit` default to `NULL` and are omitted from token-based
+#' requests. Non-`NULL` legacy arguments cannot be combined with an explicitly
+#' supplied non-`NULL` `page_size` or `page_token`. Legacy arguments are forwarded
+#' for compatibility, but Databricks deprecates them on November 30, 2026.
+#' Migrate to `page_size` and tokens returned by the preceding response;
+#' numeric offsets cannot be converted to page tokens.
+#'
+#' Supply epoch milliseconds as numeric values, not R integers.
 #'
 #' @family Clusters API
 #'
 #' @export
-#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
+#' @returns If `perform_request = TRUE`, returns the full single-page API
+#'   response, including `events` and pagination metadata when present.
+#'   If `FALSE`, returns an `httr2_request`.
 db_cluster_events <- function(
   cluster_id,
   start_time = NULL,
   end_time = NULL,
   event_types = NULL,
   order = c("DESC", "ASC"),
-  offset = 0,
-  limit = 50,
+  offset = NULL,
+  limit = NULL,
   host = db_host(),
   token = db_token(),
-  perform_request = TRUE
+  perform_request = TRUE,
+  page_size = 50,
+  page_token = NULL
 ) {
   order <- match.arg(order, several.ok = FALSE)
-  stopifnot(
-    offset >= 0,
-    limit > 0 && limit <= 500
-  )
+  cluster_check_number(page_size, "page_size", max = 500)
+  cluster_check_page_token(page_token)
+  cluster_check_number(offset, "offset")
+  cluster_check_number(limit, "limit", min = 1, max = 500)
+  cluster_check_number(start_time, "start_time")
+  cluster_check_number(end_time, "end_time")
+  if (!is.null(start_time) && !is.null(end_time) && start_time > end_time) {
+    cli::cli_abort("{.arg start_time} must be less than or equal to {.arg end_time}.")
+  }
+
+  legacy <- !is.null(offset) || !is.null(limit)
+  if (legacy && ((!missing(page_size) && !is.null(page_size)) || !is.null(page_token))) {
+    cli::cli_abort(
+      "Use either {.arg offset}/{.arg limit} or {.arg page_size}/{.arg page_token}, not both."
+    )
+  }
+  if (!is.null(offset)) {
+    lifecycle::deprecate_warn(
+      "0.2.14.9000", "db_cluster_events(offset)", "db_cluster_events(page_token)",
+      details = "Use a token from the preceding response; numeric offsets cannot be converted to tokens."
+    )
+  }
+  if (!is.null(limit)) {
+    lifecycle::deprecate_warn(
+      "0.2.14.9000", "db_cluster_events(limit)", "db_cluster_events(page_size)"
+    )
+  }
 
   body <- list(
     cluster_id = cluster_id,
-    start_time = as.integer(start_time),
-    end_time = as.integer(end_time),
+    start_time = start_time,
+    end_time = end_time,
     event_types = event_types,
     order = order,
-    offset = as.integer(offset),
-    limit = as.integer(limit)
+    offset = offset,
+    limit = limit,
+    page_size = if (legacy) NULL else page_size,
+    page_token = page_token
   )
 
   req <- db_request(
     endpoint = "clusters/events",
     method = "POST",
-    version = "2.0",
+    version = "2.1",
     body = body,
     host = host,
     token = token
   )
 
   if (perform_request) {
-    db_perform_request(req)$events
+    db_perform_request(req)
   } else {
     req
+  }
+}
+
+cluster_check_number <- function(x, arg, min = 0, max = 2^53 - 1) {
+  if (is.null(x)) return(invisible(NULL))
+  if (!is.numeric(x) || length(x) != 1L || !is.finite(x) ||
+      x != floor(x) || x < min || x > max) {
+    cli::cli_abort(
+      "{.arg {arg}} must be NULL or a single whole number between {min} and {max}."
+    )
+  }
+}
+
+cluster_check_page_token <- function(page_token) {
+  if (is.null(page_token)) return(invisible(NULL))
+  if (!is.character(page_token) || length(page_token) != 1L || is.na(page_token)) {
+    cli::cli_abort("{.arg page_token} must be NULL or a single string from a previous response.")
   }
 }
 
@@ -1036,14 +1099,12 @@ new_db_cluster <- function(x) {
 }
 
 new_db_cluster_list <- function(x) {
-  if (is.null(x)) {
-    x <- list()
-  }
-
   stopifnot(is.list(x))
-  clusters <- purrr::map(x, new_db_cluster)
-  class(clusters) <- unique(c("db_cluster_list", class(clusters)))
-  clusters
+  if (!is.null(x$clusters)) {
+    x$clusters <- purrr::map(x$clusters, new_db_cluster)
+  }
+  class(x) <- unique(c("db_cluster_list", class(x)))
+  x
 }
 
 cluster_scalar_chr <- function(x, field, default = NA_character_) {
@@ -1251,6 +1312,6 @@ print.db_cluster <- function(x, ...) {
 #' @method print db_cluster_list
 #' @noRd
 print.db_cluster_list <- function(x, ...) {
-  print(unclass(x), ...)
+  print(x$clusters, ...)
   invisible(x)
 }
