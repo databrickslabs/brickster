@@ -1,3 +1,17 @@
+test_that("internal UC pane wrappers support continuation tokens", {
+  args <- list(catalog = "main", schema = "default", host = "mock_host", token = "mock_token", perform_request = FALSE)
+  purrr::walk(list(db_uc_models_list, db_uc_funcs_list, function(...) db_uc_model_versions_get(model = "model", ...)), function(list_page) {
+    req <- do.call(list_page, c(args, list(page_token = "next+/=")))
+    expect_s3_class(req, "httr2_request")
+    expect_identical(httr2::url_parse(req$url)$query$page_token, "next+/=")
+    expect_null(req$body)
+    if (endsWith(httr2::url_parse(req$url)$path, "/functions")) {
+      expect_identical(httr2::url_parse(req$url)$query$max_results, "0")
+    }
+    expect_error(do.call(list_page, c(args, list(page_token = ""))), "page_token")
+  })
+})
+
 test_that("Unity Catalog API - don't perform", {
 
   withr::local_envvar(c(

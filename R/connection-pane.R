@@ -33,7 +33,9 @@ readable_time <- function(x) {
 }
 
 get_catalogs <- function(host, token) {
-  catalogs <- db_uc_catalogs_list(host = host, token = token)$catalogs
+  catalogs <- db_uc_list_all_pages(
+    db_uc_catalogs_list, "catalogs", host = host, token = token
+  )
   if (length(catalogs) > 0) {
     data.frame(
       name = purrr::map_chr(catalogs, "name"),
@@ -46,11 +48,12 @@ get_catalogs <- function(host, token) {
 }
 
 get_schemas <- function(catalog, host, token) {
-  schemas <- db_uc_schemas_list(
+  schemas <- db_uc_list_all_pages(
+    db_uc_schemas_list, "schemas",
     catalog = catalog,
     host = host,
     token = token
-  )$schemas
+  )
   if (length(schemas) > 0) {
     data.frame(
       name = purrr::map_chr(schemas, "name"),
@@ -63,12 +66,13 @@ get_schemas <- function(catalog, host, token) {
 }
 
 get_tables <- function(catalog, schema, host, token) {
-  tables <- db_uc_tables_list(
+  tables <- db_uc_list_all_pages(
+    db_uc_tables_list, "tables",
     catalog = catalog,
     schema = schema,
     host = host,
     token = token
-  )$tables
+  )
   if (length(tables) > 0) {
     data.frame(
       name = purrr::map_chr(tables, "name"),
@@ -81,7 +85,8 @@ get_tables <- function(catalog, schema, host, token) {
 }
 
 get_uc_models <- function(catalog, schema, host, token) {
-  models <- db_uc_models_list(
+  models <- db_uc_list_all_pages(
+    db_uc_models_list, "registered_models",
     catalog = catalog,
     schema = schema,
     host = host,
@@ -126,14 +131,14 @@ get_uc_model <- function(catalog, schema, model, host, token) {
 get_uc_model_versions <- function(catalog, schema, model, host, token,
                                   version = NULL) {
 
-  # if version is NULL get all, otherwise specific versions
-  versions <- db_uc_model_versions_get(
-    catalog,
-    schema,
-    model,
+  versions <- db_uc_list_all_pages(
+    db_uc_model_versions_get, "model_versions",
+    catalog = catalog,
+    schema = schema,
+    model = model,
     host = host,
     token = token
-  )[[1]]
+  )
 
   # get model info again to get the aliases
   model_info <- db_uc_models_get(catalog, schema, model, host, token)
@@ -158,7 +163,7 @@ get_uc_model_versions <- function(catalog, schema, model, host, token,
 
     res <- data.frame(
       name = version_names,
-      type = "version",
+      type = rep("version", length(version_names)),
       check.names = FALSE
     )
 
@@ -189,7 +194,8 @@ get_uc_model_versions <- function(catalog, schema, model, host, token,
 }
 
 get_uc_functions <- function(catalog, schema, host, token) {
-  funcs <- db_uc_funcs_list(
+  funcs <- db_uc_list_all_pages(
+    db_uc_funcs_list, "functions",
     catalog = catalog,
     schema = schema,
     host = host,
@@ -233,12 +239,13 @@ get_uc_function <- function(catalog, schema, func, host, token) {
 }
 
 get_uc_volumes <- function(catalog, schema, host, token) {
-  volumes <- db_uc_volumes_list(
+  volumes <- db_uc_list_all_pages(
+    db_uc_volumes_list, "volumes",
     catalog = catalog,
     schema = schema,
     host = host,
     token = token
-  )$volumes
+  )
   if (length(volumes) > 0) {
     data.frame(
       name = purrr::map_chr(volumes, "name"),
@@ -251,14 +258,13 @@ get_uc_volumes <- function(catalog, schema, host, token) {
 }
 
 get_uc_volume <- function(catalog, schema, host, volume, token) {
-  volumes <- db_uc_volumes_list(
+  volume <- db_uc_volumes_get(
     catalog = catalog,
     schema = schema,
+    volume = volume,
     host = host,
     token = token
-  )$volumes
-
-  volume <- purrr::keep(volumes, \(x) x$name == volume)[[1]]
+  )
 
   info <- list(
     "name" = volume$name,
@@ -270,6 +276,8 @@ get_uc_volume <- function(catalog, schema, host, volume, token) {
     "updated by" = volume$updated_by,
     "id" = volume$volume_id
   )
+
+  info <- purrr::keep(info, ~ length(.x) > 0L)
 
   data.frame(
     name = names(info),
@@ -721,7 +729,7 @@ list_objects <- function(host, token,
   # check if UC catalogs endpoint fails
   uc_active <- tryCatch(
     expr = {
-      db_uc_catalogs_list(host, token)
+      db_uc_catalogs_list(host = host, token = token)
       TRUE
     },
     error = function(e) FALSE

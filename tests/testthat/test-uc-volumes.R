@@ -1,3 +1,15 @@
+test_that("volume detail requests send include_browse as a query parameter", {
+  purrr::walk(c(TRUE, FALSE), function(include_browse) {
+    req <- db_uc_volumes_get("main", "default", "a_volume", include_browse = include_browse,
+                             host = "mock_host", token = "mock_token", perform_request = FALSE)
+    expect_s3_class(req, "httr2_request")
+    expect_identical(req$method, "GET")
+    expect_identical(httr2::url_parse(req$url)$path, "/api/2.1/unity-catalog/volumes/main.default.a_volume")
+    expect_identical(httr2::url_parse(req$url)$query$include_browse, tolower(as.character(include_browse)))
+    expect_null(req$body)
+  })
+})
+
 test_that("Unity Catalog: Volumes API - don't perform", {
 
   withr::local_envvar(c(

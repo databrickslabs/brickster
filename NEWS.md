@@ -1,20 +1,33 @@
 # brickster (development version)
 
--   Fixed OAuth U2M and M2M authentication across multiple Databricks workspaces in one R session by isolating OAuth clients and cached tokens per workspace (#255)
--   OAuth tokens are now refreshed 40 seconds before expiry, avoiding Databricks API rejections during the final 30 seconds of a token's lifetime; this requires `{httr2}` 1.3.0 or later (#257)
--   Added `databricks-cli` authentication support for profiles created by `databricks auth login`; `{brickster}` obtains tokens through `databricks auth token`, caches only the short-lived access token in memory, and leaves durable credentials and refresh to the CLI (#253)
--   Authentication mode overrides now come from `auth_type` in the selected `.databrickscfg` profile; replace `DATABRICKS_AUTH_TYPE` with the profile field. Environment-only authentication continues to infer the mode from available credentials.
--   Fixed `dbWriteTable()` and `dbAppendTable()` standard-path writes for binary columns, which now use Databricks `BINARY` types and `X'...'` literals when no staging volume is configured (#245)
--   `dbConnect()` now preserves Databricks API error details when its validation query fails
--   `db_perform_request()` and `db_perform_response()` now preserve useful error messages when Databricks returns non-JSON error bodies such as empty, plain-text, or HTML responses (#242)
--   Fixed `git_source()` erroring when `type` was left at its default
--   Fixed Unity Catalog volume file requests so `db_volume_*` paths containing spaces are encoded correctly (#231)
--   `db_cluster_events()` now forwards the `event_types` argument to the API, which was previously ignored
--   `db_sql_warehouse_create()` and `db_sql_warehouse_edit()` now forward the `tags` argument to the API, which was previously ignored
--   Unity Catalog list helpers now preserve `next_page_token` metadata in list responses for catalogs, schemas, tables, and volumes; their list arguments are sent as documented query parameters
--   `db_uc_volumes_list()` now forwards the `max_results`, `include_browse`, and `page_token` arguments to the API, which were previously ignored
--   `db_vs_indexes_query()` now sends the `score_threshold` argument to the API, which was previously ignored
--   Added `show_progress` to `dbConnect()` for the DBI backend; `dbGetQuery()`, `dbFetch()`, `dbWriteTable()`, and dbplyr `collect()` now use the connection default while preserving per-call `show_progress` overrides (#223)
+-   **Breaking change:** `db_jobs_list()` and `db_jobs_runs_list()` now return the full single-page API response, including pagination tokens and metadata. Extract `$jobs` or `$runs` to access the records. `offset` now defaults to `NULL` to enable token pagination; explicit numeric offsets are still forwarded. Use `page_token` from the preceding response to fetch another page. Job and run get wrappers also accept `page_token` for additional array elements. Use named arguments with these four wrappers because their argument order has changed.
+-   Fixed the workspace connection pane's Catalog availability check so accessible Unity Catalog resources appear.
+
+-   The RStudio connection pane now follows all Unity Catalog listing pages for catalogs, schemas, tables, volumes, models, functions, and model versions, including empty pages with continuation tokens. Volume details are fetched by name so volumes beyond the first listing page can be inspected. `db_uc_volumes_get()` now sends `include_browse` as a query parameter, and the pane handles optional metadata omitted from browse-only responses.
+-   Volume-based `dbWriteTable()` now creates the schema requested by `field.types`, including `CHAR`/`VARCHAR` length limits. Volume writes and appends use `INSERT` to convert staged values to the target column types.
+-   `db_volume_list()` now accepts `page_size` and `page_token`. Directory downloads and recursive deletion follow every listing page, preventing files beyond the first page from being omitted. Listing failures now stop recursive deletion instead of being treated as empty directories.
+-   `db_volume_upload_dir()` now creates each parent directory only once, avoiding repeated API calls for files in the same directory.
+-   Standard-path table writes now detect binary columns once per column, avoiding quadratic serialization time for lists of raw vectors.
+-   Volume file requests now encode reserved characters and literal percent sequences in paths correctly, preventing `#` and `?` in filenames from changing the request target.
+-   `db_volume_dir_delete()` now respects `perform_request = FALSE` when `recursive = TRUE`, returning a directory-delete request without listing or deleting contents.
+
+# brickster 0.2.14
+
+-   Fixed OAuth U2M and M2M authentication across multiple Databricks workspaces in one R session by isolating OAuth clients and cached tokens per workspace (#256, @zacdav-db)
+-   OAuth tokens are now refreshed 40 seconds before expiry, avoiding Databricks API rejections during the final 30 seconds of a token's lifetime; this requires `{httr2}` 1.3.0 or later (#258, @zacdav-db)
+-   Added `databricks-cli` authentication support for profiles created by `databricks auth login`; `{brickster}` obtains tokens through `databricks auth token`, caches only the short-lived access token in memory, and leaves durable credentials and refresh to the CLI (#258, @zacdav-db)
+-   Authentication mode overrides now come from `auth_type` in the selected `.databrickscfg` profile; replace `DATABRICKS_AUTH_TYPE` with the profile field. Environment-only authentication continues to infer the mode from available credentials (#258, @zacdav-db)
+-   Fixed `dbWriteTable()` and `dbAppendTable()` standard-path writes for binary columns, which now use Databricks `BINARY` types and `X'...'` literals when no staging volume is configured (#246, @zacdav-db)
+-   `dbConnect()` now preserves Databricks API error details when its validation query fails (#247, @zacdav)
+-   `db_perform_request()` and `db_perform_response()` now preserve useful error messages when Databricks returns non-JSON error bodies such as empty, plain-text, or HTML responses (#247, @zacdav)
+-   Fixed `git_source()` erroring when `type` was left at its default (#225, @m-muecke)
+-   Fixed Unity Catalog volume file requests so `db_volume_*` paths containing spaces are encoded correctly (#233, @zacdav-db)
+-   `db_cluster_events()` now forwards the `event_types` argument to the API, which was previously ignored (#236, @m-muecke)
+-   `db_sql_warehouse_create()` and `db_sql_warehouse_edit()` now forward the `tags` argument to the API, which was previously ignored (#240, @m-muecke)
+-   Unity Catalog list helpers now preserve `next_page_token` metadata in list responses for catalogs, schemas, tables, and volumes; their list arguments are sent as documented query parameters (#244, @zacdav-db)
+-   `db_uc_volumes_list()` now forwards the `max_results`, `include_browse`, and `page_token` arguments to the API, which were previously ignored (#228, @m-muecke)
+-   `db_vs_indexes_query()` now sends the `score_threshold` argument to the API, which was previously ignored (#235, @m-muecke)
+-   Added `show_progress` to `dbConnect()` for the DBI backend; `dbGetQuery()`, `dbFetch()`, `dbWriteTable()`, and dbplyr `collect()` now use the connection default while preserving per-call `show_progress` overrides (#223, @zacdav-db)
 
 # brickster 0.2.13
 

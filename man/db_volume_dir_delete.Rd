@@ -17,7 +17,10 @@ db_volume_dir_delete(
 \item{path}{Absolute path of the file in the Files API, omitting the initial
 slash.}
 
-\item{recursive}{If \code{TRUE}, recursively delete directory contents (default: \code{FALSE})}
+\item{recursive}{If \code{TRUE}, recursively delete directory contents (default: \code{FALSE})
+after listing every page of each directory. Listing failures stop traversal
+before deleting that directory's contents; earlier directories may already
+have been processed.}
 
 \item{verbose}{If \code{TRUE}, announce each file/directory deletion (default: \code{FALSE})}
 
@@ -29,7 +32,9 @@ slash.}
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \value{
-If \code{perform_request = TRUE}, returns endpoint-specific API output. If \code{FALSE}, returns an \code{httr2_request}.
+If \code{perform_request = TRUE}, returns a logical success flag.
+If \code{FALSE}, returns an \code{httr2_request} to delete only the directory itself.
+Directory contents are not listed or deleted, even when \code{recursive = TRUE}.
 }
 \description{
 Volume FileSystem Delete Directory

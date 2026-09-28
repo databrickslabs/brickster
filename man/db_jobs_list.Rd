@@ -6,23 +6,23 @@
 \usage{
 db_jobs_list(
   limit = 25,
-  offset = 0,
+  offset = NULL,
   expand_tasks = FALSE,
+  page_token = NULL,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
 )
 }
 \arguments{
-\item{limit}{Number of jobs to return. This value must be greater than 0 and
-less or equal to 25. The default value is 25. If a request specifies a limit
-of 0, the service instead uses the maximum limit.}
+\item{limit}{Number of jobs to return, from 1 to 100 (default: 25).}
 
-\item{offset}{The offset of the first job to return, relative to the most
-recently created job.}
+\item{offset}{Number of records to skip. Defaults to \code{NULL}.}
 
 \item{expand_tasks}{Whether to include task and cluster details in the
 response.}
+
+\item{page_token}{Token from a previous response, or \code{NULL} for the first page.}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
@@ -32,12 +32,22 @@ response.}
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \value{
-If \code{perform_request = TRUE}, returns a nested list of jobs with
-class \code{db_job_list}; each element has class \code{db_job}. If \code{FALSE}, returns
-an \code{httr2_request}.
+If \code{perform_request = TRUE}, returns the full single-page response
+with class \code{db_job_list}. Each record in \code{jobs} has class \code{db_job}.
+Pagination tokens are included when available. If \code{FALSE}, returns an
+\code{httr2_request}.
 }
 \description{
 List Jobs
+}
+\examples{
+\dontrun{
+page <- db_jobs_list()
+jobs <- page$jobs
+if (!is.null(page$next_page_token)) {
+  next_page <- db_jobs_list(page_token = page$next_page_token)
+}
+}
 }
 \seealso{
 Other Jobs API: 

@@ -107,11 +107,9 @@ db_jobs_create <- function(
 
 #' List Jobs
 #'
-#' @param limit Number of jobs to return. This value must be greater than 0 and
-#' less or equal to 25. The default value is 25. If a request specifies a limit
-#' of 0, the service instead uses the maximum limit.
-#' @param offset The offset of the first job to return, relative to the most
-#' recently created job.
+#' @param limit Number of jobs to return, from 1 to 100 (default: 25).
+#' @param offset Number of records to skip. Defaults to `NULL`.
+#' @param page_token Token from a previous response, or `NULL` for the first page.
 #' @param expand_tasks Whether to include task and cluster details in the
 #' response.
 #' @inheritParams auth_params
@@ -120,13 +118,23 @@ db_jobs_create <- function(
 #' @family Jobs API
 #'
 #' @export
-#' @returns If `perform_request = TRUE`, returns a nested list of jobs with
-#'   class `db_job_list`; each element has class `db_job`. If `FALSE`, returns
-#'   an `httr2_request`.
+#' @returns If `perform_request = TRUE`, returns the full single-page response
+#'   with class `db_job_list`. Each record in `jobs` has class `db_job`.
+#'   Pagination tokens are included when available. If `FALSE`, returns an
+#'   `httr2_request`.
+#' @examples
+#' \dontrun{
+#' page <- db_jobs_list()
+#' jobs <- page$jobs
+#' if (!is.null(page$next_page_token)) {
+#'   next_page <- db_jobs_list(page_token = page$next_page_token)
+#' }
+#' }
 db_jobs_list <- function(
   limit = 25,
-  offset = 0,
+  offset = NULL,
   expand_tasks = FALSE,
+  page_token = NULL,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
@@ -134,7 +142,8 @@ db_jobs_list <- function(
   body <- list(
     limit = as.numeric(limit),
     offset = as.numeric(offset),
-    expand_tasks = expand_tasks
+    expand_tasks = expand_tasks,
+    page_token = page_token
   )
 
   req <- db_request(
@@ -147,8 +156,7 @@ db_jobs_list <- function(
   )
 
   if (perform_request) {
-    res <- db_perform_request(req)
-    new_db_job_list(res$jobs)
+    new_db_job_list(db_perform_request(req))
   } else {
     req
   }
@@ -192,6 +200,10 @@ db_jobs_delete <- function(
 
 #' Get Job Details
 #'
+#' Returns one page of job details. Use `next_page_token` to retrieve additional
+#' tasks, clusters, environments, or parameters for large jobs.
+#'
+#' @inheritParams db_jobs_list
 #' @inheritParams auth_params
 #' @inheritParams db_jobs_delete
 #' @inheritParams db_sql_warehouse_create
@@ -200,15 +212,18 @@ db_jobs_delete <- function(
 #'
 #' @export
 #' @returns If `perform_request = TRUE`, returns a nested list with class
-#'   `db_job`. If `FALSE`, returns an `httr2_request`.
+#'   `db_job`, preserving `next_page_token` when present. If `FALSE`, returns an
+#'   `httr2_request`.
 db_jobs_get <- function(
   job_id,
+  page_token = NULL,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
 ) {
   body <- list(
-    job_id = as.character(job_id)
+    job_id = as.character(job_id),
+    page_token = page_token
   )
 
   req <- db_request(
@@ -594,7 +609,10 @@ db_jobs_runs_submit <- function(
 
 #' List Job Runs
 #'
-#' List runs in descending order by start time.
+#' List runs in descending order by end time, or start time for unfinished runs.
+#'
+#' @param limit Number of runs to return, from 1 to 25 (default: 25). A value of
+#'   0 requests the service maximum.
 #'
 #' @param active_only Boolean (Default: `FALSE`). If `TRUE` only active runs are
 #' included in the results; otherwise, lists both active and completed runs.
@@ -613,15 +631,19 @@ db_jobs_runs_submit <- function(
 #' @family Jobs API
 #'
 #' @export
-#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
+#' @returns If `perform_request = TRUE`, returns the full single-page API
+#'   response as a list, including `runs`, `next_page_token`, and `prev_page_token`
+#'   when present. The `runs` field may be absent when there are no runs to list.
+#'   If `perform_request = FALSE`, returns an `httr2_request`.
 db_jobs_runs_list <- function(
   job_id,
   active_only = FALSE,
   completed_only = FALSE,
-  offset = 0,
+  offset = NULL,
   limit = 25,
   run_type = c("JOB_RUN", "WORKFLOW_RUN", "SUBMIT_RUN"),
   expand_tasks = FALSE,
+  page_token = NULL,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
@@ -641,7 +663,8 @@ db_jobs_runs_list <- function(
     offset = as.numeric(offset),
     limit = as.numeric(limit),
     run_type = run_type,
-    expand_tasks = expand_tasks
+    expand_tasks = expand_tasks,
+    page_token = page_token
   )
 
   req <- db_request(
@@ -654,8 +677,7 @@ db_jobs_runs_list <- function(
   )
 
   if (perform_request) {
-    res <- db_perform_request(req)
-    res$runs
+    db_perform_request(req)
   } else {
     req
   }
@@ -663,7 +685,10 @@ db_jobs_runs_list <- function(
 
 #' Get Job Run Details
 #'
-#' Retrieve the metadata of a run.
+#' Retrieve one page of run metadata. Use `next_page_token` to retrieve additional
+#' array elements for large runs.
+#'
+#' @inheritParams db_jobs_list
 #'
 #' @param run_id The canonical identifier of the run.
 #' @inheritParams auth_params
@@ -672,15 +697,19 @@ db_jobs_runs_list <- function(
 #' @family Jobs API
 #'
 #' @export
-#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
+#' @returns If `perform_request = TRUE`, returns the full API response for one
+#'   page of run details, including `next_page_token` when present. If `FALSE`,
+#'   returns an `httr2_request`.
 db_jobs_runs_get <- function(
   run_id,
+  page_token = NULL,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
 ) {
   body <- list(
-    run_id = as.character(run_id)
+    run_id = as.character(run_id),
+    page_token = page_token
   )
 
   req <- db_request(
@@ -882,14 +911,12 @@ new_db_job <- function(x) {
 }
 
 new_db_job_list <- function(x) {
-  if (is.null(x)) {
-    x <- list()
-  }
-
   stopifnot(is.list(x))
-  jobs <- purrr::map(x, new_db_job)
-  class(jobs) <- unique(c("db_job_list", class(jobs)))
-  jobs
+  if (!is.null(x$jobs)) {
+    x$jobs <- purrr::map(x$jobs, new_db_job)
+  }
+  class(x) <- unique(c("db_job_list", class(x)))
+  x
 }
 
 job_scalar_chr <- function(x, field, default = "<unset>") {
@@ -948,6 +975,6 @@ print.db_job <- function(x, ...) {
 #' @method print db_job_list
 #' @noRd
 print.db_job_list <- function(x, ...) {
-  print(unclass(x), ...)
+  print(x$jobs, ...)
   invisible(x)
 }

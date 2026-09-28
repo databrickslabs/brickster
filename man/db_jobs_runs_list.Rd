@@ -8,10 +8,11 @@ db_jobs_runs_list(
   job_id,
   active_only = FALSE,
   completed_only = FALSE,
-  offset = 0,
+  offset = NULL,
   limit = 25,
   run_type = c("JOB_RUN", "WORKFLOW_RUN", "SUBMIT_RUN"),
   expand_tasks = FALSE,
+  page_token = NULL,
   host = db_host(),
   token = db_token(),
   perform_request = TRUE
@@ -29,18 +30,18 @@ field cannot be true when \code{completed_only} is \code{TRUE}.}
 runs are included in the results; otherwise, lists both active and completed
 runs. This field cannot be true when \code{active_only} is \code{TRUE}.}
 
-\item{offset}{The offset of the first job to return, relative to the most
-recently created job.}
+\item{offset}{Number of records to skip. Defaults to \code{NULL}.}
 
-\item{limit}{Number of jobs to return. This value must be greater than 0 and
-less or equal to 25. The default value is 25. If a request specifies a limit
-of 0, the service instead uses the maximum limit.}
+\item{limit}{Number of runs to return, from 1 to 25 (default: 25). A value of
+0 requests the service maximum.}
 
 \item{run_type}{The type of runs to return. One of \code{JOB_RUN}, \code{WORKFLOW_RUN},
 \code{SUBMIT_RUN}.}
 
 \item{expand_tasks}{Whether to include task and cluster details in the
 response.}
+
+\item{page_token}{Token from a previous response, or \code{NULL} for the first page.}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
@@ -50,10 +51,13 @@ response.}
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \value{
-If \code{perform_request = TRUE}, returns endpoint-specific API output. If \code{FALSE}, returns an \code{httr2_request}.
+If \code{perform_request = TRUE}, returns the full single-page API
+response as a list, including \code{runs}, \code{next_page_token}, and \code{prev_page_token}
+when present. The \code{runs} field may be absent when there are no runs to list.
+If \code{perform_request = FALSE}, returns an \code{httr2_request}.
 }
 \description{
-List runs in descending order by start time.
+List runs in descending order by end time, or start time for unfinished runs.
 }
 \seealso{
 Other Jobs API: 

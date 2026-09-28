@@ -35,6 +35,16 @@ warehouses <- db_sql_warehouse_list()
 
 Refer to the ["Connect to a Databricks Workspace"](https://databrickslabs.github.io/brickster/articles/setup-auth.html) article for more details on getting authentication configured.
 
+If you already authenticated with a profile created by `databricks auth login`,
+`{brickster}` can reuse its short-lived OAuth credentials:
+
+``` r
+options(
+  use_databrickscfg = TRUE,
+  db_profile = "<profile-name>"
+)
+```
+
 ## Usage
 
 ### `{DBI}` Backend

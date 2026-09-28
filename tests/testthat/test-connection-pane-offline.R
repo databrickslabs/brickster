@@ -84,7 +84,7 @@ test_that("get_table_data returns expected metadata and column summaries", {
 })
 
 test_that("get_uc_model_versions applies aliases and returns per-version metadata", {
-  versions_payload <- list(list(
+  versions_payload <- list(model_versions = list(
     list(
       version = "1",
       created_at = 1713146793000,

@@ -1,3 +1,39 @@
+test_that("Jobs pagination is included in the request body", {
+  args <- list(host = "mock_host", token = "mock_token", perform_request = FALSE)
+  requests <- list(
+    do.call(db_jobs_list, c(args, list(limit = 100, page_token = "next+/="))),
+    do.call(db_jobs_get, c(args, list(job_id = "123", page_token = "next+/="))),
+    do.call(db_jobs_runs_list, c(args, list(job_id = "123", page_token = "next+/="))),
+    do.call(db_jobs_runs_get, c(args, list(run_id = "456", page_token = "next+/=")))
+  )
+  purrr::walk(requests, function(req) {
+    expect_s3_class(req, "httr2_request")
+    expect_identical(req$method, "GET")
+    expect_identical(req$body$type, "json")
+    expect_identical(req$body$data$page_token, "next+/=")
+  })
+  expect_identical(requests[[1]]$body$data$limit, 100)
+  expect_identical(requests[[2]]$body$data$job_id, "123")
+  expect_identical(requests[[3]]$body$data$expand_tasks, FALSE)
+  expect_identical(requests[[4]]$body$data$run_id, "456")
+  expect_null(requests[[1]]$body$data$offset)
+  expect_null(requests[[3]]$body$data$offset)
+})
+
+test_that("Jobs list wrappers forward explicit numeric offsets", {
+  args <- list(host = "mock_host", token = "mock_token", perform_request = FALSE)
+  requests <- list(
+    do.call(db_jobs_list, c(args, list(offset = 2))),
+    do.call(db_jobs_runs_list, c(args, list(job_id = "123", offset = 2, limit = 0)))
+  )
+  purrr::walk(requests, function(req) {
+    expect_s3_class(req, "httr2_request")
+    expect_identical(req$body$data$offset, 2)
+    expect_null(req$body$data$page_token)
+  })
+  expect_identical(requests[[2]]$body$data$limit, 0)
+})
+
 test_that("Jobs API - don't perform", {
   withr::local_envvar(c(
     "DATABRICKS_HOST" = "http://mock_host",
@@ -315,7 +351,8 @@ test_that("Jobs API", {
   expect_no_error({
     resp_run_get <- db_jobs_runs_list(job_id = resp_create$job_id)
   })
-  expect_null(resp_run_get)
+  expect_type(resp_run_get, "list")
+  expect_null(resp_run_get$runs)
 
   expect_no_error({
     resp_delete <- db_jobs_delete(
