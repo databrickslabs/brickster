@@ -2,6 +2,12 @@
 
 ## brickster (development version)
 
+- [`cumprod()`](https://rdrr.io/r/base/cumsum.html) now uses built-in
+  Databricks SQL functions instead of requiring sparklyr’s
+  session-registered aggregate. Cumulative products use a row frame and
+  propagate `NULL` values to subsequent rows in each group
+  ([\#294](https://github.com/databrickslabs/brickster/issues/294)).
+
 - **Breaking change:**
   [`db_jobs_list()`](https://databrickslabs.github.io/brickster/reference/db_jobs_list.md)
   and

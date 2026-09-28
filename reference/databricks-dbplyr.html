@@ -54,6 +54,14 @@ enabling dplyr syntax to be translated to Databricks SQL.</p>
     </div>
 
 
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p><code><a href="https://rdrr.io/r/base/cumsum.html" class="external-link">cumprod()</a></code> returns cumulative products as doubles and propagates SQL <code>NULL</code>
+values to subsequent rows in the group. Use <code><a href="https://dbplyr.tidyverse.org/reference/window_order.html" class="external-link">dbplyr::window_order()</a></code> with a
+unique ordering (including a tie-breaker where needed) for reproducible results.
+The translation collects and multiplies each cumulative prefix, so large
+partitions can be expensive.</p>
+    </div>
 
   </main></div>
 
