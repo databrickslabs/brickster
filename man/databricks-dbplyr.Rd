@@ -7,3 +7,10 @@
 This file implements dbplyr backend support for Databricks SQL warehouses,
 enabling dplyr syntax to be translated to Databricks SQL.
 }
+\details{
+\code{cumprod()} returns cumulative products as doubles and propagates SQL \code{NULL}
+values to subsequent rows in the group. Use \code{\link[dbplyr:window_order]{dbplyr::window_order()}} with a
+unique ordering (including a tie-breaker where needed) for reproducible results.
+The translation collects and multiplies each cumulative prefix, so large
+partitions can be expensive.
+}
