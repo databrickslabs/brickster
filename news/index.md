@@ -55,6 +55,11 @@
   returning a directory-delete request without listing or deleting
   contents.
 
+- [`db_cluster_create()`](https://databrickslabs.github.io/brickster/reference/db_cluster_create.md)
+  and
+  [`db_cluster_edit()`](https://databrickslabs.github.io/brickster/reference/db_cluster_edit.md)
+  no longer ignore `log_conf`
+
 ## brickster 0.2.14
 
 CRAN release: 2026-07-24
