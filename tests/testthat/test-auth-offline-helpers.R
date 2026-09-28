@@ -88,11 +88,13 @@ test_that("CLI token responses are parsed without exposing refresh credentials",
   state <- new.env(parent = emptyenv())
   state$command <- NULL
   state$args <- NULL
+  state$timeout <- NULL
 
   local_mocked_bindings(
-    run = function(command, args, ...) {
+    run = function(command, args, timeout, ...) {
       state$command <- command
       state$args <- args
+      state$timeout <- timeout
       list(
         status = 0L,
         stdout = local_cli_token_json(),
@@ -118,6 +120,7 @@ test_that("CLI token responses are parsed without exposing refresh credentials",
       "https://workspace.example.com/"
     )
   )
+  expect_identical(state$timeout, 60)
   expect_identical(token$access_token, "cli-access-token")
   expect_identical(token$token_type, "Bearer")
   expect_s3_class(token, "httr2_token")
