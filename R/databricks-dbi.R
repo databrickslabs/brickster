@@ -1660,7 +1660,9 @@ db_binary_literal <- function(val) {
 }
 
 db_timestamp_literal <- function(val) {
-  paste0("TIMESTAMP'", format(val, "%Y-%m-%d %H:%M:%OS6", tz = "UTC"), "Z'")
+  # Match Arrow's POSIXct-to-microsecond conversion used by volume writes.
+  micros <- trunc(as.numeric(val) * 1e6)
+  paste0("TIMESTAMP_MICROS(", sprintf("%.0f", micros), ")")
 }
 
 #' Escape string literals for inline SQL VALUES
