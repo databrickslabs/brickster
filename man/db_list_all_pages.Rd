@@ -26,9 +26,11 @@ Collect Records from All API Response Pages
 }
 \details{
 Removes the top-level pagination fields \code{next_page_token}, \code{prev_page_token},
-\code{next_page}, \code{total_count}, and \code{has_more}, then combines the remaining record
-collections. No collection field name is needed. Use a listing function whose
-remaining response fields contain lists of records.
+\code{next_page}, \code{total_count}, \code{has_more}, and \code{has_next_page}, then combines the
+remaining record collections. No collection field name is needed. Use a
+listing function whose remaining response fields contain lists of records.
+Wrappers that already flatten their response, such as \code{\link[=db_lakebase_list]{db_lakebase_list()}},
+are not supported.
 
 Uses token pagination, starting at the first page. Leave legacy pagination
 arguments unset, such as \code{offset} and \code{limit} in \code{\link[=db_cluster_events]{db_cluster_events()}}. Empty

@@ -38,7 +38,8 @@ test_that("page collection removes only top-level pagination metadata", {
         prev_page_token = "previous",
         next_page = list(offset = 1),
         total_count = 0,
-        has_more = more
+        has_more = more,
+        has_next_page = more
       )
     },
     .package = "brickster"

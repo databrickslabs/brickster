@@ -188,9 +188,11 @@ from_logical <- function(x) {
 #'
 #' @details
 #' Removes the top-level pagination fields `next_page_token`, `prev_page_token`,
-#' `next_page`, `total_count`, and `has_more`, then combines the remaining record
-#' collections. No collection field name is needed. Use a listing function whose
-#' remaining response fields contain lists of records.
+#' `next_page`, `total_count`, `has_more`, and `has_next_page`, then combines the
+#' remaining record collections. No collection field name is needed. Use a
+#' listing function whose remaining response fields contain lists of records.
+#' Wrappers that already flatten their response, such as [db_lakebase_list()],
+#' are not supported.
 #'
 #' Uses token pagination, starting at the first page. Leave legacy pagination
 #' arguments unset, such as `offset` and `limit` in [db_cluster_events()]. Empty
@@ -212,7 +214,8 @@ from_logical <- function(x) {
 db_list_all_pages <- function(list_page_fn, ...) {
   stopifnot(is.function(list_page_fn))
   pagination_fields <- c(
-    "next_page_token", "prev_page_token", "next_page", "total_count", "has_more"
+    "next_page_token", "prev_page_token", "next_page", "total_count", "has_more",
+    "has_next_page"
   )
   pages <- list()
   page_token <- NULL
