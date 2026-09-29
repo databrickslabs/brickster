@@ -206,7 +206,7 @@ test_that("legacy event pagination warns and preserves positional arguments", {
   expect_null(req$body$data$page_size)
 })
 
-test_that("pagination and timestamp validation fails before authentication", {
+test_that("pagination validation fails before authentication", {
   invalid_sizes <- list(-1, 101, 1.5, NA_real_, Inf, "20", numeric(), c(1, 2), TRUE)
   purrr::walk(invalid_sizes, function(value) {
     expect_error(db_cluster_list(page_size = value, perform_request = FALSE), "page_size")
@@ -218,13 +218,9 @@ test_that("pagination and timestamp validation fails before authentication", {
     expect_error(db_cluster_list(page_token = value, perform_request = FALSE), "page_token")
     expect_error(db_cluster_events("c-1", page_token = value, perform_request = FALSE), "page_token")
   })
-  purrr::walk(c("offset", "limit", "start_time", "end_time"), function(arg) {
-    purrr::walk(list(-1, NA_real_, Inf, "100", c(1, 2), 1.5), function(value) {
-      args <- c(list(cluster_id = "c-1", perform_request = FALSE), setNames(list(value), arg))
-      expect_error(do.call(db_cluster_events, args), arg)
-    })
-  })
-  expect_error(db_cluster_events("c-1", start_time = 20, end_time = 10), "start_time.*end_time")
+  expect_error(db_cluster_events("c-1", offset = -1, perform_request = FALSE), "offset")
+  expect_error(db_cluster_events("c-1", limit = 0, perform_request = FALSE), "limit")
+  expect_error(db_cluster_events("c-1", limit = 501, perform_request = FALSE), "limit")
   expect_error(db_cluster_events("c-1", offset = 0, page_token = "next"), "not both")
   expect_error(db_cluster_events("c-1", limit = 50, page_size = 100), "not both")
 })

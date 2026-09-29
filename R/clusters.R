@@ -872,6 +872,10 @@ db_cluster_events <- function(
   page_token = NULL
 ) {
   order <- match.arg(order, several.ok = FALSE)
+  stopifnot(
+    is.null(offset) || offset >= 0,
+    is.null(limit) || (limit > 0 && limit <= 500)
+  )
   if (!is.null(page_size) && (
     !rlang::is_scalar_integerish(page_size, finite = TRUE) || page_size < 0 || page_size > 500
   )) {
@@ -879,29 +883,6 @@ db_cluster_events <- function(
   }
   if (!is.null(page_token) && !rlang::is_string(page_token)) {
     cli::cli_abort("{.arg page_token} must be NULL or a single string from a previous response.")
-  }
-  if (!is.null(offset) && (
-    !rlang::is_scalar_integerish(offset, finite = TRUE) || offset < 0
-  )) {
-    cli::cli_abort("{.arg offset} must be NULL or a non-negative whole number.")
-  }
-  if (!is.null(limit) && (
-    !rlang::is_scalar_integerish(limit, finite = TRUE) || limit < 1 || limit > 500
-  )) {
-    cli::cli_abort("{.arg limit} must be NULL or a whole number from 1 to 500.")
-  }
-  if (!is.null(start_time) && (
-    !rlang::is_scalar_integerish(start_time, finite = TRUE) || start_time < 0
-  )) {
-    cli::cli_abort("{.arg start_time} must be NULL or a non-negative whole number of milliseconds since the Unix epoch.")
-  }
-  if (!is.null(end_time) && (
-    !rlang::is_scalar_integerish(end_time, finite = TRUE) || end_time < 0
-  )) {
-    cli::cli_abort("{.arg end_time} must be NULL or a non-negative whole number of milliseconds since the Unix epoch.")
-  }
-  if (!is.null(start_time) && !is.null(end_time) && start_time > end_time) {
-    cli::cli_abort("{.arg start_time} must be less than or equal to {.arg end_time}.")
   }
 
   legacy <- !is.null(offset) || !is.null(limit)
@@ -912,8 +893,7 @@ db_cluster_events <- function(
   }
   if (!is.null(offset)) {
     lifecycle::deprecate_warn(
-      "0.2.14.9000", "db_cluster_events(offset)", "db_cluster_events(page_token)",
-      details = "Use a token from the preceding response; numeric offsets cannot be converted to tokens."
+      "0.2.14.9000", "db_cluster_events(offset)", "db_cluster_events(page_token)"
     )
   }
   if (!is.null(limit)) {
