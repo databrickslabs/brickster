@@ -412,6 +412,8 @@ setMethod(
 # Result Methods ---------------------------------------------------------------
 
 #' Fetch results from Databricks query
+#' @details INLINE results are fetched across chunks until `n` rows are
+#'   available, or all result chunks have been fetched when `n = -1`.
 #' @param res A DatabricksResult object
 #' @param n Maximum number of rows to fetch (-1 for all rows)
 #' @param show_progress If `TRUE`, show progress updates during result fetching.
@@ -453,32 +455,16 @@ setMethod("dbFetch", "DatabricksResult", function(
     status <- initial_status
   }
 
-  # Check for empty results early and return immediately
-  # Use total_row_count to detect empty result sets
-  if (status$manifest$total_row_count == 0) {
-    results <- db_sql_create_empty_result(status$manifest)
-  } else if (
-    identical(status$manifest$format, "JSON_ARRAY") ||
-      !is.null(status$result$data_array)
-  ) {
-    results <- db_sql_process_inline(
-      result_data = status$result,
-      manifest = status$manifest,
-      row_limit = if (n > 0) n else NULL
-    )
-  } else {
-    # Use helper function to fetch results with progress
-    results <- db_sql_fetch_results(
-      resp = status,
-      return_arrow = FALSE,
-      max_active_connections = res@connection@max_active_connections,
-      fetch_timeout = res@connection@fetch_timeout,
-      row_limit = if (n > 0) n else NULL,
-      host = res@connection@host,
-      token = res@connection@token,
-      show_progress = show_progress
-    )
-  }
+  results <- db_sql_fetch_results(
+    resp = status,
+    return_arrow = FALSE,
+    max_active_connections = res@connection@max_active_connections,
+    fetch_timeout = res@connection@fetch_timeout,
+    row_limit = if (n > 0) n else NULL,
+    host = res@connection@host,
+    token = res@connection@token,
+    show_progress = show_progress
+  )
 
   # Mark as completed and update rows fetched
   res@completed <- TRUE

@@ -707,7 +707,7 @@ test_that("dbFetch processes inline results from dbSendQuery", {
         result = list(data_array = list(list(1L), list(2L)))
       )
     },
-    db_sql_fetch_results = function(...) {
+    db_sql_fetch_results_fast = function(...) {
       stop("external result fetcher should not be called")
     },
     .package = "brickster"
@@ -717,6 +717,81 @@ test_that("dbFetch processes inline results from dbSendQuery", {
 
   expect_s3_class(out, "tbl_df")
   expect_identical(out$id, c(1L, 2L))
+})
+
+purrr::walk(c("JSON_ARRAY", "ARROW_STREAM"), function(format) {
+  test_that(paste("dbFetch preserves empty result schema for", format), {
+    fixture <- make_inline_test_result()
+    fixture$response$manifest$format <- format
+    fixture$response$manifest$total_row_count <- 0L
+    fixture$response$manifest$total_chunk_count <- 0L
+    fixture$response$manifest$chunks <- list()
+    fixture$response$result <- list()
+    res <- new(
+      "DatabricksResult",
+      statement_id = "stmt-empty",
+      statement = "SELECT id, label FROM example WHERE FALSE",
+      connection = make_dbi_test_con(show_progress = FALSE),
+      completed = FALSE,
+      rows_fetched = 0
+    )
+
+    local_mocked_bindings(
+      db_sql_exec_status = function(...) fixture$response,
+      db_perform_request = function(...) stop("unexpected result request"),
+      .package = "brickster"
+    )
+
+    expect_identical(dbFetch(res), tibble::tibble(id = integer(), label = character()))
+  })
+})
+
+purrr::walk(c("get", "fetch", "fetch-limited"), function(method) {
+  test_that(paste("DBI INLINE retrieves multiple chunks with", method), {
+    fixture <- make_inline_test_result()
+    con <- make_dbi_test_con(show_progress = FALSE)
+    con@host <- "dbi-inline.test"
+    con@fetch_timeout <- 23
+    state <- new.env(parent = emptyenv())
+    state$chunks <- integer()
+
+    local_mocked_bindings(
+      db_sql_exec_query = function(disposition, format, ...) {
+        expect_identical(disposition, "INLINE")
+        expect_identical(format, "JSON_ARRAY")
+        list(statement_id = "stmt-inline", status = list(state = "RUNNING"))
+      },
+      db_sql_exec_status = function(...) fixture$response,
+      db_perform_request = function(req, ...) {
+        index <- as.integer(sub(".*/chunks/", "", req$url))
+        state$chunks <- c(state$chunks, index)
+        expect_identical(
+          req$url,
+          paste0("https://dbi-inline.test/api/2.0/sql/statements/stmt-inline/result/chunks/", index)
+        )
+        expect_identical(rlang::wref_value(req$headers$Authorization), "Bearer test_token")
+        expect_equal(req$options$timeout_ms, 23000)
+        fixture$chunks[[index + 1L]]
+      },
+      .package = "brickster"
+    )
+
+    if (method == "get") {
+      out <- dbGetQuery(con, "SELECT id, label FROM example", disposition = "INLINE")
+    } else {
+      res <- dbSendQuery(con, "SELECT id, label FROM example", disposition = "INLINE")
+      out <- dbFetch(res, n = if (method == "fetch-limited") 3 else -1)
+    }
+
+    expected_rows <- if (method == "fetch-limited") 3L else 6L
+    expect_s3_class(out, "tbl_df")
+    expect_identical(out$id, as.character(seq_len(expected_rows) - 1L))
+    expect_identical(
+      out$label,
+      list(NULL, NULL, "two", "three", NULL, "five")[seq_len(expected_rows)]
+    )
+    expect_identical(state$chunks, if (method == "fetch-limited") 1L else c(1L, 2L))
+  })
 })
 
 test_that("volume-method selection warns/errors at size thresholds", {

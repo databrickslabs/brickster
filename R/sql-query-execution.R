@@ -437,6 +437,69 @@ db_sql_process_inline <- function(result_data, manifest, row_limit = NULL) {
   results
 }
 
+#' Fetch Inline SQL Query Results
+#'
+#' @description
+#' Reuses the initial chunk and fetches subsequent chunks in order, stopping
+#' once the requested row limit is satisfied. Converts the combined rows once
+#' to preserve consistent column types across chunks.
+#'
+#' @inheritParams db_sql_fetch_results
+#' @param row_limit Maximum number of rows to return. Fetching stops once enough
+#'   rows are available; any excess rows in the last fetched chunk are discarded.
+#' @returns A tibble containing all requested INLINE result rows.
+#' @keywords internal
+db_sql_fetch_inline <- function(
+  resp,
+  row_limit = NULL,
+  fetch_timeout = 300,
+  host = db_host(),
+  token = db_token()
+) {
+  total_chunks <- resp$manifest$total_chunk_count
+  if (is.null(total_chunks)) {
+    total_chunks <- 1L
+  }
+
+  expected_rows <- resp$manifest$total_row_count
+  if (!is.null(row_limit) && row_limit > 0) {
+    expected_rows <- min(expected_rows, row_limit)
+  }
+
+  chunks <- purrr::reduce(
+    seq_len(total_chunks - 1L),
+    function(chunks, chunk_index) {
+      if (sum(purrr::map_int(chunks, length)) >= expected_rows) {
+        return(rlang::done(chunks))
+      }
+
+      req <- db_sql_exec_result(
+        statement_id = resp$statement_id,
+        chunk_index = chunk_index,
+        host = host,
+        token = token,
+        perform_request = FALSE
+      )
+      if (!is.null(fetch_timeout)) {
+        req <- httr2::req_timeout(req, fetch_timeout)
+      }
+      chunk <- db_perform_request(req)
+      c(chunks, list(chunk$data_array))
+    },
+    .init = list(resp$result$data_array)
+  )
+
+  result_data <- list(data_array = purrr::list_flatten(chunks))
+  received_rows <- length(result_data$data_array)
+  if (received_rows < expected_rows) {
+    cli::cli_abort(
+      "Received {received_rows} INLINE result rows, but expected {expected_rows}. Retry the query."
+    )
+  }
+
+  db_sql_process_inline(result_data, resp$manifest, row_limit = row_limit)
+}
+
 #' Create Empty Data Frame from Query Manifest
 #'
 #' @description
@@ -466,17 +529,20 @@ db_sql_create_empty_result <- function(manifest) {
 #'
 #' @description
 #' Internal helper that fetches and processes results from a completed query.
-#' Handles Arrow stream processing and data conversion.
+#' Handles empty results, INLINE JSON arrays, and EXTERNAL_LINKS Arrow streams.
 #'
 #' @param resp Query status response from SQL execution
 #' @param return_arrow Boolean, return arrow Table instead of tibble
 #' @param max_active_connections Integer for concurrent downloads
 #' @param fetch_timeout Integer, timeout in seconds for downloading each result chunk
-#' @param row_limit Integer, limit number of rows returned (applied after fetch)
+#' @param row_limit Integer, limit number of rows returned. INLINE fetching stops
+#'   once enough rows are available; EXTERNAL_LINKS results are limited after fetch.
 #' @param host Databricks host
 #' @param token Databricks token
 #' @param show_progress If `TRUE`, show progress updates during result fetching (default: `TRUE`)
-#' @returns tibble or arrow Table with query results
+#' @returns A tibble for INLINE or empty results. For non-empty EXTERNAL_LINKS
+#'   results, a tibble or an Arrow Table according to `return_arrow` and whether
+#'   the arrow package is installed.
 #' @keywords internal
 db_sql_fetch_results <- function(
   resp,
@@ -489,6 +555,24 @@ db_sql_fetch_results <- function(
   show_progress = TRUE
 ) {
   manifest <- resp$manifest
+
+  if (manifest$total_row_count == 0) {
+    return(db_sql_create_empty_result(manifest))
+  }
+
+  if (
+    identical(manifest$format, "JSON_ARRAY") ||
+      !is.null(resp$result$data_array)
+  ) {
+    return(db_sql_fetch_inline(
+      resp = resp,
+      row_limit = row_limit,
+      fetch_timeout = fetch_timeout,
+      host = host,
+      token = token
+    ))
+  }
+
   statement_id <- resp$statement_id
   total_chunks <- manifest$total_chunk_count
 
@@ -691,7 +775,9 @@ db_sql_fetch_results_parallel <- function(
 #' [arrow::Table].
 #' @param max_active_connections Integer to decide on concurrent downloads.
 #' @param fetch_timeout Integer, timeout in seconds for downloading each result chunk
-#' @param disposition Disposition mode ("INLINE" or "EXTERNAL_LINKS")
+#' @param disposition Disposition mode ("INLINE" or "EXTERNAL_LINKS").
+#'   INLINE results are fetched across all chunks up to `row_limit` and returned
+#'   as a tibble.
 #' @param show_progress If `TRUE`, show progress updates during query execution (default: `TRUE`)
 #' @returns [tibble::tibble] or [arrow::Table].
 #' @export
@@ -732,31 +818,14 @@ db_sql_query <- function(
     show_progress = show_progress
   )
 
-  # Check for empty results early and return immediately
-  # Use total_row_count to detect empty result sets
-  if (resp$manifest$total_row_count == 0) {
-    return(db_sql_create_empty_result(resp$manifest))
-  }
-
-  # Fetch and process results based on disposition
-  if (disposition == "INLINE") {
-    # Use inline processor for JSON_ARRAY results
-    db_sql_process_inline(
-      result_data = resp$result,
-      manifest = resp$manifest,
-      row_limit = row_limit
-    )
-  } else {
-    # Use external links processor for ARROW_STREAM results
-    db_sql_fetch_results(
-      resp = resp,
-      return_arrow = return_arrow,
-      max_active_connections = max_active_connections,
-      fetch_timeout = fetch_timeout,
-      row_limit = row_limit,
-      host = host,
-      token = token,
-      show_progress = show_progress
-    )
-  }
+  db_sql_fetch_results(
+    resp = resp,
+    return_arrow = return_arrow,
+    max_active_connections = max_active_connections,
+    fetch_timeout = fetch_timeout,
+    row_limit = row_limit,
+    host = host,
+    token = token,
+    show_progress = show_progress
+  )
 }

@@ -22,3 +22,7 @@ A data.frame with query results
 \description{
 Fetch results from Databricks query
 }
+\details{
+INLINE results are fetched across chunks until \code{n} rows are
+available, or all result chunks have been fetched when \code{n = -1}.
+}
