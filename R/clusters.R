@@ -689,8 +689,14 @@ db_cluster_list <- function(
   page_size = 20,
   page_token = NULL
 ) {
-  cluster_check_number(page_size, "page_size", min = 1, max = 100)
-  cluster_check_page_token(page_token)
+  if (!is.null(page_size) && (
+    !rlang::is_scalar_integerish(page_size, finite = TRUE) || page_size < 1 || page_size > 100
+  )) {
+    cli::cli_abort("{.arg page_size} must be NULL or a whole number from 1 to 100.")
+  }
+  if (!is.null(page_token) && !rlang::is_string(page_token)) {
+    cli::cli_abort("{.arg page_token} must be NULL or a single string from a previous response.")
+  }
 
   req <- db_request(
     endpoint = "clusters/list",
@@ -866,12 +872,34 @@ db_cluster_events <- function(
   page_token = NULL
 ) {
   order <- match.arg(order, several.ok = FALSE)
-  cluster_check_number(page_size, "page_size", max = 500)
-  cluster_check_page_token(page_token)
-  cluster_check_number(offset, "offset")
-  cluster_check_number(limit, "limit", min = 1, max = 500)
-  cluster_check_number(start_time, "start_time")
-  cluster_check_number(end_time, "end_time")
+  if (!is.null(page_size) && (
+    !rlang::is_scalar_integerish(page_size, finite = TRUE) || page_size < 0 || page_size > 500
+  )) {
+    cli::cli_abort("{.arg page_size} must be NULL or a whole number from 0 to 500.")
+  }
+  if (!is.null(page_token) && !rlang::is_string(page_token)) {
+    cli::cli_abort("{.arg page_token} must be NULL or a single string from a previous response.")
+  }
+  if (!is.null(offset) && (
+    !rlang::is_scalar_integerish(offset, finite = TRUE) || offset < 0
+  )) {
+    cli::cli_abort("{.arg offset} must be NULL or a non-negative whole number.")
+  }
+  if (!is.null(limit) && (
+    !rlang::is_scalar_integerish(limit, finite = TRUE) || limit < 1 || limit > 500
+  )) {
+    cli::cli_abort("{.arg limit} must be NULL or a whole number from 1 to 500.")
+  }
+  if (!is.null(start_time) && (
+    !rlang::is_scalar_integerish(start_time, finite = TRUE) || start_time < 0
+  )) {
+    cli::cli_abort("{.arg start_time} must be NULL or a non-negative whole number of milliseconds since the Unix epoch.")
+  }
+  if (!is.null(end_time) && (
+    !rlang::is_scalar_integerish(end_time, finite = TRUE) || end_time < 0
+  )) {
+    cli::cli_abort("{.arg end_time} must be NULL or a non-negative whole number of milliseconds since the Unix epoch.")
+  }
   if (!is.null(start_time) && !is.null(end_time) && start_time > end_time) {
     cli::cli_abort("{.arg start_time} must be less than or equal to {.arg end_time}.")
   }
@@ -919,23 +947,6 @@ db_cluster_events <- function(
     db_perform_request(req)
   } else {
     req
-  }
-}
-
-cluster_check_number <- function(x, arg, min = 0, max = 2^53 - 1) {
-  if (is.null(x)) return(invisible(NULL))
-  if (!is.numeric(x) || length(x) != 1L || !is.finite(x) ||
-      x != floor(x) || x < min || x > max) {
-    cli::cli_abort(
-      "{.arg {arg}} must be NULL or a single whole number between {min} and {max}."
-    )
-  }
-}
-
-cluster_check_page_token <- function(page_token) {
-  if (is.null(page_token)) return(invisible(NULL))
-  if (!is.character(page_token) || length(page_token) != 1L || is.na(page_token)) {
-    cli::cli_abort("{.arg page_token} must be NULL or a single string from a previous response.")
   }
 }
 
