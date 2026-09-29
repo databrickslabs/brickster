@@ -153,6 +153,7 @@ reference:
       - db_perform_response
       - db_req_error_body
       - db_request_json
+      - db_list_all_pages
   - title: Low Level Helpers
     contents: starts_with("is.", internal = TRUE)
   - title: Workspace Connection

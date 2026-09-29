@@ -667,6 +667,8 @@ db_cluster_get <- function(
 #' Extract `$clusters` to access the records; earlier versions returned these
 #' records directly without pagination metadata.
 #'
+#' @seealso [db_list_all_pages()] to collect records from every page.
+#'
 #' @family Clusters API
 #'
 #' @export
@@ -850,6 +852,8 @@ db_cluster_list_zones <- function(
 #' numeric offsets cannot be converted to page tokens.
 #'
 #' Supply epoch milliseconds as numeric values, not R integers.
+#'
+#' @seealso [db_list_all_pages()] to collect records from every page.
 #'
 #' @family Clusters API
 #'

@@ -78,6 +78,8 @@ numeric offsets cannot be converted to page tokens.
 Supply epoch milliseconds as numeric values, not R integers.
 }
 \seealso{
+\code{\link[=db_list_all_pages]{db_list_all_pages()}} to collect records from every page.
+
 Other Clusters API: 
 \code{\link{db_cluster_create}()},
 \code{\link{db_cluster_edit}()},

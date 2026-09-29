@@ -51,6 +51,8 @@ if (!is.null(page$next_page_token) && nzchar(page$next_page_token)) {
 }
 }
 \seealso{
+\code{\link[=db_list_all_pages]{db_list_all_pages()}} to collect records from every page.
+
 Other Clusters API: 
 \code{\link{db_cluster_create}()},
 \code{\link{db_cluster_edit}()},

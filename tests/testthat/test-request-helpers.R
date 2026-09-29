@@ -65,6 +65,10 @@ test_that("request helpers - building requests", {
   expect_null(db_request_json(NULL))
 })
 
+test_that("page collection requires a function", {
+  expect_error(db_list_all_pages(list()), "is.function\\(list_page_fn\\)")
+})
+
 test_that("request error body handles standard Databricks JSON errors", {
   resp <- local_error_response(
     paste0(

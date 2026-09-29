@@ -22,17 +22,14 @@ knitr::opts_chunk$set(
 `db_cluster_list()` returns one page from Clusters API 2.1, with up to 20 clusters
 by default. Extract `$clusters` for the records and use `$next_page_token` to
 retrieve another page. Earlier versions returned cluster records directly.
+To collect all clusters, pass the listing function to `db_list_all_pages()`:
 
 ```{r}
-page <- db_cluster_list(page_size = 100)
-clusters <- page$clusters
-while (!is.null(page$next_page_token) && nzchar(page$next_page_token)) {
-  page <- db_cluster_list(page_size = 100, page_token = page$next_page_token)
-  clusters <- c(clusters, page$clusters)
-}
+clusters <- db_list_all_pages(db_cluster_list, page_size = 100)
 ```
 
-The Connections pane follows these pages automatically.
+The helper returns a list of cluster records with pagination metadata removed.
+The Connections pane uses the same helper to follow all pages.
 
 ## Cluster Creation
 
@@ -210,6 +207,18 @@ if (!is.null(page$next_page_token) && nzchar(page$next_page_token)) {
     page_token = page$next_page_token
   )
 }
+```
+
+To collect all matching events, use the same helper. Filters are passed to every
+page request:
+
+```{r}
+events <- db_list_all_pages(
+  db_cluster_events,
+  cluster_id = new_cluster$cluster_id,
+  event_types = list("RUNNING", "TERMINATING"),
+  page_size = 500
+)
 ```
 
 `offset` and `limit` are deprecated in favor of `page_token` and `page_size`.
