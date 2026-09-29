@@ -49,6 +49,13 @@
   now creates each parent directory only once, avoiding repeated API
   calls for files in the same directory.
 
+- [`dbWriteTable()`](https://dbi.r-dbi.org/reference/dbWriteTable.html)
+  and
+  [`dbAppendTable()`](https://dbi.r-dbi.org/reference/dbAppendTable.html)
+  now write POSIXct values as epoch microseconds without shifting their
+  time zone, using the same microsecond conversion as volume-based
+  writes.
+
 - Standard-path table writes now detect binary columns once per column,
   avoiding quadratic serialization time for lists of raw vectors.
 
