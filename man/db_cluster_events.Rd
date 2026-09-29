@@ -10,11 +10,13 @@ db_cluster_events(
   end_time = NULL,
   event_types = NULL,
   order = c("DESC", "ASC"),
-  offset = 0,
-  limit = 50,
+  offset = NULL,
+  limit = NULL,
   host = db_host(),
   token = db_token(),
-  perform_request = TRUE
+  perform_request = TRUE,
+  page_size = 50,
+  page_token = NULL
 )
 }
 \arguments{
@@ -31,12 +33,13 @@ is to return all events. \href{https://docs.databricks.com/api/workspace/cluster
 
 \item{order}{Either \code{DESC} (default) or \code{ASC}.}
 
-\item{offset}{The offset in the result set. Defaults to 0 (no offset). When
-an offset is specified and the results are requested in descending order, the
-end_time field is required.}
+\item{offset}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Use \code{page_token} instead.
+Legacy result offset. When supplied, uses legacy pagination with a warning.
+Descending requests with an offset require \code{end_time}.}
 
-\item{limit}{Maximum number of events to include in a page of events.
-Defaults to 50, and maximum allowed value is 500.}
+\item{limit}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Use \code{page_size} instead.
+Legacy page size, from 1 to 500. When supplied, uses legacy pagination
+with a warning.}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
@@ -44,21 +47,39 @@ Defaults to 50, and maximum allowed value is 500.}
 
 \item{perform_request}{If \code{TRUE} (default) the request is performed, if
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
+
+\item{page_size}{Maximum number of events per page, from 0 to 500
+(default: 50). Use \code{0} or \code{NULL} for the server default.}
+
+\item{page_token}{A \code{next_page_token} or \code{prev_page_token} from a previous
+response, or \code{NULL} for the first page.}
 }
 \value{
-If \code{perform_request = TRUE}, returns endpoint-specific API output. If \code{FALSE}, returns an \code{httr2_request}.
+If \code{perform_request = TRUE}, returns the full single-page API
+response, including \code{events} and pagination metadata when present.
+If \code{FALSE}, returns an \code{httr2_request}.
 }
 \description{
 List Cluster Activity Events
 }
 \details{
-Retrieve a list of events about the activity of a cluster. You can retrieve
-events from active clusters (running, pending, or reconfiguring) and
-terminated clusters within 30 days of their last termination. This API is
-paginated. If there are more events to read, the response includes all the
-parameters necessary to request the next page of events.
+Retrieve one page of events about the activity of a cluster. Extract
+\verb{$events} to access the records; earlier versions returned the records
+directly. Use the response's \code{next_page_token} or \code{prev_page_token} as
+\code{page_token} to navigate pages, retaining the same time and event filters.
+
+\code{offset} and \code{limit} default to \code{NULL} and are omitted from token-based
+requests. Non-\code{NULL} legacy arguments cannot be combined with an explicitly
+supplied non-\code{NULL} \code{page_size} or \code{page_token}. Legacy arguments are forwarded
+for compatibility, but Databricks deprecates them on November 30, 2026.
+Migrate to \code{page_size} and tokens returned by the preceding response;
+numeric offsets cannot be converted to page tokens.
+
+Supply epoch milliseconds as numeric values, not R integers.
 }
 \seealso{
+\code{\link[=db_list_all_pages]{db_list_all_pages()}} to collect records from every page.
+
 Other Clusters API: 
 \code{\link{db_cluster_create}()},
 \code{\link{db_cluster_edit}()},

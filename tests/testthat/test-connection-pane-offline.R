@@ -316,7 +316,7 @@ test_that("compute and model-registry list helpers format display labels", {
   out_clusters <- with_mocked_bindings(
     get_clusters(host = "mock_host", token = "mock_token"),
     db_cluster_list = function(...) {
-      list(list(state = "RUNNING", cluster_name = "c-a", cluster_id = "cid-a"))
+      list(clusters = list(list(state = "RUNNING", cluster_name = "c-a", cluster_id = "cid-a")))
     },
     .package = "brickster"
   )

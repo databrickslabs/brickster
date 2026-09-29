@@ -175,3 +175,61 @@ from_logical <- function(x) {
   stopifnot(is.logical(x))
   ifelse(x, "true", "false")
 }
+
+#' Collect Records from All API Response Pages
+#'
+#' @param list_page_fn A listing function, such as [db_cluster_list()],
+#'   [db_cluster_events()], or [db_jobs_list()]. It must accept `page_token`
+#'   and return a named list containing record collections and, when more pages
+#'   are available, `next_page_token`.
+#' @param ... Arguments passed to `list_page_fn` on every request, including
+#'   filters, page size, `host`, and `token`. Leave `page_token` and
+#'   `perform_request` at their defaults; this helper fetches the pages.
+#'
+#' @details
+#' Removes the top-level pagination fields `next_page_token`, `prev_page_token`,
+#' `next_page`, `total_count`, `has_more`, and `has_next_page`, then combines the
+#' remaining record collections. No collection field name is needed. Use a
+#' listing function whose remaining response fields contain lists of records.
+#' Wrappers that already flatten their response, such as [db_lakebase_list()],
+#' are not supported.
+#'
+#' Uses token pagination, starting at the first page. Leave legacy pagination
+#' arguments unset, such as `offset` and `limit` in [db_cluster_events()]. Empty
+#' pages with a continuation token are followed. Request errors and repeated
+#' tokens stop collection with an error.
+#'
+#' @returns A list of records from all pages, in request order, with record
+#'   classes and nested fields preserved. Pagination metadata is omitted.
+#'   Returns `list()` when there are no records. All pages are held in memory.
+#'
+#' @family Request Helpers
+#' @export
+#' @examples
+#' \dontrun{
+#' clusters <- db_list_all_pages(db_cluster_list, page_size = 100)
+#' events <- db_list_all_pages(db_cluster_events, cluster_id = "cluster-id")
+#' jobs <- db_list_all_pages(db_jobs_list, limit = 100)
+#' }
+db_list_all_pages <- function(list_page_fn, ...) {
+  stopifnot(is.function(list_page_fn))
+  pagination_fields <- c(
+    "next_page_token", "prev_page_token", "next_page", "total_count", "has_more",
+    "has_next_page"
+  )
+  pages <- list()
+  page_token <- NULL
+  seen_tokens <- character()
+  repeat {
+    page <- list_page_fn(..., page_token = page_token)
+    records <- purrr::compact(page[setdiff(names(page), pagination_fields)])
+    pages[[length(pages) + 1L]] <- purrr::list_flatten(unname(records))
+    page_token <- page$next_page_token
+    if (is.null(page_token) || !nzchar(page_token)) break
+    if (page_token %in% seen_tokens) {
+      cli::cli_abort("API listing returned a repeated page token.")
+    }
+    seen_tokens <- c(seen_tokens, page_token)
+  }
+  purrr::list_flatten(pages)
+}

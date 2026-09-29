@@ -17,6 +17,7 @@ Generate Request JSON
 }
 \seealso{
 Other Request Helpers: 
+\code{\link{db_list_all_pages}()},
 \code{\link{db_perform_request}()},
 \code{\link{db_perform_response}()},
 \code{\link{db_req_error_body}()},

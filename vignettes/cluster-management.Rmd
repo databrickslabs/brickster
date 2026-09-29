@@ -17,6 +17,20 @@ knitr::opts_chunk$set(
 
 `{brickster}` has 1:1 mappings with the clusters REST API, enabling full control of Databricks clusters from your R session.
 
+## Listing Clusters
+
+`db_cluster_list()` returns one page from Clusters API 2.1, with up to 20 clusters
+by default. Extract `$clusters` for the records and use `$next_page_token` to
+retrieve another page. Earlier versions returned cluster records directly.
+To collect all clusters, pass the listing function to `db_list_all_pages()`:
+
+```{r}
+clusters <- db_list_all_pages(db_cluster_list, page_size = 100)
+```
+
+The helper returns a list of cluster records with pagination metadata removed.
+The Connections pane uses the same helper to follow all pages.
+
 ## Cluster Creation
 
 Clusters have a number of parameters and can be configured to match to needs of a given workload. `db_cluster_create()` facilitates creation of a cluster in a Databricks workspace for all cloud platforms (AWS, Azure, GCP).
@@ -177,12 +191,42 @@ db_libs_cluster_status(cluster_id = new_cluster$cluster_id)
 
 ## Events
 
-A list of events regarding the clusters activity can be fetched via `db_cluster_events()`. There are many [event types](https://docs.databricks.com/api/workspace/clusters/events#events) that can occur, and by default the 50 most recent events are returned.
+A page of cluster activity events can be fetched via `db_cluster_events()`.
+There are many [event types](https://docs.databricks.com/api/workspace/clusters/events#events),
+and by default up to 50 recent events are returned. Extract `$events` for the
+records; earlier versions returned these records directly. Use the returned
+pagination tokens to navigate pages, retaining the same filters.
 
 ```{r}
-events <- db_cluster_events(cluster_id = new_cluster$cluster_id)
-head(events, 1)
+page <- db_cluster_events(cluster_id = new_cluster$cluster_id, page_size = 50)
+head(page$events, 1)
+if (!is.null(page$next_page_token) && nzchar(page$next_page_token)) {
+  next_page <- db_cluster_events(
+    cluster_id = new_cluster$cluster_id,
+    page_size = 50,
+    page_token = page$next_page_token
+  )
+}
 ```
+
+To collect all matching events, use the same helper. Filters are passed to every
+page request:
+
+```{r}
+events <- db_list_all_pages(
+  db_cluster_events,
+  cluster_id = new_cluster$cluster_id,
+  event_types = list("RUNNING", "TERMINATING"),
+  page_size = 500
+)
+```
+
+`offset` and `limit` are deprecated in favor of `page_token` and `page_size`.
+Explicit legacy arguments still use the old API fields with a warning, but
+cannot be combined with token pagination. Databricks deprecates these fields
+on November 30, 2026. Use tokens from previous responses; numeric offsets cannot
+be converted to tokens. Supply `start_time` and `end_time` as numeric epoch
+milliseconds rather than R integers.
 
 ```{r, echo=FALSE, results='hide'}
 db_cluster_unpin(cluster_id = new_cluster$cluster_id)

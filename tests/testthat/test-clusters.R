@@ -119,6 +119,112 @@ test_that("Clusters API - don't perform", {
   expect_s3_class(resp_delete, "httr2_request")
 })
 
+test_that("cluster wrappers use the Clusters API 2.1 paths and methods", {
+  withr::local_envvar(c(DATABRICKS_HOST = "mock_host", DATABRICKS_TOKEN = "mock_token"))
+  requests <- list(
+    create = db_cluster_create("test", "runtime", "node", num_workers = 1, perform_request = FALSE),
+    edit = db_cluster_edit("c-1", "runtime", "node", perform_request = FALSE),
+    start = db_cluster_start("c-1", perform_request = FALSE),
+    restart = db_cluster_restart("c-1", perform_request = FALSE),
+    delete = db_cluster_delete("c-1", perform_request = FALSE),
+    delete = db_cluster_terminate("c-1", perform_request = FALSE),
+    `permanent-delete` = db_cluster_perm_delete("c-1", perform_request = FALSE),
+    pin = db_cluster_pin("c-1", perform_request = FALSE),
+    unpin = db_cluster_unpin("c-1", perform_request = FALSE),
+    resize = db_cluster_resize("c-1", num_workers = 2, perform_request = FALSE),
+    get = db_cluster_get("c-1", perform_request = FALSE),
+    list = db_cluster_list(perform_request = FALSE),
+    `list-node-types` = db_cluster_list_node_types(perform_request = FALSE),
+    `spark-versions` = db_cluster_runtime_versions(perform_request = FALSE),
+    `list-zones` = db_cluster_list_zones(perform_request = FALSE),
+    events = db_cluster_events("c-1", perform_request = FALSE)
+  )
+  get_endpoints <- c("get", "list", "list-node-types", "spark-versions", "list-zones")
+  purrr::iwalk(requests, function(req, endpoint) {
+    expect_s3_class(req, "httr2_request")
+    expect_identical(httr2::url_parse(req$url)$path, paste0("/api/2.1/clusters/", endpoint))
+    expect_identical(req$method, if (endpoint %in% get_endpoints) "GET" else "POST")
+  })
+  expect_identical(httr2::url_parse(requests$get$url)$query$cluster_id, "c-1")
+  expect_null(requests$get$body)
+})
+
+test_that("cluster listing sends pagination as query parameters", {
+  req <- db_cluster_list("mock_host", "mock_token", FALSE, page_size = 100, page_token = "next+/=")
+  expect_identical(httr2::url_parse(req$url)$query, list(page_size = "100", page_token = "next+/="))
+  expect_null(req$body)
+  req <- db_cluster_list("mock_host", "mock_token", FALSE)
+  expect_identical(httr2::url_parse(req$url)$query, list(page_size = "20"))
+  req <- db_cluster_list("mock_host", "mock_token", FALSE, page_size = NULL)
+  expect_length(httr2::url_parse(req$url)$query, 0)
+})
+
+test_that("cluster event requests retain timestamps and use token pagination", {
+  withr::local_envvar(c(DATABRICKS_HOST = "mock_host", DATABRICKS_TOKEN = "mock_token"))
+  req <- db_cluster_events(
+    "c-1", start_time = 1790553600000, end_time = 1790640000000,
+    event_types = list("RUNNING", "TERMINATING"), order = "ASC",
+    page_size = 500, page_token = "next+/=", perform_request = FALSE
+  )
+  body <- jsonlite::fromJSON(db_request_json(req))
+  expect_identical(body$start_time, 1790553600000)
+  expect_identical(body$end_time, 1790640000000)
+  expect_identical(body$event_types, c("RUNNING", "TERMINATING"))
+  expect_identical(body$order, "ASC")
+  expect_identical(body$page_size, 500L)
+  expect_identical(body$page_token, "next+/=")
+  expect_null(body$offset)
+  expect_null(body$limit)
+
+  default <- db_cluster_events("c-1", perform_request = FALSE)$body$data
+  expect_identical(default, list(cluster_id = "c-1", order = "DESC", page_size = 50))
+  zero <- db_cluster_events("c-1", page_size = 0, perform_request = FALSE)$body$data
+  expect_identical(zero$page_size, 0)
+  omitted <- db_cluster_events("c-1", page_size = NULL, perform_request = FALSE)$body$data
+  expect_null(omitted$page_size)
+})
+
+test_that("legacy event pagination warns and preserves positional arguments", {
+  withr::local_options(lifecycle_verbosity = "warning")
+  expect_warning(
+    req <- db_cluster_events(
+      "c-1", NULL, 1790640000000, NULL, "DESC", 25, NULL,
+      "mock_host", "mock_token", FALSE
+    ),
+    "offset.*deprecated", class = "lifecycle_warning_deprecated"
+  )
+  expect_identical(req$body$data$offset, 25)
+  expect_null(req$body$data$page_size)
+  expect_null(req$body$data$page_token)
+  expect_warning(
+    req <- db_cluster_events(
+      "c-1", limit = 100, host = "mock_host", token = "mock_token", perform_request = FALSE
+    ),
+    "limit.*deprecated", class = "lifecycle_warning_deprecated"
+  )
+  expect_identical(req$body$data$limit, 100)
+  expect_null(req$body$data$page_size)
+})
+
+test_that("pagination validation fails before authentication", {
+  invalid_sizes <- list(-1, 101, 1.5, NA_real_, Inf, "20", numeric(), c(1, 2), TRUE)
+  purrr::walk(invalid_sizes, function(value) {
+    expect_error(db_cluster_list(page_size = value, perform_request = FALSE), "page_size")
+  })
+  purrr::walk(list(-1, 501, 1.5, NA_real_, Inf, "20", numeric(), c(1, 2)), function(value) {
+    expect_error(db_cluster_events("c-1", page_size = value, perform_request = FALSE), "page_size")
+  })
+  purrr::walk(list(1, NA_character_, character(), c("a", "b")), function(value) {
+    expect_error(db_cluster_list(page_token = value, perform_request = FALSE), "page_token")
+    expect_error(db_cluster_events("c-1", page_token = value, perform_request = FALSE), "page_token")
+  })
+  expect_error(db_cluster_events("c-1", offset = -1, perform_request = FALSE), "offset")
+  expect_error(db_cluster_events("c-1", limit = 0, perform_request = FALSE), "limit")
+  expect_error(db_cluster_events("c-1", limit = 501, perform_request = FALSE), "limit")
+  expect_error(db_cluster_events("c-1", offset = 0, page_token = "next"), "not both")
+  expect_error(db_cluster_events("c-1", limit = 50, page_size = 100), "not both")
+})
+
 skip_on_cran()
 skip_unless_authenticated()
 skip_unless_aws_workspace()
@@ -126,9 +232,15 @@ skip_unless_aws_workspace()
 test_that("Clusters API", {
   # basic metadata functions
   expect_no_error({
-    resp_list <- db_cluster_list()
+    resp_list <- db_cluster_list(page_size = 1)
   })
-  expect_type(resp_list, "list")
+  expect_s3_class(resp_list, "db_cluster_list")
+  expect_lte(length(resp_list$clusters), 1L)
+  if (!is.null(resp_list$next_page_token) && nzchar(resp_list$next_page_token)) {
+    next_page <- db_cluster_list(page_size = 1, page_token = resp_list$next_page_token)
+    expect_s3_class(next_page, "db_cluster_list")
+    expect_lte(length(next_page$clusters), 1L)
+  }
 
   expect_no_error({
     resp_list_zones <- db_cluster_list_zones()
@@ -179,8 +291,17 @@ test_that("Clusters API", {
   })
 
   expect_no_error({
-    resp_events <- db_cluster_events(resp_create$cluster_id)
+    resp_events <- db_cluster_events(resp_create$cluster_id, page_size = 1)
   })
+  expect_type(resp_events, "list")
+  expect_lte(length(resp_events$events), 1L)
+  if (!is.null(resp_events$next_page_token) && nzchar(resp_events$next_page_token)) {
+    next_events <- db_cluster_events(
+      resp_create$cluster_id, page_size = 1, page_token = resp_events$next_page_token
+    )
+    expect_type(next_events, "list")
+    expect_lte(length(next_events$events), 1L)
+  }
 
   expect_no_error({
     resp_terminate <- db_cluster_terminate(cluster_id = resp_create$cluster_id)

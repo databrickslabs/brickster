@@ -4,7 +4,13 @@
 \alias{db_cluster_list}
 \title{List Clusters}
 \usage{
-db_cluster_list(host = db_host(), token = db_token(), perform_request = TRUE)
+db_cluster_list(
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE,
+  page_size = 20,
+  page_token = NULL
+)
 }
 \arguments{
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
@@ -13,31 +19,40 @@ db_cluster_list(host = db_host(), token = db_token(), perform_request = TRUE)
 
 \item{perform_request}{If \code{TRUE} (default) the request is performed, if
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
+
+\item{page_size}{Maximum number of clusters per page, from 1 to 100
+(default: 20). Use \code{NULL} for the server default.}
+
+\item{page_token}{A \code{next_page_token} or \code{prev_page_token} from a previous
+response, or \code{NULL} for the first page.}
 }
 \value{
-If \code{perform_request = TRUE}, returns a nested list of clusters with
-class \code{db_cluster_list}; each element has class \code{db_cluster}. If \code{FALSE},
+If \code{perform_request = TRUE}, returns the full single-page API
+response with class \code{db_cluster_list}, including pagination tokens when
+present. Each record in \code{clusters} has class \code{db_cluster}. If \code{FALSE},
 returns an \code{httr2_request}.
 }
 \description{
 List Clusters
 }
 \details{
-Return information about all pinned clusters, active clusters, up to 150 of
-the most recently terminated all-purpose clusters in the past 30 days, and up
-to 30 of the most recently terminated job clusters in the past 30 days.
-
-For example, if there is 1 pinned cluster, 4 active clusters, 45 terminated
-all-purpose clusters in the past 30 days, and 50 terminated job clusters in
-the past 30 days, then this API returns:
-\itemize{
-\item the 1 pinned cluster
-\item 4 active clusters
-\item All 45 terminated all-purpose clusters
-\item The 30 most recently terminated job clusters
+Retrieve one page of pinned and active clusters, and clusters terminated
+within the past 30 days. Use \code{next_page_token} to request subsequent pages.
+Extract \verb{$clusters} to access the records; earlier versions returned these
+records directly without pagination metadata.
+}
+\examples{
+\dontrun{
+page <- db_cluster_list()
+clusters <- page$clusters
+if (!is.null(page$next_page_token) && nzchar(page$next_page_token)) {
+  next_page <- db_cluster_list(page_token = page$next_page_token)
+}
 }
 }
 \seealso{
+\code{\link[=db_list_all_pages]{db_list_all_pages()}} to collect records from every page.
+
 Other Clusters API: 
 \code{\link{db_cluster_create}()},
 \code{\link{db_cluster_edit}()},

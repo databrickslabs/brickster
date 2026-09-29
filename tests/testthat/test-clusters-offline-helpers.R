@@ -1,3 +1,74 @@
+test_that("cluster listing preserves metadata and exposes subsequent pages", {
+  state <- new.env(parent = emptyenv())
+  state$tokens <- list()
+  local_mocked_bindings(
+    db_perform_request = function(req) {
+      token <- httr2::url_parse(req$url)$query$page_token
+      state$tokens[length(state$tokens) + 1L] <- list(token)
+      if (is.null(token)) {
+        return(list(
+          clusters = list(list(cluster_id = "first")), next_page_token = "next+/=",
+          prev_page_token = "previous", future_metadata = "kept"
+        ))
+      }
+      if (token == "next+/=") return(list(next_page_token = "last", future_metadata = "empty page"))
+      list(clusters = list(list(cluster_id = "last")), next_page_token = "")
+    },
+    .package = "brickster"
+  )
+  first <- db_cluster_list("mock_host", "mock_token")
+  expect_s3_class(first, "db_cluster_list")
+  expect_s3_class(first$clusters[[1]], "db_cluster")
+  expect_identical(first$clusters[[1]]$cluster_id, "first")
+  expect_identical(first$next_page_token, "next+/=")
+  expect_identical(first$prev_page_token, "previous")
+  expect_identical(first$future_metadata, "kept")
+  expect_length(state$tokens, 1L)
+  second <- db_cluster_list("mock_host", "mock_token", page_token = first$next_page_token)
+  expect_null(second$clusters)
+  expect_identical(second$future_metadata, "empty page")
+  last <- db_cluster_list("mock_host", "mock_token", page_token = second$next_page_token)
+  expect_identical(last$clusters[[1]]$cluster_id, "last")
+  expect_identical(last$next_page_token, "")
+  expect_identical(state$tokens, list(NULL, "next+/=", "last"))
+})
+
+test_that("events preserve pagination tokens and filters across requests", {
+  state <- new.env(parent = emptyenv())
+  state$bodies <- list()
+  local_mocked_bindings(
+    db_perform_request = function(req) {
+      state$bodies[[length(state$bodies) + 1L]] <- req$body$data
+      if (is.null(req$body$data$page_token)) {
+        return(list(events = list(list(type = "RUNNING")), next_page_token = "next+/=", prev_page_token = "previous"))
+      }
+      list(events = list(), next_page_token = "", prev_page_token = "first", future_metadata = "kept")
+    },
+    .package = "brickster"
+  )
+  args <- list(
+    cluster_id = "c-1", start_time = 1790553600000, end_time = 1790640000000,
+    event_types = list("RUNNING"), order = "ASC", page_size = 10,
+    host = "mock_host", token = "mock_token"
+  )
+  first <- do.call(db_cluster_events, args)
+  expect_identical(first$events[[1]]$type, "RUNNING")
+  expect_identical(first$next_page_token, "next+/=")
+  expect_identical(first$prev_page_token, "previous")
+  expect_length(state$bodies, 1L)
+  last <- do.call(db_cluster_events, c(args, list(page_token = first$next_page_token)))
+  expect_identical(last, list(events = list(), next_page_token = "", prev_page_token = "first", future_metadata = "kept"))
+  expect_identical(state$bodies[[2]], c(state$bodies[[1]], list(page_token = "next+/=")))
+})
+
+test_that("empty cluster and event responses remain usable", {
+  local_mocked_bindings(db_perform_request = function(req) list(), .package = "brickster")
+  page <- db_cluster_list("mock_host", "mock_token")
+  expect_identical(unclass(page), list())
+  expect_output(expect_identical(print(page), page), "NULL")
+  expect_identical(db_cluster_events("c-1", host = "mock_host", token = "mock_token"), list())
+})
+
 test_that("get_and_start_cluster starts a terminated cluster and waits until running", {
   state <- new.env(parent = emptyenv())
   state$idx <- 0L
@@ -214,12 +285,11 @@ test_that("cluster action/list wrappers return expected payload shapes", {
     "DATABRICKS_TOKEN" = "mock_token"
   ))
 
-  req <- structure(list(), class = "httr2_request")
-
   local_mocked_bindings(
-    db_request = function(...) req,
+    db_perform_response = function(req) list(),
     db_perform_request = function(req) {
       list(
+        cluster_id = "c-1",
         clusters = list(list(cluster_id = "c-1")),
         node_types = list(list(node_type_id = "m5d.large")),
         versions = list(list(key = "14.3.x-scala2.12")),
@@ -229,36 +299,26 @@ test_that("cluster action/list wrappers return expected payload shapes", {
     },
     .package = "brickster"
   )
-  local_mocked_bindings(
-    req_body_json = function(req, body) req,
-    req_perform = function(req) structure(list(), class = "httr2_response"),
-    resp_body_json = function(resp, ...) list(cluster_id = "c-1", state = "RUNNING"),
-    .package = "httr2"
-  )
-
   expect_null(db_cluster_action(cluster_id = "c-1", action = "start", perform_request = TRUE))
 
-  expect_identical(db_cluster_list(perform_request = TRUE)[[1]]$cluster_id, "c-1")
+  expect_identical(db_cluster_list(perform_request = TRUE)$clusters[[1]]$cluster_id, "c-1")
   expect_identical(db_cluster_list_node_types(perform_request = TRUE)$node_types[[1]]$node_type_id, "m5d.large")
   expect_identical(db_cluster_runtime_versions(perform_request = TRUE)$versions[[1]]$key, "14.3.x-scala2.12")
   expect_identical(db_cluster_list_zones(perform_request = TRUE)$zones, "us-west-2a")
-  expect_identical(db_cluster_events(cluster_id = "c-1", perform_request = TRUE)[[1]]$type, "RUNNING")
+  expect_identical(db_cluster_events(cluster_id = "c-1", perform_request = TRUE)$events[[1]]$type, "RUNNING")
   expect_identical(db_cluster_get(cluster_id = "c-1", perform_request = TRUE)$cluster_id, "c-1")
 })
 
-test_that("cluster get/list responses add print classes without changing list access", {
+test_that("cluster get/list responses retain print classes and cluster details", {
   withr::local_envvar(c(
     "DATABRICKS_HOST" = "http://mock_host",
     "DATABRICKS_TOKEN" = "mock_token"
   ))
 
   local_mocked_bindings(
-    db_request = function(...) {
-      args <- list(...)
-      structure(list(endpoint = args$endpoint), class = "httr2_request")
-    },
     db_perform_request = function(req) {
-      if (identical(req$endpoint, "clusters/list")) {
+      endpoint <- httr2::url_parse(req$url)$path
+      if (endsWith(endpoint, "/clusters/list")) {
         return(list(
           clusters = list(
             list(
@@ -285,11 +345,8 @@ test_that("cluster get/list responses add print classes without changing list ac
         ))
       }
 
-      cli::cli_abort("Unexpected endpoint in test mock: {req$endpoint}")
-    },
-    db_perform_response = function(req) {
-      if (identical(req$endpoint, "clusters/get")) {
-        return(structure(
+      if (endsWith(endpoint, "/clusters/get")) {
+        return(
           list(
             cluster_id = "c-1",
             cluster_name = "cluster-a",
@@ -300,19 +357,13 @@ test_that("cluster get/list responses add print classes without changing list ac
             executors = list(list(executor_id = "1"), list(executor_id = "2")),
             node_type_id = "m5d.large",
             spark_version = "14.3.x-scala2.12"
-          ),
-          class = "httr2_response"
-        ))
+          )
+        )
       }
 
-      cli::cli_abort("Unexpected endpoint in test mock: {req$endpoint}")
+      cli::cli_abort("Unexpected endpoint in test mock: {endpoint}")
     },
     .package = "brickster"
-  )
-
-  local_mocked_bindings(
-    resp_body_json = function(resp, ...) unclass(resp),
-    .package = "httr2"
   )
 
   cluster <- db_cluster_get(cluster_id = "c-1", perform_request = TRUE)
@@ -324,8 +375,8 @@ test_that("cluster get/list responses add print classes without changing list ac
 
   expect_type(clusters, "list")
   expect_s3_class(clusters, c("db_cluster_list", "list"))
-  expect_s3_class(clusters[[1]], c("db_cluster", "list"))
-  expect_identical(clusters[[2]]$cluster_id, "c-2")
+  expect_s3_class(clusters$clusters[[1]], c("db_cluster", "list"))
+  expect_identical(clusters$clusters[[2]]$cluster_id, "c-2")
 
   cluster_print <- cli::ansi_strip(paste(capture.output(print(cluster)), collapse = "\n"))
   clusters_print <- cli::ansi_strip(paste(capture.output(print(clusters)), collapse = "\n"))
