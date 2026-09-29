@@ -148,6 +148,7 @@
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_libs_cluster_status.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_libs_install.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_libs_uninstall.html</loc></url>
+<url><loc>https://databrickslabs.github.io/brickster/reference/db_list_all_pages.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_mlflow_model_approve_transition_req.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_mlflow_model_delete_transition_req.html</loc></url>
 <url><loc>https://databrickslabs.github.io/brickster/reference/db_mlflow_model_open_transition_reqs.html</loc></url>

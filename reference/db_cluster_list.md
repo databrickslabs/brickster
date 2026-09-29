@@ -5,7 +5,13 @@ List Clusters
 ## Usage
 
 ``` r
-db_cluster_list(host = db_host(), token = db_token(), perform_request = TRUE)
+db_cluster_list(
+  host = db_host(),
+  token = db_token(),
+  perform_request = TRUE,
+  page_size = 20,
+  page_token = NULL
+)
 ```
 
 ## Arguments
@@ -25,32 +31,34 @@ db_cluster_list(host = db_host(), token = db_token(), perform_request = TRUE)
   If `TRUE` (default) the request is performed, if `FALSE` the httr2
   request is returned *without* being performed.
 
+- page_size:
+
+  Maximum number of clusters per page, from 1 to 100 (default: 20). Use
+  `NULL` for the server default.
+
+- page_token:
+
+  A `next_page_token` or `prev_page_token` from a previous response, or
+  `NULL` for the first page.
+
 ## Value
 
-If `perform_request = TRUE`, returns a nested list of clusters with
-class `db_cluster_list`; each element has class `db_cluster`. If
-`FALSE`, returns an `httr2_request`.
+If `perform_request = TRUE`, returns the full single-page API response
+with class `db_cluster_list`, including pagination tokens when present.
+Each record in `clusters` has class `db_cluster`. If `FALSE`, returns an
+`httr2_request`.
 
 ## Details
 
-Return information about all pinned clusters, active clusters, up to 150
-of the most recently terminated all-purpose clusters in the past 30
-days, and up to 30 of the most recently terminated job clusters in the
-past 30 days.
-
-For example, if there is 1 pinned cluster, 4 active clusters, 45
-terminated all-purpose clusters in the past 30 days, and 50 terminated
-job clusters in the past 30 days, then this API returns:
-
-- the 1 pinned cluster
-
-- 4 active clusters
-
-- All 45 terminated all-purpose clusters
-
-- The 30 most recently terminated job clusters
+Retrieve one page of pinned and active clusters, and clusters terminated
+within the past 30 days. Use `next_page_token` to request subsequent
+pages. Extract `$clusters` to access the records; earlier versions
+returned these records directly without pagination metadata.
 
 ## See also
+
+[`db_list_all_pages()`](https://databrickslabs.github.io/brickster/reference/db_list_all_pages.md)
+to collect records from every page.
 
 Other Clusters API:
 [`db_cluster_create()`](https://databrickslabs.github.io/brickster/reference/db_cluster_create.md),
@@ -69,3 +77,15 @@ Other Clusters API:
 [`db_cluster_unpin()`](https://databrickslabs.github.io/brickster/reference/db_cluster_unpin.md),
 [`get_and_start_cluster()`](https://databrickslabs.github.io/brickster/reference/get_and_start_cluster.md),
 [`get_latest_dbr()`](https://databrickslabs.github.io/brickster/reference/get_latest_dbr.md)
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+page <- db_cluster_list()
+clusters <- page$clusters
+if (!is.null(page$next_page_token) && nzchar(page$next_page_token)) {
+  next_page <- db_cluster_list(page_token = page$next_page_token)
+}
+} # }
+```

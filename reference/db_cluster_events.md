@@ -11,11 +11,13 @@ db_cluster_events(
   end_time = NULL,
   event_types = NULL,
   order = c("DESC", "ASC"),
-  offset = 0,
-  limit = 50,
+  offset = NULL,
+  limit = NULL,
   host = db_host(),
   token = db_token(),
-  perform_request = TRUE
+  perform_request = TRUE,
+  page_size = 50,
+  page_token = NULL
 )
 ```
 
@@ -47,14 +49,14 @@ db_cluster_events(
 
 - offset:
 
-  The offset in the result set. Defaults to 0 (no offset). When an
-  offset is specified and the results are requested in descending order,
-  the end_time field is required.
+  **\[deprecated\]** Use `page_token` instead. Legacy result offset.
+  When supplied, uses legacy pagination with a warning. Descending
+  requests with an offset require `end_time`.
 
 - limit:
 
-  Maximum number of events to include in a page of events. Defaults to
-  50, and maximum allowed value is 500.
+  **\[deprecated\]** Use `page_size` instead. Legacy page size, from 1
+  to 500. When supplied, uses legacy pagination with a warning.
 
 - host:
 
@@ -71,21 +73,44 @@ db_cluster_events(
   If `TRUE` (default) the request is performed, if `FALSE` the httr2
   request is returned *without* being performed.
 
+- page_size:
+
+  Maximum number of events per page, from 0 to 500 (default: 50). Use
+  `0` or `NULL` for the server default.
+
+- page_token:
+
+  A `next_page_token` or `prev_page_token` from a previous response, or
+  `NULL` for the first page.
+
 ## Value
 
-If `perform_request = TRUE`, returns endpoint-specific API output. If
-`FALSE`, returns an `httr2_request`.
+If `perform_request = TRUE`, returns the full single-page API response,
+including `events` and pagination metadata when present. If `FALSE`,
+returns an `httr2_request`.
 
 ## Details
 
-Retrieve a list of events about the activity of a cluster. You can
-retrieve events from active clusters (running, pending, or
-reconfiguring) and terminated clusters within 30 days of their last
-termination. This API is paginated. If there are more events to read,
-the response includes all the parameters necessary to request the next
-page of events.
+Retrieve one page of events about the activity of a cluster. Extract
+`$events` to access the records; earlier versions returned the records
+directly. Use the response's `next_page_token` or `prev_page_token` as
+`page_token` to navigate pages, retaining the same time and event
+filters.
+
+`offset` and `limit` default to `NULL` and are omitted from token-based
+requests. Non-`NULL` legacy arguments cannot be combined with an
+explicitly supplied non-`NULL` `page_size` or `page_token`. Legacy
+arguments are forwarded for compatibility, but Databricks deprecates
+them on November 30, 2026. Migrate to `page_size` and tokens returned by
+the preceding response; numeric offsets cannot be converted to page
+tokens.
+
+Supply epoch milliseconds as numeric values, not R integers.
 
 ## See also
+
+[`db_list_all_pages()`](https://databrickslabs.github.io/brickster/reference/db_list_all_pages.md)
+to collect records from every page.
 
 Other Clusters API:
 [`db_cluster_create()`](https://databrickslabs.github.io/brickster/reference/db_cluster_create.md),

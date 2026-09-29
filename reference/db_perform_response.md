@@ -22,6 +22,7 @@ db_perform_response(req, ...)
 ## See also
 
 Other Request Helpers:
+[`db_list_all_pages()`](https://databrickslabs.github.io/brickster/reference/db_list_all_pages.md),
 [`db_perform_request()`](https://databrickslabs.github.io/brickster/reference/db_perform_request.md),
 [`db_req_error_body()`](https://databrickslabs.github.io/brickster/reference/db_req_error_body.md),
 [`db_request()`](https://databrickslabs.github.io/brickster/reference/db_request.md),

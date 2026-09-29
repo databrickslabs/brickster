@@ -52,7 +52,13 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">db_cluster_list</span><span class="op">(</span>host <span class="op">=</span> <span class="fu"><a href="db_host.html">db_host</a></span><span class="op">(</span><span class="op">)</span>, token <span class="op">=</span> <span class="fu"><a href="db_token.html">db_token</a></span><span class="op">(</span><span class="op">)</span>, perform_request <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">db_cluster_list</span><span class="op">(</span></span>
+<span>  host <span class="op">=</span> <span class="fu"><a href="db_host.html">db_host</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  token <span class="op">=</span> <span class="fu"><a href="db_token.html">db_token</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  perform_request <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  page_size <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  page_token <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -71,28 +77,35 @@
 <dd><p>If <code>TRUE</code> (default) the request is performed, if
 <code>FALSE</code> the httr2 request is returned <em>without</em> being performed.</p></dd>
 
+
+<dt id="arg-page-size">page_size<a class="anchor" aria-label="anchor" href="#arg-page-size"></a></dt>
+<dd><p>Maximum number of clusters per page, from 1 to 100
+(default: 20). Use <code>NULL</code> for the server default.</p></dd>
+
+
+<dt id="arg-page-token">page_token<a class="anchor" aria-label="anchor" href="#arg-page-token"></a></dt>
+<dd><p>A <code>next_page_token</code> or <code>prev_page_token</code> from a previous
+response, or <code>NULL</code> for the first page.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>If <code>perform_request = TRUE</code>, returns a nested list of clusters with
-class <code>db_cluster_list</code>; each element has class <code>db_cluster</code>. If <code>FALSE</code>,
+    <p>If <code>perform_request = TRUE</code>, returns the full single-page API
+response with class <code>db_cluster_list</code>, including pagination tokens when
+present. Each record in <code>clusters</code> has class <code>db_cluster</code>. If <code>FALSE</code>,
 returns an <code>httr2_request</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Return information about all pinned clusters, active clusters, up to 150 of
-the most recently terminated all-purpose clusters in the past 30 days, and up
-to 30 of the most recently terminated job clusters in the past 30 days.</p>
-<p>For example, if there is 1 pinned cluster, 4 active clusters, 45 terminated
-all-purpose clusters in the past 30 days, and 50 terminated job clusters in
-the past 30 days, then this API returns:</p><ul><li><p>the 1 pinned cluster</p></li>
-<li><p>4 active clusters</p></li>
-<li><p>All 45 terminated all-purpose clusters</p></li>
-<li><p>The 30 most recently terminated job clusters</p></li>
-</ul></div>
+    <p>Retrieve one page of pinned and active clusters, and clusters terminated
+within the past 30 days. Use <code>next_page_token</code> to request subsequent pages.
+Extract <code>$clusters</code> to access the records; earlier versions returned these
+records directly without pagination metadata.</p>
+    </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p>Other Clusters API:
+    <div class="dont-index"><p><code><a href="db_list_all_pages.html">db_list_all_pages()</a></code> to collect records from every page.</p>
+<p>Other Clusters API:
 <code><a href="db_cluster_create.html">db_cluster_create()</a></code>,
 <code><a href="db_cluster_edit.html">db_cluster_edit()</a></code>,
 <code><a href="db_cluster_events.html">db_cluster_events()</a></code>,
@@ -111,6 +124,17 @@ the past 30 days, then this API returns:</p><ul><li><p>the 1 pinned cluster</p><
 <code><a href="get_latest_dbr.html">get_latest_dbr()</a></code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="va">page</span> <span class="op">&lt;-</span> <span class="fu">db_cluster_list</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">clusters</span> <span class="op">&lt;-</span> <span class="va">page</span><span class="op">$</span><span class="va">clusters</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">page</span><span class="op">$</span><span class="va">next_page_token</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar</a></span><span class="op">(</span><span class="va">page</span><span class="op">$</span><span class="va">next_page_token</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">next_page</span> <span class="op">&lt;-</span> <span class="fu">db_cluster_list</span><span class="op">(</span>page_token <span class="op">=</span> <span class="va">page</span><span class="op">$</span><span class="va">next_page_token</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

@@ -820,6 +820,8 @@ dbplyr support for dplyr syntax with Databricks SQL
   : Propagate Databricks API Errors
 - [`db_request_json()`](https://databrickslabs.github.io/brickster/reference/db_request_json.md)
   : Generate Request JSON
+- [`db_list_all_pages()`](https://databrickslabs.github.io/brickster/reference/db_list_all_pages.md)
+  : Collect Records from All API Response Pages
 
 ## Low Level Helpers
 

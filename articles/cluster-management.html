@@ -84,6 +84,21 @@
 <p><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a> has 1:1 mappings with the clusters REST API,
 enabling full control of Databricks clusters from your R session.</p>
 <div class="section level2">
+<h2 id="listing-clusters">Listing Clusters<a class="anchor" aria-label="anchor" href="#listing-clusters"></a>
+</h2>
+<p><code><a href="../reference/db_cluster_list.html">db_cluster_list()</a></code> returns one page from Clusters API
+2.1, with up to 20 clusters by default. Extract <code>$clusters</code>
+for the records and use <code>$next_page_token</code> to retrieve
+another page. Earlier versions returned cluster records directly. To
+collect all clusters, pass the listing function to
+<code><a href="../reference/db_list_all_pages.html">db_list_all_pages()</a></code>:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">clusters</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_list_all_pages.html">db_list_all_pages</a></span><span class="op">(</span><span class="va">db_cluster_list</span>, page_size <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></code></pre></div>
+<p>The helper returns a list of cluster records with pagination metadata
+removed. The Connections pane uses the same helper to follow all
+pages.</p>
+</div>
+<div class="section level2">
 <h2 id="cluster-creation">Cluster Creation<a class="anchor" aria-label="anchor" href="#cluster-creation"></a>
 </h2>
 <p>Clusters have a number of parameters and can be configured to match
@@ -95,7 +110,7 @@ cloud platforms (AWS, Azure, GCP).</p>
 <code><a href="../reference/azure_attributes.html">azure_attributes()</a></code>, or <code><a href="../reference/gcp_attributes.html">gcp_attributes()</a></code>.</p>
 <p>Below we will create a cluster on AWS and then step through using the
 other supporting functions.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/databrickslabs/brickster" class="external-link">brickster</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># create a small cluster on AWS with DBR 9.1 LTS</span></span>
@@ -149,7 +164,7 @@ just created, including information such as the state.</p>
 <code>RUNNING</code> , which is exactly what
 <code><a href="../reference/get_and_start_cluster.html">get_and_start_cluster()</a></code> uses internally to wait until the
 cluster is running before completing.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cluster_info</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_cluster_get.html">db_cluster_get</a></span><span class="op">(</span>cluster_id <span class="op">=</span> <span class="va">new_cluster</span><span class="op">$</span><span class="va">cluster_id</span><span class="op">)</span></span>
 <span><span class="va">cluster_info</span><span class="op">$</span><span class="va">state</span></span></code></pre></div>
 </div>
@@ -159,7 +174,7 @@ cluster is running before completing.</p>
 <p>You can edit Databricks clusters to change various parameters using
 <code><a href="../reference/db_cluster_edit.html">db_cluster_edit()</a></code>. For example, we may decide we want our
 cluster to autoscale between 2-8 nodes and add some tags.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># we are required to input all parameters</span></span>
 <span><span class="fu"><a href="../reference/db_cluster_edit.html">db_cluster_edit</a></span><span class="op">(</span></span>
@@ -183,7 +198,7 @@ alternative.</p>
 range. If the range or workers is adjusted via <code>autoscale</code>
 the number of workers active on the cluster will be increased/decreased
 if they are outside the bounds.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># adjust number autoscale range to be between 4-6 workers</span></span>
 <span><span class="fu"><a href="../reference/db_cluster_resize.html">db_cluster_resize</a></span><span class="op">(</span></span>
 <span>  cluster_id <span class="op">=</span> <span class="va">new_cluster</span><span class="op">$</span><span class="va">cluster_id</span>,</span>
@@ -197,7 +212,7 @@ onward.</p>
 removed after 30 days of termination. <code><a href="../reference/db_cluster_pin.html">db_cluster_pin()</a></code> and
 <code><a href="../reference/db_cluster_unpin.html">db_cluster_unpin()</a></code> are the functions used for changing if a
 cluster is “pinned” or not.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># pin the cluster</span></span>
 <span><span class="fu"><a href="../reference/db_cluster_pin.html">db_cluster_pin</a></span><span class="op">(</span>cluster_id <span class="op">=</span> <span class="va">new_cluster</span><span class="op">$</span><span class="va">cluster_id</span><span class="op">)</span></span>
 <span></span>
@@ -281,7 +296,7 @@ sources using <code><a href="../reference/db_libs_install.html">db_libs_install(
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># installing a package from CRAN on cluster</span></span>
 <span><span class="fu"><a href="../reference/db_libs_install.html">db_libs_install</a></span><span class="op">(</span></span>
 <span>  cluster_id <span class="op">=</span> <span class="va">new_cluster</span><span class="op">$</span><span class="va">cluster_id</span>,</span>
@@ -293,18 +308,18 @@ sources using <code><a href="../reference/db_libs_install.html">db_libs_install(
 <p>For convenience the <code><a href="../reference/wait_for_lib_installs.html">wait_for_lib_installs()</a></code> function
 will block until all the libraries for the specified cluster have
 finished installing.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/wait_for_lib_installs.html">wait_for_lib_installs</a></span><span class="op">(</span>cluster_id <span class="op">=</span> <span class="va">new_cluster</span><span class="op">$</span><span class="va">cluster_id</span><span class="op">)</span></span></code></pre></div>
 <p>Installation of libraries is asynchronous and will complete in the
 background. <code><a href="../reference/db_libs_cluster_status.html">db_libs_cluster_status()</a></code> is used to check on
 the installation status of libraries for a given cluster,
 <code><a href="../reference/db_libs_all_cluster_statuses.html">db_libs_all_cluster_statuses()</a></code> is used for getting the
 status of all libraries across all clusters in the workspace.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/db_libs_cluster_status.html">db_libs_cluster_status</a></span><span class="op">(</span>cluster_id <span class="op">=</span> <span class="va">new_cluster</span><span class="op">$</span><span class="va">cluster_id</span><span class="op">)</span></span></code></pre></div>
 <p>Libraries can be uninstalled using
 <code><a href="../reference/db_libs_uninstall.html">db_libs_uninstall()</a></code>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/db_libs_uninstall.html">db_libs_uninstall</a></span><span class="op">(</span></span>
 <span>  cluster_id <span class="op">=</span> <span class="va">new_cluster</span><span class="op">$</span><span class="va">cluster_id</span>,</span>
 <span>  libraries <span class="op">=</span> <span class="fu"><a href="../reference/libraries.html">libraries</a></span><span class="op">(</span></span>
@@ -314,19 +329,45 @@ status of all libraries across all clusters in the workspace.</p>
 <p>Using <code><a href="../reference/db_libs_cluster_status.html">db_libs_cluster_status()</a></code> shows that the library
 will be uninstalled upon restart
 (e.g. <code><a href="../reference/db_cluster_restart.html">db_cluster_restart()</a></code>).</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/db_libs_cluster_status.html">db_libs_cluster_status</a></span><span class="op">(</span>cluster_id <span class="op">=</span> <span class="va">new_cluster</span><span class="op">$</span><span class="va">cluster_id</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="events">Events<a class="anchor" aria-label="anchor" href="#events"></a>
 </h2>
-<p>A list of events regarding the clusters activity can be fetched via
+<p>A page of cluster activity events can be fetched via
 <code><a href="../reference/db_cluster_events.html">db_cluster_events()</a></code>. There are many <a href="https://docs.databricks.com/api/workspace/clusters/events#events" class="external-link">event
-types</a> that can occur, and by default the 50 most recent events are
-returned.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">events</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_cluster_events.html">db_cluster_events</a></span><span class="op">(</span>cluster_id <span class="op">=</span> <span class="va">new_cluster</span><span class="op">$</span><span class="va">cluster_id</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">events</span>, <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+types</a>, and by default up to 50 recent events are returned. Extract
+<code>$events</code> for the records; earlier versions returned these
+records directly. Use the returned pagination tokens to navigate pages,
+retaining the same filters.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">page</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_cluster_events.html">db_cluster_events</a></span><span class="op">(</span>cluster_id <span class="op">=</span> <span class="va">new_cluster</span><span class="op">$</span><span class="va">cluster_id</span>, page_size <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">page</span><span class="op">$</span><span class="va">events</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">page</span><span class="op">$</span><span class="va">next_page_token</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nzchar</a></span><span class="op">(</span><span class="va">page</span><span class="op">$</span><span class="va">next_page_token</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">next_page</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_cluster_events.html">db_cluster_events</a></span><span class="op">(</span></span>
+<span>    cluster_id <span class="op">=</span> <span class="va">new_cluster</span><span class="op">$</span><span class="va">cluster_id</span>,</span>
+<span>    page_size <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>    page_token <span class="op">=</span> <span class="va">page</span><span class="op">$</span><span class="va">next_page_token</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<p>To collect all matching events, use the same helper. Filters are
+passed to every page request:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">events</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_list_all_pages.html">db_list_all_pages</a></span><span class="op">(</span></span>
+<span>  <span class="va">db_cluster_events</span>,</span>
+<span>  cluster_id <span class="op">=</span> <span class="va">new_cluster</span><span class="op">$</span><span class="va">cluster_id</span>,</span>
+<span>  event_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"RUNNING"</span>, <span class="st">"TERMINATING"</span><span class="op">)</span>,</span>
+<span>  page_size <span class="op">=</span> <span class="fl">500</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><code>offset</code> and <code>limit</code> are deprecated in favor of
+<code>page_token</code> and <code>page_size</code>. Explicit legacy
+arguments still use the old API fields with a warning, but cannot be
+combined with token pagination. Databricks deprecates these fields on
+November 30, 2026. Use tokens from previous responses; numeric offsets
+cannot be converted to tokens. Supply <code>start_time</code> and
+<code>end_time</code> as numeric epoch milliseconds rather than R
+integers.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

@@ -51,6 +51,7 @@ request
 ## See also
 
 Other Request Helpers:
+[`db_list_all_pages()`](https://databrickslabs.github.io/brickster/reference/db_list_all_pages.md),
 [`db_perform_request()`](https://databrickslabs.github.io/brickster/reference/db_perform_request.md),
 [`db_perform_response()`](https://databrickslabs.github.io/brickster/reference/db_perform_response.md),
 [`db_req_error_body()`](https://databrickslabs.github.io/brickster/reference/db_req_error_body.md),

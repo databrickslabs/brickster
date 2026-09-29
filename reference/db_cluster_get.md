@@ -42,7 +42,7 @@ If `perform_request = TRUE`, returns a nested list with class
 ## Details
 
 Retrieve the information for a cluster given its identifier. Clusters
-can be described while they are running or up to 30 days after they are
+can be described while they are running or up to 60 days after they are
 terminated.
 
 ## See also

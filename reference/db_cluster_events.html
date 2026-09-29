@@ -58,11 +58,13 @@
 <span>  end_time <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  event_types <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DESC"</span>, <span class="st">"ASC"</span><span class="op">)</span>,</span>
-<span>  offset <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  limit <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  offset <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  limit <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  host <span class="op">=</span> <span class="fu"><a href="db_host.html">db_host</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  token <span class="op">=</span> <span class="fu"><a href="db_token.html">db_token</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  perform_request <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  perform_request <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  page_size <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  page_token <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -94,14 +96,15 @@ is to return all events. <a href="https://docs.databricks.com/api/workspace/clus
 
 
 <dt id="arg-offset">offset<a class="anchor" aria-label="anchor" href="#arg-offset"></a></dt>
-<dd><p>The offset in the result set. Defaults to 0 (no offset). When
-an offset is specified and the results are requested in descending order, the
-end_time field is required.</p></dd>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> Use <code>page_token</code> instead.
+Legacy result offset. When supplied, uses legacy pagination with a warning.
+Descending requests with an offset require <code>end_time</code>.</p></dd>
 
 
 <dt id="arg-limit">limit<a class="anchor" aria-label="anchor" href="#arg-limit"></a></dt>
-<dd><p>Maximum number of events to include in a page of events.
-Defaults to 50, and maximum allowed value is 500.</p></dd>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> Use <code>page_size</code> instead.
+Legacy page size, from 1 to 500. When supplied, uses legacy pagination
+with a warning.</p></dd>
 
 
 <dt id="arg-host">host<a class="anchor" aria-label="anchor" href="#arg-host"></a></dt>
@@ -116,22 +119,41 @@ Defaults to 50, and maximum allowed value is 500.</p></dd>
 <dd><p>If <code>TRUE</code> (default) the request is performed, if
 <code>FALSE</code> the httr2 request is returned <em>without</em> being performed.</p></dd>
 
+
+<dt id="arg-page-size">page_size<a class="anchor" aria-label="anchor" href="#arg-page-size"></a></dt>
+<dd><p>Maximum number of events per page, from 0 to 500
+(default: 50). Use <code>0</code> or <code>NULL</code> for the server default.</p></dd>
+
+
+<dt id="arg-page-token">page_token<a class="anchor" aria-label="anchor" href="#arg-page-token"></a></dt>
+<dd><p>A <code>next_page_token</code> or <code>prev_page_token</code> from a previous
+response, or <code>NULL</code> for the first page.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>If <code>perform_request = TRUE</code>, returns endpoint-specific API output. If <code>FALSE</code>, returns an <code>httr2_request</code>.</p>
+    <p>If <code>perform_request = TRUE</code>, returns the full single-page API
+response, including <code>events</code> and pagination metadata when present.
+If <code>FALSE</code>, returns an <code>httr2_request</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Retrieve a list of events about the activity of a cluster. You can retrieve
-events from active clusters (running, pending, or reconfiguring) and
-terminated clusters within 30 days of their last termination. This API is
-paginated. If there are more events to read, the response includes all the
-parameters necessary to request the next page of events.</p>
+    <p>Retrieve one page of events about the activity of a cluster. Extract
+<code>$events</code> to access the records; earlier versions returned the records
+directly. Use the response's <code>next_page_token</code> or <code>prev_page_token</code> as
+<code>page_token</code> to navigate pages, retaining the same time and event filters.</p>
+<p><code>offset</code> and <code>limit</code> default to <code>NULL</code> and are omitted from token-based
+requests. Non-<code>NULL</code> legacy arguments cannot be combined with an explicitly
+supplied non-<code>NULL</code> <code>page_size</code> or <code>page_token</code>. Legacy arguments are forwarded
+for compatibility, but Databricks deprecates them on November 30, 2026.
+Migrate to <code>page_size</code> and tokens returned by the preceding response;
+numeric offsets cannot be converted to page tokens.</p>
+<p>Supply epoch milliseconds as numeric values, not R integers.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p>Other Clusters API:
+    <div class="dont-index"><p><code><a href="db_list_all_pages.html">db_list_all_pages()</a></code> to collect records from every page.</p>
+<p>Other Clusters API:
 <code><a href="db_cluster_create.html">db_cluster_create()</a></code>,
 <code><a href="db_cluster_edit.html">db_cluster_edit()</a></code>,
 <code><a href="db_cluster_get.html">db_cluster_get()</a></code>,

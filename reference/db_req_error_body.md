@@ -17,6 +17,7 @@ db_req_error_body(resp)
 ## See also
 
 Other Request Helpers:
+[`db_list_all_pages()`](https://databrickslabs.github.io/brickster/reference/db_list_all_pages.md),
 [`db_perform_request()`](https://databrickslabs.github.io/brickster/reference/db_perform_request.md),
 [`db_perform_response()`](https://databrickslabs.github.io/brickster/reference/db_perform_response.md),
 [`db_request()`](https://databrickslabs.github.io/brickster/reference/db_request.md),
