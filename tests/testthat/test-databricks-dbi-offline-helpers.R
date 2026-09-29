@@ -315,6 +315,74 @@ test_that("binary SQL serialization scans columns once rather than per cell", {
   expect_lte(state$elements_scanned, ncol(value) * nrow(value))
 })
 
+test_that("db_format_typed_value_sql writes POSIXct as epoch microseconds", {
+  con <- make_dbi_test_con(show_progress = FALSE)
+  instant <- as.POSIXct("2024-07-01 08:00:00.123456", tz = "UTC")
+  withr::local_envvar(TZ = "America/New_York")
+  withr::local_options(list(digits.secs = 0, scipen = -9))
+
+  purrr::walk(c("UTC", "America/New_York", "Europe/Berlin", ""), function(tz) {
+    x <- instant
+    attr(x, "tzone") <- tz
+    expect_identical(
+      db_format_typed_value_sql(con, x, x),
+      "TIMESTAMP_MICROS(1719820800123456)"
+    )
+  })
+
+  expect_identical(
+    db_timestamp_literal(as.POSIXct("1900-06-15 12:00:00.5", tz = "UTC")),
+    "TIMESTAMP_MICROS(-2194689599500000)"
+  )
+  expect_identical(
+    db_generate_typed_values_sql(con, data.frame(ts = c(instant, NA))),
+    "(TIMESTAMP_MICROS(1719820800123456)), (NULL)"
+  )
+})
+
+test_that("timestamp SQL preserves microseconds and truncates submicroseconds", {
+  values <- .POSIXct(c(
+    1719820800.3, 1719820800.000001, 1719820800.123456,
+    1735689599.9999996, 1104537600.000002,
+    -0.3, -0.000001, -1.0000004, 0
+  ), tz = "UTC")
+  expected <- c(
+    "1719820800300000", "1719820800000001", "1719820800123456",
+    "1735689599999999", "1104537600000001",
+    "-300000", "-1", "-1000000", "0"
+  )
+
+  expect_identical(
+    purrr::map_chr(values, db_timestamp_literal),
+    paste0("TIMESTAMP_MICROS(", expected, ")")
+  )
+})
+
+test_that("inline timestamp SQL agrees with staged Parquet microseconds", {
+  skip_if_not_installed("arrow")
+  value <- data.frame(ts = .POSIXct(c(
+    1719820800.3, 1719820800.000001, 1719820800.123456,
+    1735689599.9999996, 1104537600.000002,
+    -0.3, -0.000001, -1.0000004, 0, NA_real_
+  ), tz = "Europe/Berlin"))
+  path <- fs::file_temp("brickster-timestamps-")
+  withr::defer(fs::dir_delete(path))
+  arrow::write_dataset(value, path, format = "parquet", compression = "zstd")
+  staged <- arrow::read_parquet(
+    fs::dir_ls(path, glob = "*.parquet")[[1]],
+    as_data_frame = FALSE
+  )
+  micros <- as.character(as.vector(staged$GetColumnByName("ts")$cast(arrow::int64())))
+  expected_rows <- ifelse(
+    is.na(micros), "(NULL)", paste0("(TIMESTAMP_MICROS(", micros, "))")
+  )
+
+  expect_identical(
+    db_generate_typed_values_sql(make_dbi_test_con(), value),
+    paste(expected_rows, collapse = ", ")
+  )
+})
+
 test_that("dbAppendTable standard path supports binary columns", {
   con <- make_dbi_test_con(show_progress = FALSE)
   value <- data.frame(id = 4L)

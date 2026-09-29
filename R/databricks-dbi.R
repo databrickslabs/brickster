@@ -1629,6 +1629,8 @@ db_format_typed_value_sql <- function(
     "NULL"
   } else if (is_binary) {
     db_binary_literal(val)
+  } else if (inherits(col_data, "POSIXct")) {
+    db_timestamp_literal(val)
   } else if (is.logical(col_data)) {
     if (as.logical(val)) "TRUE" else "FALSE"
   } else if (is.numeric(col_data)) {
@@ -1655,6 +1657,12 @@ db_binary_literal <- function(val) {
   }
 
   paste0("X'", paste(toupper(as.character(val)), collapse = ""), "'")
+}
+
+db_timestamp_literal <- function(val) {
+  # Match Arrow's POSIXct-to-microsecond conversion used by volume writes.
+  micros <- trunc(as.numeric(val) * 1e6)
+  paste0("TIMESTAMP_MICROS(", sprintf("%.0f", micros), ")")
 }
 
 #' Escape string literals for inline SQL VALUES
