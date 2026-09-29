@@ -361,6 +361,67 @@ test_that("volume writes preserve field types across appends and replacements", 
   expect_equal(as.numeric(replaced$amount), 123456.78)
 })
 
+test_that("POSIXct writes and appends agree across inline and volume paths", {
+  skip_on_cran()
+  staging_volume <- Sys.getenv("DATABRICKS_TEST_VOLUME")
+  skip_if(!nzchar(staging_volume), "Set DATABRICKS_TEST_VOLUME to run volume write tests")
+  skip_if_not_installed("arrow")
+  skip_unless_warehouse_available()
+
+  parts <- strsplit(staging_volume, "/", fixed = TRUE)[[1]]
+  prefix <- paste0("brickster_timestamp_", sample.int(1e9, 1))
+  tables <- purrr::map(c("inline", "volume"), function(method) {
+    DBI::Id(catalog = parts[[3]], schema = parts[[4]], table = paste0(prefix, "_", method))
+  })
+  names(tables) <- c("inline", "volume")
+  con <- dbConnect(
+    DatabricksSQL(), warehouse_id = Sys.getenv("DATABRICKS_WAREHOUSE_ID"),
+    show_progress = FALSE
+  )
+  withr::defer(dbDisconnect(con))
+  test_env <- environment()
+  purrr::walk(tables, function(name) {
+    skip_if(dbExistsTable(con, name), "Test table name already exists")
+    quoted_name <- dbQuoteIdentifier(con, name)
+    withr::defer(
+      dbExecute(con, paste("DROP TABLE IF EXISTS", quoted_name)),
+      envir = test_env
+    )
+  })
+
+  value <- data.frame(
+    id = seq_len(10L),
+    ts = .POSIXct(c(
+      1719820800.3, 1719820800.000001, 1719820800.123456,
+      1735689599.9999996, 1104537600.000002,
+      -0.3, -0.000001, -1.0000004, 0, NA_real_
+    ), tz = "Europe/Berlin")
+  )
+  expected <- c(
+    "1719820800300000", "1719820800000001", "1719820800123456",
+    "1735689599999999", "1104537600000001",
+    "-300000", "-1", "-1000000", "0", NA_character_
+  )
+  added <- value[seq_len(3L), ]
+  added$id <- added$id + nrow(value)
+  attr(added$ts, "tzone") <- "America/New_York"
+  read_micros <- function(name) {
+    dbGetQuery(con, paste(
+      "SELECT CAST(unix_micros(ts) AS STRING) AS micros FROM",
+      dbQuoteIdentifier(con, name), "ORDER BY id"
+    ))$micros
+  }
+
+  purrr::iwalk(tables, function(name, method) {
+    volume <- if (method == "volume") staging_volume else NULL
+    expect_true(dbWriteTable(con, name, value, staging_volume = volume))
+    expect_identical(read_micros(name), expected)
+    expect_true(dbAppendTable(con, name, added, staging_volume = volume))
+    expect_identical(read_micros(name), c(expected, expected[seq_len(3L)]))
+  })
+  expect_identical(read_micros(tables$inline), read_micros(tables$volume))
+})
+
 # Online Tests (require warehouse connection) --------------------------------
 
 skip_on_cran()
