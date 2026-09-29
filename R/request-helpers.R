@@ -176,12 +176,12 @@ from_logical <- function(x) {
   ifelse(x, "true", "false")
 }
 
-db_list_all_pages <- function(list_page, field, ...) {
+db_list_all_pages <- function(list_page_fn, field, ...) {
   pages <- list()
   page_token <- NULL
   seen_tokens <- character()
   repeat {
-    page <- list_page(..., page_token = page_token)
+    page <- list_page_fn(..., page_token = page_token)
     pages[[length(pages) + 1L]] <- page[[field]] %||% list()
     page_token <- page$next_page_token
     if (is.null(page_token) || !nzchar(page_token)) break
