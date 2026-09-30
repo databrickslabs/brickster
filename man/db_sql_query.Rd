@@ -79,7 +79,9 @@ should happen after the timeout is reached.}
 
 \item{fetch_timeout}{Integer, timeout in seconds for downloading each result chunk}
 
-\item{disposition}{Disposition mode ("INLINE" or "EXTERNAL_LINKS")}
+\item{disposition}{Disposition mode ("INLINE" or "EXTERNAL_LINKS").
+INLINE results are fetched across all chunks up to \code{row_limit} and returned
+as a tibble.}
 
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 

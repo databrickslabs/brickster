@@ -21,10 +21,12 @@ test_that("SQL Execution API - don't perform", {
 
   resp_result <- db_sql_exec_result(
     statement_id = "some_statement_id",
-    chunk_index = 0,
+    chunk_index = 1,
     perform_request = FALSE
   )
   expect_s3_class(resp_result, "httr2_request")
+  expect_identical(resp_result$method, "GET")
+  expect_match(resp_result$url, "/api/2.0/sql/statements/some_statement_id/result/chunks/1$")
 
   resp_status <- db_sql_exec_status(
     statement_id = "some_statement_id",
@@ -147,6 +149,19 @@ test_that("db_sql_query works as expected", {
   expect_s3_class(result, "data.frame")
   expect_shape(result, nrow = 1)
   expect_equal(result$test_col, 1)
+})
+
+test_that("db_sql_query retrieves large INLINE results without losing rows", {
+  result <- db_sql_query(
+    test_warehouse_id_sql,
+    "SELECT id, repeat('x', 200) AS s FROM range(100000) ORDER BY id",
+    disposition = "INLINE",
+    show_progress = FALSE
+  )
+
+  expect_equal(nrow(result), 100000L)
+  expect_identical(result$id, as.character(0:99999))
+  expect_true(all(nchar(result$s) == 200L))
 })
 
 test_that("db_sql_query handles complex queries", {

@@ -24,7 +24,8 @@ db_sql_fetch_results(
 
 \item{fetch_timeout}{Integer, timeout in seconds for downloading each result chunk}
 
-\item{row_limit}{Integer, limit number of rows returned (applied after fetch)}
+\item{row_limit}{Integer, limit number of rows returned. INLINE fetching stops
+once enough rows are available; EXTERNAL_LINKS results are limited after fetch.}
 
 \item{host}{Databricks host}
 
@@ -33,10 +34,12 @@ db_sql_fetch_results(
 \item{show_progress}{If \code{TRUE}, show progress updates during result fetching (default: \code{TRUE})}
 }
 \value{
-tibble or arrow Table with query results
+A tibble for INLINE or empty results. For non-empty EXTERNAL_LINKS
+results, a tibble or an Arrow Table according to \code{return_arrow} and whether
+the arrow package is installed.
 }
 \description{
 Internal helper that fetches and processes results from a completed query.
-Handles Arrow stream processing and data conversion.
+Handles empty results, INLINE JSON arrays, and EXTERNAL_LINKS Arrow streams.
 }
 \keyword{internal}

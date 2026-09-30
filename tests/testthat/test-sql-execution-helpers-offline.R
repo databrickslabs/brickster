@@ -47,7 +47,7 @@ test_that("db_sql_query uses inline result processor for INLINE disposition", {
       state$inline_called <- TRUE
       tibble::tibble(v = 1L)
     },
-    db_sql_fetch_results = function(...) stop("external processor should not be called"),
+    db_sql_fetch_results_fast = function(...) stop("external processor should not be called"),
     .package = "brickster"
   )
 
@@ -62,6 +62,137 @@ test_that("db_sql_query uses inline result processor for INLINE disposition", {
   expect_identical(out$v, 1L)
 })
 
+purrr::walk(
+  list(
+    list(limit = NULL, ids = as.character(0:5), chunks = c(1L, 2L)),
+    list(limit = 1L, ids = "0", chunks = integer()),
+    list(limit = 2L, ids = c("0", "1"), chunks = integer()),
+    list(limit = 3L, ids = c("0", "1", "2"), chunks = 1L),
+    list(limit = 4L, ids = as.character(0:3), chunks = 1L),
+    list(limit = 6L, ids = as.character(0:5), chunks = c(1L, 2L)),
+    list(limit = 8L, ids = as.character(0:5), chunks = c(1L, 2L))
+  ),
+  function(case) {
+    limit_label <- if (is.null(case$limit)) "all rows" else case$limit
+    test_that(paste("INLINE query fetches ordered chunks for limit", limit_label), {
+      fixture <- make_inline_test_result()
+      state <- new.env(parent = emptyenv())
+      state$chunks <- integer()
+
+      local_mocked_bindings(
+        db_sql_exec_and_wait = function(...) fixture$response,
+        db_perform_request = function(req, ...) {
+          index <- as.integer(sub(".*/chunks/", "", req$url))
+          state$chunks <- c(state$chunks, index)
+          expect_identical(req$method, "GET")
+          expect_identical(
+            req$url,
+            paste0("https://inline.test/api/2.0/sql/statements/stmt-inline/result/chunks/", index)
+          )
+          expect_identical(rlang::wref_value(req$headers$Authorization), "Bearer inline-token")
+          expect_equal(req$options$timeout_ms, 17000)
+          fixture$chunks[[index + 1L]]
+        },
+        .package = "brickster"
+      )
+
+      out <- db_sql_query(
+        warehouse_id = "wh-inline",
+        statement = "SELECT id, label FROM example",
+        disposition = "INLINE",
+        row_limit = case$limit,
+        fetch_timeout = 17,
+        host = "inline.test",
+        token = "inline-token",
+        show_progress = FALSE
+      )
+
+      expect_s3_class(out, "tbl_df")
+      expect_identical(out$id, case$ids)
+      expect_identical(
+        out$label,
+        list(NULL, NULL, "two", "three", NULL, "five")[seq_along(case$ids)]
+      )
+      expect_identical(state$chunks, case$chunks)
+    })
+  }
+)
+
+test_that("single-chunk INLINE results require no additional requests", {
+  fixture <- make_inline_test_result()
+  fixture$response$manifest$total_chunk_count <- 1L
+  fixture$response$manifest$total_row_count <- 2L
+  fixture$response$manifest$chunks <- fixture$response$manifest$chunks[1]
+  fixture$response$result$next_chunk_index <- NULL
+
+  local_mocked_bindings(
+    db_sql_exec_and_wait = function(...) fixture$response,
+    db_perform_request = function(...) stop("unexpected chunk request"),
+    .package = "brickster"
+  )
+
+  out <- db_sql_query("wh-inline", "SELECT 1", disposition = "INLINE", show_progress = FALSE)
+  expect_identical(out$id, c("0", "1"))
+  expect_identical(out$label, list(NULL, NULL))
+})
+
+test_that("empty INLINE results retain schema without fetching chunks", {
+  fixture <- make_inline_test_result()
+  fixture$response$manifest$total_chunk_count <- 0L
+  fixture$response$manifest$total_row_count <- 0L
+  fixture$response$manifest$chunks <- list()
+  fixture$response$result <- list()
+
+  local_mocked_bindings(
+    db_sql_exec_and_wait = function(...) fixture$response,
+    db_perform_request = function(...) stop("unexpected chunk request"),
+    .package = "brickster"
+  )
+
+  out <- db_sql_query("wh-inline", "SELECT 1 WHERE FALSE", disposition = "INLINE", show_progress = FALSE)
+  expect_identical(out, tibble::tibble(id = integer(), label = character()))
+})
+
+test_that("INLINE chunk request failures propagate instead of returning partial rows", {
+  fixture <- make_inline_test_result()
+
+  local_mocked_bindings(
+    db_sql_exec_and_wait = function(...) fixture$response,
+    db_perform_request = function(...) stop("chunk retrieval failed"),
+    .package = "brickster"
+  )
+
+  expect_error(
+    db_sql_query(
+      "wh-inline", "SELECT 1", disposition = "INLINE",
+      host = "inline.test", token = "inline-token", show_progress = FALSE
+    ),
+    "chunk retrieval failed"
+  )
+})
+
+test_that("INLINE results fail when fetched rows do not satisfy the manifest", {
+  fixture <- make_inline_test_result()
+  fixture$chunks[[3]]$data_array <- list(list("4", NULL))
+
+  local_mocked_bindings(
+    db_sql_exec_and_wait = function(...) fixture$response,
+    db_perform_request = function(req, ...) {
+      index <- as.integer(sub(".*/chunks/", "", req$url))
+      fixture$chunks[[index + 1L]]
+    },
+    .package = "brickster"
+  )
+
+  expect_error(
+    db_sql_query(
+      "wh-inline", "SELECT 1", disposition = "INLINE", fetch_timeout = NULL,
+      host = "inline.test", token = "inline-token", show_progress = FALSE
+    ),
+    "Received 5 INLINE result rows, but expected 6"
+  )
+})
+
 test_that("db_sql_query uses external-links processor for EXTERNAL_LINKS disposition", {
   state <- new.env(parent = emptyenv())
   state$external_called <- FALSE
@@ -70,11 +201,11 @@ test_that("db_sql_query uses external-links processor for EXTERNAL_LINKS disposi
     db_sql_exec_and_wait = function(...) {
       list(
         statement_id = "stmt-3",
-        manifest = list(total_row_count = 2),
+        manifest = list(format = "ARROW_STREAM", total_row_count = 2, total_chunk_count = 1),
         result = list()
       )
     },
-    db_sql_fetch_results = function(...) {
+    db_sql_fetch_results_fast = function(...) {
       state$external_called <- TRUE
       tibble::tibble(v = c(1L, 2L))
     },
