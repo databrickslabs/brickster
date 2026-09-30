@@ -449,6 +449,8 @@
   : Get SQL Query Results
 - [`db_sql_exec_status()`](https://databrickslabs.github.io/brickster/reference/db_sql_exec_status.md)
   : Get SQL Query Status
+- [`db_sql_fetch_inline()`](https://databrickslabs.github.io/brickster/reference/db_sql_fetch_inline.md)
+  : Fetch Inline SQL Query Results
 - [`db_sql_fetch_results()`](https://databrickslabs.github.io/brickster/reference/db_sql_fetch_results.md)
   : Fetch SQL Query Results from Completed Query
 - [`db_sql_fetch_results_fast()`](https://databrickslabs.github.io/brickster/reference/db_sql_fetch_results_fast.md)

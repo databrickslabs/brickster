@@ -2,6 +2,14 @@
 
 ## brickster (development version)
 
+- Fixed
+  [`db_sql_query()`](https://databrickslabs.github.io/brickster/reference/db_sql_query.md),
+  [`dbGetQuery()`](https://dbi.r-dbi.org/reference/dbGetQuery.html), and
+  [`dbFetch()`](https://dbi.r-dbi.org/reference/dbFetch.html) silently
+  returning only the first chunk of `INLINE` results. Additional chunks
+  are fetched in order up to the requested row limit
+  ([\#302](https://github.com/databrickslabs/brickster/issues/302)).
+
 - [`db_list_all_pages()`](https://databrickslabs.github.io/brickster/reference/db_list_all_pages.md)
   collects all records from token-paginated listings, omitting
   pagination metadata automatically. Pass a listing function and its

@@ -31,3 +31,8 @@ dbFetch(res, n = -1, show_progress = res@connection@show_progress, ...)
 ## Value
 
 A data.frame with query results
+
+## Details
+
+INLINE results are fetched across chunks until `n` rows are available,
+or all result chunks have been fetched when `n = -1`.

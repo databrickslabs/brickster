@@ -110,7 +110,8 @@ db_sql_query(
 
 - disposition:
 
-  Disposition mode ("INLINE" or "EXTERNAL_LINKS")
+  Disposition mode ("INLINE" or "EXTERNAL_LINKS"). INLINE results are
+  fetched across all chunks up to `row_limit` and returned as a tibble.
 
 - host:
 

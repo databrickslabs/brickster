@@ -1,7 +1,8 @@
 # Fetch SQL Query Results from Completed Query
 
 Internal helper that fetches and processes results from a completed
-query. Handles Arrow stream processing and data conversion.
+query. Handles empty results, INLINE JSON arrays, and EXTERNAL_LINKS
+Arrow streams.
 
 ## Usage
 
@@ -38,7 +39,9 @@ db_sql_fetch_results(
 
 - row_limit:
 
-  Integer, limit number of rows returned (applied after fetch)
+  Integer, limit number of rows returned. INLINE fetching stops once
+  enough rows are available; EXTERNAL_LINKS results are limited after
+  fetch.
 
 - host:
 
@@ -55,4 +58,6 @@ db_sql_fetch_results(
 
 ## Value
 
-tibble or arrow Table with query results
+A tibble for INLINE or empty results. For non-empty EXTERNAL_LINKS
+results, a tibble or an Arrow Table according to `return_arrow` and
+whether the arrow package is installed.

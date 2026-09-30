@@ -150,7 +150,9 @@ arrow::Table.</p></dd>
 
 
 <dt id="arg-disposition">disposition<a class="anchor" aria-label="anchor" href="#arg-disposition"></a></dt>
-<dd><p>Disposition mode ("INLINE" or "EXTERNAL_LINKS")</p></dd>
+<dd><p>Disposition mode ("INLINE" or "EXTERNAL_LINKS").
+INLINE results are fetched across all chunks up to <code>row_limit</code> and returned
+as a tibble.</p></dd>
 
 
 <dt id="arg-host">host<a class="anchor" aria-label="anchor" href="#arg-host"></a></dt>
