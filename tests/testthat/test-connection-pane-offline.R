@@ -37,8 +37,8 @@ test_that("get_table_data returns expected metadata and column summaries", {
     ),
     db_uc_tables_get = function(...) {
       list(
-        table_type = "TABLE",
-        data_source_format = "TABLE",
+        table_type = "MANAGED",
+        data_source_format = "DELTA",
         full_name = "main.s.t",
         owner = "owner",
         storage_location = "s3://bucket/path",
