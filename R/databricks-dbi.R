@@ -1856,6 +1856,14 @@ db_write_table_volume <- function(
           }
         },
         error = function(e) {
+          # Directory was never created (upload failed early), nothing to clean up
+          if (rlang::cnd_inherits(e, "httr2_http_404")) {
+            if (show_progress) {
+              cli::cli_progress_done()
+            }
+            return(invisible(NULL))
+          }
+
           if (show_progress) {
             cli::cli_progress_done(result = "failed")
           }
