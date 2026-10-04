@@ -838,17 +838,12 @@ test_that("db_write_table_volume executes create flow when append is FALSE", {
   con <- make_dbi_test_con()
   state <- new.env(parent = emptyenv())
   state$sql <- NULL
-  state$created <- NULL
   state$uploaded <- NULL
   state$deleted <- NULL
 
   local_mocked_bindings(
     is_valid_volume_path = function(path) path,
     db_volume_dir_exists = function(...) TRUE,
-    db_volume_dir_create = function(path, ...) {
-      state$created <- path
-      invisible(TRUE)
-    },
     db_volume_upload_dir = function(local_dir, volume_dir, ...) {
       state$uploaded <- volume_dir
       invisible(TRUE)
@@ -884,8 +879,7 @@ test_that("db_write_table_volume executes create flow when append is FALSE", {
   )
 
   expect_match(state$sql, "^CREATE TABLE .* AS SELECT \\* FROM READ_FILES")
-  expect_identical(state$created, state$uploaded)
-  expect_identical(state$deleted, state$created)
+  expect_identical(state$deleted, state$uploaded)
 })
 
 test_that("db_write_table_volume executes append flow when append is TRUE", {
@@ -893,17 +887,12 @@ test_that("db_write_table_volume executes append flow when append is TRUE", {
   con <- make_dbi_test_con()
   state <- new.env(parent = emptyenv())
   state$sql <- NULL
-  state$created <- NULL
   state$uploaded <- NULL
   state$deleted <- NULL
 
   local_mocked_bindings(
     is_valid_volume_path = function(path) path,
     db_volume_dir_exists = function(...) TRUE,
-    db_volume_dir_create = function(path, ...) {
-      state$created <- path
-      invisible(TRUE)
-    },
     db_volume_upload_dir = function(local_dir, volume_dir, ...) {
       state$uploaded <- volume_dir
       invisible(TRUE)
@@ -939,6 +928,5 @@ test_that("db_write_table_volume executes append flow when append is TRUE", {
   )
 
   expect_match(state$sql, "INSERT INTO `tbl` (`x`) SELECT * FROM READ_FILES(", fixed = TRUE)
-  expect_identical(state$created, state$uploaded)
-  expect_identical(state$deleted, state$created)
+  expect_identical(state$deleted, state$uploaded)
 })
