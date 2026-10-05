@@ -929,8 +929,8 @@ setMethod(
     # Clean table name - remove quotes if present
     clean_name <- db_clean_table_name(name)
 
-    # Use DESCRIBE TABLE to get column information with inline disposition
-    sql <- paste0("DESCRIBE TABLE ", clean_name)
+    # DESCRIBE TABLE also returns partition and clustering rows
+    sql <- paste0("SELECT * FROM ", clean_name, " LIMIT 0")
     result <- db_sql_query(
       warehouse_id = conn@warehouse_id,
       statement = sql,
@@ -945,15 +945,7 @@ setMethod(
       show_progress = FALSE
     )
 
-    # Extract column names
-    if ("col_name" %in% names(result)) {
-      result$col_name
-    } else if ("column_name" %in% names(result)) {
-      result$column_name
-    } else {
-      # Fallback to first column
-      result[[1]]
-    }
+    names(result)
   }
 )
 

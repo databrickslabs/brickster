@@ -518,6 +518,18 @@ test_that("dbListTables uses connection context when generating SQL", {
   ))
 })
 
+test_that("dbListFields uses a zero-row query", {
+  local_mocked_bindings(
+    db_sql_query = function(statement, ...) {
+      expect_identical(statement, "SELECT * FROM t LIMIT 0")
+      tibble::tibble(id = integer())
+    },
+    .package = "brickster"
+  )
+
+  expect_identical(dbListFields(make_dbi_test_con(), "t"), "id")
+})
+
 test_that("dbRemoveTable and dbReadTable support character, Id, and AsIs inputs", {
   con <- make_dbi_test_con()
   state <- new.env(parent = emptyenv())
