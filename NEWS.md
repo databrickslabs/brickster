@@ -17,6 +17,7 @@
 -   Volume file requests now encode reserved characters and literal percent sequences in paths correctly, preventing `#` and `?` in filenames from changing the request target.
 -   `db_volume_dir_delete()` now respects `perform_request = FALSE` when `recursive = TRUE`, returning a directory-delete request without listing or deleting contents.
 -   `db_cluster_create()` and `db_cluster_edit()` no longer ignore `log_conf`
+-   `db_vs_indexes_upsert_data()` no longer rounds numbers to four decimal places.
 
 # brickster 0.2.14
 
