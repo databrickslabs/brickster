@@ -2,6 +2,9 @@
 
 ## brickster (development version)
 
+- [`dbListFields()`](https://dbi.r-dbi.org/reference/dbListFields.html)
+  no longer returns extra rows for partitioned and clustered tables.
+
 - Fixed
   [`db_sql_query()`](https://databrickslabs.github.io/brickster/reference/db_sql_query.md),
   [`dbGetQuery()`](https://dbi.r-dbi.org/reference/dbGetQuery.html), and
@@ -104,6 +107,9 @@
   and
   [`db_cluster_edit()`](https://databrickslabs.github.io/brickster/reference/db_cluster_edit.md)
   no longer ignore `log_conf`
+
+- [`db_vs_indexes_upsert_data()`](https://databrickslabs.github.io/brickster/reference/db_vs_indexes_upsert_data.md)
+  no longer rounds numbers to four decimal places.
 
 ## brickster 0.2.14
 
