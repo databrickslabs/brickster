@@ -998,7 +998,7 @@ access_control_req_group <- function(
   permission_level <- match.arg(permission_level, several.ok = FALSE)
 
   obj <- list(
-    group = group,
+    group_name = group,
     permission_level = permission_level
   )
 

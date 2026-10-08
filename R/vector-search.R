@@ -517,7 +517,7 @@ db_vs_indexes_upsert_data <- function(index, df,
                                       perform_request = TRUE) {
 
   body <- list(
-    inputs_json = jsonlite::toJSON(x = df, auto_unbox = TRUE)
+    inputs_json = jsonlite::toJSON(x = df, auto_unbox = TRUE, digits = NA)
   )
 
   req <- db_request(

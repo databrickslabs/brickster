@@ -1,6 +1,8 @@
 # brickster (development version)
 
 -   `db_jobs_repair_run()` now sends `job_parameters` correctly.
+-   `access_control_req_group()` now sends the group as `group_name`, so jobs created with group permissions no longer fail with "Principal name not defined".
+-   `dbListFields()` no longer returns extra rows for partitioned and clustered tables.
 -   Fixed `db_sql_query()`, `dbGetQuery()`, and `dbFetch()` silently returning only the first chunk of `INLINE` results. Additional chunks are fetched in order up to the requested row limit (#302).
 -   `db_list_all_pages()` collects all records from token-paginated listings, omitting pagination metadata automatically. Pass a listing function and its arguments, for example `db_list_all_pages(db_cluster_list, page_size = 100)`.
 -   Cluster wrappers now use Clusters API 2.1 (#300). **Breaking change:** `db_cluster_list()` and `db_cluster_events()` return full single-page responses, preserving pagination tokens; extract `$clusters` or `$events` for records. Both accept `page_size` and `page_token`. The Connections pane follows all cluster pages.
@@ -18,6 +20,7 @@
 -   Volume file requests now encode reserved characters and literal percent sequences in paths correctly, preventing `#` and `?` in filenames from changing the request target.
 -   `db_volume_dir_delete()` now respects `perform_request = FALSE` when `recursive = TRUE`, returning a directory-delete request without listing or deleting contents.
 -   `db_cluster_create()` and `db_cluster_edit()` no longer ignore `log_conf`
+-   `db_vs_indexes_upsert_data()` no longer rounds numbers to four decimal places.
 
 # brickster 0.2.14
 
