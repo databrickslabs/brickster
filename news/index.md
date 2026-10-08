@@ -2,6 +2,10 @@
 
 ## brickster (development version)
 
+- [`access_control_req_group()`](https://databrickslabs.github.io/brickster/reference/access_control_req_group.md)
+  now sends the group as `group_name`, so jobs created with group
+  permissions no longer fail with “Principal name not defined”.
+
 - [`dbListFields()`](https://dbi.r-dbi.org/reference/dbListFields.html)
   no longer returns extra rows for partitioned and clustered tables.
 
