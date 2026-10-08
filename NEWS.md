@@ -1,5 +1,6 @@
 # brickster (development version)
 
+-   `access_control_req_group()` now sends the group as `group_name`, so jobs created with group permissions no longer fail with "Principal name not defined".
 -   `dbListFields()` no longer returns extra rows for partitioned and clustered tables.
 -   Fixed `db_sql_query()`, `dbGetQuery()`, and `dbFetch()` silently returning only the first chunk of `INLINE` results. Additional chunks are fetched in order up to the requested row limit (#302).
 -   `db_list_all_pages()` collects all records from token-paginated listings, omitting pagination metadata automatically. Pass a listing function and its arguments, for example `db_list_all_pages(db_cluster_list, page_size = 100)`.
