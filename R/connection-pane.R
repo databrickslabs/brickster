@@ -393,6 +393,8 @@ get_table_data <- function(catalog, schema, table, host, token, metadata = TRUE)
     names(info) <- purrr::map_chr(tbl$columns, "name")
   }
 
+  info <- purrr::compact(info)
+
   data.frame(
     name = names(info),
     type = unname(unlist(info)),
