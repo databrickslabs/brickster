@@ -139,7 +139,7 @@ pak::pak("databrickslabs/brickster")
 | [DBFS](https://docs.databricks.com/api/workspace/dbfs) | Yes | 2.0 |
 | [Secrets](https://docs.databricks.com/api/workspace/secrets) | Yes | 2.0 |
 | [Repos](https://docs.databricks.com/api/workspace/repos) | Yes | 2.0 |
-| [mlflow Model Registry](https://docs.databricks.com/api/workspace/modelregistry) | Yes | 2.0 |
+| [mlflow Model Registry](https://docs.databricks.com/api/model-registry/v1/registered-model) | Yes | 2.0 |
 | [Clusters](https://docs.databricks.com/api/workspace/clusters) | Yes | 2.0 |
 | [Libraries](https://docs.databricks.com/api/workspace/libraries) | Yes | 2.0 |
 | [Workspace](https://docs.databricks.com/api/workspace/workspace) | Yes | 2.0 |
@@ -147,8 +147,8 @@ pak::pak("databrickslabs/brickster")
 | [Query History](https://docs.databricks.com/api/workspace/queryhistory) | Yes | 2.0 |
 | [Jobs](https://docs.databricks.com/api/workspace/jobs) | Yes | 2.1 |
 | [Volumes (Files)](https://docs.databricks.com/api/workspace/files) | Yes | 2.0 |
-| [SQL Statement Execution](https://docs.databricks.com/api/workspace/statementexecution) | Yes | 2.0 |
-| [REST 1.2 Commands](https://docs.databricks.com/api/workspace/commandexecution) | Partially | 1.2 |
+| [SQL Statement Execution](https://docs.databricks.com/api/statement-execution/v1/statement-execution) | Yes | 2.0 |
+| [REST 1.2 Commands](https://docs.databricks.com/api/command-execution/v2/command-execution) | Partially | 1.2 |
 | [Unity Catalog - Tables](https://docs.databricks.com/api/workspace/tables) | Yes | 2.1 |
 | [Unity Catalog - Volumes](https://docs.databricks.com/api/workspace/volumes) | Yes | 2.1 |
 | [Unity Catalog](https://docs.databricks.com/api/workspace/catalogs) | Partially | 2.1 |
