@@ -108,6 +108,18 @@ test_that("Vector Search APIs - don't perform", {
   })
   expect_s3_class(req_vsi_upsert_data, "httr2_request")
 
+  df <- data.frame(id = 1)
+  df$embedding <- list(c(0.123456789, -0.987654321))
+  req_vsi_upsert_precise <- db_vs_indexes_upsert_data(
+    index = "mock_index",
+    df = df,
+    perform_request = FALSE
+  )
+  expect_identical(
+    as.character(req_vsi_upsert_precise$body$data$inputs_json),
+    '[{"id":1,"embedding":[0.123456789,-0.987654321]}]'
+  )
+
   expect_no_error({
     req_vsi_query <- db_vs_indexes_query(
       index = "mock_index",

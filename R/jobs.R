@@ -462,14 +462,6 @@ db_jobs_repair_run <- function(
     )
   }
 
-  job_parameters <- purrr::imap(
-    job_parameters,
-    ~ {
-      list(name = .y, default = .x)
-    }
-  )
-  job_parameters <- stats::setNames(job_parameters, NULL)
-
   body <- list(
     run_id = as.character(run_id),
     rerun_tasks = rerun_tasks,

@@ -37,8 +37,8 @@ test_that("get_table_data returns expected metadata and column summaries", {
     ),
     db_uc_tables_get = function(...) {
       list(
-        table_type = "TABLE",
-        data_source_format = "TABLE",
+        table_type = "MANAGED",
+        data_source_format = "DELTA",
         full_name = "main.s.t",
         owner = "owner",
         storage_location = "s3://bucket/path",
@@ -57,6 +57,39 @@ test_that("get_table_data returns expected metadata and column summaries", {
   )
 
   expect_true(all(c("last commit at", "min reader version", "min writer version") %in% out_table$name))
+
+  out_no_delta_meta <- with_mocked_bindings(
+    get_table_data(
+      catalog = "main",
+      schema = "s",
+      table = "t",
+      host = "mock_host",
+      token = "mock_token",
+      metadata = TRUE
+    ),
+    db_uc_tables_get = function(...) {
+      list(
+        table_type = "MANAGED",
+        data_source_format = "DELTA",
+        full_name = "main.s.t",
+        owner = "owner",
+        storage_location = "s3://bucket/path",
+        created_at = 1713146793000,
+        created_by = "creator",
+        updated_at = 1713146793000,
+        updated_by = "updater"
+      )
+    },
+    .package = "brickster"
+  )
+
+  expect_identical(
+    out_no_delta_meta$type[out_no_delta_meta$name == "storage location"],
+    "s3://bucket/path"
+  )
+  expect_false(any(
+    c("last commit at", "min reader version") %in% out_no_delta_meta$name
+  ))
 
   out_cols <- with_mocked_bindings(
     get_table_data(

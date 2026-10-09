@@ -239,6 +239,7 @@ test_that("access control object behaviour", {
     group = "MockGroup",
     permission_level = "CAN_VIEW"
   )
+  expect_identical(group_perm$group_name, "MockGroup")
   user_perm <- access_control_req_user(
     user_name = "user@mock.com",
     permission_level = "IS_OWNER"

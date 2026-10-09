@@ -359,7 +359,7 @@ get_table_data <- function(catalog, schema, table, host, token, metadata = TRUE)
         "updated at" = readable_time(tbl$updated_at),
         "updated by" = tbl$updated_by
       )
-    } else if (tbl$data_source_format == "TABLE") {
+    } else if (tbl$data_source_format == "DELTA") {
       info <- list(
         "table type" = tbl$table_type,
         "data source format" = tbl$data_source_format,
@@ -392,6 +392,8 @@ get_table_data <- function(catalog, schema, table, host, token, metadata = TRUE)
     })
     names(info) <- purrr::map_chr(tbl$columns, "name")
   }
+
+  info <- purrr::compact(info)
 
   data.frame(
     name = names(info),
