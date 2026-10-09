@@ -308,6 +308,39 @@ get_schema_objects <- function(catalog, schema, host, token) {
 
 }
 
+get_table_format <- function(tbl) {
+  format <- tbl$data_source_format
+  kind <- tbl[["securable_kind"]] %||% tbl$securable_kind_manifest$securable_kind
+  iceberg_kinds <- c(
+    "TABLE_DELTA_ICEBERG_MANAGED",
+    "TABLE_ICEBERG_UNIFORM_MANAGED",
+    "TABLE_DELTA_ICEBERG_DELTASHARING"
+  )
+
+  # Managed Iceberg can report DELTA; its securable kind identifies the format.
+  if (any(kind %in% iceberg_kinds) ||
+      any(format %in% c("ICEBERG", "DELTA_UNIFORM_ICEBERG"))) {
+    return("ICEBERG")
+  }
+
+  writer_compat <- tbl$properties[c(
+    "delta.enableIcebergWriterCompatV1",
+    "delta.enableIcebergWriterCompatV3"
+  )]
+  if (is.null(kind) && identical(format, "DELTA") &&
+      identical(tbl$table_type, "MANAGED") && any(unlist(writer_compat) %in% "true")) {
+    return("ICEBERG")
+  }
+
+  formats <- tbl$properties$delta.universalFormat.enabledFormats %||% ""
+  formats <- trimws(strsplit(tolower(formats), ",", fixed = TRUE)[[1]])
+  if (identical(format, "DELTA") && "iceberg" %in% formats) {
+    return("DELTA (UniForm: Iceberg)")
+  }
+
+  format
+}
+
 get_table_data <- function(catalog, schema, table, host, token, metadata = TRUE) {
   # if metadata is TRUE then return metadata, otherwise columns
   tbl <- db_uc_tables_get(
@@ -322,7 +355,8 @@ get_table_data <- function(catalog, schema, table, host, token, metadata = TRUE)
   )
   # TODO: handle edge case errors?
   if (metadata) {
-    if (tbl$table_type == "VIEW") {
+    format <- get_table_format(tbl)
+    if (identical(tbl$table_type, "VIEW")) {
       info <- list(
         "table type" = tbl$table_type,
         "view definition" = tbl$view_definition,
@@ -333,10 +367,24 @@ get_table_data <- function(catalog, schema, table, host, token, metadata = TRUE)
         "updated at" = readable_time(tbl$updated_at),
         "updated by" = tbl$updated_by
       )
-    } else if (tbl$data_source_format == "DELTASHARING") {
+    } else if (identical(format, "ICEBERG")) {
       info <- list(
         "table type" = tbl$table_type,
-        "data source format" = tbl$data_source_format,
+        "data source format" = format,
+        "full name" = tbl$full_name,
+        "owner" = tbl$owner,
+        "storage location" = tbl$storage_location,
+        "iceberg format version" = tbl$properties[["format-version"]],
+        "iceberg metadata location" = tbl$delta_uniform_iceberg$metadata_location,
+        "created at" = readable_time(tbl$created_at),
+        "created by" = tbl$created_by,
+        "updated at" = readable_time(tbl$updated_at),
+        "updated by" = tbl$updated_by
+      )
+    } else if (identical(format, "DELTASHARING")) {
+      info <- list(
+        "table type" = tbl$table_type,
+        "data source format" = format,
         "full name" = tbl$full_name,
         "owner" = tbl$owner,
         "storage location" = tbl$storage_location,
@@ -345,10 +393,10 @@ get_table_data <- function(catalog, schema, table, host, token, metadata = TRUE)
         "updated at" = readable_time(tbl$updated_at),
         "updated by" = tbl$updated_by
       )
-    } else if (tbl$data_source_format == "VECTOR_INDEX_FORMAT") {
+    } else if (identical(format, "VECTOR_INDEX_FORMAT")) {
       info <- list(
         "table type" = tbl$table_type,
-        "data source format" = tbl$data_source_format,
+        "data source format" = format,
         "full name" = tbl$full_name,
         "owner" = tbl$owner,
         "endpoint name" = tbl$properties$endpoint_name,
@@ -359,10 +407,10 @@ get_table_data <- function(catalog, schema, table, host, token, metadata = TRUE)
         "updated at" = readable_time(tbl$updated_at),
         "updated by" = tbl$updated_by
       )
-    } else if (tbl$data_source_format == "DELTA") {
+    } else if (any(format %in% c("DELTA", "DELTA (UniForm: Iceberg)"))) {
       info <- list(
         "table type" = tbl$table_type,
-        "data source format" = tbl$data_source_format,
+        "data source format" = format,
         "full name" = tbl$full_name,
         "owner" = tbl$owner,
         "storage location" = tbl$storage_location,
@@ -377,7 +425,7 @@ get_table_data <- function(catalog, schema, table, host, token, metadata = TRUE)
     } else {
       info <- list(
         "table type" = tbl$table_type,
-        "data source format" = tbl$data_source_format,
+        "data source format" = format,
         "full name" = tbl$full_name,
         "owner" = tbl$owner,
         "created at" = readable_time(tbl$created_at),
