@@ -895,6 +895,43 @@ test_that("db_write_table_volume executes create flow when append is FALSE", {
   expect_identical(state$deleted, state$uploaded)
 })
 
+test_that("db_write_table_volume staging names don't depend on the seed", {
+  testthat::skip_if_not_installed("arrow")
+  withr::local_preserve_seed()
+  con <- make_dbi_test_con()
+  state <- new.env(parent = emptyenv())
+  state$uploaded <- character()
+
+  local_mocked_bindings(
+    db_volume_dir_exists = function(...) TRUE,
+    db_volume_upload_dir = function(local_dir, volume_dir, ...) {
+      state$uploaded <- c(state$uploaded, volume_dir)
+      invisible(TRUE)
+    },
+    db_sql_exec_and_wait = function(...) invisible(NULL),
+    db_volume_dir_delete = function(...) invisible(TRUE),
+    .package = "brickster"
+  )
+  local_mocked_bindings(
+    write_dataset = function(dataset, path, ...) fs::dir_create(path),
+    .package = "arrow"
+  )
+  write <- function() {
+    set.seed(42)
+    db_write_table_volume(
+      con,
+      DBI::SQL("`tbl`"),
+      data.frame(x = 1L),
+      "/Volumes/c/s/v",
+      show_progress = FALSE
+    )
+  }
+
+  write()
+  write()
+  expect_length(unique(state$uploaded), 2)
+})
+
 test_that("db_write_table_volume executes append flow when append is TRUE", {
   testthat::skip_if_not_installed("arrow")
   con <- make_dbi_test_con()
