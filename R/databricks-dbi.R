@@ -1773,7 +1773,7 @@ db_should_use_volume_method <- function(
 
 #' Write table using volume-based approach
 #' @param field.types Named character vector of SQL types for columns when
-#'   creating or replacing a table. Unspecified columns use [dbDataType()].
+#'   creating or replacing a table. Unspecified columns use [DBI::dbDataType()].
 #'   Volume writes without overrides infer types from Parquet. Databricks
 #'   validates SQL types and enforces the declared schema, including
 #'   `CHAR`/`VARCHAR` length limits. Appends use the existing table schema.

@@ -17,7 +17,7 @@ db_write_table_volume(
 }
 \arguments{
 \item{field.types}{Named character vector of SQL types for columns when
-creating or replacing a table. Unspecified columns use \code{\link[=dbDataType]{dbDataType()}}.
+creating or replacing a table. Unspecified columns use \code{\link[DBI:dbDataType]{DBI::dbDataType()}}.
 Volume writes without overrides infer types from Parquet. Databricks
 validates SQL types and enforces the declared schema, including
 \code{CHAR}/\code{VARCHAR} length limits. Appends use the existing table schema.}

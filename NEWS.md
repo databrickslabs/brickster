@@ -1,28 +1,29 @@
-# brickster (development version)
+# brickster 0.2.15
 
--   The workspace Connections pane identifies managed and foreign Iceberg tables as `ICEBERG`, distinguishes Delta tables with Iceberg reads as `DELTA (UniForm: Iceberg)`, and shows Iceberg metadata instead of Delta protocol versions. Tables without a source format, including metric views, no longer fail when opening metadata.
--   The RStudio connection pane now shows the storage location, last commit time, and minimum reader and writer versions of Delta tables.
--   `db_jobs_repair_run()` now sends `job_parameters` correctly.
--   `access_control_req_group()` now sends the group as `group_name`, so jobs created with group permissions no longer fail with "Principal name not defined".
--   `dbListFields()` no longer returns extra rows for partitioned and clustered tables.
--   Fixed `db_sql_query()`, `dbGetQuery()`, and `dbFetch()` silently returning only the first chunk of `INLINE` results. Additional chunks are fetched in order up to the requested row limit (#302).
--   `db_list_all_pages()` collects all records from token-paginated listings, omitting pagination metadata automatically. Pass a listing function and its arguments, for example `db_list_all_pages(db_cluster_list, page_size = 100)`.
--   Cluster wrappers now use Clusters API 2.1 (#300). **Breaking change:** `db_cluster_list()` and `db_cluster_events()` return full single-page responses, preserving pagination tokens; extract `$clusters` or `$events` for records. Both accept `page_size` and `page_token`. The Connections pane follows all cluster pages.
--   `db_cluster_events()` deprecates `offset`/`limit` in favor of `page_token`/`page_size` ahead of Databricks' November 30, 2026 migration deadline. Legacy arguments default to `NULL`; explicitly supplied values still work with a warning but cannot be mixed with token pagination. Obtain tokens from preceding responses rather than converting numeric offsets. Millisecond timestamps are now preserved without integer overflow.
--   `cumprod()` now uses built-in Databricks SQL functions instead of requiring sparklyr's session-registered aggregate. Cumulative products use a row frame and propagate `NULL` values to subsequent rows in each group (#294).
--   **Breaking change:** `db_jobs_list()` and `db_jobs_runs_list()` now return the full single-page API response, including pagination tokens and metadata. Extract `$jobs` or `$runs` to access the records. `offset` now defaults to `NULL` to enable token pagination; explicit numeric offsets are still forwarded. Use `page_token` from the preceding response to fetch another page. Job and run get wrappers also accept `page_token` for additional array elements. Use named arguments with these four wrappers because their argument order has changed.
--   Fixed the workspace connection pane's Catalog availability check so accessible Unity Catalog resources appear.
-
--   The RStudio connection pane now follows all Unity Catalog listing pages for catalogs, schemas, tables, volumes, models, functions, and model versions, including empty pages with continuation tokens. Volume details are fetched by name so volumes beyond the first listing page can be inspected. `db_uc_volumes_get()` now sends `include_browse` as a query parameter, and the pane handles optional metadata omitted from browse-only responses.
--   Volume-based `dbWriteTable()` now creates the schema requested by `field.types`, including `CHAR`/`VARCHAR` length limits. Volume writes and appends use `INSERT` to convert staged values to the target column types.
--   `db_volume_list()` now accepts `page_size` and `page_token`. Directory downloads and recursive deletion follow every listing page, preventing files beyond the first page from being omitted. Listing failures now stop recursive deletion instead of being treated as empty directories.
--   `db_volume_upload_dir()` now creates each parent directory only once, avoiding repeated API calls for files in the same directory.
--   `dbWriteTable()` and `dbAppendTable()` now write POSIXct values as epoch microseconds without shifting their time zone, using the same microsecond conversion as volume-based writes.
--   Standard-path table writes now detect binary columns once per column, avoiding quadratic serialization time for lists of raw vectors.
--   Volume file requests now encode reserved characters and literal percent sequences in paths correctly, preventing `#` and `?` in filenames from changing the request target.
--   `db_volume_dir_delete()` now respects `perform_request = FALSE` when `recursive = TRUE`, returning a directory-delete request without listing or deleting contents.
--   `db_cluster_create()` and `db_cluster_edit()` no longer ignore `log_conf`
--   `db_vs_indexes_upsert_data()` no longer rounds numbers to four decimal places.
+-   The workspace Connections pane identifies managed and foreign Iceberg tables as `ICEBERG`, distinguishes Delta tables with Iceberg reads as `DELTA (UniForm: Iceberg)`, and shows Iceberg metadata instead of Delta protocol versions. Tables without a source format, including metric views, no longer fail when opening metadata (#311, @zacdav).
+-   The RStudio connection pane now shows the storage location, last commit time, and minimum reader and writer versions of Delta tables (#304, @m-muecke).
+-   `db_jobs_repair_run()` now sends `job_parameters` correctly (#307, @m-muecke).
+-   `access_control_req_group()` now sends the group as `group_name`, so jobs created with group permissions no longer fail with "Principal name not defined" (#305, @m-muecke).
+-   `dbListFields()` no longer returns extra rows for partitioned and clustered tables (#306, @m-muecke).
+-   Fixed `db_sql_query()`, `dbGetQuery()`, and `dbFetch()` silently returning only the first chunk of `INLINE` results. Additional chunks are fetched in order up to the requested row limit (#303, @zacdav).
+-   `db_list_all_pages()` collects all records from token-paginated listings, omitting pagination metadata automatically. Pass a listing function and its arguments, for example `db_list_all_pages(db_cluster_list, page_size = 100)` (#301, @zacdav-db).
+-   Cluster wrappers now use Clusters API 2.1. **Breaking change:** `db_cluster_list()` and `db_cluster_events()` return full single-page responses, preserving pagination tokens; extract `$clusters` or `$events` for records. Both accept `page_size` and `page_token`. The Connections pane follows all cluster pages (#301, @zacdav-db).
+-   `db_cluster_events()` deprecates `offset`/`limit` in favor of `page_token`/`page_size` ahead of Databricks' November 30, 2026 migration deadline. Legacy arguments default to `NULL`; explicitly supplied values still work with a warning but cannot be mixed with token pagination. Obtain tokens from preceding responses rather than converting numeric offsets. Millisecond timestamps are now preserved without integer overflow (#301, @zacdav-db).
+-   `cumprod()` now uses built-in Databricks SQL functions instead of requiring sparklyr's session-registered aggregate. Cumulative products use a row frame and propagate `NULL` values to subsequent rows in each group (#295, @zacdav-db).
+-   **Breaking change:** `db_jobs_list()` and `db_jobs_runs_list()` now return the full single-page API response, including pagination tokens and metadata. Extract `$jobs` or `$runs` to access the records. `offset` now defaults to `NULL` to enable token pagination; explicit numeric offsets are still forwarded. Use `page_token` from the preceding response to fetch another page. Job and run get wrappers also accept `page_token` for additional array elements. Use named arguments with these four wrappers because their argument order has changed (#282, @zacdav).
+-   Fixed the workspace connection pane's Catalog availability check so accessible Unity Catalog resources appear (#283, @zacdav).
+-   The RStudio connection pane now follows all Unity Catalog listing pages for catalogs, schemas, tables, volumes, models, functions, and model versions, including empty pages with continuation tokens. Volume details are fetched by name so volumes beyond the first listing page can be inspected. `db_uc_volumes_get()` now sends `include_browse` as a query parameter, and the pane handles optional metadata omitted from browse-only responses (#283, @zacdav).
+-   Volume-based `dbWriteTable()` now creates the schema requested by `field.types`, including `CHAR`/`VARCHAR` length limits. Volume writes and appends use `INSERT` to convert staged values to the target column types (#287, @zacdav).
+-   `db_volume_list()` now accepts `page_size` and `page_token`. Directory downloads and recursive deletion follow every listing page, preventing files beyond the first page from being omitted. Listing failures now stop recursive deletion instead of being treated as empty directories (#281, @zacdav).
+-   `db_volume_upload_dir()` now creates each parent directory only once, avoiding repeated API calls for files in the same directory (#269, @zacdav-db).
+-   `dbWriteTable()` and `dbAppendTable()` now write POSIXct values as epoch microseconds without shifting their time zone, using the same microsecond conversion as volume-based writes (#298, @m-muecke).
+-   Standard-path table writes now detect binary columns once per column, avoiding quadratic serialization time for lists of raw vectors (#268, @zacdav-db).
+-   Volume file requests now encode reserved characters and literal percent sequences in paths correctly, preventing `#` and `?` in filenames from changing the request target (#267, @zacdav-db).
+-   `db_volume_dir_delete()` now respects `perform_request = FALSE` when `recursive = TRUE`, returning a directory-delete request without listing or deleting contents (#266, @zacdav-db).
+-   `db_cluster_create()` and `db_cluster_edit()` no longer ignore `log_conf` (#299, @m-muecke).
+-   `db_vs_indexes_upsert_data()` no longer rounds numbers to four decimal places (#308, @m-muecke).
+-   Volume-backed `dbWriteTable()` and `dbAppendTable()` avoid an extra staging-directory creation request before uploading files (#309, @m-muecke).
+-   Databricks CLI authentication now limits token retrieval to 60 seconds instead of waiting up to 60,000 seconds (#296, @m-muecke).
 
 # brickster 0.2.14
 

@@ -6,6 +6,7 @@
 ^docs$
 ^pkgdown$
 ^\.github$
+^\.git$
 ^\.covrignore$
 ^LICENSE\.md$
 ^NOTICE
