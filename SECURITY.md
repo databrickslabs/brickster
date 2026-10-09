@@ -30,10 +30,10 @@ required reviewers configured in GitHub repository settings under
 
 ## Protected Runner Workflows
 
-The `pkgdown` workflow may use `databrickslabs-protected-runner-group` with
-`contents: write` because it is limited to privileged triggers: protected-branch
-`push`, release publication, and manual dispatch. The runner group configuration
-must remain locked down:
+The `pkgdown` workflow may use `databricks-ghec-protected-runner-group-small`
+with the `linux-ubuntu-latest-2core-8gb` label and `contents: write` because it is
+limited to privileged triggers: protected-branch `push`, release publication,
+and manual dispatch. The runner group configuration must remain locked down:
 
 - Only trusted repositories may target the runner group.
 - Workflows using the runner group must not add `pull_request`, `issue_comment`,
