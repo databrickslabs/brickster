@@ -17,9 +17,9 @@ will be the focus of this article.
 
 The REPL temporarily connects the existing R console to a Databricks
 cluster (via [command execution
-APIs](https://docs.databricks.com/api/workspace/commandexecution)) and
-allows code in all supported languages to be sent interactively - as if
-it were running locally.
+APIs](https://docs.databricks.com/api/command-execution/v2/command-execution))
+and allows code in all supported languages to be sent interactively - as
+if it were running locally.
 
 ### Getting Started
 

@@ -1,64 +1,70 @@
 # Changelog
 
-## brickster (development version)
+## brickster 0.2.15
 
 - The workspace Connections pane identifies managed and foreign Iceberg
   tables as `ICEBERG`, distinguishes Delta tables with Iceberg reads as
   `DELTA (UniForm: Iceberg)`, and shows Iceberg metadata instead of
   Delta protocol versions. Tables without a source format, including
-  metric views, no longer fail when opening metadata.
-
+  metric views, no longer fail when opening metadata
+  ([\#311](https://github.com/databrickslabs/brickster/issues/311),
+  [@zacdav](https://github.com/zacdav)).
 - The RStudio connection pane now shows the storage location, last
-  commit time, and minimum reader and writer versions of Delta tables.
-
+  commit time, and minimum reader and writer versions of Delta tables
+  ([\#304](https://github.com/databrickslabs/brickster/issues/304),
+  [@m-muecke](https://github.com/m-muecke)).
 - [`db_jobs_repair_run()`](https://databrickslabs.github.io/brickster/reference/db_jobs_repair_run.md)
-  now sends `job_parameters` correctly.
-
+  now sends `job_parameters` correctly
+  ([\#307](https://github.com/databrickslabs/brickster/issues/307),
+  [@m-muecke](https://github.com/m-muecke)).
 - [`access_control_req_group()`](https://databrickslabs.github.io/brickster/reference/access_control_req_group.md)
   now sends the group as `group_name`, so jobs created with group
-  permissions no longer fail with “Principal name not defined”.
-
+  permissions no longer fail with “Principal name not defined”
+  ([\#305](https://github.com/databrickslabs/brickster/issues/305),
+  [@m-muecke](https://github.com/m-muecke)).
 - [`dbListFields()`](https://dbi.r-dbi.org/reference/dbListFields.html)
-  no longer returns extra rows for partitioned and clustered tables.
-
+  no longer returns extra rows for partitioned and clustered tables
+  ([\#306](https://github.com/databrickslabs/brickster/issues/306),
+  [@m-muecke](https://github.com/m-muecke)).
 - Fixed
   [`db_sql_query()`](https://databrickslabs.github.io/brickster/reference/db_sql_query.md),
   [`dbGetQuery()`](https://dbi.r-dbi.org/reference/dbGetQuery.html), and
   [`dbFetch()`](https://dbi.r-dbi.org/reference/dbFetch.html) silently
   returning only the first chunk of `INLINE` results. Additional chunks
   are fetched in order up to the requested row limit
-  ([\#302](https://github.com/databrickslabs/brickster/issues/302)).
-
+  ([\#303](https://github.com/databrickslabs/brickster/issues/303),
+  [@zacdav](https://github.com/zacdav)).
 - [`db_list_all_pages()`](https://databrickslabs.github.io/brickster/reference/db_list_all_pages.md)
   collects all records from token-paginated listings, omitting
   pagination metadata automatically. Pass a listing function and its
   arguments, for example
-  `db_list_all_pages(db_cluster_list, page_size = 100)`.
-
-- Cluster wrappers now use Clusters API 2.1
-  ([\#300](https://github.com/databrickslabs/brickster/issues/300)).
-  **Breaking change:**
+  `db_list_all_pages(db_cluster_list, page_size = 100)`
+  ([\#301](https://github.com/databrickslabs/brickster/issues/301),
+  [@zacdav-db](https://github.com/zacdav-db)).
+- Cluster wrappers now use Clusters API 2.1. **Breaking change:**
   [`db_cluster_list()`](https://databrickslabs.github.io/brickster/reference/db_cluster_list.md)
   and
   [`db_cluster_events()`](https://databrickslabs.github.io/brickster/reference/db_cluster_events.md)
   return full single-page responses, preserving pagination tokens;
   extract `$clusters` or `$events` for records. Both accept `page_size`
-  and `page_token`. The Connections pane follows all cluster pages.
-
+  and `page_token`. The Connections pane follows all cluster pages
+  ([\#301](https://github.com/databrickslabs/brickster/issues/301),
+  [@zacdav-db](https://github.com/zacdav-db)).
 - [`db_cluster_events()`](https://databrickslabs.github.io/brickster/reference/db_cluster_events.md)
   deprecates `offset`/`limit` in favor of `page_token`/`page_size` ahead
   of Databricks’ November 30, 2026 migration deadline. Legacy arguments
   default to `NULL`; explicitly supplied values still work with a
   warning but cannot be mixed with token pagination. Obtain tokens from
   preceding responses rather than converting numeric offsets.
-  Millisecond timestamps are now preserved without integer overflow.
-
+  Millisecond timestamps are now preserved without integer overflow
+  ([\#301](https://github.com/databrickslabs/brickster/issues/301),
+  [@zacdav-db](https://github.com/zacdav-db)).
 - [`cumprod()`](https://rdrr.io/r/base/cumsum.html) now uses built-in
   Databricks SQL functions instead of requiring sparklyr’s
   session-registered aggregate. Cumulative products use a row frame and
   propagate `NULL` values to subsequent rows in each group
-  ([\#294](https://github.com/databrickslabs/brickster/issues/294)).
-
+  ([\#295](https://github.com/databrickslabs/brickster/issues/295),
+  [@zacdav-db](https://github.com/zacdav-db)).
 - **Breaking change:**
   [`db_jobs_list()`](https://databrickslabs.github.io/brickster/reference/db_jobs_list.md)
   and
@@ -70,11 +76,13 @@
   preceding response to fetch another page. Job and run get wrappers
   also accept `page_token` for additional array elements. Use named
   arguments with these four wrappers because their argument order has
-  changed.
-
+  changed
+  ([\#282](https://github.com/databrickslabs/brickster/issues/282),
+  [@zacdav](https://github.com/zacdav)).
 - Fixed the workspace connection pane’s Catalog availability check so
-  accessible Unity Catalog resources appear.
-
+  accessible Unity Catalog resources appear
+  ([\#283](https://github.com/databrickslabs/brickster/issues/283),
+  [@zacdav](https://github.com/zacdav)).
 - The RStudio connection pane now follows all Unity Catalog listing
   pages for catalogs, schemas, tables, volumes, models, functions, and
   model versions, including empty pages with continuation tokens. Volume
@@ -82,50 +90,73 @@
   can be inspected.
   [`db_uc_volumes_get()`](https://databrickslabs.github.io/brickster/reference/db_uc_volumes_get.md)
   now sends `include_browse` as a query parameter, and the pane handles
-  optional metadata omitted from browse-only responses.
-
+  optional metadata omitted from browse-only responses
+  ([\#283](https://github.com/databrickslabs/brickster/issues/283),
+  [@zacdav](https://github.com/zacdav)).
 - Volume-based
   [`dbWriteTable()`](https://dbi.r-dbi.org/reference/dbWriteTable.html)
   now creates the schema requested by `field.types`, including
   `CHAR`/`VARCHAR` length limits. Volume writes and appends use `INSERT`
-  to convert staged values to the target column types.
-
+  to convert staged values to the target column types
+  ([\#287](https://github.com/databrickslabs/brickster/issues/287),
+  [@zacdav](https://github.com/zacdav)).
 - [`db_volume_list()`](https://databrickslabs.github.io/brickster/reference/db_volume_list.md)
   now accepts `page_size` and `page_token`. Directory downloads and
   recursive deletion follow every listing page, preventing files beyond
   the first page from being omitted. Listing failures now stop recursive
-  deletion instead of being treated as empty directories.
-
+  deletion instead of being treated as empty directories
+  ([\#281](https://github.com/databrickslabs/brickster/issues/281),
+  [@zacdav](https://github.com/zacdav)).
 - [`db_volume_upload_dir()`](https://databrickslabs.github.io/brickster/reference/db_volume_upload_dir.md)
   now creates each parent directory only once, avoiding repeated API
-  calls for files in the same directory.
-
+  calls for files in the same directory
+  ([\#269](https://github.com/databrickslabs/brickster/issues/269),
+  [@zacdav-db](https://github.com/zacdav-db)).
 - [`dbWriteTable()`](https://dbi.r-dbi.org/reference/dbWriteTable.html)
   and
   [`dbAppendTable()`](https://dbi.r-dbi.org/reference/dbAppendTable.html)
   now write POSIXct values as epoch microseconds without shifting their
   time zone, using the same microsecond conversion as volume-based
-  writes.
-
+  writes
+  ([\#298](https://github.com/databrickslabs/brickster/issues/298),
+  [@m-muecke](https://github.com/m-muecke)).
 - Standard-path table writes now detect binary columns once per column,
-  avoiding quadratic serialization time for lists of raw vectors.
-
+  avoiding quadratic serialization time for lists of raw vectors
+  ([\#268](https://github.com/databrickslabs/brickster/issues/268),
+  [@zacdav-db](https://github.com/zacdav-db)).
 - Volume file requests now encode reserved characters and literal
   percent sequences in paths correctly, preventing `#` and `?` in
-  filenames from changing the request target.
-
+  filenames from changing the request target
+  ([\#267](https://github.com/databrickslabs/brickster/issues/267),
+  [@zacdav-db](https://github.com/zacdav-db)).
 - [`db_volume_dir_delete()`](https://databrickslabs.github.io/brickster/reference/db_volume_dir_delete.md)
   now respects `perform_request = FALSE` when `recursive = TRUE`,
   returning a directory-delete request without listing or deleting
-  contents.
-
+  contents
+  ([\#266](https://github.com/databrickslabs/brickster/issues/266),
+  [@zacdav-db](https://github.com/zacdav-db)).
 - [`db_cluster_create()`](https://databrickslabs.github.io/brickster/reference/db_cluster_create.md)
   and
   [`db_cluster_edit()`](https://databrickslabs.github.io/brickster/reference/db_cluster_edit.md)
   no longer ignore `log_conf`
-
+  ([\#299](https://github.com/databrickslabs/brickster/issues/299),
+  [@m-muecke](https://github.com/m-muecke)).
 - [`db_vs_indexes_upsert_data()`](https://databrickslabs.github.io/brickster/reference/db_vs_indexes_upsert_data.md)
-  no longer rounds numbers to four decimal places.
+  no longer rounds numbers to four decimal places
+  ([\#308](https://github.com/databrickslabs/brickster/issues/308),
+  [@m-muecke](https://github.com/m-muecke)).
+- Volume-backed
+  [`dbWriteTable()`](https://dbi.r-dbi.org/reference/dbWriteTable.html)
+  and
+  [`dbAppendTable()`](https://dbi.r-dbi.org/reference/dbAppendTable.html)
+  avoid an extra staging-directory creation request before uploading
+  files
+  ([\#309](https://github.com/databrickslabs/brickster/issues/309),
+  [@m-muecke](https://github.com/m-muecke)).
+- Databricks CLI authentication now limits token retrieval to 60 seconds
+  instead of waiting up to 60,000 seconds
+  ([\#296](https://github.com/databrickslabs/brickster/issues/296),
+  [@m-muecke](https://github.com/m-muecke)).
 
 ## brickster 0.2.14
 

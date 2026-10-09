@@ -25,8 +25,8 @@ both [DBI](https://dbi.r-dbi.org) and
 Databricks SQL warehouses.
 
 It uses the [Statement Execution
-API](https://docs.databricks.com/api/workspace/statementexecution) in
-combination with the [Files
+API](https://docs.databricks.com/api/statement-execution/v1/statement-execution)
+in combination with the [Files
 API](https://docs.databricks.com/api/workspace/files) (the latter
 specifically for large data uploads).
 
