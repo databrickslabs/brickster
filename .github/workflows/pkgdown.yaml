@@ -20,8 +20,8 @@ jobs:
     # (push to protected branches, release publication, or manual dispatch).
     # Do not add pull_request, issue_comment, or other untrusted triggers here.
     runs-on:
-      group: databricks-ghec-protected-runner-group-small
-      labels: linux-ubuntu-latest-2core-8gb
+      group: databrickslabs-protected-runner-group
+      labels: linux-ubuntu-latest
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
