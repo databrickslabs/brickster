@@ -7,6 +7,7 @@ volume_types_connection <- function() {
 
 test_that("volume writes carry partial field types through every table-name method", {
   skip_if_not_installed("arrow")
+  skip_if_not(arrow::codec_is_available("zstd"), "Arrow was built without zstd support")
   state <- new.env(parent = emptyenv())
   state$sql <- character()
   state$uploads <- 0L
@@ -82,6 +83,7 @@ test_that("invalid volume field type arguments fail before staging", {
 purrr::walk(c("CREATE", "INSERT"), function(failed_statement) {
   test_that(paste("volume writes clean up when", failed_statement, "fails"), {
     skip_if_not_installed("arrow")
+    skip_if_not(arrow::codec_is_available("zstd"), "Arrow was built without zstd support")
     state <- new.env(parent = emptyenv())
     state$local_dir <- NULL
     state$cleaned <- FALSE

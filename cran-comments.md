@@ -1,3 +1,10 @@
+## Resubmission
+
+The Debian pretest reported four test failures because Arrow was built without
+zstd support. Tests that write zstd-compressed Parquet now check
+`arrow::codec_is_available("zstd")` and skip when it is unavailable.
+Volume staging continues to require zstd; runtime behavior is unchanged.
+
 ## Test environment
 
 * macOS Tahoe 26.6.2 (aarch64), R 4.5.1
@@ -8,8 +15,8 @@
 
 Checked with `--as-cran --run-donttest`, including tests, vignettes and the manual.
 Authenticated integration tests are skipped without workspace credentials.
-
-* This is an updated release.
+The full test suite passes with zstd available and with codec availability
+mocked as unavailable; only the four zstd-dependent offline tests additionally skip.
 
 ## Reverse dependencies
 

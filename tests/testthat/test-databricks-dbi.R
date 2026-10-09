@@ -307,6 +307,7 @@ test_that("volume writes preserve field types across appends and replacements", 
   staging_volume <- Sys.getenv("DATABRICKS_TEST_VOLUME")
   skip_if(!nzchar(staging_volume), "Set DATABRICKS_TEST_VOLUME to run volume write tests")
   skip_if_not_installed("arrow")
+  skip_if_not(arrow::codec_is_available("zstd"), "Arrow was built without zstd support")
   skip_unless_warehouse_available()
 
   parts <- strsplit(staging_volume, "/", fixed = TRUE)[[1]]
@@ -366,6 +367,7 @@ test_that("POSIXct writes and appends agree across inline and volume paths", {
   staging_volume <- Sys.getenv("DATABRICKS_TEST_VOLUME")
   skip_if(!nzchar(staging_volume), "Set DATABRICKS_TEST_VOLUME to run volume write tests")
   skip_if_not_installed("arrow")
+  skip_if_not(arrow::codec_is_available("zstd"), "Arrow was built without zstd support")
   skip_unless_warehouse_available()
 
   parts <- strsplit(staging_volume, "/", fixed = TRUE)[[1]]

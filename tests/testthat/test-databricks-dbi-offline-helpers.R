@@ -360,6 +360,7 @@ test_that("timestamp SQL preserves microseconds and truncates submicroseconds", 
 
 test_that("inline timestamp SQL agrees with staged Parquet microseconds", {
   skip_if_not_installed("arrow")
+  skip_if_not(arrow::codec_is_available("zstd"), "Arrow was built without zstd support")
   value <- data.frame(ts = .POSIXct(c(
     1719820800.3, 1719820800.000001, 1719820800.123456,
     1735689599.9999996, 1104537600.000002,
