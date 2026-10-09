@@ -2,6 +2,12 @@
 
 ## brickster (development version)
 
+- The workspace Connections pane identifies managed and foreign Iceberg
+  tables as `ICEBERG`, distinguishes Delta tables with Iceberg reads as
+  `DELTA (UniForm: Iceberg)`, and shows Iceberg metadata instead of
+  Delta protocol versions. Tables without a source format, including
+  metric views, no longer fail when opening metadata.
+
 - The RStudio connection pane now shows the storage location, last
   commit time, and minimum reader and writer versions of Delta tables.
 
