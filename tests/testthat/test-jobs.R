@@ -211,6 +211,11 @@ test_that("Jobs API - don't perform", {
     perform_request = FALSE
   )
   expect_s3_class(resp_repair_run, "httr2_request")
+  expect_match(
+    db_request_json(resp_repair_run),
+    '"job_parameters":{"param1":"value1"}',
+    fixed = TRUE
+  )
 
   # Test with rerun_all_failed_tasks
   resp_repair_all <- db_jobs_repair_run(

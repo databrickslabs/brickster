@@ -929,8 +929,8 @@ setMethod(
     # Clean table name - remove quotes if present
     clean_name <- db_clean_table_name(name)
 
-    # Use DESCRIBE TABLE to get column information with inline disposition
-    sql <- paste0("DESCRIBE TABLE ", clean_name)
+    # DESCRIBE TABLE also returns partition and clustering rows
+    sql <- paste0("SELECT * FROM ", clean_name, " LIMIT 0")
     result <- db_sql_query(
       warehouse_id = conn@warehouse_id,
       statement = sql,
@@ -945,15 +945,7 @@ setMethod(
       show_progress = FALSE
     )
 
-    # Extract column names
-    if ("col_name" %in% names(result)) {
-      result$col_name
-    } else if ("column_name" %in% names(result)) {
-      result$column_name
-    } else {
-      # Fallback to first column
-      result[[1]]
-    }
+    names(result)
   }
 )
 
@@ -1856,6 +1848,14 @@ db_write_table_volume <- function(
           }
         },
         error = function(e) {
+          # Directory was never created (upload failed early), nothing to clean up
+          if (rlang::cnd_inherits(e, "httr2_http_404")) {
+            if (show_progress) {
+              cli::cli_progress_done()
+            }
+            return(invisible(NULL))
+          }
+
           if (show_progress) {
             cli::cli_progress_done(result = "failed")
           }
@@ -1887,14 +1887,7 @@ db_write_table_volume <- function(
     cli::cli_progress_done()
   }
 
-  # Create staging directory
-  db_volume_dir_create(
-    volume_dataset_path,
-    host = conn@host,
-    token = conn@token
-  )
-
-  # Upload files to volume
+  # Upload files to volume (creates the staging directory)
   db_volume_upload_dir(
     local_dir = local_temp_dir,
     volume_dir = volume_dataset_path,

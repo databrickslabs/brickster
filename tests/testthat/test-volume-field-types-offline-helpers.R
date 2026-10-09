@@ -14,7 +14,6 @@ test_that("volume writes carry partial field types through every table-name meth
   local_mocked_bindings(
     dbExistsTable = function(...) FALSE,
     db_volume_dir_exists = function(...) TRUE,
-    db_volume_dir_create = function(...) TRUE,
     db_volume_upload_dir = function(local_dir, ...) {
       state$uploads <- state$uploads + 1L
       staged <- arrow::read_parquet(fs::dir_ls(local_dir, glob = "*.parquet")[[1]])
@@ -90,7 +89,6 @@ purrr::walk(c("CREATE", "INSERT"), function(failed_statement) {
     local_mocked_bindings(
       dbExistsTable = function(...) FALSE,
       db_volume_dir_exists = function(...) TRUE,
-      db_volume_dir_create = function(...) TRUE,
       db_volume_upload_dir = function(local_dir, ...) {
         state$local_dir <- local_dir
         TRUE
