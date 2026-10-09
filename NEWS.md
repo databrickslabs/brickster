@@ -1,5 +1,6 @@
 # brickster (development version)
 
+-   The RStudio connection pane now shows the storage location, last commit time, and minimum reader and writer versions of Delta tables.
 -   `db_jobs_repair_run()` now sends `job_parameters` correctly.
 -   `access_control_req_group()` now sends the group as `group_name`, so jobs created with group permissions no longer fail with "Principal name not defined".
 -   `dbListFields()` no longer returns extra rows for partitioned and clustered tables.
