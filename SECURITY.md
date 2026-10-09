@@ -28,19 +28,19 @@ Before enabling or changing internal runners, verify the environment still has
 required reviewers configured in GitHub repository settings under
 `Settings > Environments > runtime`.
 
-## Protected Runner Workflows
+## Documentation Deployment
 
-The `pkgdown` workflow may use `databricks-ghec-protected-runner-group-small`
-with the `linux-ubuntu-latest-2core-8gb` label and `contents: write` because it is
-limited to privileged triggers: protected-branch `push`, release publication,
-and manual dispatch. The runner group configuration must remain locked down:
+The `pkgdown` workflow uses a standard GitHub-hosted `ubuntu-24.04` runner.
+It builds public package documentation and uses the ephemeral `GITHUB_TOKEN`
+with `contents: write` to publish the `gh-pages` branch.
 
-- Only trusted repositories may target the runner group.
-- Workflows using the runner group must not add `pull_request`, `issue_comment`,
-  `pull_request_target`, `workflow_run`, or other externally influenced triggers.
-- Jobs using the runner group must continue to declare the `runtime` environment
-  when they execute repository code with runtime secrets or write tokens.
-- Changes to protected-runner workflows require CODEOWNERS review.
+- Publishing is limited to protected-branch `push`, release publication, and
+  manual dispatch.
+- Do not add `pull_request`, `issue_comment`, `pull_request_target`,
+  `workflow_run`, or other externally influenced triggers to this write job.
+- Do not expose Databricks runtime secrets to documentation builds. Jobs that
+  need those secrets must declare the reviewed `runtime` environment.
+- Changes to the publishing workflow require CODEOWNERS review.
 
 ## Pull Request Comment Commands
 
