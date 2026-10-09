@@ -23,6 +23,7 @@
 -   `db_cluster_create()` and `db_cluster_edit()` no longer ignore `log_conf` (#299, @m-muecke).
 -   `db_vs_indexes_upsert_data()` no longer rounds numbers to four decimal places (#308, @m-muecke).
 -   Volume-backed `dbWriteTable()` and `dbAppendTable()` avoid an extra staging-directory creation request before uploading files (#309, @m-muecke).
+-   Volume-backed `dbWriteTable()` no longer uses the random seed to name staging directories (@m-muecke).
 -   Databricks CLI authentication now limits token retrieval to 60 seconds instead of waiting up to 60,000 seconds (#296, @m-muecke).
 
 # brickster 0.2.14

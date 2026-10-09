@@ -1809,12 +1809,14 @@ db_write_table_volume <- function(
     cli::cli_abort("Staging volume directory does not exist: {.path {staging_volume}}")
   }
 
-  # Generate unique directory name for dataset
+  # Unique per process without touching the user's RNG state
   temp_dirname <- paste0(
     "brickster_upload_",
     format(Sys.time(), "%Y%m%d_%H%M%S"),
     "_",
-    sample(10000:99999, 1)
+    basename(tempdir()),
+    "_",
+    basename(tempfile(""))
   )
 
   volume_dataset_path <- fs::path(staging_volume, temp_dirname)
