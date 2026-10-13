@@ -2,6 +2,8 @@
 
 ## brickster 0.2.15
 
+CRAN release: 2026-10-09
+
 - The workspace Connections pane identifies managed and foreign Iceberg
   tables as `ICEBERG`, distinguishes Delta tables with Iceberg reads as
   `DELTA (UniForm: Iceberg)`, and shows Iceberg metadata instead of
@@ -153,6 +155,10 @@
   files
   ([\#309](https://github.com/databrickslabs/brickster/issues/309),
   [@m-muecke](https://github.com/m-muecke)).
+- Volume-backed
+  [`dbWriteTable()`](https://dbi.r-dbi.org/reference/dbWriteTable.html)
+  no longer uses the random seed to name staging directories
+  ([@m-muecke](https://github.com/m-muecke)).
 - Databricks CLI authentication now limits token retrieval to 60 seconds
   instead of waiting up to 60,000 seconds
   ([\#296](https://github.com/databrickslabs/brickster/issues/296),

@@ -46,7 +46,7 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.15" id="brickster-0215">brickster 0.2.15<a class="anchor" aria-label="anchor" href="#brickster-0215"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.2.15" id="brickster-0215">brickster 0.2.15<a class="anchor" aria-label="anchor" href="#brickster-0215"></a></h2><p class="text-muted">CRAN release: 2026-10-09</p>
 <ul><li>The workspace Connections pane identifies managed and foreign Iceberg tables as <code>ICEBERG</code>, distinguishes Delta tables with Iceberg reads as <code>DELTA (UniForm: Iceberg)</code>, and shows Iceberg metadata instead of Delta protocol versions. Tables without a source format, including metric views, no longer fail when opening metadata (<a href="https://github.com/databrickslabs/brickster/issues/311" class="external-link">#311</a>, <a href="https://github.com/zacdav" class="external-link">@zacdav</a>).</li>
 <li>The RStudio connection pane now shows the storage location, last commit time, and minimum reader and writer versions of Delta tables (<a href="https://github.com/databrickslabs/brickster/issues/304" class="external-link">#304</a>, <a href="https://github.com/m-muecke" class="external-link">@m-muecke</a>).</li>
 <li>
@@ -83,6 +83,7 @@
 <li>
 <code><a href="../reference/db_vs_indexes_upsert_data.html">db_vs_indexes_upsert_data()</a></code> no longer rounds numbers to four decimal places (<a href="https://github.com/databrickslabs/brickster/issues/308" class="external-link">#308</a>, <a href="https://github.com/m-muecke" class="external-link">@m-muecke</a>).</li>
 <li>Volume-backed <code><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable()</a></code> and <code><a href="https://dbi.r-dbi.org/reference/dbAppendTable.html" class="external-link">dbAppendTable()</a></code> avoid an extra staging-directory creation request before uploading files (<a href="https://github.com/databrickslabs/brickster/issues/309" class="external-link">#309</a>, <a href="https://github.com/m-muecke" class="external-link">@m-muecke</a>).</li>
+<li>Volume-backed <code><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable()</a></code> no longer uses the random seed to name staging directories (<a href="https://github.com/m-muecke" class="external-link">@m-muecke</a>).</li>
 <li>Databricks CLI authentication now limits token retrieval to 60 seconds instead of waiting up to 60,000 seconds (<a href="https://github.com/databrickslabs/brickster/issues/296" class="external-link">#296</a>, <a href="https://github.com/m-muecke" class="external-link">@m-muecke</a>).</li>
 </ul></div>
     <div class="section level2">
