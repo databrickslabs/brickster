@@ -17,7 +17,8 @@ db_sql_exec_and_wait(
   format = c("ARROW_STREAM", "JSON_ARRAY"),
   host = db_host(),
   token = db_token(),
-  show_progress = TRUE
+  show_progress = TRUE,
+  query_tags = NULL
 )
 }
 \arguments{
@@ -67,6 +68,13 @@ for details.}
 \item{host}{Databricks workspace URL, defaults to calling \code{\link[=db_host]{db_host()}}.}
 
 \item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}
+
+\item{query_tags}{Optional named list of execution-level query tags, for
+example \code{list(team = "informatics", environment = "dev")}. Supply at most
+20 tags with unique, non-empty names and single string values. Use a \code{NULL}
+value for a key-only tag. \code{NULL} or \code{list()} omits tags from the request.
+Tags are recorded in \code{system.query.history.query_tags}; they are distinct
+from the saved-query metadata \code{tags} in \code{\link[=db_query_create]{db_query_create()}}.}
 }
 \value{
 Status response with manifest when query completes successfully

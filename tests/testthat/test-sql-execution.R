@@ -35,6 +35,63 @@ test_that("SQL Execution API - don't perform", {
   expect_s3_class(resp_status, "httr2_request")
 })
 
+test_that("SQL execution serializes named query tags as an API array", {
+  req <- db_sql_exec_query(
+    statement = "SELECT 1",
+    warehouse_id = "wh-1",
+    query_tags = list(team = "informatics", experiment = NULL, metadata = 'a:b,c\\d"e'),
+    host = "mock.test",
+    token = "mock-token",
+    perform_request = FALSE
+  )
+
+  expect_s3_class(req, "httr2_request")
+  expect_identical(req$method, "POST")
+  expect_identical(req$url, "https://mock.test/api/2.0/sql/statements")
+  body <- jsonlite::fromJSON(db_request_json(req), simplifyVector = FALSE)
+  expect_identical(body$query_tags, list(
+    list(key = "team", value = "informatics"),
+    list(key = "experiment"),
+    list(key = "metadata", value = 'a:b,c\\d"e')
+  ))
+  expect_identical(body$statement, "SELECT 1")
+})
+
+test_that("SQL execution keeps a single tag in an array and omits empty tags", {
+  request <- function(...) db_sql_exec_query(
+    "SELECT 1", "wh-1", host = "mock.test", token = "mock-token",
+    perform_request = FALSE, ...
+  )
+  req <- request(query_tags = list(team = "informatics"))
+  body <- jsonlite::fromJSON(db_request_json(req), simplifyVector = FALSE)
+  expect_identical(body$query_tags, list(list(key = "team", value = "informatics")))
+
+  purrr::walk(list(request(), request(query_tags = NULL), request(query_tags = list())), function(req) {
+    expect_false("query_tags" %in% names(req$body$data))
+  })
+  tags <- setNames(as.list(rep("value", 20)), paste0("tag", seq_len(20)))
+  expect_length(request(query_tags = tags)$body$data$query_tags, 20L)
+})
+
+test_that("SQL execution rejects malformed query tags before building a request", {
+  invalid <- list(
+    "team:informatics", c(team = "informatics"), data.frame(team = "informatics"),
+    list("informatics"), list(team = "informatics", "dev"),
+    setNames(list("value"), ""), setNames(list("value"), " "),
+    setNames(list("value"), NA_character_), list(team = "a", team = "b"),
+    list(team = NA_character_), list(team = 1), list(team = TRUE),
+    list(team = character()), list(team = c("a", "b")), list(team = list("a")),
+    setNames(as.list(rep("value", 21)), paste0("tag", seq_len(21)))
+  )
+  purrr::walk(invalid, function(tags) {
+    expect_error(
+      db_sql_exec_query("SELECT 1", "wh-1", query_tags = tags,
+        host = "mock.test", token = "mock-token", perform_request = FALSE),
+      "query_tags"
+    )
+  })
+})
+
 skip_on_cran()
 skip_unless_authenticated()
 skip_unless_aws_workspace()
@@ -55,7 +112,8 @@ test_that("SQL Execution API", {
     resp_query <- db_sql_exec_query(
       statement = "select 1",
       warehouse_id = test_warehouse$id,
-      wait_timeout = "0s"
+      wait_timeout = "0s",
+      query_tags = list(application = "brickster_tests", test = "sql_execution")
     )
   })
   expect_type(resp_query, "list")
@@ -99,6 +157,7 @@ test_that("SQL Execution API", {
     resp_query <- db_sql_query(
       warehouse_id = test_warehouse$id,
       statement = "select 1",
+      query_tags = list(application = "brickster_tests", test = "sql_query"),
       show_progress = FALSE
     )
   })

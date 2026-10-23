@@ -73,6 +73,67 @@ con <- dbConnect(
 )
 ```
 
+## Query tags
+
+Use `query_tags` to attribute SQL executions to a team, project, or environment:
+
+```{r}
+trips <- db_sql_query(
+  warehouse_id = "<your_warehouse_id>",
+  statement = "SELECT * FROM samples.nyctaxi.trips LIMIT 10",
+  query_tags = list(team = "informatics", project = "disease_surveillance")
+)
+```
+
+`db_sql_exec_query()` accepts the same named list. Supply up to 20 unique,
+non-empty tag names, each with a single string value; use `NULL` as a value for
+a key-only tag, such as `list(experiment = NULL)`. Omitting `query_tags` preserves
+the existing untagged behavior. These execution tags are separate from the
+saved-query metadata set by `db_query_create(tags = ...)`.
+
+For DBI, set defaults when connecting:
+
+```{r}
+con <- dbConnect(
+  DatabricksSQL(),
+  warehouse_id = "<your_warehouse_id>",
+  query_tags = list(team = "informatics", environment = "dev")
+)
+
+# Uses the connection defaults
+dbGetQuery(con, "SELECT 1")
+
+# Replaces all defaults for this statement only
+dbGetQuery(con, "SELECT 1", query_tags = list(project = "ad_hoc"))
+
+# Omits tags for this statement only
+dbGetQuery(con, "SELECT 1", query_tags = NULL)
+```
+
+The same override is available in `dbSendQuery()`, `dbExecute()`, and
+`dbSendStatement()`. `list()` also omits tags. Subsequent calls still use the
+connection defaults, which are available through `dbGetInfo(con)$query_tags`.
+Connection defaults also apply to metadata queries, table writes, and queries
+submitted by dbplyr. Brickster's connections are stateless: these defaults are
+sent with each statement, including connection validation, rather than stored
+in a server-side SQL session.
+
+With access to `system.query.history`, inspect the submitted tags:
+
+```{r}
+dbGetQuery(con, "
+  SELECT statement_id, statement_text, query_tags
+  FROM system.query.history
+  WHERE query_tags['team'] = 'informatics'
+  ORDER BY start_time DESC
+  LIMIT 20
+")
+```
+
+See the [Databricks query tags documentation](https://docs.databricks.com/aws/en/sql/user/queries/query-tags)
+for availability and access requirements. Tags are stored as plain text; avoid
+sensitive data in tag names and values.
+
 ## `{DBI}` Backend
 
 ### Reading Data

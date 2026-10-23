@@ -4,7 +4,13 @@
 \alias{dbSendQuery,DatabricksConnection,character-method}
 \title{Send query to Databricks (asynchronous)}
 \usage{
-\S4method{dbSendQuery}{DatabricksConnection,character}(conn, statement, disposition = conn@disposition, ...)
+\S4method{dbSendQuery}{DatabricksConnection,character}(
+  conn,
+  statement,
+  disposition = conn@disposition,
+  ...,
+  query_tags = conn@query_tags
+)
 }
 \arguments{
 \item{conn}{A DatabricksConnection object}
@@ -15,6 +21,11 @@
 \code{disposition} setting.}
 
 \item{...}{Additional arguments (ignored)}
+
+\item{query_tags}{Named list of execution-level query tags, as in
+\code{\link[=db_sql_exec_query]{db_sql_exec_query()}}. Defaults to the connection's tags. An explicitly
+supplied list replaces all connection tags for this statement only;
+\code{NULL} or \code{list()} omits tags for this statement.}
 }
 \value{
 A DatabricksResult object
@@ -22,3 +33,11 @@ A DatabricksResult object
 \description{
 Send query to Databricks (asynchronous)
 }
+\seealso{
+Other DBI Methods:
+\code{\link{dbConnect,DatabricksDriver-method}},
+\code{\link{dbExecute,DatabricksConnection,character-method}},
+\code{\link{dbGetQuery,DatabricksConnection,character-method}},
+\code{\link{dbSendStatement,DatabricksConnection,character-method}}
+}
+\concept{DBI Methods}

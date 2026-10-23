@@ -37,6 +37,7 @@ status to see the terminal state.
 Other SQL Execution APIs: 
 \code{\link{db_sql_exec_query}()},
 \code{\link{db_sql_exec_result}()},
-\code{\link{db_sql_exec_status}()}
+\code{\link{db_sql_exec_status}()},
+\code{\link{db_sql_query}()}
 }
 \concept{SQL Execution APIs}

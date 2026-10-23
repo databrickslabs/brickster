@@ -23,6 +23,12 @@
 #'
 #' See [docs](https://docs.databricks.com/api/workspace/statementexecution/executestatement)
 #' for more details.
+#' @param query_tags Optional named list of execution-level query tags, for
+#'   example `list(team = "informatics", environment = "dev")`. Supply at most
+#'   20 tags with unique, non-empty names and single string values. Use a `NULL`
+#'   value for a key-only tag. `NULL` or `list()` omits tags from the request.
+#'   Tags are recorded in `system.query.history.query_tags`; they are distinct
+#'   from the saved-query metadata `tags` in [db_query_create()].
 #' @param row_limit Integer, applies the given row limit to the statement's
 #' result set, but unlike the `LIMIT` clause in SQL, it also sets the
 #' `truncated` field in the response to indicate whether the result was trimmed
@@ -73,7 +79,9 @@
 #' @family SQL Execution APIs
 #'
 #' @export
-#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
+#' @returns If `perform_request = TRUE`, the full API response as a list,
+#'   including `statement_id`, `status`, and any available `manifest` and
+#'   `result`. If `FALSE`, an `httr2_request`.
 db_sql_exec_query <- function(
   statement,
   warehouse_id,
@@ -88,8 +96,10 @@ db_sql_exec_query <- function(
   on_wait_timeout = c("CONTINUE", "CANCEL"),
   host = db_host(),
   token = db_token(),
-  perform_request = TRUE
+  perform_request = TRUE,
+  query_tags = NULL
 ) {
+  query_tags <- db_sql_format_query_tags(query_tags)
   disposition <- match.arg(disposition)
   format <- match.arg(format)
   on_wait_timeout <- match.arg(on_wait_timeout)
@@ -100,6 +110,7 @@ db_sql_exec_query <- function(
     catalog = catalog,
     schema = schema,
     parameters = parameters,
+    query_tags = query_tags,
     row_limit = row_limit,
     byte_limit = byte_limit,
     disposition = disposition,
@@ -302,6 +313,39 @@ db_sql_exec_poll_for_success <- function(
 
 # Internal Helper Functions for SQL Execution -------------------------------
 
+db_sql_format_query_tags <- function(query_tags) {
+  if (is.null(query_tags)) {
+    return(NULL)
+  }
+  if (!rlang::is_bare_list(query_tags)) {
+    cli::cli_abort("{.arg query_tags} must be a named list, for example {.code list(team = 'informatics')}.")
+  }
+  if (length(query_tags) == 0L) {
+    return(NULL)
+  }
+
+  keys <- names(query_tags)
+  if (is.null(keys) || anyNA(keys) || any(!nzchar(trimws(keys)))) {
+    cli::cli_abort("Every tag in {.arg query_tags} must have a non-empty name.")
+  }
+  if (anyDuplicated(keys)) {
+    cli::cli_abort("Tag names in {.arg query_tags} must be unique.")
+  }
+  if (length(query_tags) > 20L) {
+    cli::cli_abort("{.arg query_tags} must contain at most 20 tags; remove extra tags to avoid server-side truncation.")
+  }
+
+  unname(purrr::imap(query_tags, function(value, key) {
+    if (is.null(value)) {
+      return(list(key = key))
+    }
+    if (!is.character(value) || length(value) != 1L || is.na(value)) {
+      cli::cli_abort("Tag {.val {key}} in {.arg query_tags} must be a single non-missing string or {.code NULL} for a key-only tag.")
+    }
+    list(key = key, value = unname(value))
+  }))
+}
+
 #' Execute SQL Query and Wait for Completion
 #'
 #' @description
@@ -325,7 +369,8 @@ db_sql_exec_and_wait <- function(
   format = c("ARROW_STREAM", "JSON_ARRAY"),
   host = db_host(),
   token = db_token(),
-  show_progress = TRUE
+  show_progress = TRUE,
+  query_tags = NULL
 ) {
   # Validate arguments
   disposition <- match.arg(disposition)
@@ -346,6 +391,7 @@ db_sql_exec_and_wait <- function(
     catalog = catalog,
     schema = schema,
     parameters = parameters,
+    query_tags = query_tags,
     row_limit = row_limit,
     byte_limit = byte_limit,
     host = host,
@@ -780,6 +826,7 @@ db_sql_fetch_results_parallel <- function(
 #'   as a tibble.
 #' @param show_progress If `TRUE`, show progress updates during query execution (default: `TRUE`)
 #' @returns [tibble::tibble] or [arrow::Table].
+#' @family SQL Execution APIs
 #' @export
 db_sql_query <- function(
   warehouse_id,
@@ -796,7 +843,8 @@ db_sql_query <- function(
   disposition = "EXTERNAL_LINKS",
   host = db_host(),
   token = db_token(),
-  show_progress = TRUE
+  show_progress = TRUE,
+  query_tags = NULL
 ) {
   # Choose format based on disposition
   format <- if (disposition == "INLINE") "JSON_ARRAY" else "ARROW_STREAM"
@@ -808,6 +856,7 @@ db_sql_query <- function(
     catalog = catalog,
     schema = schema,
     parameters = parameters,
+    query_tags = query_tags,
     row_limit = row_limit,
     byte_limit = byte_limit,
     wait_timeout = wait_timeout,

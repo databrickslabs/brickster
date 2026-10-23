@@ -9,7 +9,8 @@
   statement,
   disposition = conn@disposition,
   show_progress = conn@show_progress,
-  ...
+  ...,
+  query_tags = conn@query_tags
 )
 }
 \arguments{
@@ -24,6 +25,11 @@
 Defaults to the connection's \code{show_progress} setting.}
 
 \item{...}{Additional arguments passed to underlying query execution}
+
+\item{query_tags}{Named list of execution-level query tags, as in
+\code{\link[=db_sql_exec_query]{db_sql_exec_query()}}. Defaults to the connection's tags. An explicitly
+supplied list replaces all connection tags for this statement only;
+\code{NULL} or \code{list()} omits tags for this statement.}
 }
 \value{
 A data.frame with query results
@@ -31,3 +37,11 @@ A data.frame with query results
 \description{
 Execute SQL query and return results
 }
+\seealso{
+Other DBI Methods:
+\code{\link{dbConnect,DatabricksDriver-method}},
+\code{\link{dbExecute,DatabricksConnection,character-method}},
+\code{\link{dbSendQuery,DatabricksConnection,character-method}},
+\code{\link{dbSendStatement,DatabricksConnection,character-method}}
+}
+\concept{DBI Methods}

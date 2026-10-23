@@ -19,7 +19,8 @@ db_sql_query(
   disposition = "EXTERNAL_LINKS",
   host = db_host(),
   token = db_token(),
-  show_progress = TRUE
+  show_progress = TRUE,
+  query_tags = NULL
 )
 }
 \arguments{
@@ -88,6 +89,13 @@ as a tibble.}
 \item{token}{Databricks workspace token, defaults to calling \code{\link[=db_token]{db_token()}}.}
 
 \item{show_progress}{If \code{TRUE}, show progress updates during query execution (default: \code{TRUE})}
+
+\item{query_tags}{Optional named list of execution-level query tags, for
+example \code{list(team = "informatics", environment = "dev")}. Supply at most
+20 tags with unique, non-empty names and single string values. Use a \code{NULL}
+value for a key-only tag. \code{NULL} or \code{list()} omits tags from the request.
+Tags are recorded in \code{system.query.history.query_tags}; they are distinct
+from the saved-query metadata \code{tags} in \code{\link[=db_query_create]{db_query_create()}}.}
 }
 \value{
 \link[tibble:tibble]{tibble::tibble} or \link[arrow:Table-class]{arrow::Table}.
@@ -95,3 +103,11 @@ as a tibble.}
 \description{
 Execute query with SQL Warehouse
 }
+\seealso{
+Other SQL Execution APIs:
+\code{\link{db_sql_exec_cancel}()},
+\code{\link{db_sql_exec_query}()},
+\code{\link{db_sql_exec_result}()},
+\code{\link{db_sql_exec_status}()}
+}
+\concept{SQL Execution APIs}
