@@ -85,11 +85,7 @@ trips <- db_sql_query(
 )
 ```
 
-`db_sql_exec_query()` accepts the same named list. Supply up to 20 unique,
-non-empty tag names, each with a single string value; use `NULL` as a value for
-a key-only tag, such as `list(experiment = NULL)`. Omitting `query_tags` preserves
-the existing untagged behavior. These execution tags are separate from the
-saved-query metadata set by `db_query_create(tags = ...)`.
+`db_sql_exec_query()` accepts the same tags.
 
 For DBI, set defaults when connecting:
 
@@ -110,13 +106,8 @@ dbGetQuery(con, "SELECT 1", query_tags = list(project = "ad_hoc"))
 dbGetQuery(con, "SELECT 1", query_tags = NULL)
 ```
 
-The same override is available in `dbSendQuery()`, `dbExecute()`, and
-`dbSendStatement()`. `list()` also omits tags. Subsequent calls still use the
-connection defaults, which are available through `dbGetInfo(con)$query_tags`.
-Connection defaults also apply to metadata queries, table writes, and queries
-submitted by dbplyr. Brickster's connections are stateless: these defaults are
-sent with each statement, including connection validation, rather than stored
-in a server-side SQL session.
+Overrides also work with `dbSendQuery()`, `dbExecute()`, and `dbSendStatement()`.
+The next call uses the connection defaults again.
 
 With access to `system.query.history`, inspect the submitted tags:
 
@@ -130,9 +121,7 @@ dbGetQuery(con, "
 ")
 ```
 
-See the [Databricks query tags documentation](https://docs.databricks.com/aws/en/sql/user/queries/query-tags)
-for availability and access requirements. Tags are stored as plain text; avoid
-sensitive data in tag names and values.
+Learn more in the [Databricks query tags documentation](https://docs.databricks.com/aws/en/sql/user/queries/query-tags).
 
 ## `{DBI}` Backend
 
