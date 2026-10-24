@@ -52,4 +52,5 @@ docs](https://docs.databricks.com/api/workspace/statementexecution/cancelexecuti
 Other SQL Execution APIs:
 [`db_sql_exec_query()`](https://databrickslabs.github.io/brickster/reference/db_sql_exec_query.md),
 [`db_sql_exec_result()`](https://databrickslabs.github.io/brickster/reference/db_sql_exec_result.md),
-[`db_sql_exec_status()`](https://databrickslabs.github.io/brickster/reference/db_sql_exec_status.md)
+[`db_sql_exec_status()`](https://databrickslabs.github.io/brickster/reference/db_sql_exec_status.md),
+[`db_sql_query()`](https://databrickslabs.github.io/brickster/reference/db_sql_query.md)

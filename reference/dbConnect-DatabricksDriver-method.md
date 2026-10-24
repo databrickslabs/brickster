@@ -19,7 +19,8 @@ dbConnect(
   show_progress = TRUE,
   token = db_token(),
   host = db_host(),
-  ...
+  ...,
+  query_tags = NULL
 )
 ```
 
@@ -82,6 +83,17 @@ dbConnect(
 
   Additional arguments (ignored)
 
+- query_tags:
+
+  Optional named list of execution-level query tags, for example
+  `list(team = "informatics", environment = "dev")`. Supply at most 20
+  tags with unique, non-empty names and single string values. Use a
+  `NULL` value for a key-only tag. `NULL` or
+  [`list()`](https://rdrr.io/r/base/list.html) omits tags from the
+  request. Tags are recorded in `system.query.history.query_tags`; they
+  are distinct from the saved-query metadata `tags` in
+  [`db_query_create()`](https://databrickslabs.github.io/brickster/reference/db_query_create.md).
+
 ## Value
 
 A DatabricksConnection object
@@ -90,4 +102,14 @@ A DatabricksConnection object
 
 Provide either `warehouse_id` or `http_path`. When `http_path` is
 supplied, the warehouse ID is extracted from the `/warehouses/<id>`
-segment.
+segment. Connections are stateless: connection-level `query_tags` are
+sent with each statement, including connection validation, metadata
+queries, and table writes. They do not create a server-side SQL session.
+
+## See also
+
+Other DBI Methods:
+[`dbExecute,DatabricksConnection,character-method`](https://databrickslabs.github.io/brickster/reference/dbExecute-DatabricksConnection-character-method.md),
+[`dbGetQuery,DatabricksConnection,character-method`](https://databrickslabs.github.io/brickster/reference/dbGetQuery-DatabricksConnection-character-method.md),
+[`dbSendQuery,DatabricksConnection,character-method`](https://databrickslabs.github.io/brickster/reference/dbSendQuery-DatabricksConnection-character-method.md),
+[`dbSendStatement,DatabricksConnection,character-method`](https://databrickslabs.github.io/brickster/reference/dbSendStatement-DatabricksConnection-character-method.md)

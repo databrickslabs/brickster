@@ -46,6 +46,11 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="development version" id="brickster-development-version">brickster (development version)<a class="anchor" aria-label="anchor" href="#brickster-development-version"></a></h2>
+<ul><li>
+<code><a href="../reference/db_sql_exec_query.html">db_sql_exec_query()</a></code> and <code><a href="../reference/db_sql_query.html">db_sql_query()</a></code> now accept execution-level <code>query_tags</code> as a named list. DBI connections can set default tags with <code>dbConnect(query_tags = ...)</code>; <code><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery()</a></code>, <code><a href="https://dbi.r-dbi.org/reference/dbSendQuery.html" class="external-link">dbSendQuery()</a></code>, <code><a href="https://dbi.r-dbi.org/reference/dbExecute.html" class="external-link">dbExecute()</a></code>, and <code><a href="https://dbi.r-dbi.org/reference/dbSendStatement.html" class="external-link">dbSendStatement()</a></code> can replace them per statement or omit them with <code>query_tags = NULL</code> (<a href="https://github.com/databrickslabs/brickster/issues/318" class="external-link">#318</a>).</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.15" id="brickster-0215">brickster 0.2.15<a class="anchor" aria-label="anchor" href="#brickster-0215"></a></h2><p class="text-muted">CRAN release: 2026-10-09</p>
 <ul><li>The workspace Connections pane identifies managed and foreign Iceberg tables as <code>ICEBERG</code>, distinguishes Delta tables with Iceberg reads as <code>DELTA (UniForm: Iceberg)</code>, and shows Iceberg metadata instead of Delta protocol versions. Tables without a source format, including metric views, no longer fail when opening metadata (<a href="https://github.com/databrickslabs/brickster/issues/311" class="external-link">#311</a>, <a href="https://github.com/zacdav" class="external-link">@zacdav</a>).</li>
 <li>The RStudio connection pane now shows the storage location, last commit time, and minimum reader and writer versions of Delta tables (<a href="https://github.com/databrickslabs/brickster/issues/304" class="external-link">#304</a>, <a href="https://github.com/m-muecke" class="external-link">@m-muecke</a>).</li>

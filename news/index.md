@@ -1,5 +1,19 @@
 # Changelog
 
+## brickster (development version)
+
+- [`db_sql_exec_query()`](https://databrickslabs.github.io/brickster/reference/db_sql_exec_query.md)
+  and
+  [`db_sql_query()`](https://databrickslabs.github.io/brickster/reference/db_sql_query.md)
+  now accept execution-level `query_tags` as a named list. DBI
+  connections can set default tags with `dbConnect(query_tags = ...)`;
+  [`dbGetQuery()`](https://dbi.r-dbi.org/reference/dbGetQuery.html),
+  [`dbSendQuery()`](https://dbi.r-dbi.org/reference/dbSendQuery.html),
+  [`dbExecute()`](https://dbi.r-dbi.org/reference/dbExecute.html), and
+  [`dbSendStatement()`](https://dbi.r-dbi.org/reference/dbSendStatement.html)
+  can replace them per statement or omit them with `query_tags = NULL`
+  ([\#318](https://github.com/databrickslabs/brickster/issues/318)).
+
 ## brickster 0.2.15
 
 CRAN release: 2026-10-09

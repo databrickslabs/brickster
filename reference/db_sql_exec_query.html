@@ -66,7 +66,8 @@
 <span>  on_wait_timeout <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CONTINUE"</span>, <span class="st">"CANCEL"</span><span class="op">)</span>,</span>
 <span>  host <span class="op">=</span> <span class="fu"><a href="db_host.html">db_host</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  token <span class="op">=</span> <span class="fu"><a href="db_token.html">db_token</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  perform_request <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  perform_request <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  query_tags <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -172,10 +173,21 @@ returns with a <code>CANCELED</code> state.</p></dd>
 <dd><p>If <code>TRUE</code> (default) the request is performed, if
 <code>FALSE</code> the httr2 request is returned <em>without</em> being performed.</p></dd>
 
+
+<dt id="arg-query-tags">query_tags<a class="anchor" aria-label="anchor" href="#arg-query-tags"></a></dt>
+<dd><p>Optional named list of execution-level query tags, for
+example <code>list(team = "informatics", environment = "dev")</code>. Supply at most
+20 tags with unique, non-empty names and single string values. Use a <code>NULL</code>
+value for a key-only tag. <code>NULL</code> or <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code> omits tags from the request.
+Tags are recorded in <code>system.query.history.query_tags</code>; they are distinct
+from the saved-query metadata <code>tags</code> in <code><a href="db_query_create.html">db_query_create()</a></code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>If <code>perform_request = TRUE</code>, returns endpoint-specific API output. If <code>FALSE</code>, returns an <code>httr2_request</code>.</p>
+    <p>If <code>perform_request = TRUE</code>, the full API response as a list,
+including <code>statement_id</code>, <code>status</code>, and any available <code>manifest</code> and
+<code>result</code>. If <code>FALSE</code>, an <code>httr2_request</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -188,7 +200,8 @@ for detailed material on interaction of the various parameters and general recom
     <div class="dont-index"><p>Other SQL Execution APIs:
 <code><a href="db_sql_exec_cancel.html">db_sql_exec_cancel()</a></code>,
 <code><a href="db_sql_exec_result.html">db_sql_exec_result()</a></code>,
-<code><a href="db_sql_exec_status.html">db_sql_exec_status()</a></code></p></div>
+<code><a href="db_sql_exec_status.html">db_sql_exec_status()</a></code>,
+<code><a href="db_sql_query.html">db_sql_query()</a></code></p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

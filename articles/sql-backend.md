@@ -51,6 +51,65 @@ con <- dbConnect(
 )
 ```
 
+## Query tags
+
+Use `query_tags` to attribute SQL executions to a team, project, or
+environment:
+
+``` r
+
+trips <- db_sql_query(
+  warehouse_id = "<your_warehouse_id>",
+  statement = "SELECT * FROM samples.nyctaxi.trips LIMIT 10",
+  query_tags = list(team = "informatics", project = "disease_surveillance")
+)
+```
+
+[`db_sql_exec_query()`](https://databrickslabs.github.io/brickster/reference/db_sql_exec_query.md)
+accepts the same tags.
+
+For DBI, set defaults when connecting:
+
+``` r
+
+con <- dbConnect(
+  DatabricksSQL(),
+  warehouse_id = "<your_warehouse_id>",
+  query_tags = list(team = "informatics", environment = "dev")
+)
+
+# Uses the connection defaults
+dbGetQuery(con, "SELECT 1")
+
+# Replaces all defaults for this statement only
+dbGetQuery(con, "SELECT 1", query_tags = list(project = "ad_hoc"))
+
+# Omits tags for this statement only
+dbGetQuery(con, "SELECT 1", query_tags = NULL)
+```
+
+Overrides also work with
+[`dbSendQuery()`](https://dbi.r-dbi.org/reference/dbSendQuery.html),
+[`dbExecute()`](https://dbi.r-dbi.org/reference/dbExecute.html), and
+[`dbSendStatement()`](https://dbi.r-dbi.org/reference/dbSendStatement.html).
+The next call uses the connection defaults again.
+
+With access to `system.query.history`, inspect the submitted tags:
+
+``` r
+
+dbGetQuery(con, "
+  SELECT statement_id, statement_text, query_tags
+  FROM system.query.history
+  WHERE query_tags['team'] = 'informatics'
+  ORDER BY start_time DESC
+  LIMIT 20
+")
+```
+
+Learn more in the [Databricks query tags
+documentation](https://docs.databricks.com/aws/en/sql/user/queries/query-tags).
+
 ## `{DBI}` Backend
 
 ### Reading Data

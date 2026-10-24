@@ -19,7 +19,8 @@ db_sql_exec_and_wait(
   format = c("ARROW_STREAM", "JSON_ARRAY"),
   host = db_host(),
   token = db_token(),
-  show_progress = TRUE
+  show_progress = TRUE,
+  query_tags = NULL
 )
 ```
 
@@ -99,6 +100,17 @@ db_sql_exec_and_wait(
 
   Databricks workspace token, defaults to calling
   [`db_token()`](https://databrickslabs.github.io/brickster/reference/db_token.md).
+
+- query_tags:
+
+  Optional named list of execution-level query tags, for example
+  `list(team = "informatics", environment = "dev")`. Supply at most 20
+  tags with unique, non-empty names and single string values. Use a
+  `NULL` value for a key-only tag. `NULL` or
+  [`list()`](https://rdrr.io/r/base/list.html) omits tags from the
+  request. Tags are recorded in `system.query.history.query_tags`; they
+  are distinct from the saved-query metadata `tags` in
+  [`db_query_create()`](https://databrickslabs.github.io/brickster/reference/db_query_create.md).
 
 ## Value
 

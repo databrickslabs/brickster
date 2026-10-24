@@ -19,7 +19,8 @@ db_sql_exec_query(
   on_wait_timeout = c("CONTINUE", "CANCEL"),
   host = db_host(),
   token = db_token(),
-  perform_request = TRUE
+  perform_request = TRUE,
+  query_tags = NULL
 )
 ```
 
@@ -135,10 +136,22 @@ db_sql_exec_query(
   If `TRUE` (default) the request is performed, if `FALSE` the httr2
   request is returned *without* being performed.
 
+- query_tags:
+
+  Optional named list of execution-level query tags, for example
+  `list(team = "informatics", environment = "dev")`. Supply at most 20
+  tags with unique, non-empty names and single string values. Use a
+  `NULL` value for a key-only tag. `NULL` or
+  [`list()`](https://rdrr.io/r/base/list.html) omits tags from the
+  request. Tags are recorded in `system.query.history.query_tags`; they
+  are distinct from the saved-query metadata `tags` in
+  [`db_query_create()`](https://databrickslabs.github.io/brickster/reference/db_query_create.md).
+
 ## Value
 
-If `perform_request = TRUE`, returns endpoint-specific API output. If
-`FALSE`, returns an `httr2_request`.
+If `perform_request = TRUE`, the full API response as a list, including
+`statement_id`, `status`, and any available `manifest` and `result`. If
+`FALSE`, an `httr2_request`.
 
 ## Details
 
@@ -152,4 +165,5 @@ general recommendations
 Other SQL Execution APIs:
 [`db_sql_exec_cancel()`](https://databrickslabs.github.io/brickster/reference/db_sql_exec_cancel.md),
 [`db_sql_exec_result()`](https://databrickslabs.github.io/brickster/reference/db_sql_exec_result.md),
-[`db_sql_exec_status()`](https://databrickslabs.github.io/brickster/reference/db_sql_exec_status.md)
+[`db_sql_exec_status()`](https://databrickslabs.github.io/brickster/reference/db_sql_exec_status.md),
+[`db_sql_query()`](https://databrickslabs.github.io/brickster/reference/db_sql_query.md)

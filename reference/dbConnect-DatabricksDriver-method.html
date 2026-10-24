@@ -66,7 +66,8 @@
 <span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  token <span class="op">=</span> <span class="fu"><a href="db_token.html">db_token</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  host <span class="op">=</span> <span class="fu"><a href="db_host.html">db_host</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  <span class="va">...</span>,</span>
+<span>  query_tags <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -131,6 +132,15 @@ queries, dbplyr collection, and table writes (default: <code>TRUE</code>)</p></d
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional arguments (ignored)</p></dd>
 
+
+<dt id="arg-query-tags">query_tags<a class="anchor" aria-label="anchor" href="#arg-query-tags"></a></dt>
+<dd><p>Optional named list of execution-level query tags, for
+example <code>list(team = "informatics", environment = "dev")</code>. Supply at most
+20 tags with unique, non-empty names and single string values. Use a <code>NULL</code>
+value for a key-only tag. <code>NULL</code> or <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code> omits tags from the request.
+Tags are recorded in <code>system.query.history.query_tags</code>; they are distinct
+from the saved-query metadata <code>tags</code> in <code><a href="db_query_create.html">db_query_create()</a></code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -139,7 +149,18 @@ queries, dbplyr collection, and table writes (default: <code>TRUE</code>)</p></d
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Provide either <code>warehouse_id</code> or <code>http_path</code>. When <code>http_path</code> is
-supplied, the warehouse ID is extracted from the <code>/warehouses/&lt;id&gt;</code> segment.</p>
+supplied, the warehouse ID is extracted from the <code>/warehouses/&lt;id&gt;</code> segment.
+Connections are stateless: connection-level <code>query_tags</code> are sent with each
+statement, including connection validation, metadata queries, and table
+writes. They do not create a server-side SQL session.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p>Other DBI Methods:
+<code><a href="dbExecute-DatabricksConnection-character-method.html">dbExecute,DatabricksConnection,character-method</a></code>,
+<code><a href="dbGetQuery-DatabricksConnection-character-method.html">dbGetQuery,DatabricksConnection,character-method</a></code>,
+<code><a href="dbSendQuery-DatabricksConnection-character-method.html">dbSendQuery,DatabricksConnection,character-method</a></code>,
+<code><a href="dbSendStatement-DatabricksConnection-character-method.html">dbSendStatement,DatabricksConnection,character-method</a></code></p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

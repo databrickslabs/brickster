@@ -58,7 +58,8 @@
 <span>  <span class="va">statement</span>,</span>
 <span>  disposition <span class="op">=</span> <span class="va">conn</span><span class="op">@</span><span class="va">disposition</span>,</span>
 <span>  show_progress <span class="op">=</span> <span class="va">conn</span><span class="op">@</span><span class="va">show_progress</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  <span class="va">...</span>,</span>
+<span>  query_tags <span class="op">=</span> <span class="va">conn</span><span class="op">@</span><span class="va">query_tags</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -87,10 +88,25 @@ Defaults to the connection's <code>show_progress</code> setting.</p></dd>
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional arguments passed to underlying query execution</p></dd>
 
+
+<dt id="arg-query-tags">query_tags<a class="anchor" aria-label="anchor" href="#arg-query-tags"></a></dt>
+<dd><p>Named list of execution-level query tags, as in
+<code><a href="db_sql_exec_query.html">db_sql_exec_query()</a></code>. Defaults to the connection's tags. An explicitly
+supplied list replaces all connection tags for this statement only;
+<code>NULL</code> or <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code> omits tags for this statement.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A data.frame with query results</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p>Other DBI Methods:
+<code><a href="dbConnect-DatabricksDriver-method.html">dbConnect,DatabricksDriver-method</a></code>,
+<code><a href="dbExecute-DatabricksConnection-character-method.html">dbExecute,DatabricksConnection,character-method</a></code>,
+<code><a href="dbSendQuery-DatabricksConnection-character-method.html">dbSendQuery,DatabricksConnection,character-method</a></code>,
+<code><a href="dbSendStatement-DatabricksConnection-character-method.html">dbSendStatement,DatabricksConnection,character-method</a></code></p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
