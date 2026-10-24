@@ -1,3 +1,40 @@
+test_that("db_sql_query submits query tags once and retains polling and results", {
+  state <- new.env(parent = emptyenv())
+  state$requests <- list()
+  response <- make_inline_test_result()$response
+  response$manifest$total_row_count <- 2L
+  response$result$next_chunk_index <- NULL
+  local_mocked_bindings(
+    db_perform_request = function(req, ...) {
+      state$requests[[length(state$requests) + 1L]] <- req
+      if (req$method == "POST") {
+        return(list(statement_id = "stmt-inline", status = list(state = "PENDING")))
+      }
+      response
+    },
+    .package = "brickster"
+  )
+
+  out <- db_sql_query(
+    "wh-1", "SELECT id, label FROM example", query_tags = list(team = "informatics"),
+    disposition = "INLINE", host = "mock.test", token = "mock-token",
+    show_progress = FALSE
+  )
+  expect_identical(out$id, c("0", "1"))
+  expect_length(state$requests, 2L)
+  expect_identical(state$requests[[1]]$body$data$query_tags,
+    list(list(key = "team", value = "informatics")))
+  expect_identical(state$requests[[2]]$method, "GET")
+  expect_match(state$requests[[2]]$url, "/statements/stmt-inline$")
+  expect_null(state$requests[[2]]$body)
+
+  expect_error(
+    db_sql_query("wh-1", "SELECT 1", query_tags = list(team = 1), show_progress = FALSE),
+    "query_tags"
+  )
+  expect_length(state$requests, 2L)
+})
+
 test_that("db_sql_query returns typed empty results from manifest schema", {
   local_mocked_bindings(
     db_sql_exec_and_wait = function(...) {

@@ -18,7 +18,8 @@ db_sql_exec_query(
   on_wait_timeout = c("CONTINUE", "CANCEL"),
   host = db_host(),
   token = db_token(),
-  perform_request = TRUE
+  perform_request = TRUE,
+  query_tags = NULL
 )
 }
 \arguments{
@@ -98,9 +99,18 @@ returns with a \code{CANCELED} state.}
 
 \item{perform_request}{If \code{TRUE} (default) the request is performed, if
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
+
+\item{query_tags}{Optional named list of execution-level query tags, for
+example \code{list(team = "informatics", environment = "dev")}. Supply at most
+20 tags with unique, non-empty names and single string values. Use a \code{NULL}
+value for a key-only tag. \code{NULL} or \code{list()} omits tags from the request.
+Tags are recorded in \code{system.query.history.query_tags}; they are distinct
+from the saved-query metadata \code{tags} in \code{\link[=db_query_create]{db_query_create()}}.}
 }
 \value{
-If \code{perform_request = TRUE}, returns endpoint-specific API output. If \code{FALSE}, returns an \code{httr2_request}.
+If \code{perform_request = TRUE}, the full API response as a list,
+including \code{statement_id}, \code{status}, and any available \code{manifest} and
+\code{result}. If \code{FALSE}, an \code{httr2_request}.
 }
 \description{
 Execute SQL Query
@@ -114,6 +124,7 @@ for detailed material on interaction of the various parameters and general recom
 Other SQL Execution APIs: 
 \code{\link{db_sql_exec_cancel}()},
 \code{\link{db_sql_exec_result}()},
-\code{\link{db_sql_exec_status}()}
+\code{\link{db_sql_exec_status}()},
+\code{\link{db_sql_query}()}
 }
 \concept{SQL Execution APIs}

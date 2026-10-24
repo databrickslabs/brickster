@@ -1,7 +1,8 @@
 make_dbi_test_con <- function(
   staging_volume = "",
   disposition = "EXTERNAL_LINKS",
-  show_progress = TRUE
+  show_progress = TRUE,
+  query_tags = list()
 ) {
   new(
     "DatabricksConnection",
@@ -14,7 +15,8 @@ make_dbi_test_con <- function(
     disposition = disposition,
     max_active_connections = 30,
     fetch_timeout = 300,
-    show_progress = show_progress
+    show_progress = show_progress,
+    query_tags = query_tags
   )
 }
 
@@ -94,6 +96,136 @@ test_that("dbConnect validates tuning inputs and persists connection settings", 
     ),
     "'arg' should be one of"
   )
+})
+
+test_that("dbConnect validates, submits, and retains default query tags", {
+  state <- new.env(parent = emptyenv())
+  state$requests <- list()
+  response <- make_inline_test_result()$response
+  response$manifest$total_row_count <- 2L
+  response$result$next_chunk_index <- NULL
+  local_mocked_bindings(
+    db_perform_request = function(req, ...) {
+      state$requests[[length(state$requests) + 1L]] <- req
+      response
+    },
+    dbi_connection_opened = function(...) invisible(NULL),
+    .package = "brickster"
+  )
+  tags <- list(team = "informatics", environment = "dev")
+  con <- dbConnect(DatabricksSQL(), warehouse_id = "wh-1",
+    host = "mock.test", token = "mock-token", query_tags = tags)
+  expect_identical(con@query_tags, tags)
+  expect_identical(dbGetInfo(con)$query_tags, tags)
+  expect_identical(state$requests[[1]]$body$data$query_tags, list(
+    list(key = "team", value = "informatics"), list(key = "environment", value = "dev")
+  ))
+  expect_error(
+    dbConnect(DatabricksSQL(), warehouse_id = "wh-1", query_tags = list(team = 1)),
+    "query_tags"
+  )
+  expect_length(state$requests, 1L)
+
+  untagged <- dbConnect(DatabricksSQL(), warehouse_id = "wh-1",
+    host = "mock.test", token = "mock-token")
+  expect_identical(untagged@query_tags, list())
+  expect_false("query_tags" %in% names(state$requests[[2]]$body$data))
+})
+
+purrr::iwalk(
+  list(dbGetQuery = dbGetQuery, dbSendQuery = dbSendQuery,
+    dbExecute = dbExecute, dbSendStatement = dbSendStatement),
+  function(method, method_name) {
+    test_that(paste(method_name, "uses, replaces, and omits connection query tags"), {
+      defaults <- list(team = "informatics", environment = "dev")
+      con <- make_dbi_test_con(disposition = "INLINE", show_progress = FALSE,
+        query_tags = defaults)
+      state <- new.env(parent = emptyenv())
+      state$requests <- list()
+      response <- make_inline_test_result()$response
+      response$manifest$total_row_count <- 2L
+      response$result$next_chunk_index <- NULL
+      local_mocked_bindings(
+        db_perform_request = function(req, ...) {
+          state$requests[[length(state$requests) + 1L]] <- req
+          response
+        },
+        .package = "brickster"
+      )
+
+      method(con, "SELECT 1")
+      method(con, "SELECT 1", query_tags = list(team = "override"))
+      method(con, "SELECT 1", query_tags = NULL)
+      method(con, "SELECT 1", query_tags = list())
+      method(con, "SELECT 1")
+      method(make_dbi_test_con(disposition = "INLINE", show_progress = FALSE), "SELECT 1")
+
+      bodies <- purrr::map(state$requests, function(req) req$body$data)
+      expect_identical(bodies[[1]]$query_tags, list(
+        list(key = "team", value = "informatics"), list(key = "environment", value = "dev")
+      ))
+      expect_identical(bodies[[2]]$query_tags, list(list(key = "team", value = "override")))
+      purrr::walk(bodies[c(3, 4, 6)], function(body) {
+        expect_false("query_tags" %in% names(body))
+      })
+      expect_identical(bodies[[5]]$query_tags, bodies[[1]]$query_tags)
+      expect_identical(con@query_tags, defaults)
+      expect_error(method(con, "SELECT 1", query_tags = list(team = NA_character_)), "query_tags")
+      expect_length(state$requests, 6L)
+    })
+  }
+)
+
+test_that("metadata and inline table writes inherit connection query tags", {
+  tags <- list(team = "informatics")
+  con <- make_dbi_test_con(show_progress = FALSE, query_tags = tags)
+  state <- new.env(parent = emptyenv())
+  state$requests <- list()
+  response <- make_inline_test_result()$response
+  response$manifest$total_row_count <- 0L
+  local_mocked_bindings(
+    db_perform_request = function(req, ...) {
+      state$requests[[length(state$requests) + 1L]] <- req
+      response
+    },
+    dbExistsTable = function(...) FALSE,
+    .package = "brickster"
+  )
+
+  expect_identical(dbListFields(con, "target"), c("id", "label"))
+  expect_true(dbWriteTable(con, "target", data.frame(id = 1L)))
+  expect_length(state$requests, 3L)
+  purrr::walk(state$requests, function(req) {
+    expect_identical(req$body$data$query_tags, list(list(key = "team", value = "informatics")))
+  })
+})
+
+test_that("volume table writes inherit connection query tags", {
+  skip_if_not_installed("arrow")
+  con <- make_dbi_test_con(show_progress = FALSE, query_tags = list(team = "informatics"))
+  state <- new.env(parent = emptyenv())
+  state$requests <- list()
+  local_mocked_bindings(
+    write_dataset = function(...) invisible(NULL),
+    .package = "arrow"
+  )
+  local_mocked_bindings(
+    db_volume_dir_exists = function(...) TRUE,
+    db_volume_upload_dir = function(...) TRUE,
+    db_volume_dir_delete = function(...) TRUE,
+    db_perform_request = function(req, ...) {
+      state$requests[[length(state$requests) + 1L]] <- req
+      list(status = list(state = "SUCCEEDED"))
+    },
+    .package = "brickster"
+  )
+
+  db_write_table_volume(con, "`target`", data.frame(id = 1L),
+    staging_volume = "/Volumes/c/s/v", show_progress = FALSE)
+  expect_length(state$requests, 1L)
+  expect_match(state$requests[[1]]$body$data$statement, "READ_FILES", fixed = TRUE)
+  expect_identical(state$requests[[1]]$body$data$query_tags,
+    list(list(key = "team", value = "informatics")))
 })
 
 test_that("dbConnect preserves validation query error details", {

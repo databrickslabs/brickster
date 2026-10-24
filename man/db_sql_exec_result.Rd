@@ -49,6 +49,7 @@ iteration through the result set.
 Other SQL Execution APIs: 
 \code{\link{db_sql_exec_cancel}()},
 \code{\link{db_sql_exec_query}()},
-\code{\link{db_sql_exec_status}()}
+\code{\link{db_sql_exec_status}()},
+\code{\link{db_sql_query}()}
 }
 \concept{SQL Execution APIs}

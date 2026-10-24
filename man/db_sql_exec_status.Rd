@@ -44,6 +44,7 @@ warehouse and further calls will receive an HTTP \code{404} response.
 Other SQL Execution APIs: 
 \code{\link{db_sql_exec_cancel}()},
 \code{\link{db_sql_exec_query}()},
-\code{\link{db_sql_exec_result}()}
+\code{\link{db_sql_exec_result}()},
+\code{\link{db_sql_query}()}
 }
 \concept{SQL Execution APIs}

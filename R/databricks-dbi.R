@@ -31,9 +31,10 @@ setClass(
     disposition = "character",
     max_active_connections = "numeric",
     fetch_timeout = "numeric",
-    show_progress = "logical"
+    show_progress = "logical",
+    query_tags = "list"
   ),
-  prototype = list(show_progress = TRUE)
+  prototype = list(show_progress = TRUE, query_tags = list())
 )
 
 #' DBI Result for Databricks
@@ -79,6 +80,9 @@ setMethod("show", "DatabricksDriver", function(object) {
 #'
 #' @details Provide either `warehouse_id` or `http_path`. When `http_path` is
 #'   supplied, the warehouse ID is extracted from the `/warehouses/<id>` segment.
+#'   Connections are stateless: connection-level `query_tags` are sent with each
+#'   statement, including connection validation, metadata queries, and table
+#'   writes. They do not create a server-side SQL session.
 #' @param drv A DatabricksDriver object
 #' @param warehouse_id Optional ID of the SQL warehouse to connect to
 #' @param http_path Optional HTTP path for the SQL warehouse; if provided,
@@ -97,8 +101,10 @@ setMethod("show", "DatabricksDriver", function(object) {
 #'   queries, dbplyr collection, and table writes (default: `TRUE`)
 #' @param token Authentication token (defaults to db_token())
 #' @param host Databricks workspace host (defaults to db_host())
+#' @inheritParams db_sql_exec_query
 #' @param ... Additional arguments (ignored)
 #' @returns A DatabricksConnection object
+#' @family DBI Methods
 #' @export
 setMethod(
   "dbConnect",
@@ -116,7 +122,8 @@ setMethod(
     show_progress = TRUE,
     token = db_token(),
     host = db_host(),
-    ...
+    ...,
+    query_tags = NULL
   ) {
     disposition <- match.arg(disposition)
 
@@ -149,6 +156,7 @@ setMethod(
     }
 
     db_assert_show_progress(show_progress)
+    db_sql_format_query_tags(query_tags)
 
     # Validate connection by testing a simple query
     tryCatch(
@@ -156,6 +164,7 @@ setMethod(
         test_result <- db_sql_query(
           warehouse_id = warehouse_id,
           statement = "SELECT 1 as test_connection",
+          query_tags = query_tags,
           disposition = "INLINE",
           catalog = catalog,
           schema = schema,
@@ -187,7 +196,8 @@ setMethod(
       disposition = disposition,
       max_active_connections = max_active_connections,
       fetch_timeout = fetch_timeout,
-      show_progress = show_progress
+      show_progress = show_progress,
+      query_tags = query_tags %||% list()
     )
 
     dbi_connection_opened(con)
@@ -249,13 +259,19 @@ setMethod("show", "DatabricksConnection", function(object) {
 #' @param statement SQL statement to execute
 #' @param disposition Query disposition mode. Defaults to the connection's
 #'   `disposition` setting.
+#' @param query_tags Named list of execution-level query tags, as in
+#'   [db_sql_exec_query()]. Defaults to the connection's tags. An explicitly
+#'   supplied list replaces all connection tags for this statement only;
+#'   `NULL` or `list()` omits tags for this statement.
 #' @param ... Additional arguments (ignored)
 #' @returns A DatabricksResult object
+#' @family DBI Methods
 #' @export
 setMethod(
   "dbSendQuery",
   signature = c(conn = "DatabricksConnection", statement = "character"),
-  function(conn, statement, disposition = conn@disposition, ...) {
+  function(conn, statement, disposition = conn@disposition, ...,
+           query_tags = conn@query_tags) {
     db_assert_statement(statement)
     disposition <- match.arg(disposition, c("EXTERNAL_LINKS", "INLINE"))
 
@@ -263,6 +279,7 @@ setMethod(
     resp <- db_sql_exec_query(
       warehouse_id = conn@warehouse_id,
       statement = statement,
+      query_tags = query_tags,
       catalog = if (nzchar(conn@catalog)) conn@catalog else NULL,
       schema = if (nzchar(conn@schema)) conn@schema else NULL,
       disposition = disposition,
@@ -293,7 +310,9 @@ setMethod(
 #' @param show_progress If `TRUE`, show progress updates during query execution.
 #'   Defaults to the connection's `show_progress` setting.
 #' @param ... Additional arguments passed to underlying query execution
+#' @inheritParams dbSendQuery,DatabricksConnection,character-method
 #' @returns A data.frame with query results
+#' @family DBI Methods
 #' @export
 setMethod(
   "dbGetQuery",
@@ -303,7 +322,8 @@ setMethod(
     statement,
     disposition = conn@disposition,
     show_progress = conn@show_progress,
-    ...
+    ...,
+    query_tags = conn@query_tags
   ) {
     disposition <- match.arg(disposition, c("EXTERNAL_LINKS", "INLINE"))
     db_assert_show_progress(show_progress)
@@ -319,6 +339,7 @@ setMethod(
     db_sql_query(
       warehouse_id = conn@warehouse_id,
       statement = statement,
+      query_tags = query_tags,
       catalog = if (nzchar(conn@catalog)) conn@catalog else NULL,
       schema = if (nzchar(conn@schema)) conn@schema else NULL,
       return_arrow = FALSE,
@@ -338,18 +359,21 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param statement SQL statement
 #' @param ... Additional arguments (ignored)
+#' @inheritParams dbSendQuery,DatabricksConnection,character-method
 #' @returns A DatabricksResult object
+#' @family DBI Methods
 #' @export
 setMethod(
   "dbSendStatement",
   signature = c(conn = "DatabricksConnection", statement = "character"),
-  function(conn, statement, ...) {
+  function(conn, statement, ..., query_tags = conn@query_tags) {
     db_assert_statement(statement)
 
     # Execute statement asynchronously
     resp <- db_sql_exec_query(
       warehouse_id = conn@warehouse_id,
       statement = statement,
+      query_tags = query_tags,
       catalog = if (nzchar(conn@catalog)) conn@catalog else NULL,
       schema = if (nzchar(conn@schema)) conn@schema else NULL,
       disposition = "EXTERNAL_LINKS",
@@ -375,18 +399,21 @@ setMethod(
 #' @param conn A DatabricksConnection object
 #' @param statement SQL statement
 #' @param ... Additional arguments (ignored)
+#' @inheritParams dbSendQuery,DatabricksConnection,character-method
 #' @returns Number of rows in result set (from metadata, without loading data)
+#' @family DBI Methods
 #' @export
 setMethod(
   "dbExecute",
   signature = c(conn = "DatabricksConnection", statement = "character"),
-  function(conn, statement, ...) {
+  function(conn, statement, ..., query_tags = conn@query_tags) {
     db_assert_statement(statement)
 
     # Execute statement synchronously to get metadata without loading data
     status <- db_sql_exec_and_wait(
       warehouse_id = conn@warehouse_id,
       statement = statement,
+      query_tags = query_tags,
       catalog = if (nzchar(conn@catalog)) conn@catalog else NULL,
       schema = if (nzchar(conn@schema)) conn@schema else NULL,
       disposition = "EXTERNAL_LINKS",
@@ -910,7 +937,8 @@ setMethod("dbGetInfo", "DatabricksConnection", function(dbObj, ...) {
     port = NA_integer_,
     warehouse_id = dbObj@warehouse_id,
     disposition = dbObj@disposition,
-    show_progress = dbObj@show_progress
+    show_progress = dbObj@show_progress,
+    query_tags = dbObj@query_tags
   )
 })
 
@@ -934,6 +962,7 @@ setMethod(
     result <- db_sql_query(
       warehouse_id = conn@warehouse_id,
       statement = sql,
+      query_tags = conn@query_tags,
       catalog = if (nzchar(conn@catalog)) conn@catalog else NULL,
       schema = if (nzchar(conn@schema)) conn@schema else NULL,
       return_arrow = FALSE,
@@ -1717,6 +1746,7 @@ db_append_with_select_values <- function(conn, quoted_name, value) {
   db_sql_exec_and_wait(
     warehouse_id = conn@warehouse_id,
     statement = insert_sql,
+    query_tags = conn@query_tags,
     catalog = if (nzchar(conn@catalog)) conn@catalog else NULL,
     schema = if (nzchar(conn@schema)) conn@schema else NULL,
     disposition = "INLINE",
@@ -1936,6 +1966,7 @@ db_write_table_volume <- function(
   db_sql_exec_and_wait(
     warehouse_id = conn@warehouse_id,
     statement = write_sql,
+    query_tags = conn@query_tags,
     catalog = if (nzchar(conn@catalog)) conn@catalog else NULL,
     schema = if (nzchar(conn@schema)) conn@schema else NULL,
     disposition = "INLINE",

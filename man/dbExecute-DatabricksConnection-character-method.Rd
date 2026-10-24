@@ -4,7 +4,7 @@
 \alias{dbExecute,DatabricksConnection,character-method}
 \title{Execute statement on Databricks}
 \usage{
-\S4method{dbExecute}{DatabricksConnection,character}(conn, statement, ...)
+\S4method{dbExecute}{DatabricksConnection,character}(conn, statement, ..., query_tags = conn@query_tags)
 }
 \arguments{
 \item{conn}{A DatabricksConnection object}
@@ -12,6 +12,11 @@
 \item{statement}{SQL statement}
 
 \item{...}{Additional arguments (ignored)}
+
+\item{query_tags}{Named list of execution-level query tags, as in
+\code{\link[=db_sql_exec_query]{db_sql_exec_query()}}. Defaults to the connection's tags. An explicitly
+supplied list replaces all connection tags for this statement only;
+\code{NULL} or \code{list()} omits tags for this statement.}
 }
 \value{
 Number of rows in result set (from metadata, without loading data)
@@ -19,3 +24,11 @@ Number of rows in result set (from metadata, without loading data)
 \description{
 Execute statement on Databricks
 }
+\seealso{
+Other DBI Methods:
+\code{\link{dbConnect,DatabricksDriver-method}},
+\code{\link{dbGetQuery,DatabricksConnection,character-method}},
+\code{\link{dbSendQuery,DatabricksConnection,character-method}},
+\code{\link{dbSendStatement,DatabricksConnection,character-method}}
+}
+\concept{DBI Methods}

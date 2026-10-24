@@ -17,7 +17,8 @@
   show_progress = TRUE,
   token = db_token(),
   host = db_host(),
-  ...
+  ...,
+  query_tags = NULL
 )
 }
 \arguments{
@@ -52,6 +53,13 @@ queries, dbplyr collection, and table writes (default: \code{TRUE})}
 \item{host}{Databricks workspace host (defaults to db_host())}
 
 \item{...}{Additional arguments (ignored)}
+
+\item{query_tags}{Optional named list of execution-level query tags, for
+example \code{list(team = "informatics", environment = "dev")}. Supply at most
+20 tags with unique, non-empty names and single string values. Use a \code{NULL}
+value for a key-only tag. \code{NULL} or \code{list()} omits tags from the request.
+Tags are recorded in \code{system.query.history.query_tags}; they are distinct
+from the saved-query metadata \code{tags} in \code{\link[=db_query_create]{db_query_create()}}.}
 }
 \value{
 A DatabricksConnection object
@@ -62,4 +70,15 @@ Connect to Databricks SQL Warehouse
 \details{
 Provide either \code{warehouse_id} or \code{http_path}. When \code{http_path} is
 supplied, the warehouse ID is extracted from the \verb{/warehouses/<id>} segment.
+Connections are stateless: connection-level \code{query_tags} are sent with each
+statement, including connection validation, metadata queries, and table
+writes. They do not create a server-side SQL session.
 }
+\seealso{
+Other DBI Methods:
+\code{\link{dbExecute,DatabricksConnection,character-method}},
+\code{\link{dbGetQuery,DatabricksConnection,character-method}},
+\code{\link{dbSendQuery,DatabricksConnection,character-method}},
+\code{\link{dbSendStatement,DatabricksConnection,character-method}}
+}
+\concept{DBI Methods}
