@@ -82,6 +82,27 @@ test_that("Volumes API - don't perform", {
 
 })
 
+test_that("volume existence inspection returns HEAD requests and validates paths", {
+  local_mocked_bindings(
+    req_perform = function(...) stop("Request unexpectedly performed"),
+    .package = "httr2"
+  )
+
+  purrr::iwalk(list(files = db_volume_file_exists, directories = db_volume_dir_exists), function(exists, type) {
+    req <- exists(
+      "/Volumes/c/s/v/path", host = "mock_host", token = "mock_token",
+      perform_request = FALSE
+    )
+    expect_s3_class(req, "httr2_request")
+    expect_identical(req$method, "HEAD")
+    expect_identical(req$url, paste0("https://mock_host/api/2.0/fs/", type, "/Volumes/c/s/v/path"))
+    expect_error(
+      exists("/invalid/path", host = "mock_host", token = "mock_token", perform_request = FALSE),
+      "must start with"
+    )
+  })
+})
+
 test_that("directory deletion inspection returns a request in either recursive mode", {
   local_mocked_bindings(
     req_perform = function(...) stop("Request unexpectedly performed"),

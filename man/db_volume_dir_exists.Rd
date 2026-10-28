@@ -23,7 +23,9 @@ slash.}
 \code{FALSE} the httr2 request is returned \emph{without} being performed.}
 }
 \value{
-If \code{perform_request = TRUE}, returns endpoint-specific API output. If \code{FALSE}, returns an \code{httr2_request}.
+If \code{perform_request = TRUE}, returns \code{TRUE} when the directory exists
+(HTTP 200) and \code{FALSE} when it is not found (HTTP 404). Other HTTP errors
+are propagated. If \code{perform_request = FALSE}, returns an \code{httr2_request}.
 }
 \description{
 Volume FileSystem Check Directory Exists

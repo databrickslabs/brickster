@@ -1,3 +1,69 @@
+test_that("volume existence checks return logical results for present and missing paths", {
+  state <- new.env(parent = emptyenv())
+  perform <- httr2::req_perform
+  local_mocked_bindings(
+    req_perform = function(req, ...) {
+      perform(req, ..., mock = function(req) httr2::response(
+        status_code = state$status,
+        headers = list("content-type" = "application/json")
+      ))
+    },
+    .package = "httr2"
+  )
+
+  purrr::walk(list(db_volume_file_exists, db_volume_dir_exists), function(exists) {
+    state$status <- 200L
+    expect_true(exists("/Volumes/c/s/v/path", host = "mock_host", token = "mock_token"))
+    state$status <- 404L
+    expect_false(exists("/Volumes/c/s/v/path", host = "mock_host", token = "mock_token"))
+  })
+})
+
+test_that("volume existence checks preserve other HTTP errors", {
+  state <- new.env(parent = emptyenv())
+  perform <- httr2::req_perform
+  local_mocked_bindings(
+    req_perform = function(req, ...) {
+      perform(req, ..., mock = function(req) httr2::response(status_code = state$status))
+    },
+    .package = "httr2"
+  )
+
+  purrr::walk(list(db_volume_file_exists, db_volume_dir_exists), function(exists) {
+    purrr::walk(c(400L, 401L, 403L, 429L, 500L, 503L), function(status) {
+      state$status <- status
+      expect_error(
+        exists("/Volumes/c/s/v/path", host = "mock_host", token = "mock_token"),
+        class = paste0("httr2_http_", status)
+      )
+    })
+  })
+})
+
+test_that("other volume operations still raise HTTP 404 errors", {
+  perform <- httr2::req_perform
+  local_mocked_bindings(
+    req_perform = function(req, ...) {
+      perform(req, ..., mock = function(req) httr2::response(status_code = 404))
+    },
+    .package = "httr2"
+  )
+
+  expect_error(
+    db_volume_read(
+      "/Volumes/c/s/v/path", destination = withr::local_tempfile(),
+      host = "mock_host", token = "mock_token", progress = FALSE
+    ),
+    class = "httr2_http_404"
+  )
+  purrr::walk(list(db_volume_dir_create, db_volume_delete), function(action) {
+    expect_error(
+      action("/Volumes/c/s/v/path", host = "mock_host", token = "mock_token"),
+      class = "httr2_http_404"
+    )
+  })
+})
+
 test_that("db_volume_dir_delete inspection neither traverses nor performs requests", {
   state <- new.env(parent = emptyenv())
   state$traversals <- 0L

@@ -198,7 +198,9 @@ db_volume_write <- function(
 #' @family Volumes FileSystem API
 #'
 #' @export
-#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
+#' @returns If `perform_request = TRUE`, returns `TRUE` when the file exists
+#' (HTTP 200) and `FALSE` when it is not found (HTTP 404). Other HTTP errors
+#' are propagated. If `perform_request = FALSE`, returns an `httr2_request`.
 db_volume_file_exists <- function(
   path,
   host = db_host(),
@@ -346,7 +348,9 @@ db_volume_recursive_delete_contents <- function(
 #' @family Volumes FileSystem API
 #'
 #' @export
-#' @returns If `perform_request = TRUE`, returns endpoint-specific API output. If `FALSE`, returns an `httr2_request`.
+#' @returns If `perform_request = TRUE`, returns `TRUE` when the directory exists
+#' (HTTP 200) and `FALSE` when it is not found (HTTP 404). Other HTTP errors
+#' are propagated. If `perform_request = FALSE`, returns an `httr2_request`.
 db_volume_dir_exists <- function(
   path,
   host = db_host(),
@@ -427,8 +431,13 @@ db_volume_action <- function(
       httr2::req_error(is_error = function(resp) {
         httr2::resp_status(resp) == 500
       }) |>
-      httr2::req_perform(path = destination) |>
-      httr2::resp_check_status()
+      httr2::req_perform(path = destination)
+
+    if (action == "HEAD" && httr2::resp_status(resp) == 404L) {
+      return(FALSE)
+    }
+
+    httr2::resp_check_status(resp)
 
     if (action == "HEAD") {
       return(httr2::resp_status(resp) == 200)
