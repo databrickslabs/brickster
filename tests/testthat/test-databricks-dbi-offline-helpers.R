@@ -956,13 +956,17 @@ test_that("volume-method selection warns/errors at size thresholds", {
 })
 
 test_that("db_write_table_volume errors when staging directory is missing", {
-  testthat::skip_if_not_installed("arrow")
   con <- make_dbi_test_con()
+  state <- new.env(parent = emptyenv())
+  state$requests <- character()
+  perform <- httr2::req_perform
 
   local_mocked_bindings(
-    is_valid_volume_path = function(path) path,
-    db_volume_dir_exists = function(...) FALSE,
-    .package = "brickster"
+    req_perform = function(req, ...) {
+      state$requests <- c(state$requests, paste(req$method, req$url))
+      perform(req, ..., mock = function(req) httr2::response(status_code = 404))
+    },
+    .package = "httr2"
   )
 
   expect_error(
@@ -976,6 +980,7 @@ test_that("db_write_table_volume errors when staging directory is missing", {
     ),
     "Staging volume directory does not exist"
   )
+  expect_identical(state$requests, "HEAD https://test_host/api/2.0/fs/directories/Volumes/c/s/v")
 })
 
 test_that("db_write_table_volume executes create flow when append is FALSE", {

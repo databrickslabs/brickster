@@ -1,5 +1,6 @@
 # brickster (development version)
 
+-   `db_volume_file_exists()` and `db_volume_dir_exists()` now return `FALSE` for missing paths (HTTP 404), allowing volume-backed `dbWriteTable()` to report a missing staging directory. Other HTTP errors still propagate (#320).
 -   `db_sql_exec_query()` and `db_sql_query()` now accept execution-level `query_tags` as a named list. DBI connections can set default tags with `dbConnect(query_tags = ...)`; `dbGetQuery()`, `dbSendQuery()`, `dbExecute()`, and `dbSendStatement()` can replace them per statement or omit them with `query_tags = NULL` (#318).
 
 # brickster 0.2.15
