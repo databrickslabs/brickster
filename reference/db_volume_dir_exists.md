@@ -37,8 +37,10 @@ db_volume_dir_exists(
 
 ## Value
 
-If `perform_request = TRUE`, returns endpoint-specific API output. If
-`FALSE`, returns an `httr2_request`.
+If `perform_request = TRUE`, returns `TRUE` when the directory exists
+(HTTP 200) and `FALSE` when it is not found (HTTP 404). Other HTTP
+errors are propagated. If `perform_request = FALSE`, returns an
+`httr2_request`.
 
 ## See also
 

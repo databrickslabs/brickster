@@ -2,6 +2,15 @@
 
 ## brickster (development version)
 
+- [`db_volume_file_exists()`](https://databrickslabs.github.io/brickster/reference/db_volume_file_exists.md)
+  and
+  [`db_volume_dir_exists()`](https://databrickslabs.github.io/brickster/reference/db_volume_dir_exists.md)
+  now return `FALSE` for missing paths (HTTP 404), allowing
+  volume-backed
+  [`dbWriteTable()`](https://dbi.r-dbi.org/reference/dbWriteTable.html)
+  to report a missing staging directory. Other HTTP errors still
+  propagate
+  ([\#320](https://github.com/databrickslabs/brickster/issues/320)).
 - [`db_sql_exec_query()`](https://databrickslabs.github.io/brickster/reference/db_sql_exec_query.md)
   and
   [`db_sql_query()`](https://databrickslabs.github.io/brickster/reference/db_sql_query.md)
