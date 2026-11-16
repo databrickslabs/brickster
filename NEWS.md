@@ -1,7 +1,8 @@
-# brickster (development version)
+# brickster 0.2.16
 
 -   `db_volume_file_exists()` and `db_volume_dir_exists()` now return `FALSE` for missing paths (HTTP 404), allowing volume-backed `dbWriteTable()` to report a missing staging directory. Other HTTP errors still propagate (#320).
 -   `db_sql_exec_query()` and `db_sql_query()` now accept execution-level `query_tags` as a named list. DBI connections can set default tags with `dbConnect(query_tags = ...)`; `dbGetQuery()`, `dbSendQuery()`, `dbExecute()`, and `dbSendStatement()` can replace them per statement or omit them with `query_tags = NULL` (#318).
+-   Volume-backed `dbWriteTable()` no longer uses the random seed to name staging directories (#316, @m-muecke).
 
 # brickster 0.2.15
 
@@ -28,7 +29,6 @@
 -   `db_cluster_create()` and `db_cluster_edit()` no longer ignore `log_conf` (#299, @m-muecke).
 -   `db_vs_indexes_upsert_data()` no longer rounds numbers to four decimal places (#308, @m-muecke).
 -   Volume-backed `dbWriteTable()` and `dbAppendTable()` avoid an extra staging-directory creation request before uploading files (#309, @m-muecke).
--   Volume-backed `dbWriteTable()` no longer uses the random seed to name staging directories (@m-muecke).
 -   Databricks CLI authentication now limits token retrieval to 60 seconds instead of waiting up to 60,000 seconds (#296, @m-muecke).
 
 # brickster 0.2.14
