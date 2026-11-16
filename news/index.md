@@ -1,6 +1,6 @@
 # Changelog
 
-## brickster (development version)
+## brickster 0.2.16
 
 - [`db_volume_file_exists()`](https://databrickslabs.github.io/brickster/reference/db_volume_file_exists.md)
   and
@@ -22,6 +22,11 @@
   [`dbSendStatement()`](https://dbi.r-dbi.org/reference/dbSendStatement.html)
   can replace them per statement or omit them with `query_tags = NULL`
   ([\#318](https://github.com/databrickslabs/brickster/issues/318)).
+- Volume-backed
+  [`dbWriteTable()`](https://dbi.r-dbi.org/reference/dbWriteTable.html)
+  no longer uses the random seed to name staging directories
+  ([\#316](https://github.com/databrickslabs/brickster/issues/316),
+  [@m-muecke](https://github.com/m-muecke)).
 
 ## brickster 0.2.15
 
@@ -178,10 +183,6 @@ CRAN release: 2026-10-09
   files
   ([\#309](https://github.com/databrickslabs/brickster/issues/309),
   [@m-muecke](https://github.com/m-muecke)).
-- Volume-backed
-  [`dbWriteTable()`](https://dbi.r-dbi.org/reference/dbWriteTable.html)
-  no longer uses the random seed to name staging directories
-  ([@m-muecke](https://github.com/m-muecke)).
 - Databricks CLI authentication now limits token retrieval to 60 seconds
   instead of waiting up to 60,000 seconds
   ([\#296](https://github.com/databrickslabs/brickster/issues/296),
