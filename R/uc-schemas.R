@@ -17,7 +17,7 @@ db_uc_schemas_list <- function(catalog,
                                host = db_host(), token = db_token(),
                                perform_request = TRUE) {
 
-  stopifnot(max_results <= 1000)
+  check_number_whole(max_results, max = 1000, allow_null = TRUE)
 
   req <- db_request(
     endpoint = "unity-catalog/schemas",

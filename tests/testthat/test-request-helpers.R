@@ -66,7 +66,7 @@ test_that("request helpers - building requests", {
 })
 
 test_that("page collection requires a function", {
-  expect_error(db_list_all_pages(list()), "is.function\\(list_page_fn\\)")
+  expect_error(db_list_all_pages(list()), "list_page_fn")
 })
 
 test_that("request error body handles standard Databricks JSON errors", {

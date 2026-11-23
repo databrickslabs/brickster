@@ -61,7 +61,7 @@ test_that("dbConnect validates tuning inputs and persists connection settings", 
       token = "mock_token",
       max_active_connections = 0
     ),
-    "`max_active_connections` must be a positive numeric value"
+    "`max_active_connections` must be a whole number"
   )
 
   expect_error(

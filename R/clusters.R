@@ -691,14 +691,8 @@ db_cluster_list <- function(
   page_size = 20,
   page_token = NULL
 ) {
-  if (!is.null(page_size) && (
-    !rlang::is_scalar_integerish(page_size, finite = TRUE) || page_size < 1 || page_size > 100
-  )) {
-    cli::cli_abort("{.arg page_size} must be NULL or a whole number from 1 to 100.")
-  }
-  if (!is.null(page_token) && !rlang::is_string(page_token)) {
-    cli::cli_abort("{.arg page_token} must be NULL or a single string from a previous response.")
-  }
+  check_number_whole(page_size, min = 1, max = 100, allow_null = TRUE)
+  check_string(page_token, allow_null = TRUE)
 
   req <- db_request(
     endpoint = "clusters/list",
@@ -876,18 +870,10 @@ db_cluster_events <- function(
   page_token = NULL
 ) {
   order <- match.arg(order, several.ok = FALSE)
-  stopifnot(
-    is.null(offset) || offset >= 0,
-    is.null(limit) || (limit > 0 && limit <= 500)
-  )
-  if (!is.null(page_size) && (
-    !rlang::is_scalar_integerish(page_size, finite = TRUE) || page_size < 0 || page_size > 500
-  )) {
-    cli::cli_abort("{.arg page_size} must be NULL or a whole number from 0 to 500.")
-  }
-  if (!is.null(page_token) && !rlang::is_string(page_token)) {
-    cli::cli_abort("{.arg page_token} must be NULL or a single string from a previous response.")
-  }
+  check_number_whole(offset, min = 0, allow_null = TRUE)
+  check_number_whole(limit, min = 1, max = 500, allow_null = TRUE)
+  check_number_whole(page_size, min = 0, max = 500, allow_null = TRUE)
+  check_string(page_token, allow_null = TRUE)
 
   legacy <- !is.null(offset) || !is.null(limit)
   if (legacy && ((!missing(page_size) && !is.null(page_size)) || !is.null(page_token))) {

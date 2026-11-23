@@ -175,6 +175,6 @@ test_that("db_context_command_run_and_wait polls until done and supports parsed/
       host = "mock_host",
       token = "mock_token"
     ),
-    "is.logical"
+    "parse_result"
   )
 })

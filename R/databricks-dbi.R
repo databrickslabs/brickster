@@ -147,9 +147,7 @@ setMethod(
       }
     }
 
-    if (!is.numeric(max_active_connections) || max_active_connections <= 0) {
-      cli::cli_abort("{.arg max_active_connections} must be a positive numeric value")
-    }
+    check_number_whole(max_active_connections, min = 1)
 
     if (!is.numeric(fetch_timeout) || fetch_timeout <= 0) {
       cli::cli_abort("{.arg fetch_timeout} must be a positive numeric value")
@@ -1045,13 +1043,7 @@ db_assert_statement <- function(statement) {
 #' Assert that a progress flag is valid
 #' @keywords internal
 db_assert_show_progress <- function(show_progress) {
-  if (
-    !is.logical(show_progress) ||
-      length(show_progress) != 1L ||
-      is.na(show_progress)
-  ) {
-    cli::cli_abort("{.arg show_progress} must be `TRUE` or `FALSE`.")
-  }
+  check_bool(show_progress)
 }
 
 #' Extract warehouse ID from an http_path

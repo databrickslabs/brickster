@@ -85,10 +85,14 @@ db_workspace_export <- function(
   perform_request = TRUE
 ) {
   format <- match.arg(format, several.ok = FALSE)
-  stopifnot(is.logical(direct_download))
+  check_bool(direct_download)
 
   if (direct_download) {
-    stopifnot(!is.null(output_path))
+    if (is.null(output_path)) {
+      cli::cli_abort(
+        "{.arg output_path} must be supplied when {.code direct_download = TRUE}."
+      )
+    }
   }
 
   body <- list(

@@ -1,1 +1,4 @@
-utils::globalVariables(c("displayHTML"))
+utils::globalVariables("displayHTML")
+
+#' @import rlang
+NULL

@@ -180,7 +180,7 @@ azure_attributes <- function(
   spot_bid_max_price = -1
 ) {
   # TODO: check inputs
-  stopifnot(first_on_demand > 0)
+  check_number_whole(first_on_demand, min = 1)
   availability <- paste0(match.arg(availability, several.ok = FALSE), "_AZURE")
 
   obj <- list(
@@ -219,8 +219,11 @@ is.azure_attributes <- function(x) {
 #'
 #' @export
 cluster_autoscale <- function(min_workers, max_workers) {
-  stopifnot(min_workers > 0)
-  stopifnot(min_workers < max_workers)
+  check_number_whole(min_workers, min = 1)
+  check_number_whole(max_workers)
+  if (min_workers >= max_workers) {
+    cli::cli_abort("{.arg min_workers} must be smaller than {.arg max_workers}.")
+  }
 
   obj <- list(
     min_workers = min_workers,
@@ -376,8 +379,9 @@ is.s3_storage_info <- function(x) {
 #'
 #' @export
 cluster_log_conf <- function(dbfs = NULL, s3 = NULL) {
-  # dbfs or s3 must be specified - but not both
-  stopifnot(xor(is.null(dbfs), is.null(s3)))
+  if (is.null(dbfs) == is.null(s3)) {
+    cli::cli_abort("Exactly one of {.arg dbfs} or {.arg s3} must be supplied.")
+  }
 
   if (!is.null(dbfs)) {
     stopifnot(is.dbfs_storage_info(dbfs))
@@ -840,10 +844,10 @@ email_notifications <- function(
   on_failure = NULL,
   no_alert_for_skipped_runs = TRUE
 ) {
-  stopifnot(is.character(on_start))
-  stopifnot(is.character(on_success))
-  stopifnot(is.character(on_failure))
-  stopifnot(is.logical(no_alert_for_skipped_runs))
+  check_character(on_start, allow_null = TRUE)
+  check_character(on_success, allow_null = TRUE)
+  check_character(on_failure, allow_null = TRUE)
+  check_bool(no_alert_for_skipped_runs)
 
   obj <- list(
     on_start = on_start,
@@ -1634,7 +1638,7 @@ is.embedding_source_column <- function(x) {
 #'
 #' @export
 embedding_vector_column <- function(name, dimension) {
-  stopifnot(is.numeric(dimension))
+  check_number_whole(dimension, min = 1)
 
   obj <- list(
     name = name,

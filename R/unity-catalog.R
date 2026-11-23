@@ -107,8 +107,7 @@ db_uc_models_list <- function(catalog, schema,
                               host = db_host(), token = db_token(),
                               perform_request = TRUE, page_token = NULL) {
 
-  stopifnot(is.null(page_token) || (is.character(page_token) &&
-    length(page_token) == 1L && !is.na(page_token) && nzchar(page_token)))
+  check_string(page_token, allow_empty = FALSE, allow_null = TRUE)
 
   req <- db_request(
     endpoint = "unity-catalog/models",
@@ -158,8 +157,7 @@ db_uc_model_versions_get <- function(catalog, schema, model,
                              host = db_host(), token = db_token(),
                              perform_request = TRUE, page_token = NULL) {
 
-  stopifnot(is.null(page_token) || (is.character(page_token) &&
-    length(page_token) == 1L && !is.na(page_token) && nzchar(page_token)))
+  check_string(page_token, allow_empty = FALSE, allow_null = TRUE)
 
   req <- db_request(
     endpoint = "unity-catalog/models",
@@ -183,8 +181,7 @@ db_uc_funcs_list <- function(catalog, schema,
                               host = db_host(), token = db_token(),
                               perform_request = TRUE, page_token = NULL) {
 
-  stopifnot(is.null(page_token) || (is.character(page_token) &&
-    length(page_token) == 1L && !is.na(page_token) && nzchar(page_token)))
+  check_string(page_token, allow_empty = FALSE, allow_null = TRUE)
 
   req <- db_request(
     endpoint = "unity-catalog/functions",
