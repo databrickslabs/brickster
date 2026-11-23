@@ -1,3 +1,7 @@
+# brickster (development version)
+
+-   Errors for a profile missing from `.databrickscfg` now name the profile and no longer wrap the config file path in stray backticks.
+
 # brickster 0.2.16
 
 -   `db_volume_file_exists()` and `db_volume_dir_exists()` now return `FALSE` for missing paths (HTTP 404), allowing volume-backed `dbWriteTable()` to report a missing staging directory. Other HTTP errors still propagate (#320).

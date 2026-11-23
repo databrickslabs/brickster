@@ -196,8 +196,8 @@ read_databrickscfg <- function(
   # return error in case of empty profile
   if (is.null(vars)) {
     cli::cli_abort(c(
-      "Specified {.var profile} not found in {.file `{config_path}`}:",
-      "x" = "Need to specify {.envvar {profile}} profile within {.file {config_path}} file."
+      "Profile {.val {profile}} not found in {.file {config_path}}:",
+      "x" = "Need to specify {.val {profile}} profile within {.file {config_path}} file."
     ))
   }
 
@@ -207,8 +207,8 @@ read_databrickscfg <- function(
   if (is.null(value)) {
     if (error) {
       cli::cli_abort(c(
-        "Parameter {.var {key}} not found in {.envvar {profile}} profile of {.file {config_path}}:",
-        "x" = "Need to specify {.envvar {key}} in {.envvar {profile}} profile."
+        "Parameter {.field {key}} not found in {.val {profile}} profile of {.file {config_path}}:",
+        "x" = "Need to specify {.field {key}} in {.val {profile}} profile."
       ))
     } else {
       value <- NULL
@@ -284,8 +284,8 @@ read_env_var <- function(
   if (!nzchar(value)) {
     if (error) {
       cli::cli_abort(c(
-        "Environment variable {.var {key_name}} not found:",
-        "x" = "Need to specify {.var {key_name}} environment variable."
+        "Environment variable {.envvar {key_name}} not found:",
+        "x" = "Need to specify {.envvar {key_name}} environment variable."
       ))
     } else {
       value <- NULL
