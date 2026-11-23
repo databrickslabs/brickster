@@ -875,7 +875,7 @@ db_cluster_events <- function(
   page_size = 50,
   page_token = NULL
 ) {
-  order <- match.arg(order, several.ok = FALSE)
+  order <- match.arg(order)
   stopifnot(
     is.null(offset) || offset >= 0,
     is.null(limit) || (limit > 0 && limit <= 500)

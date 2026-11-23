@@ -356,7 +356,7 @@ db_secrets_scope_acl_put <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
-  permission <- match.arg(permission, several.ok = FALSE)
+  permission <- match.arg(permission)
 
   body <- list(
     scope = scope,

@@ -17,7 +17,7 @@ db_context_create <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
-  language <- match.arg(language, several.ok = FALSE)
+  language <- match.arg(language)
 
   body <- list(
     clusterId = cluster_id,
@@ -143,7 +143,7 @@ db_context_command_run <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
-  language <- match.arg(language, several.ok = FALSE)
+  language <- match.arg(language)
 
   # only can have one of `command` or `command_file`
   if (!is.null(command) && !is.null(command_file)) {
