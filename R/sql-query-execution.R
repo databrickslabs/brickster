@@ -676,7 +676,7 @@ db_sql_fetch_results_fast <- function(
   link <- resp$result$external_links[[1]]$external_link
 
   req <- httr2::request(link) |>
-    httr2::req_retry(max_tries = 3, backoff = ~1)
+    httr2::req_retry(max_tries = 3, backoff = ~1, retry_on_failure = TRUE)
 
   if (!is.null(fetch_timeout)) {
     req <- httr2::req_timeout(req, fetch_timeout)
