@@ -840,9 +840,9 @@ email_notifications <- function(
   on_failure = NULL,
   no_alert_for_skipped_runs = TRUE
 ) {
-  stopifnot(is.character(on_start))
-  stopifnot(is.character(on_success))
-  stopifnot(is.character(on_failure))
+  stopifnot(is.null(on_start) || is.character(on_start))
+  stopifnot(is.null(on_success) || is.character(on_success))
+  stopifnot(is.null(on_failure) || is.character(on_failure))
   stopifnot(is.logical(no_alert_for_skipped_runs))
 
   obj <- list(
