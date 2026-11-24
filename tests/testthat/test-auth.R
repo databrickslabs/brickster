@@ -221,6 +221,17 @@ test_that("auth functions - reading .databrickscfg", {
   expect_identical(wsid, wsid_w)
 })
 
+test_that("read_databrickscfg errors name the missing profile", {
+  local_clear_auth_env()
+  withr::local_envvar(DATABRICKS_CONFIG_FILE = "databricks.cfg")
+  withr::local_file("databricks.cfg", {
+    writeLines(c("[DEFAULT]", "host = http://some-host"), "databricks.cfg")
+  })
+
+  expect_error(read_databrickscfg("host", profile = "missing-profile"), "missing-profile")
+  expect_error(read_databrickscfg("token", profile = "DEFAULT"), "Parameter token not found")
+})
+
 test_that("auth functions - m2m credentials from env", {
   local_clear_auth_env()
 
