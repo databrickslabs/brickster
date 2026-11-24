@@ -97,8 +97,8 @@ time.
   than equal to 18
 
 `filter_jsons` will convert attempt to use
-[`jsonlite::toJSON`](https://jeroen.r-universe.dev/jsonlite/reference/fromJSON.html)
-on any non character vectors.
+[`jsonlite::toJSON`](https://rdrr.io/pkg/jsonlite/man/fromJSON.html) on
+any non character vectors.
 
 Refer to docs for [Vector
 Search](https://docs.databricks.com/en/generative-ai/create-query-vector-search.html#use-filters-on-queries).

@@ -2,6 +2,8 @@
 
 ## brickster 0.2.16
 
+CRAN release: 2026-11-16
+
 - [`db_volume_file_exists()`](https://databrickslabs.github.io/brickster/reference/db_volume_file_exists.md)
   and
   [`db_volume_dir_exists()`](https://databrickslabs.github.io/brickster/reference/db_volume_dir_exists.md)
