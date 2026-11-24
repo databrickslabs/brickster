@@ -33,7 +33,7 @@ Imports:
     processx,
     purrr,
     R6,
-    rlang,
+    rlang (>= 1.2.0),
     tibble,
     utils
 Suggests:

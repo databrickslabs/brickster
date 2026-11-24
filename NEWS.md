@@ -1,3 +1,7 @@
+# brickster (development version)
+
+-   `email_notifications()` no longer fails when `on_start`, `on_success`, or `on_failure` is left at its `NULL` default.
+
 # brickster 0.2.16
 
 -   `db_volume_file_exists()` and `db_volume_dir_exists()` now return `FALSE` for missing paths (HTTP 404), allowing volume-backed `dbWriteTable()` to report a missing staging directory. Other HTTP errors still propagate (#320).

@@ -202,7 +202,7 @@ db_context_command_run_and_wait <- function(
   host = db_host(),
   token = db_token()
 ) {
-  stopifnot(is.logical(parse_result))
+  check_bool(parse_result)
 
   command <- db_context_command_run(
     cluster_id = cluster_id,

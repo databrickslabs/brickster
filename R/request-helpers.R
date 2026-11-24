@@ -212,7 +212,7 @@ from_logical <- function(x) {
 #' jobs <- db_list_all_pages(db_jobs_list, limit = 100)
 #' }
 db_list_all_pages <- function(list_page_fn, ...) {
-  stopifnot(is.function(list_page_fn))
+  check_function(list_page_fn)
   pagination_fields <- c(
     "next_page_token", "prev_page_token", "next_page", "total_count", "has_more",
     "has_next_page"

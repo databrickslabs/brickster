@@ -188,9 +188,7 @@ copy_to.DatabricksConnection <- function(
     cli::cli_abort("Connection is not valid")
   }
   
-  if (!is.data.frame(df)) {
-    cli::cli_abort("df must be a data frame")
-  }
+  check_data_frame(df)
   
   # Note: sql_query_save will handle name generation for temporary objects
   

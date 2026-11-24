@@ -26,7 +26,9 @@ db_lakebase_creds_generate <- function(
   perform_request = TRUE
 ) {
   permission_set <- match.arg(permission_set)
-  stopifnot(!is.null(instance_names), length(instance_names) > 0)
+  if (length(instance_names) == 0) {
+    cli::cli_abort("{.arg instance_names} must contain at least one instance name.")
+  }
 
   resources <- NULL
   if (!is.null(tables)) {

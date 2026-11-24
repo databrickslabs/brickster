@@ -144,7 +144,7 @@ test_that("copy_to validates inputs offline", {
   # Test input validation
   expect_error(
     copy_to.DatabricksConnection(con, "not_a_dataframe"),
-    "df must be a data frame"
+    "`df` must be a data frame"
   )
 
   expect_error(

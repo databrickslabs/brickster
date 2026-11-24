@@ -344,6 +344,9 @@ test_that("email notification object behaviour", {
     c("JobEmailNotifications", "list")
   )
   expect_true(is.email_notifications(email_notif2))
+
+  expect_s3_class(email_notifications(), "JobEmailNotifications")
+  expect_s3_class(email_notifications(on_failure = allowed), "JobEmailNotifications")
 })
 
 

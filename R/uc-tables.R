@@ -35,7 +35,7 @@ db_uc_tables_list <- function(catalog, schema, max_results = 50,
                               host = db_host(), token = db_token(),
                               perform_request = TRUE) {
 
-  stopifnot(max_results <= 50)
+  check_number_whole(max_results, max = 50, allow_null = TRUE)
 
   req <- db_request(
     endpoint = "unity-catalog/tables",
@@ -204,7 +204,7 @@ db_uc_tables_summaries <- function(catalog,
                                   host = db_host(), token = db_token(),
                                   perform_request = TRUE) {
 
-  stopifnot(max_results <= 10000)
+  check_number_whole(max_results, max = 10000, allow_null = TRUE)
 
   body <- list(
     catalog_name = catalog,
