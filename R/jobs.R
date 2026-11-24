@@ -640,7 +640,7 @@ db_jobs_runs_list <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
-  run_type <- match.arg(run_type, several.ok = FALSE)
+  run_type <- match.arg(run_type)
 
   if (active_only && completed_only) {
     cli::cli_abort(
@@ -742,7 +742,7 @@ db_jobs_runs_export <- function(
   perform_request = TRUE
 ) {
   # TODO: could add the ability to directly parse the outputs to files?
-  views_to_export <- match.arg(views_to_export, several.ok = FALSE)
+  views_to_export <- match.arg(views_to_export)
 
   body <- list(
     run_id = as.character(run_id),

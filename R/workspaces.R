@@ -84,7 +84,7 @@ db_workspace_export <- function(
   direct_download = FALSE,
   perform_request = TRUE
 ) {
-  format <- match.arg(format, several.ok = FALSE)
+  format <- match.arg(format)
   stopifnot(is.logical(direct_download))
 
   if (direct_download) {
@@ -199,7 +199,7 @@ db_workspace_import <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
-  format <- match.arg(format, several.ok = FALSE)
+  format <- match.arg(format)
 
   if (!is.null(language)) {
     stopifnot(language %in% c("SCALA", "PYTHON", "SQL", "R"))

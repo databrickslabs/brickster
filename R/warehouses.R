@@ -57,9 +57,9 @@ db_sql_warehouse_create <- function(
   perform_request = TRUE
 ) {
   # checks
-  spot_instance_policy <- match.arg(spot_instance_policy, several.ok = FALSE)
-  channel <- match.arg(channel, several.ok = FALSE)
-  warehouse_type <- match.arg(warehouse_type, several.ok = FALSE)
+  spot_instance_policy <- match.arg(spot_instance_policy)
+  channel <- match.arg(channel)
+  warehouse_type <- match.arg(warehouse_type)
   sizes <- c(
     "2X-Small",
     "X-Small",

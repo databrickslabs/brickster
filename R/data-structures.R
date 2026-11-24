@@ -89,8 +89,8 @@ aws_attributes <- function(
   ebs_volume_throughput = NULL
 ) {
   # TODO: check inputs
-  availability <- match.arg(availability, several.ok = FALSE)
-  ebs_volume_type <- match.arg(ebs_volume_type, several.ok = FALSE)
+  availability <- match.arg(availability)
+  ebs_volume_type <- match.arg(ebs_volume_type)
 
   obj <- list(
     first_on_demand = first_on_demand,
@@ -181,7 +181,7 @@ azure_attributes <- function(
 ) {
   # TODO: check inputs
   stopifnot(first_on_demand > 0)
-  availability <- paste0(match.arg(availability, several.ok = FALSE), "_AZURE")
+  availability <- paste0(match.arg(availability), "_AZURE")
 
   obj <- list(
     first_on_demand = first_on_demand,
@@ -336,7 +336,7 @@ s3_storage_info <- function(
   kms_key = NULL,
   canned_acl = NULL
 ) {
-  encryption_type <- match.arg(encryption_type, several.ok = FALSE)
+  encryption_type <- match.arg(encryption_type)
 
   obj <- list(
     destination = destination,
@@ -887,7 +887,7 @@ cron_schedule <- function(
   timezone_id = "Etc/UTC",
   pause_status = c("UNPAUSED", "PAUSED")
 ) {
-  pause_status <- match.arg(pause_status, several.ok = FALSE)
+  pause_status <- match.arg(pause_status)
 
   obj <- list(
     quartz_cron_expression = quartz_cron_expression,
@@ -958,7 +958,7 @@ access_control_req_user <- function(
   user_name,
   permission_level = c("CAN_MANAGE", "CAN_MANAGE_RUN", "CAN_VIEW", "IS_OWNER")
 ) {
-  permission_level <- match.arg(permission_level, several.ok = FALSE)
+  permission_level <- match.arg(permission_level)
 
   obj <- list(
     user_name = user_name,
@@ -995,7 +995,7 @@ access_control_req_group <- function(
   group,
   permission_level = c("CAN_MANAGE", "CAN_MANAGE_RUN", "CAN_VIEW")
 ) {
-  permission_level <- match.arg(permission_level, several.ok = FALSE)
+  permission_level <- match.arg(permission_level)
 
   obj <- list(
     group_name = group,

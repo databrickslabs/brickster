@@ -64,7 +64,7 @@ db_mlflow_model_transition_stage <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
-  stage <- match.arg(stage, several.ok = FALSE)
+  stage <- match.arg(stage)
 
   body <- list(
     name = name,
@@ -109,7 +109,7 @@ db_mlflow_model_transition_req <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
-  stage <- match.arg(stage, several.ok = FALSE)
+  stage <- match.arg(stage)
 
   body <- list(
     name = name,
@@ -192,7 +192,7 @@ db_mlflow_model_approve_transition_req <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
-  stage <- match.arg(stage, several.ok = FALSE)
+  stage <- match.arg(stage)
 
   body <- list(
     name = name,
@@ -237,7 +237,7 @@ db_mlflow_model_reject_transition_req <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
-  stage <- match.arg(stage, several.ok = FALSE)
+  stage <- match.arg(stage)
 
   body <- list(
     name = name,
@@ -285,7 +285,7 @@ db_mlflow_model_delete_transition_req <- function(
   token = db_token(),
   perform_request = TRUE
 ) {
-  stage <- match.arg(stage, several.ok = FALSE)
+  stage <- match.arg(stage)
 
   body <- list(
     name = name,
