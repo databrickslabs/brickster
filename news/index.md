@@ -1,5 +1,11 @@
 # Changelog
 
+## brickster (development version)
+
+- [`email_notifications()`](https://databrickslabs.github.io/brickster/reference/email_notifications.md)
+  no longer fails when `on_start`, `on_success`, or `on_failure` is left
+  at its `NULL` default.
+
 ## brickster 0.2.16
 
 CRAN release: 2026-11-16
